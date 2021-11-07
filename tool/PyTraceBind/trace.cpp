@@ -16,27 +16,42 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     {
         case PyTrace_LINE:
         {
-            printf("PyTrace_LINE\n");
+            printf("PyTrace_LINE:%d\n", what);
             break;
         }
         case PyTrace_CALL:
         {
-            printf("PyTrace_CALL\n");
+            printf("PyTrace_CALL:%d\n", what);
             break;
         }
         case PyTrace_EXCEPTION:
         {
-            printf("PyTrace_EXCEPTION\n");
+            printf("PyTrace_EXCEPTION:%d\n", what);
             break;
         }
         case PyTrace_RETURN:
         {
-            printf("PyTrace_RETURN\n");
+            printf("PyTrace_RETURN:%d\n", what);
             break;
         }
         case PyTrace_OPCODE:
         {
-            printf("PyTrace_OPCODE\n");
+            printf("PyTrace_OPCODE:%d\n", what);
+            break;
+        }
+        case PyTrace_C_CALL:
+        {
+            printf("PyTrace_C_CALL:%d\n", what);
+            break;
+        }
+        case PyTrace_C_EXCEPTION:
+        {
+            printf("PyTrace_C_EXCEPTION:%d\n", what);
+            break;
+        }
+        case PyTrace_C_RETURN:
+        {
+            printf("PyTrace_C_RETURN:%d\n", what);
             break;
         }
         default:
@@ -54,6 +69,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 void SetupTracer() 
 {
     PyEval_SetTrace((Py_tracefunc)Tracer, (PyObject*)NULL);
+    PyEval_SetProfile ((Py_tracefunc)Tracer, (PyObject*)NULL);
 }
 
 

@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import os
+import pyins
 from DemoAdd import DemoAdd
     
 def DemoTr (Value):
@@ -11,6 +12,7 @@ def DemoTr (Value):
 
 
 if __name__ == '__main__':
+    pyins.Setup()
     Temp = 8
     Result = DemoTr(Temp)
     print ("trace end", Result)

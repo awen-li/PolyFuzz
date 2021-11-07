@@ -1,0 +1,8 @@
+README.md
+pyins.cpp
+setup.py
+trace.cpp
+pyins.egg-info/PKG-INFO
+pyins.egg-info/SOURCES.txt
+pyins.egg-info/dependency_links.txt
+pyins.egg-info/top_level.txt

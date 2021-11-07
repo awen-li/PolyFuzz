@@ -8,7 +8,6 @@ import tempfile
 import setuptools
 from setuptools import Extension
 from setuptools import setup
-from setuptools.command.build_ext import build_ext
 
 __version__ = os.getenv("PYINS_VERSION", "1.0.0")
 
@@ -30,30 +29,6 @@ ext_modules = [
         ],
         language="c++"),
 ]
-
-
-class BuildExt(build_ext):
-  """A custom build extension for adding compiler-specific options."""
-
-  def build_extensions(self):
-
-    for ext in self.extensions:
-      ext.define_macros = [("VERSION_INFO",
-                            "'{}'".format(self.distribution.get_version())),
-                           ("ATHERIS_MODULE_NAME", ext.name)]
-      ext.extra_compile_args = c_opts
-      if ext.name == "atheris_no_libfuzzer":
-        ext.extra_link_args = l_opts
-      else:
-        ext.extra_link_args = l_opts + [libfuzzer]
-    build_ext.build_extensions(self)
-
-    try:
-      self.deploy_file(libfuzzer, orig_libfuzzer_name)
-    except Exception as e:
-      sys.stderr.write(str(e))
-      sys.stderr.write("\n")
-      pass
 
 
 setup(

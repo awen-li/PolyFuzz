@@ -5,6 +5,8 @@ from DemoAdd import DemoAdd
     
 def DemoTr (Value):
     Var = os.getenv("CASE1")
+    if Var == None:
+    	Var = 1
     Var = int (Var)
     Da = DemoAdd (Var)
     Res = Da.Add (Value)

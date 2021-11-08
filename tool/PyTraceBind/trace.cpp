@@ -1,4 +1,5 @@
 #include "trace.h"
+#include <object.h>
 #include <frameobject.h>
 #include <opcode.h>
 #include <pystate.h>
@@ -95,13 +96,44 @@ char *StringObj (PyObject *StrObj)
 #endif
 }
 
+static void ShowVars (PyObject *co_varnames)
+{
+    int VarNum = PyTuple_GET_SIZE(co_varnames);
+    if (VarNum == 0)
+    {
+        return;
+    }
+    
+    for (int i = 0; i < VarNum; i++)
+    {
+        PyObject *Var = PyTuple_GET_ITEM(co_varnames, i);
+        //PyObject *item = PyList_GET_ITEM(dir, i);
+        Py_ssize_t item_size;
+        const char *VarName = PyUnicode_AsUTF8AndSize(Var, &item_size);
+        printf ("\n\tVarType: %s , VarName:%s ", Var->ob_type->tp_name, VarName);
+        
+        //if (Var->ob_type == &PyLong_Type)
+        //{
+        //    PyLongObject *LongVar = (PyLongObject*)Var;
+        //    int Value = Py_SIZE(LongVar) == 0 ? 0 : (sdigit)LongVar->ob_digit[0];
+        //    printf ("\tLONG_VAR: [%s][%d] \r\n", VarName, Value);
+        //}
+    }
+}
+
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 {
+    // enable PyTrace_OPCODE
+    frame->f_trace_opcodes = true;
+    
     PyCodeObject *f_code  = frame->f_code;
     PyObject *co_filename = f_code->co_filename;
     PyObject *co_name     = f_code->co_name;
+    PyObject *co_varnames = f_code->co_varnames;
     
-    printf ("%s : %s : %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno);
+    printf ("%s : %s : %d --- %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno, frame->f_lasti);
+    ShowVars (co_varnames);
+    
     switch(what)
     {
         case PyTrace_LINE:
@@ -126,7 +158,8 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         }
         case PyTrace_OPCODE:
         {
-            printf("PyTrace_OPCODE:%d\n", what);
+            unsigned int opcode = PyBytes_AsString(f_code->co_code)[frame->f_lasti];
+            printf("PyTrace_OPCODE:%d[%u]\n", what, opcode);      
             break;
         }
         case PyTrace_C_CALL:

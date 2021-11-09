@@ -4,11 +4,32 @@
 #include <opcode.h>
 #include <pystate.h>
 #include <cstddef>
-#include <deque>
-#include <iostream>
-#include <unordered_map>
+#include <set>
+
 
 namespace pyins {
+
+using namespace std;
+
+static set<string> RegModule;
+
+void PyInit(const vector<string>& Modules) 
+{
+    RegModule.clear ();
+    for (auto It = Modules.begin (); It != Modules.end (); It++)
+    {
+        RegModule.insert (*It);
+        cout<<">>>>>>>>>>>>>>>>> add module: "<<*It<<endl;
+    }
+
+    return;
+}
+
+bool IsRegModule (string Module)
+{
+    return true;
+}
+
 
 //typedef struct {
 //    PyObject_HEAD			   /* Header information, we see that everything really is an object, and bytecode is also an object */	
@@ -96,7 +117,43 @@ char *StringObj (PyObject *StrObj)
 #endif
 }
 
-static void ShowVars (PyObject *co_varnames)
+static void ShowValue (PyObject *Var)
+{
+    Py_ssize_t ItemSize = 0;
+    const char *VarName = PyUnicode_AsUTF8AndSize(Var, &ItemSize);
+        
+        
+        //if (Var->ob_type == &PyLong_Type)
+        //{
+        //    PyLongObject *LongVar = (PyLongObject*)Var;
+        //    int Value = Py_SIZE(LongVar) == 0 ? 0 : (sdigit)LongVar->ob_digit[0];
+        //    printf ("\tLONG_VAR: [%s][%d] \r\n", VarName, Value);
+        //}
+    if (PyLong_Check (Var))
+    {
+        long Value = PyLong_AsLong(Var);
+        printf ("\n\t >>>>>>>> [Long]VarName:%s, Value:%ld ", VarName, Value);
+    }
+    else if (PyUnicode_Check (Var))
+    {
+        printf ("\n\t >>>>>>>> Unicode, VarName:%s ", VarName);
+    }
+    else if (PyTuple_Check (Var))
+    {
+        printf ("\n\t >>>>>>>> Tuple, VarName:%s ", VarName);
+    }
+    else if (PyBytes_Check (Var))
+    {
+        printf ("\n\t >>>>>>>> Bytes, VarName:%s ", VarName);
+    }
+    else
+    {
+        printf ("\n\t >>>>>>>> Other, VarName:%s ", VarName);
+    }
+}
+
+
+static void ShowVariables (PyObject *co_varnames)
 {
     int VarNum = PyTuple_GET_SIZE(co_varnames);
     if (VarNum == 0)
@@ -107,17 +164,29 @@ static void ShowVars (PyObject *co_varnames)
     for (int i = 0; i < VarNum; i++)
     {
         PyObject *Var = PyTuple_GET_ITEM(co_varnames, i);
-        //PyObject *item = PyList_GET_ITEM(dir, i);
-        Py_ssize_t item_size;
-        const char *VarName = PyUnicode_AsUTF8AndSize(Var, &item_size);
-        printf ("\n\tVarType: %s , VarName:%s ", Var->ob_type->tp_name, VarName);
-        
-        //if (Var->ob_type == &PyLong_Type)
-        //{
-        //    PyLongObject *LongVar = (PyLongObject*)Var;
-        //    int Value = Py_SIZE(LongVar) == 0 ? 0 : (sdigit)LongVar->ob_digit[0];
-        //    printf ("\tLONG_VAR: [%s][%d] \r\n", VarName, Value);
-        //}
+        ShowValue (Var);        
+    }
+}
+
+
+static inline void OpCodeProc (PyFrameObject *frame, unsigned int opcode)
+{
+    switch (opcode)
+    {
+        case COMPARE_OP:
+        {
+             assert (frame->f_stacktop - frame->f_valuestack >= 2);
+    
+            PyObject* left = frame->f_stacktop[-2];
+            PyObject* right = frame->f_stacktop[-1];
+
+            ShowValue (left);
+            ShowValue (right);
+            break;
+        }
+        default:
+        {
+        }
     }
 }
 
@@ -132,7 +201,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     PyObject *co_varnames = f_code->co_varnames;
     
     printf ("%s : %s : %d --- %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno, frame->f_lasti);
-    ShowVars (co_varnames);
+    ShowVariables (co_varnames);
     
     switch(what)
     {
@@ -159,7 +228,8 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         case PyTrace_OPCODE:
         {
             unsigned int opcode = PyBytes_AsString(f_code->co_code)[frame->f_lasti];
-            printf("PyTrace_OPCODE:%d[%u]\n", what, opcode);      
+            printf("PyTrace_OPCODE:%d[%u]\n", what, opcode);
+            OpCodeProc (frame, opcode);
             break;
         }
         case PyTrace_C_CALL:
@@ -196,9 +266,5 @@ void SetupTracer()
 }
 
 
-void PyInit() 
-{
-    return;
-}
 
 }  // namespace atheris

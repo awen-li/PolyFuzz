@@ -6,15 +6,11 @@
 
 namespace pyins {
 
-void Setup ()
-{
-    SetupTracer();
-    return;
-}
 
 PYBIND11_MODULE(pyins, PyModule) {
 
-  PyModule.def("Setup", &Setup);
+  PyModule.def("Setup",  &SetupTracer);
+  PyModule.def("PyInit", &PyInit);
 }
 
 } // end namespace pyins

@@ -11,8 +11,8 @@ namespace pyins {
 
 using namespace std;
 
-void SetupTracer();
-void PyInit(const vector<string>& Modules);
+void SetupTracer(const vector<string>& Modules);
+
 
 
 }

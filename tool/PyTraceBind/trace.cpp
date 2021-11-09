@@ -13,7 +13,12 @@ using namespace std;
 
 static set<string> RegModule;
 
-void PyInit(const vector<string>& Modules) 
+static inline string BaseName(string const &Path)
+{
+    return Path.substr(Path.find_last_of("/") + 1);
+}
+
+static inline void PyInit(const vector<string>& Modules) 
 {
     RegModule.clear ();
     for (auto It = Modules.begin (); It != Modules.end (); It++)
@@ -25,8 +30,15 @@ void PyInit(const vector<string>& Modules)
     return;
 }
 
-bool IsRegModule (string Module)
+static inline bool IsRegModule (string Module)
 {
+    string FileName = BaseName (Module);
+    auto It = RegModule.find (FileName);
+    if (It == RegModule.end ())
+    {
+        return false;
+    }
+    
     return true;
 }
 
@@ -119,37 +131,42 @@ char *StringObj (PyObject *StrObj)
 
 static void ShowValue (PyObject *Var)
 {
-    Py_ssize_t ItemSize = 0;
-    const char *VarName = PyUnicode_AsUTF8AndSize(Var, &ItemSize);
-        
-        
-        //if (Var->ob_type == &PyLong_Type)
-        //{
-        //    PyLongObject *LongVar = (PyLongObject*)Var;
-        //    int Value = Py_SIZE(LongVar) == 0 ? 0 : (sdigit)LongVar->ob_digit[0];
-        //    printf ("\tLONG_VAR: [%s][%d] \r\n", VarName, Value);
-        //}
+    Py_ssize_t VarSize = Py_SIZE(Var);
     if (PyLong_Check (Var))
     {
         long Value = PyLong_AsLong(Var);
-        printf ("\n\t >>>>>>>> [Long]VarName:%s, Value:%ld ", VarName, Value);
+        printf ("\n\t >>>>>>>>[Size:%ld] [Long]Var:%p, Value:%ld ", VarSize, Var, Value);
     }
     else if (PyUnicode_Check (Var))
     {
-        printf ("\n\t >>>>>>>> Unicode, VarName:%s ", VarName);
+        printf ("\n\t >>>>>>>>[Size:%ld] Unicode, Var:%p ", VarSize, Var);
     }
     else if (PyTuple_Check (Var))
     {
-        printf ("\n\t >>>>>>>> Tuple, VarName:%s ", VarName);
+        printf ("\n\t >>>>>>>>[Size:%ld] Tuple, Var:%p ", VarSize, Var);
+    }
+    else if (PyList_Check (Var))
+    {
+        printf ("\n\t >>>>>>>>[Size:%ld] List, Var:%p ", VarSize, Var);
+    }
+    else if (PyDict_Check (Var))
+    {
+        printf ("\n\t >>>>>>>>[Size:%ld] Dict, Var:%p ", VarSize, Var);
     }
     else if (PyBytes_Check (Var))
     {
-        printf ("\n\t >>>>>>>> Bytes, VarName:%s ", VarName);
+        printf ("\n\t >>>>>>>>[Size:%ld] Bytes, Var:%p ", VarSize, Var);
+    }
+    else if (Var == Py_None)
+    {
+        printf ("\n\t >>>>>>>>[Size:%ld] NoneType, Var:%p ", VarSize, Var);
     }
     else
     {
-        printf ("\n\t >>>>>>>> Other, VarName:%s ", VarName);
+        printf ("\n\t >>>>>>>>[Size:%ld] Other:%s, Var:%p ", VarSize, Var->ob_type->tp_name, Var);
     }
+    
+    return;
 }
 
 
@@ -182,12 +199,16 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned int opcode)
 
             ShowValue (left);
             ShowValue (right);
+            cout<<endl;
             break;
         }
         default:
         {
+            break;
         }
     }
+
+    return;
 }
 
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
@@ -199,9 +220,14 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     PyObject *co_filename = f_code->co_filename;
     PyObject *co_name     = f_code->co_name;
     PyObject *co_varnames = f_code->co_varnames;
+
+    if (!IsRegModule (StringObj(co_filename)))
+    {
+        return 0;
+    }
     
     printf ("%s : %s : %d --- %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno, frame->f_lasti);
-    ShowVariables (co_varnames);
+    //ShowVariables (co_varnames);
     
     switch(what)
     {
@@ -259,8 +285,9 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 
 
 
-void SetupTracer() 
+void SetupTracer(const vector<string>& Modules) 
 {
+    PyInit(Modules);
     PyEval_SetTrace((Py_tracefunc)Tracer, (PyObject*)NULL);
     PyEval_SetProfile ((Py_tracefunc)Tracer, (PyObject*)NULL);
 }

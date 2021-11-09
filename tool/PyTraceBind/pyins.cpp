@@ -10,7 +10,7 @@ namespace pyins {
 PYBIND11_MODULE(pyins, PyModule) {
 
   PyModule.def("Setup",  &SetupTracer);
-  PyModule.def("PyInit", &PyInit);
+
 }
 
 } // end namespace pyins

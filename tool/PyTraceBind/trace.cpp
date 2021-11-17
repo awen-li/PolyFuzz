@@ -139,7 +139,8 @@ static void ShowValue (PyObject *Var)
     }
     else if (PyUnicode_Check (Var))
     {
-        printf ("\n\t >>>>>>>>[Size:%ld] Unicode, Var:%p ", VarSize, Var);
+        char *UcVar = (char*)PyUnicode_AsUTF8 (Var);
+        printf ("\n\t >>>>>>>>[Size:%ld] Unicode, Var:%p -> %s", VarSize, Var, UcVar);
     }
     else if (PyTuple_Check (Var))
     {
@@ -148,6 +149,11 @@ static void ShowValue (PyObject *Var)
     else if (PyList_Check (Var))
     {
         printf ("\n\t >>>>>>>>[Size:%ld] List, Var:%p ", VarSize, Var);
+        for (int i = 0; i < VarSize; i++)
+        {
+            PyObject *Item = PyList_GET_ITEM(Var, i);
+            ShowValue (Item);
+        }
     }
     else if (PyDict_Check (Var))
     {
@@ -192,7 +198,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned int opcode)
     {
         case COMPARE_OP:
         {
-             assert (frame->f_stacktop - frame->f_valuestack >= 2);
+            assert (frame->f_stacktop - frame->f_valuestack >= 2);
     
             PyObject* left = frame->f_stacktop[-2];
             PyObject* right = frame->f_stacktop[-1];
@@ -227,7 +233,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     }
     
     printf ("%s : %s : %d --- %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno, frame->f_lasti);
-    //ShowVariables (co_varnames);
+    ShowVariables (co_varnames);
     
     switch(what)
     {

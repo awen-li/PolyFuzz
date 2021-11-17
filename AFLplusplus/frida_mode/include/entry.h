@@ -1,0 +1,17 @@
+#ifndef _ENTRY_H
+#define _ENTRY_H
+
+#include "frida-gumjs.h"
+
+extern guint64 entry_point;
+
+void entry_config(void);
+
+void entry_init(void);
+
+void entry_start(void);
+
+void entry_prologue(GumStalkerIterator *iterator, GumStalkerOutput *output);
+
+#endif
+

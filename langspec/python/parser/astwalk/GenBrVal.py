@@ -33,7 +33,7 @@ def _AddChildNode (Doc, Parent, Child, Value=None):
 
 def GenBrVal (PyDir, ExpList=None):
     doc  = Document()  
-    Root = _AddChildNode (doc, doc, "branch-variables")
+    Root = _AddChildNode (doc, doc, "branch_variables")
 
     SrcApiList = {}
     FuncDefList = {}
@@ -65,9 +65,11 @@ def GenBrVal (PyDir, ExpList=None):
                     FuncDefList[FuncName] = FDef
 
     for FuncName, Def in FuncDefList.items ():
-        Src = _AddChildNode (doc, Root, "function")
-        _AddChildNode (doc, Src, "name", FuncName)
-        _AddChildNode (doc, Src, "variables", "v1 v2 v3 v4")
+        BrVals = list(set (Def.BrVal))
+        
+        FuncNode = _AddChildNode (doc, Root, "function")
+        FuncNode.setAttribute ("name", FuncName)
+        FuncNode.setAttribute ("brval", " ".join(BrVals))
 
     # write to xml
     f = open(PyDir+"branch_variables.xml", "w")

@@ -16,7 +16,7 @@ def DemoTr (Value):
     	Var = 0
     
     Da = DemoAdd (Var)
-    if Da == None:
+    if Da == None or Var < 0:
         return 0
     
     Res = Da.Add (Value)

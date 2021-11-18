@@ -31,14 +31,10 @@ def main():
     InitArgument (parser)
 
     opts = parser.parse_args()
-    if opts.branch == True:
-
-        if opts.dirname is None:
-            parser.error('dirname is missing: required with the main options')
+    if opts.dirname is None:
+        parser.error('dirname is missing: required with the main options')
         
-        GenBrVal (opts.dirname)
-    else:
-        print ("do nothing?") 
+    GenBrVal (opts.dirname)
 
     print ("Run successful.....")
 

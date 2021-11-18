@@ -6,19 +6,24 @@ import ast
 from ast import *
 
 class FuncDef ():
-    def __init__(self, Cls, FName, Fid, FormalParas):
+    def __init__(self, Cls, FName, Fid):
         self.Cls   = Cls
         self.Id    = Fid
         self.Name  = FName
-        self.Paras = FormalParas
+        self.BrVal = []
 
+    def AddBrVal (self, Val):
+        self.BrVal.append (Val)
+        
     def View (self):
-        print ("FuncDef: Id = ", self.Id, " Name = ", self.Name, " Paras = ", self.Paras)
+        print ("FuncDef: Id = ", self.Id, " Name = ", self.Name, " BrVals = ", self.BrVal)
 
 class ASTWalk(NodeVisitor):
     def __init__(self):
         self.FuncDef   = {}
         self.FId = 1
+        self.IfTest  = False
+        self.CurFunc = None
     
     def visit(self, node):
         """Visit a node."""
@@ -28,60 +33,69 @@ class ASTWalk(NodeVisitor):
         visitor = getattr(self, method, self.generic_visit)
         return visitor(node)
 
-    def _GetArgs (self, Stmt):
-        ArgList = []
-        Args = Stmt.args.args
-        for arg in Args:
-            if Stmt.name == "__init__" and arg.arg == "self":
-                continue
-            ArgList.append (arg.arg)
-        return ArgList
+    def _IsBuiltin (self, FuncName):
+        if FuncName[0:2] == "__":
+            return True
+        else:
+            return False
 
-    
-    def _GetFuncDef (self, Stmt, ClfName=None):
+    def _GetFuncId (self):
         Fid = self.FId
         self.FId += 1
-        
-        ArgList = self._GetArgs (Stmt)
+        return Fid 
+    
+    def _GetFuncDef (self, Stmt, ClfName=None):
+        Fid = self._GetFuncId ()
+
         if ClfName == None:
-            if 'self' in ArgList:
-                return None
-            return FuncDef ("", Stmt.name, Fid, ArgList)
+            return FuncDef ("", Stmt.name, Fid)
         else:
             FullName = ClfName + "." + Stmt.name
-            return FuncDef (ClfName, FullName, Fid, ArgList)
+            return FuncDef (ClfName, FullName, Fid)
+
+    def visit_name (self, node):
+        if self.IfTest == True and self.CurFunc != None:
+            FDef = self.FuncDef.get (self.CurFunc)
+            FDef.AddBrVal (node.id)
+            print ("====> visit variable name: " + self.CurFunc + " --- " + node.id)
+        return node.id
 
     def visit_functiondef(self, node, ClfName=None):
-        FuncName = node.name
-        if FuncName[0:2] == "__":
+        if self._IsBuiltin (node.name) == True:
             return
         
         Def = self._GetFuncDef (node, ClfName)
-        if Def != None:
-            self.FuncDef [Def.Name] = Def
+        self.FuncDef [Def.Name] = Def
 
-        print ("Parse function ===> ", Def.Name)
+        self.CurFunc = Def.Name
         Body = node.body
         for Stmt in Body:
             self.visit (Stmt)
+        self.CurFunc = None
 
         return
 
     def visit_classdef(self, node):
-        print ("Parse class ===> ", node.name)
         Body = node.body
         for Fdef in Body:
             if not isinstance (Fdef, FunctionDef):
                 continue
             
-            Def = self._GetFuncDef (Fdef, node.name)
-            self.FuncDef[Def.Name]  = Def
-            
             self.visit_functiondef (Fdef, node.name)
         return
 
+    def visit_boolop(self, node):
+        Values = node.values
+        for value in Values:
+            self.visit(value)
+
     def visit_if(self, node):
         print (ast.dump (node))
+        Test = node.test
+        self.IfTest = True
+        self.visit(Test)
+        self.IfTest = False
+        
         return
 
     

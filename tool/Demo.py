@@ -1,10 +1,10 @@
 #!/usr/bin/python
 import os
-import pyins
+import pyprob
 from DemoAdd import DemoAdd
 
 Modules = ['Demo.py', 'DemoAdd.py']
-pyins.Setup(Modules)
+pyprob.Setup(Modules, 'branch_variables.xml')
  
 def DemoTr (Value):
     Var = os.getenv("CASE1")

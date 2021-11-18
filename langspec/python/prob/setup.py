@@ -9,8 +9,8 @@ import setuptools
 from setuptools import Extension
 from setuptools import setup
 
-__version__ = os.getenv("PYINS_VERSION", "1.0.0")
-
+#os.environ["CC"]  = "clang"
+#os.environ["CXX"] = "clang"
 
 class PybindHeader(object):
   def __str__(self):
@@ -19,27 +19,29 @@ class PybindHeader(object):
 
 ext_modules = [
     Extension(
-        "pyins",
+        "pyprob",
         sorted([
-            "pyins.cpp",
-            "trace.cpp",
+            "src/setup.cpp",
+            #"src/loadbrval.cpp",
+            "src/pyprob.cpp",
+            "src/pytrace.cpp",
         ]),
         include_dirs=[
+            "include",
             PybindHeader(),
         ],
         language="c++"),
 ]
 
+os
 
 setup(
-    name="pyins",
-    version=__version__,
+    name="pyprob",
+    version="1.0.0",
     author="Wen Li",
     author_email="li.wen@wsu.edu",
     url="https://github.com/Daybreak2019/xFuzz",
-    description="demo for python profile",
-    long_description=open("README.md", "r").read(),
-    long_description_content_type="text/markdown",
+    description="dynamic prob for python",
     ext_modules=ext_modules,
     setup_requires=["pybind11>=2.5.0"],
 )

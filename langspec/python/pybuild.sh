@@ -28,4 +28,7 @@ fi
 echo ""
 echo ""
 echo "@@@@@@@@@@@@@@@ build Python:prob @@@@@@@@@@@@@@@"
+cd $PY_PATH/prob
+pip3 install .
+cd -
 

@@ -6,7 +6,10 @@ class DemoAdd ():
         self.Left = a
     
     def Add (self, b):
-        return (self.Left + b)
+        if b < 0:
+            return (self.Left - b)
+        else:
+            return (self.Left + b)
 
     def __eq__(self, other):
         if not hasattr(self, 'Left') or not isinstance (other, DemoAdd):

@@ -6,7 +6,7 @@ from setuptools import find_packages
 
 setup(
     name="astwalk",
-    version="0.0.1",
+    version="1.0.0",
     author="Wen Li",
     author_email="li.wen@wsu.edu",
     description="a static parser for python.",

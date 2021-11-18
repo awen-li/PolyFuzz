@@ -1,25 +1,20 @@
-#include "trace.h"
-#include <object.h>
-#include <frameobject.h>
-#include <opcode.h>
-#include <pystate.h>
+#include "pytrace.h"
+#include "loadbrval.h"
 #include <cstddef>
 #include <set>
 
 
-namespace pyins {
+namespace pyprob {
 
 using namespace std;
 
 static set<string> RegModule;
+static unordered_map<string, FBrVal> BrValMap;
 
-static inline string BaseName(string const &Path)
-{
-    return Path.substr(Path.find_last_of("/") + 1);
-}
 
-static inline void PyInit(const vector<string>& Modules) 
+void PyInit(const vector<string>& Modules, string BrValXml) 
 {
+    /* init tracing modules */
     RegModule.clear ();
     for (auto It = Modules.begin (); It != Modules.end (); It++)
     {
@@ -27,7 +22,16 @@ static inline void PyInit(const vector<string>& Modules)
         cout<<">>>>>>>>>>>>>>>>> add module: "<<*It<<endl;
     }
 
+    /* load all branch variables for each function */
+    //LoadBrVals(BrValXml, &BrValMap);
+    
     return;
+}
+
+
+static inline string BaseName(string const &Path)
+{
+    return Path.substr(Path.find_last_of("/") + 1);
 }
 
 static inline bool IsRegModule (string Module)
@@ -288,16 +292,6 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     
     return 0;
 }
-
-
-
-void SetupTracer(const vector<string>& Modules) 
-{
-    PyInit(Modules);
-    PyEval_SetTrace((Py_tracefunc)Tracer, (PyObject*)NULL);
-    PyEval_SetProfile ((Py_tracefunc)Tracer, (PyObject*)NULL);
-}
-
 
 
 }  // namespace atheris

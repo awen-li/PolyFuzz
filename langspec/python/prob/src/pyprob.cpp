@@ -1,13 +1,13 @@
 
-#include "trace.h"
+#include "setup.h"
 #include "pybind11/functional.h"
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-namespace pyins {
+namespace pyprob {
 
 
-PYBIND11_MODULE(pyins, PyModule) {
+PYBIND11_MODULE(pyprob, PyModule) {
 
   PyModule.def("Setup",  &SetupTracer);
 

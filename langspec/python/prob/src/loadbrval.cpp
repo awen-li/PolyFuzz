@@ -1,6 +1,7 @@
 #include "loadbrval.h"
 #include <stdio.h>
 #include<mxml.h>
+#include<assert.h>
 
 
 namespace pyprob {
@@ -15,10 +16,12 @@ using namespace std;
 */
 void LoadBrVals(string BrValXml, unordered_map <string, FBrVal> *BrValMap)
 {
+    assert (BrValMap != NULL);
+    
     FILE *fp = fopen(BrValXml.c_str(), "r");
     if (fp == NULL)
     {
-        cout<<"LoadBrVals: open fail -----> "<<BrValXml<<endl;
+        cout<<"@@@ LoadBrVals: open fail -----> "<<BrValXml<<endl;
         return;
     }    
     mxml_node_t* tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
@@ -29,18 +32,35 @@ void LoadBrVals(string BrValXml, unordered_map <string, FBrVal> *BrValMap)
     while (XmlNode != NULL)
     {     
         mxml_node_t *Function  = mxmlFindElement(XmlNode, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);
+        if (Function == NULL)
+        {
+            break;
+        }
 
         const char *FuncName = mxmlElementGetAttr(Function, "name");
+        assert (FuncName != NULL);
+        
         const char *ValList  = mxmlElementGetAttr(Function, "brval");
+        assert (ValList != NULL);
 
-        cout<<"Get function: "<<FuncName<<" with ValList: "<<ValList<<endl;
+        auto It = BrValMap->insert (make_pair(FuncName, FBrVal (FuncName))).first;
+        assert (It != NULL);
 
-        XmlNode = mxmlFindElement(XmlNode, tree, "branch_variables", NULL, NULL, MXML_DESCEND);
+        FBrVal *FBV = &It->second;
+        const char *Val = strtok ((char *)ValList, " ");
+        while(Val != NULL) 
+        {
+            FBV->Insert(Val);   
+            Val = strtok(NULL, " ");
+        }
+        FBV->View();
+
+        XmlNode = mxmlFindElement(XmlNode, tree, "function", NULL, NULL, MXML_DESCEND);
         No++;
     }
 
     mxmlDelete(tree);
-    cout<<"LoadBrVals: load done -----> "<<BrValXml<<", function number -> "<<No<<endl;
+    cout<<"@@@ LoadBrVals: load done -----> "<<BrValXml<<", function number: "<<No<<endl;
     
     return;
 }

@@ -19,10 +19,10 @@ class PybindHeader(object):
 
 ext_modules = [
     Extension(
-        "pyprob",
+        "pyprob",     
         sorted([
             "src/setup.cpp",
-            #"src/loadbrval.cpp",
+            "src/loadbrval.cpp",
             "src/pyprob.cpp",
             "src/pytrace.cpp",
         ]),
@@ -30,6 +30,7 @@ ext_modules = [
             "include",
             PybindHeader(),
         ],
+        extra_link_args=["-lmxml"],
         language="c++"),
 ]
 

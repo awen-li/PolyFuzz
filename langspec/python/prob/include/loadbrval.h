@@ -13,18 +13,28 @@ using namespace std;
 
 struct FBrVal
 {
-    string FuncName;
-    set <string> BrVals;
+    string m_FuncName;
+    set <string> m_BrVals;
 
-    FBrVal (string &FuncName)
+    FBrVal (string FuncName)
     {
-        this->FuncName = FuncName;
+        m_FuncName = FuncName;
     }
 
     inline void Insert (string BrVal)
     {
-        BrVals.insert (BrVal);
+        m_BrVals.insert (BrVal);
         return;
+    }
+
+    inline void View ()
+    {
+        cout<<"@@@ "<<m_FuncName<<" -> BrVals: ";
+        for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
+        {
+            cout<<*It<<" ";
+        }
+        cout<<endl;
     }
 };
 

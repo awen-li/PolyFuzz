@@ -22,6 +22,7 @@ ext_modules = [
         "pyprob",     
         sorted([
             "src/setup.cpp",
+            "src/op_code.cpp",
             "src/loadbrval.cpp",
             "src/pyprob.cpp",
             "src/pytrace.cpp",

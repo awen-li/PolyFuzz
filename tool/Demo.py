@@ -28,9 +28,5 @@ if __name__ == '__main__':
     for i in range (1, 8):
     	Result = DemoTr(i)
     	ResultList.append (Result)
-    if ResultList == None:
-        exit (0)
-    if ResultList[2] == 111:
-    	ResultList[2] += 2
     print ("Trace end ---> ", ResultList)
 

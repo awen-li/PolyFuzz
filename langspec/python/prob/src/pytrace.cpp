@@ -1,4 +1,5 @@
 #include "pytrace.h"
+#include "op_code.h"
 #include "loadbrval.h"
 #include <cstddef>
 #include <set>
@@ -10,7 +11,6 @@ using namespace std;
 
 static set<string> RegModule;
 static unordered_map<string, FBrVal> BrValMap;
-
 
 void PyInit(const vector<string>& Modules, string BrValXml) 
 {
@@ -113,26 +113,6 @@ static inline bool IsRegModule (string Module)
 //} PyFrameObject;
 
 
-char *StringObj (PyObject *StrObj)
-{
-#if 0
-    PyObject *ByteObj = PyUnicode_AsEncodedString(StrObj, "UTF-8", "strict");
-    if (ByteObj != NULL) 
-    {
-        char *Str = PyBytes_AS_STRING(ByteObj);
-        Str = strdup(Str);
-        Py_DECREF(ByteObj);
-        return Str;
-    } 
-    else 
-    {
-        return "None";
-    }
-#else
-    return (char*)PyUnicode_AsUTF8 (StrObj);
-#endif
-}
-
 static void ShowValue (PyObject *Var)
 {
     Py_ssize_t VarSize = Py_SIZE(Var);
@@ -196,12 +176,22 @@ static void ShowVariables (PyObject *co_varnames)
 }
 
 
-static inline void OpCodeProc (PyFrameObject *frame, unsigned int opcode)
+static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
 {
+    if (!HAS_ARG(opcode))
+    {
+        return;
+    }
+
+    cout<<"\t > OPCODE: "<<Op2Name(opcode)<<" ";
+    PyObject *co_names = frame->f_code->co_names;
+    PyObject *co_varnames = frame->f_code->co_varnames;
+    
     switch (opcode)
     {
         case COMPARE_OP:
         {
+            
             assert (frame->f_stacktop - frame->f_valuestack >= 2);
     
             PyObject* left = frame->f_stacktop[-2];
@@ -212,32 +202,67 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned int opcode)
             cout<<endl;
             break;
         }
+        case STORE_NAME:
+        {
+            assert (frame->f_stacktop - frame->f_valuestack >= 1);
+
+            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
+            printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+
+            PyObject* Value = frame->f_stacktop[-1];
+            ShowValue (Value);
+            cout<<endl;
+            break;
+        }
+        case LOAD_FAST:
+        {
+            break;
+            assert (frame->f_stacktop - frame->f_valuestack >= 1);
+
+            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
+            printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+
+            PyObject* Value = frame->f_stacktop[-1];
+            ShowValue (Value);
+            cout<<endl;
+            break;
+        }
         default:
         {
             break;
         }
     }
 
+    cout<<endl;
     return;
 }
 
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
-{
-    // enable PyTrace_OPCODE
-    frame->f_trace_opcodes = true;
-    
+{   
     PyCodeObject *f_code  = frame->f_code;
-    PyObject *co_filename = f_code->co_filename;
-    PyObject *co_name     = f_code->co_name;
-    PyObject *co_varnames = f_code->co_varnames;
 
-    if (!IsRegModule (StringObj(co_filename)))
+    const char* FileName = PyUnicode_AsUTF8(f_code->co_filename);
+    if (!IsRegModule (FileName))
     {
         return 0;
     }
     
-    printf ("%s : %s : %d --- %d -> ", StringObj(co_filename), StringObj (co_name), frame->f_lineno, frame->f_lasti);
-    ShowVariables (co_varnames);
+    // enable PyTrace_OPCODE
+    frame->f_trace_opcodes = true; 
+    PyObject *co_varnames = f_code->co_varnames;
+
+    PyObject *Locals  = frame->f_locals;
+    PyObject *Globals = frame->f_globals;
+    int LocalSize  = (Locals != NULL)?(int)PyDict_GET_SIZE(Locals):0;
+    int GlobalSize = (Globals != NULL)?(int)PyDict_GET_SIZE(Globals):0;
+
+
+    const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
+    
+    printf ("%s : %s : %d --- %d [%d-%d]-> ", FileName, FuncName, frame->f_lineno, frame->f_lasti, LocalSize, GlobalSize);
+    //ShowVariables (co_varnames);
+
+    
     
     switch(what)
     {
@@ -263,9 +288,10 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         }
         case PyTrace_OPCODE:
         {
-            unsigned int opcode = PyBytes_AsString(f_code->co_code)[frame->f_lasti];
-            printf("PyTrace_OPCODE:%d[%u]\n", what, opcode);
-            OpCodeProc (frame, opcode);
+            int opcode = PyBytes_AsString(f_code->co_code)[frame->f_lasti];
+            int oparg  = PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
+            printf("PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
+            OpCodeProc (frame, opcode, oparg);
             break;
         }
         case PyTrace_C_CALL:

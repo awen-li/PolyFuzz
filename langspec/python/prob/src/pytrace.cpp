@@ -183,15 +183,17 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         return;
     }
 
-    cout<<"\t > OPCODE: "<<Op2Name(opcode)<<" ";
+    printf("\t > OPCODE[%d-%d]: %s ", opcode, oparg, Op2Name(opcode).c_str());
     PyObject *co_names = frame->f_code->co_names;
     PyObject *co_varnames = frame->f_code->co_varnames;
+
+    Py_ssize_t CoSize = Py_SIZE (co_names);
+    Py_ssize_t CoVarSize = Py_SIZE (co_varnames);
     
     switch (opcode)
     {
         case COMPARE_OP:
-        {
-            
+        {       
             assert (frame->f_stacktop - frame->f_valuestack >= 2);
     
             PyObject* left = frame->f_stacktop[-2];
@@ -202,12 +204,17 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
             cout<<endl;
             break;
         }
+        case STORE_FAST:
+        {
+            break;
+        }
         case STORE_NAME:
         {
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
             PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
-            printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+            PyObject *Ov   = PyDict_GetItemWithError(frame->f_locals, Name);
+            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(Name), Ov);
 
             PyObject* Value = frame->f_stacktop[-1];
             ShowValue (Value);
@@ -216,14 +223,21 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         }
         case LOAD_FAST:
         {
+            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);   
+            printf ("CoSize = %d, CoVarSize = %d, Name = %p ", CoSize, CoVarSize, Name);
+            //printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+
+            cout<<endl;
             break;
+        }
+        case LOAD_NAME:
+        {
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
             PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
-            printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+            PyObject *Ov   = PyDict_GetItemWithError(frame->f_locals, Name);
+            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(Name), Ov);
 
-            PyObject* Value = frame->f_stacktop[-1];
-            ShowValue (Value);
             cout<<endl;
             break;
         }

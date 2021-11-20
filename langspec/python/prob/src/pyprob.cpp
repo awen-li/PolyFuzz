@@ -9,9 +9,9 @@ namespace pyprob {
 
 PYBIND11_MODULE(pyprob, PyModule) {
 
-  PyModule.def("Setup",  &SetupTracer);
+    PyModule.def("Setup",  &SetupTracer);
 
 }
 
-} // end namespace pyins
+} 
 

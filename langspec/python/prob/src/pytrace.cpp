@@ -1,5 +1,6 @@
 #include "pytrace.h"
 #include "op_code.h"
+#include "objvalue.h"
 #include "loadbrval.h"
 #include <cstddef>
 #include <set>
@@ -113,13 +114,16 @@ static inline bool IsRegModule (string Module)
 //} PyFrameObject;
 
 
-static void ShowValue (PyObject *Var)
+static inline void GetValue (PyObject *Var, ObjValue *OV)
 {
     Py_ssize_t VarSize = Py_SIZE(Var);
     if (PyLong_Check (Var))
     {
-        long Value = PyLong_AsLong(Var);
-        printf ("\n\t >>>>>>>>[Size:%ld] [Long]Var:%p, Value:%ld ", VarSize, Var, Value);
+        OV->Type   = VT_LONG;
+        OV->Attr   = 0;
+        OV->Length = sizeof (long);
+        OV->Value  = PyLong_AsLong(Var);
+        printf ("\n\t >>>>>>>>[Size:%ld] [T: LONG, A:%u L: %u, V:%u]", VarSize, OV->Attr, OV->Length, OV->Value);
     }
     else if (PyUnicode_Check (Var))
     {
@@ -133,10 +137,11 @@ static void ShowValue (PyObject *Var)
     else if (PyList_Check (Var))
     {
         printf ("\n\t >>>>>>>>[Size:%ld] List, Var:%p ", VarSize, Var);
+        ObjValue OVI = {0};
         for (int i = 0; i < VarSize; i++)
         {
             PyObject *Item = PyList_GET_ITEM(Var, i);
-            ShowValue (Item);
+            GetValue (Item, &OVI);
         }
     }
     else if (PyDict_Check (Var))
@@ -167,11 +172,12 @@ static void ShowVariables (PyObject *co_varnames)
     {
         return;
     }
-    
+
+    ObjValue OV = {0};
     for (int i = 0; i < VarNum; i++)
     {
         PyObject *Var = PyTuple_GET_ITEM(co_varnames, i);
-        ShowValue (Var);        
+        GetValue (Var, &OV);        
     }
 }
 
@@ -189,6 +195,11 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
 
     Py_ssize_t CoSize = Py_SIZE (co_names);
     Py_ssize_t CoVarSize = Py_SIZE (co_varnames);
+
+    PyObject *UseName = NULL;
+    PyObject *UseVal  = NULL;
+
+    ObjValue OV = {0};
     
     switch (opcode)
     {
@@ -199,46 +210,60 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
             PyObject* left = frame->f_stacktop[-2];
             PyObject* right = frame->f_stacktop[-1];
 
-            ShowValue (left);
-            ShowValue (right);
+            GetValue(left, &OV);
+            GetValue(right, &OV);
             cout<<endl;
             break;
         }
         case STORE_FAST:
         {
+            /* STORE_FAST namei -> pops the stack and stores into co_names[namei] */
+            
             break;
         }
         case STORE_NAME:
         {
+            /* STORE_NAME namei -> pops the stack and stores into co_names[namei] */
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
-            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
-            PyObject *Ov   = PyDict_GetItemWithError(frame->f_locals, Name);
-            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(Name), Ov);
-
-            PyObject* Value = frame->f_stacktop[-1];
-            ShowValue (Value);
+            UseName = PyTuple_GET_ITEM (co_names, oparg);
+            UseVal  = frame->f_stacktop[-1];
+            GetValue(UseVal, &OV);
             cout<<endl;
+            break;
+        }
+        case STORE_GLOBAL:
+        {
+            /* STORE_GLOBAL namei -> pops the stack and stores into co_names[namei] */
             break;
         }
         case LOAD_FAST:
         {
-            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);   
-            printf ("CoSize = %d, CoVarSize = %d, Name = %p ", CoSize, CoVarSize, Name);
-            //printf ("Name = %s ", PyUnicode_AsUTF8(Name));
+            /* LOAD_FAST valnum -> push co_varnames[valnum] onto stack */
+            UseName = PyTuple_GET_ITEM (co_varnames, oparg);
+            //assert (frame->f_locals != NULL);
+            //UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
+            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
 
             cout<<endl;
             break;
         }
         case LOAD_NAME:
         {
+            /* LOAD_NAME namei -> push co_names[namei] onto stack */
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
-            PyObject *Name = PyTuple_GET_ITEM (co_names, oparg);
-            PyObject *Ov   = PyDict_GetItemWithError(frame->f_locals, Name);
-            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(Name), Ov);
+            UseName = PyTuple_GET_ITEM (co_names, oparg);
+            //UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
+            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
 
             cout<<endl;
+            break;
+        }
+        case LOAD_GLOBAL:
+        {
+            /* LOAD_GLOBAL namei -> push co_names[namei] onto stack */
+            
             break;
         }
         default:
@@ -334,4 +359,4 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 }
 
 
-}  // namespace atheris
+}  

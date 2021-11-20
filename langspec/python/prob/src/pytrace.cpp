@@ -218,6 +218,12 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         case STORE_FAST:
         {
             /* STORE_FAST namei -> pops the stack and stores into co_names[namei] */
+            assert (frame->f_stacktop - frame->f_valuestack >= 1);
+
+            UseName = PyTuple_GET_ITEM (co_names, oparg);
+            UseVal  = frame->f_stacktop[-1];
+            GetValue(UseVal, &OV);
+            cout<<endl;
             
             break;
         }
@@ -235,6 +241,12 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         case STORE_GLOBAL:
         {
             /* STORE_GLOBAL namei -> pops the stack and stores into co_names[namei] */
+            assert (frame->f_stacktop - frame->f_valuestack >= 1);
+
+            UseName = PyTuple_GET_ITEM (co_names, oparg);
+            UseVal  = frame->f_stacktop[-1];
+            GetValue(UseVal, &OV);
+            cout<<endl;
             break;
         }
         case LOAD_FAST:
@@ -254,9 +266,21 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
             UseName = PyTuple_GET_ITEM (co_names, oparg);
-            //UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
-            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
+            printf ("Name = %s ", PyUnicode_AsUTF8(UseName));
+            if (PyDict_CheckExact(frame->f_locals)) 
+            {
+                UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
+            }
+            else
+            {
+                UseVal = PyObject_GetItem(frame->f_locals, UseName);
+            }
 
+            if (UseVal != NULL) 
+            {
+                GetValue(UseVal, &OV);
+            }
+                
             cout<<endl;
             break;
         }

@@ -220,8 +220,10 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
             /* STORE_FAST namei -> pops the stack and stores into co_names[namei] */
             assert (frame->f_stacktop - frame->f_valuestack >= 1);
 
-            UseName = PyTuple_GET_ITEM (co_names, oparg);
+            UseName = PyTuple_GET_ITEM (co_varnames, oparg);
             UseVal  = frame->f_stacktop[-1];
+            printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
+            
             GetValue(UseVal, &OV);
             cout<<endl;
             
@@ -251,20 +253,18 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         }
         case LOAD_FAST:
         {
-            /* LOAD_FAST valnum -> push co_varnames[valnum] onto stack */
+            /* LOAD_FAST valnum -> push co_varnames[valnum] (frame->f_localsplus[oparg]) onto stack */
             UseName = PyTuple_GET_ITEM (co_varnames, oparg);
-            //assert (frame->f_locals != NULL);
-            //UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
+            assert (frame->f_localsplus != NULL);
+            UseVal  = frame->f_localsplus[oparg];
             printf ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
-
+            GetValue(UseVal, &OV);
             cout<<endl;
             break;
         }
         case LOAD_NAME:
         {
             /* LOAD_NAME namei -> push co_names[namei] onto stack */
-            assert (frame->f_stacktop - frame->f_valuestack >= 1);
-
             UseName = PyTuple_GET_ITEM (co_names, oparg);
             printf ("Name = %s ", PyUnicode_AsUTF8(UseName));
             if (PyDict_CheckExact(frame->f_locals)) 
@@ -287,7 +287,8 @@ static void OpCodeProc (PyFrameObject *frame, int opcode, int oparg)
         case LOAD_GLOBAL:
         {
             /* LOAD_GLOBAL namei -> push co_names[namei] onto stack */
-            
+            //UseName = PyTuple_GET_ITEM (co_names, oparg);
+            /* pass the global variables */            
             break;
         }
         default:

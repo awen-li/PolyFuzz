@@ -23,10 +23,12 @@ def DemoTr (Value):
     return Res
 
 
+Length = 0
 if __name__ == '__main__':
     ResultList = []
     for i in range (1, 8):
     	Result = DemoTr(i)
     	ResultList.append (Result)
-    print ("Trace end ---> ", ResultList)
+    Length = len (ResultList)
+    print ("Trace end ---> ", ResultList, " == ", Length)
 

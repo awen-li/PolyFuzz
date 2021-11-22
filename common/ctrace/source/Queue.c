@@ -13,7 +13,7 @@ static int g_SharedId = 0;
 
 static inline key_t GetKey ()
 {
-    char *ShareKey = getenv("LDI_SHARE_KEY");
+    char *ShareKey = getenv("XFUZZ_SHARE_KEY");
     if (ShareKey == NULL)
     {
         return SHARE_KEY;

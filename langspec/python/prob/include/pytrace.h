@@ -21,10 +21,11 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg);
 
 
 #if 1
-#define DEBUG_PRINT printf
+#define DEBUG_PRINT(format, ...) printf(format, ##__VA_ARGS__)
 #else
-#define DEBUG_PRINT 
+#define DEBUG_PRINT(format, ...) 
 #endif
+
 
 
 }

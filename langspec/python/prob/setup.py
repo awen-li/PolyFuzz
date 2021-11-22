@@ -29,9 +29,10 @@ ext_modules = [
         ]),
         include_dirs=[
             "include",
+            "/usr/include/ctrace",
             PybindHeader(),
         ],
-        extra_link_args=["-lmxml"],
+        extra_link_args=["-lmxml", "-lxFuzztrace"],
         language="c++"),
 ]
 

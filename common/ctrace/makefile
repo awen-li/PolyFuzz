@@ -1,6 +1,6 @@
 
 
-TARGET = libDynTrace.so
+TARGET = libxFuzztrace.so
 
 CC = clang
 LD = $(CC)
@@ -23,6 +23,8 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ_FILES)
 	$(LD) -o $@ $^ $(LD_CFLAGS)
+	@cp $(TARGET) -rf /usr/lib/
+	@cp $(INCLUDE_PATH) -rf /usr/include/ctrace
 	
 $(OBJ_PATH)/%.o: $(SOURCE_PATH)/%.c
 	@if [ ! -d $(OBJ_PATH) ];then mkdir $(OBJ_PATH); fi

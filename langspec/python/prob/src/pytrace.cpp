@@ -2,6 +2,7 @@
 #include "op_code.h"
 #include "objvalue.h"
 #include "loadbrval.h"
+#include "DynTrace.h"
 #include <cstddef>
 #include <set>
 

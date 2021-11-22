@@ -15,18 +15,25 @@ extern "C"{
 #endif 
 
 
-#define  QUEUE_SIZE (4024 * 1024)
+#define  QUEUE_SIZE (16 * 1024)
+#define  BUF_SIZE   (64)
 
+typedef size_t TraceKey;
 
-#define  BUF_SIZE  (272)
 
 typedef struct tag_QNode
 {
-    ULONG EventId;
+    TraceKey Tk;
     DWORD ThreadId;
     DWORD Flag;
     char QBuf [BUF_SIZE];
 }QNode;
+
+static inline QNode* QBUF2QNODE (BYTE *Qbuf)
+{
+    return (QNode*)(Qbuf - (sizeof (QNode)-BUF_SIZE));
+}
+
 
 typedef struct tag_Queue
 {

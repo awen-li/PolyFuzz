@@ -25,9 +25,12 @@ def DemoTr (Value):
 
 Length = 0
 if __name__ == '__main__':
+    def PPP():
+        print("Result = %d" %Result)
     ResultList = []
     for i in range (1, 8):
     	Result = DemoTr(i)
+    	PPP()
     	ResultList.append (Result)
     Length = len (ResultList)
     print ("Trace end ---> ", ResultList, " == ", Length)

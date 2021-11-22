@@ -1,6 +1,5 @@
 #include "pytrace.h"
 #include "op_code.h"
-#include "objvalue.h"
 #include "loadbrval.h"
 #include "DynTrace.h"
 #include <cstddef>
@@ -123,7 +122,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;
         OV->Length = sizeof (long);
         OV->Value  = PyLong_AsLong(Var);
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] [T: LONG, A:%u L: %u, V:%u]", VarSize, OV->Attr, OV->Length, OV->Value);
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] [T: LONG, A:%u L: %u, V:%lu]", VarSize, OV->Attr, OV->Length, OV->Value);
     }
     else if (PyUnicode_Check (Var))
     {
@@ -228,6 +227,12 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
                 UseVal  = frame->f_stacktop[-1];
                 DEBUG_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);           
                 GetValue(UseVal, &OV);
+
+                EVENT_HANDLE Eh = AllocEvent();
+                assert (Eh != NULL);
+                unsigned Esize = 0;
+                Esize = EncodeEvent(Eh, Esize, ET_VALNAME, strlen(StrUseName), (BYTE*)StrUseName);
+                DynTrace(Eh, STORE_FAST);
             }
             DEBUG_PRINT ("\r\n");
             break;

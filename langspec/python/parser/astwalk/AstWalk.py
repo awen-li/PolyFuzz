@@ -50,8 +50,8 @@ class ASTWalk(NodeVisitor):
         if ClfName == None:
             return FuncDef ("", Stmt.name, Fid)
         else:
-            FullName = ClfName + "." + Stmt.name
-            return FuncDef (ClfName, FullName, Fid)
+            #FullName = ClfName + "." + Stmt.name
+            return FuncDef (ClfName, Stmt.name, Fid)
 
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None:

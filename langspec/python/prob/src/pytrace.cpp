@@ -11,7 +11,7 @@ namespace pyprob {
 using namespace std;
 
 static set<string> RegModule;
-static unordered_map<string, FBrVal> BrValMap;
+static unordered_map<string, BV_file> Fname2BVfile;
 
 void PyInit(const vector<string>& Modules, string BrValXml) 
 {
@@ -24,7 +24,7 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     }
 
     /* load all branch variables for each function */
-    LoadBrVals(BrValXml, &BrValMap);
+    LoadBrVals(BrValXml, &Fname2BVfile);
 
     return;
 }

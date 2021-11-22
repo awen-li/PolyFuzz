@@ -4,10 +4,17 @@
 class DemoAdd ():
     def __init__(self, a):
         self.Left = a
+        
+    def _add_ (self, b):
+        addvar = b + 1024
+        if addvar > 0:
+    	    return self.Left + b
+        else:
+    	    return self.Left - b
     
     def Add (self, b):
         if b < 0:
-            return (self.Left - b)
+            return self._add_ (b)
         else:
             return (self.Left + b)
 

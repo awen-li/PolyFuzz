@@ -60,16 +60,18 @@ def GenBrVal (PyDir, ExpList=None):
  
                 # function definition retrieve
                 FuncDef = Visitor.FuncDef
-                for FuncName, FDef in FuncDef.items ():
-                    FDef.Id = len (FuncDefList)+2
-                    FuncDefList[FuncName] = FDef
 
-    for FuncName, Def in FuncDefList.items ():
-        BrVals = list(set (Def.BrVal))
-        
-        FuncNode = _AddChildNode (doc, Root, "function")
-        FuncNode.setAttribute ("name", FuncName)
-        FuncNode.setAttribute ("brval", " ".join(BrVals))
+                # add childnode file
+                FileNode = _AddChildNode (doc, Root, "file")
+                FileNode.setAttribute ("name", py)
+
+                for FuncName, Def in FuncDef.items ():
+                    BrVals = list(set (Def.BrVal))
+                    
+                    FuncNode = _AddChildNode (doc, FileNode, "function")
+                    FuncNode.setAttribute ("class", Def.Cls)
+                    FuncNode.setAttribute ("name",  FuncName)
+                    FuncNode.setAttribute ("brval", " ".join(BrVals))
 
     # write to xml
     f = open(PyDir+"branch_variables.xml", "w")

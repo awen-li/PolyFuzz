@@ -20,10 +20,8 @@ using namespace std;
 </branch_variables>
 
 */
-void LoadBrVals(string BrValXml, unordered_map <string, BV_file> *Fname2BVfile)
+void BV_set::LoadBrVals(string BrValXml)
 {
-    assert (Fname2BVfile != NULL);
-   
     FILE *fp = fopen(BrValXml.c_str(), "r");
     if (fp == NULL)
     {
@@ -50,9 +48,8 @@ void LoadBrVals(string BrValXml, unordered_map <string, BV_file> *Fname2BVfile)
         const char *FileName = mxmlElementGetAttr(File, "name");
         assert (FileName != NULL);
         
-        auto It = Fname2BVfile->insert (make_pair(FileName, BV_file (FileName))).first;
-        assert (It != NULL);
-        BV_file *BVfile = &It->second;
+        BV_file *BVfile = Insert (FileName);
+        assert (BVfile != NULL);
             
         /* read function tag */
         mxml_node_t *Function = mxmlFindElement(File, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);
@@ -92,6 +89,54 @@ void LoadBrVals(string BrValXml, unordered_map <string, BV_file> *Fname2BVfile)
 
     return;
 }
+
+
+set <string> *BV_set::GetBvSet (string File, string Func)
+{
+    if (m_BVFileCatch != NULL && m_BVFileCatch->m_FileName == File)
+    {
+        BV_function *BVFuncCatch = m_BVFileCatch->m_BVFuncCatch;
+        if (BVFuncCatch != NULL && BVFuncCatch->m_FuncName == Func)
+        {
+            return &BVFuncCatch->m_BrVals;
+        }
+        else
+        {
+            BVFuncCatch = m_BVFileCatch->Get(Func);
+            m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
+            if (BVFuncCatch != NULL)
+            {
+                return &BVFuncCatch->m_BrVals;
+            }
+            else
+            {
+                return NULL;
+            }
+        }
+    }
+    else
+    {
+        m_BVFileCatch = Get (File);
+        if (m_BVFileCatch == NULL)
+        {
+            return NULL;
+        }
+
+        BV_function *BVFuncCatch = m_BVFileCatch->Get(Func);
+        m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
+        if (BVFuncCatch != NULL)
+        {
+            return &BVFuncCatch->m_BrVals;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    return NULL;
+}
+
 
 
 }  // namespace atheris

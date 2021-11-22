@@ -20,5 +20,12 @@ void PyInit(const vector<string>& Modules, string BrValXml);
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg);
 
 
+#if 1
+#define DEBUG_PRINT printf
+#else
+#define DEBUG_PRINT 
+#endif
+
+
 }
 #endif 

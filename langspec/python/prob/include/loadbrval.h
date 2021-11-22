@@ -43,28 +43,69 @@ struct BV_file
 {
     string m_FileName;
     BV_function *m_BVFuncCatch;
-    unordered_map <string, BV_function> m_Fname2BVf;
+    unordered_map <string, BV_function> m_Fname2BVfunc;
 
     
     BV_file (string FileName)
     {
         m_FileName = FileName;
-        m_Fname2BVf.clear ();
+        m_Fname2BVfunc.clear ();
 
         m_BVFuncCatch = NULL;
     }
     
     inline BV_function* Insert (string FuncName)
     {
-        auto It = m_Fname2BVf.insert (make_pair(FuncName, BV_function (FuncName))).first;
+        auto It = m_Fname2BVfunc.insert (make_pair(FuncName, BV_function (FuncName))).first;
         assert (It != NULL);
+        return &It->second;
+    }
+
+    inline BV_function* Get (string FuncName)
+    {
+        auto It = m_Fname2BVfunc.find (FuncName);
+        if (It == m_Fname2BVfunc.end ())
+        {
+            return NULL;
+        }
         return &It->second;
     }
 };
 
 
+struct BV_set
+{
+    BV_file *m_BVFileCatch;
+    unordered_map <string, BV_file> m_Fname2BVfile;
 
-void LoadBrVals(string BrValXml, unordered_map <string, BV_file> *Fname2BVfile);
+    BV_set ()
+    {
+        m_BVFileCatch = NULL;
+        m_Fname2BVfile.clear ();
+    }
+
+    inline BV_file* Insert (string FileName)
+    {
+        auto It = m_Fname2BVfile.insert (make_pair(FileName, BV_file (FileName))).first;
+        assert (It != NULL);
+        return &It->second;
+    }
+
+    inline BV_file* Get (string FileName)
+    {
+        auto It = m_Fname2BVfile.find (FileName);
+        if (It == m_Fname2BVfile.end ())
+        {
+            return NULL;
+        }
+        return &It->second;
+    }
+
+    void LoadBrVals(string BrValXml);
+    set <string> *GetBvSet (string File, string Func);
+};
+
+
 
 }
 #endif 

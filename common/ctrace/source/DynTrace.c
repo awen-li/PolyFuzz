@@ -7,7 +7,7 @@
 extern "C"{
 #endif
 
-void DynTrace (EVENT_HANDLE Eh, TraceKey Tk)
+void DynTrace (EVENT_HANDLE Eh, unsigned Length, TraceKey Tk)
 {
     QNode *Node = QBUF2QNODE (Eh);
 
@@ -15,7 +15,7 @@ void DynTrace (EVENT_HANDLE Eh, TraceKey Tk)
     Node->Tk       = Tk;
     Node->Flag     = TRUE;
 
-    DEBUG ("[TRC_trace][T:%u]%lx\r\n", Node->ThreadId, Tk);
+    DEBUG ("[DynTrace][T:%u][L:%u]%lx\r\n", Node->ThreadId, Length, Tk);
 
     return;   
 }

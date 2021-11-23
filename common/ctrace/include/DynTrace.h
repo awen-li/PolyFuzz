@@ -17,7 +17,7 @@ extern "C"{
 #endif 
 
 
-void DynTrace (EVENT_HANDLE Eh, TraceKey Tk);
+void DynTrace (EVENT_HANDLE Eh, unsigned Length, TraceKey Tk);
 
 
 #ifdef __cplusplus

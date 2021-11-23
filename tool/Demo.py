@@ -6,14 +6,14 @@ from DemoAdd import DemoAdd
 Modules = ['Demo.py', 'DemoAdd.py']
 pyprob.Setup(Modules, 'branch_variables.xml')
  
-def DemoTr (Value):
+def DemoTr (Value, List):
     Var = os.getenv("CASE1")
     if Var == None:
     	Var = '1024'
     
     Var = int (Var)
-    if Var == 100:
-    	Var = 0
+    if List != None and len (List) > 3:
+    	Var = len (List)
     
     Da = DemoAdd (Var)
     if Da == None or Var < 0:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         print("Result = %d" %Result)
     ResultList = []
     for i in range (1, 8):
-    	Result = DemoTr(i)
+    	Result = DemoTr(i, ResultList)
     	PPP()
     	ResultList.append (Result)
     Length = len (ResultList)

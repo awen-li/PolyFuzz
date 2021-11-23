@@ -115,49 +115,84 @@ static inline bool IsRegModule (string Module)
 
 static inline void GetValue (PyObject *Var, ObjValue *OV)
 {
-    Py_ssize_t VarSize = Py_SIZE(Var);
     if (PyLong_Check (Var))
     {
         OV->Type   = VT_LONG;
         OV->Attr   = 0;
-        OV->Length = sizeof (long);
+        OV->Length = sizeof(OV->Value);
         OV->Value  = PyLong_AsLong(Var);
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] [T: LONG, A:%u L: %u, V:%lu]", VarSize, OV->Attr, OV->Length, OV->Value);
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] [T: LONG, A:%u L: %u, V:%lx]", OV->Length, OV->Attr, OV->Length, OV->Value);
     }
     else if (PyUnicode_Check (Var))
     {
         char *UcVar = (char*)PyUnicode_AsUTF8 (Var);
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] Unicode, Var:%p -> %s", VarSize, Var, UcVar);
+        int Length  = strlen (UcVar);
+        
+        OV->Type   = VT_STRING;
+        OV->Attr   = 0;
+
+        int Scale = Length/sizeof(OV->Value);
+        if (Scale == 0)
+        {
+            OV->Length = Length;
+            memcpy (&OV->Value, UcVar, Length);
+        }
+        else
+        {
+            char *Value = (char *)(&OV->Value);
+            for (int off = 0; off < sizeof(OV->Value); off++)
+            {
+                Value[off] = UcVar[off * Scale];
+            }
+            OV->Length = sizeof(OV->Value);
+        }
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Unicode, Var:%lx -> %s", OV->Length, OV->Value, UcVar);
     }
     else if (PyTuple_Check (Var))
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] Tuple, Var:%p ", VarSize, Var);
+        OV->Type   = VT_SET;
+        OV->Attr   = 0;    
+        OV->Length = (unsigned short)Py_SIZE(Var);
+        
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Tuple, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyList_Check (Var))
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] List, Var:%p ", VarSize, Var);
-        ObjValue OVI = {0};
-        for (int i = 0; i < VarSize; i++)
+        OV->Type   = VT_LIST;
+        OV->Attr   = 0;    
+        OV->Length = (unsigned short)Py_SIZE(Var);
+
+        ObjValue OVi;
+        for (unsigned i = 0; i < OV->Length && i < 4; i++)
         {
             PyObject *Item = PyList_GET_ITEM(Var, i);
-            GetValue (Item, &OVI);
+            GetValue (Item, &OVi);
+            OV->Value ^= OVi.Value;
         }
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] List, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyDict_Check (Var))
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] Dict, Var:%p ", VarSize, Var);
+        OV->Type   = VT_DICT;
+        OV->Attr   = 0;    
+        OV->Length = (unsigned short)Py_SIZE(Var);
+        
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Dict, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyBytes_Check (Var))
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] Bytes, Var:%p ", VarSize, Var);
+        OV->Type   = VT_STRING;
+        OV->Attr   = 0;    
+        OV->Length = (unsigned short)Py_SIZE(Var);
+        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Bytes, Var:%lx ", OV->Length, OV->Value);
     }
     else if (Var == Py_None)
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] NoneType, Var:%p ", VarSize, Var);
+        DEBUG_PRINT ("\n\t >>>>>>>>NoneType, Var:%p ", Var);
     }
     else
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%ld] Other:%s, Var:%p ", VarSize, Var->ob_type->tp_name, Var);
+        DEBUG_PRINT ("\n\t >>>>>>>>Other:%s, Var:%lx ", Var->ob_type->tp_name, OV->Value);
     }
     
     return;
@@ -180,6 +215,19 @@ static inline void ShowVariables (PyObject *co_varnames)
     }
 }
 
+static inline void StartTracing (const char* VarName, PyObject *VarAddr, ObjValue *VarValue, TraceKey Tk)
+{
+    EVENT_HANDLE Eh = AllocEvent();
+    assert (Eh != NULL);
+
+    unsigned Esize = 0;
+    Esize = EncodeEvent(Eh, Esize, ET_VALNAME, strlen(VarName), (BYTE*)VarName);
+    Esize = EncodeEvent(Eh, Esize, ET_VALADDR, sizeof (char*), (BYTE*)VarAddr);
+    Esize = EncodeEvent(Eh, Esize, ET_VALUE, sizeof (ObjValue), (BYTE*)VarValue);
+    DynTrace(Eh, Esize, Tk);
+
+    return;
+}
 
 static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned oparg, set <string> *BVs)
 {
@@ -228,11 +276,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
                 DEBUG_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);           
                 GetValue(UseVal, &OV);
 
-                EVENT_HANDLE Eh = AllocEvent();
-                assert (Eh != NULL);
-                unsigned Esize = 0;
-                Esize = EncodeEvent(Eh, Esize, ET_VALNAME, strlen(StrUseName), (BYTE*)StrUseName);
-                DynTrace(Eh, STORE_FAST);
+                StartTracing (StrUseName, UseVal, &OV, STORE_FAST);                
             }
             DEBUG_PRINT ("\r\n");
             break;
@@ -249,6 +293,8 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
                 UseVal  = frame->f_stacktop[-1];
                 DEBUG_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);
                 GetValue(UseVal, &OV);
+
+                StartTracing (StrUseName, UseVal, &OV, STORE_NAME); 
             }
             DEBUG_PRINT ("\r\n");
             break;
@@ -264,6 +310,8 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             {
                 UseVal  = frame->f_stacktop[-1];
                 GetValue(UseVal, &OV);
+
+                StartTracing (StrUseName, UseVal, &OV, STORE_GLOBAL); 
             }
             DEBUG_PRINT ("\r\n");
             break;

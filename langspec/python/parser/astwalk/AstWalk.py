@@ -89,8 +89,11 @@ class ASTWalk(NodeVisitor):
         for value in Values:
             self.visit(value)
 
+    def visit_call (self, node):
+        pass
+
     def visit_if(self, node):
-        print (ast.dump (node))
+        #print (ast.dump (node))
         Test = node.test
         self.IfTest = True
         self.visit(Test)

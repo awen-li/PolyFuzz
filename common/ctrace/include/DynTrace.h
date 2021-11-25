@@ -17,6 +17,8 @@ extern "C"{
 #endif 
 
 
+void DynTraceInit ();
+void DynTraceExit ();
 void DynTrace (EVENT_HANDLE Eh, unsigned Length, TraceKey Tk);
 
 

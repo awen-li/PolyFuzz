@@ -26,6 +26,9 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     /* load all branch variables for each function */
     BvSet.LoadBrVals(BrValXml);
 
+    /* Init tracing: shared memory ALF++, etc. */
+    DynTraceInit ();
+
     return;
 }
 

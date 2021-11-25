@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<branch_variables>
+  <file name="DemoAdd.py">
+    <function brval="addvar" class="DemoAdd" name="_add_"/>
+    <function brval="b" class="DemoAdd" name="Add"/>
+  </file>
+  <file name="Demo.py">
+    <function brval="Var Da List" class="" name="DemoTr"/>
+  </file>
+</branch_variables>

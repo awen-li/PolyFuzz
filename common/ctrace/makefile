@@ -14,7 +14,7 @@ INSTALL_HEADER = /usr/include/ctrace
 
 #CFLAGS    = -fPIC -O3 -I$(INCLUDE_PATH) -I$(AFLPP)/include
 CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -I$(AFLPP)/include -D__DEBUG__ 
-LD_CFLAGS  = -fPIC -shared -lpthread -ldl 
+LD_CFLAGS  = -fPIC -shared -lpthread -ldl $(AFLPP)/libAFLDriver.a
 
 $SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)
 SOURCE_FILES  = $(wildcard $(SOURCE_PATH)/*.c) #source/Queue.c source/DynTrace.c source/DbCore.c source/List.c

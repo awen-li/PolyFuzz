@@ -5,13 +5,15 @@ TARGET = libxFuzztrace.so
 CC = clang
 LD = $(CC)
 
+AFLPP = ../../AFLplusplus
+
 SOURCE_PATH  = source
 INCLUDE_PATH = include
 OBJ_PATH     = obj
 INSTALL_HEADER = /usr/include/ctrace
 
-#CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH)
-CFLAGS    = -fPIC -g -I$(INCLUDE_PATH) -D__DEBUG__ 
+#CFLAGS    = -fPIC -O3 -I$(INCLUDE_PATH) -I$(AFLPP)/include
+CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -I$(AFLPP)/include -D__DEBUG__ 
 LD_CFLAGS  = -fPIC -shared -lpthread -ldl 
 
 $SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)

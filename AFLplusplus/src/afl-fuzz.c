@@ -1953,6 +1953,7 @@ int main(int argc, char **argv_orig, char **envp) {
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
 
+  DEBUG_PRINT("Run into fuzzing loop....\r\n");
   while (likely(!afl->stop_soon)) {
 
     cull_queue(afl);

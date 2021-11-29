@@ -893,6 +893,7 @@ static void __afl_start_snapshots(void) {
 
 static void __afl_start_forkserver(void) {
 
+  DEBUG_PRINT ("Wen -> __afl_start_forkserver.... \r\n");
   if (__afl_already_initialized_forkserver) return;
   __afl_already_initialized_forkserver = 1;
 

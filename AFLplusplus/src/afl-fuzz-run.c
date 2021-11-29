@@ -300,6 +300,8 @@ u8 calibrate_case(afl_state_t *afl, struct queue_entry *q, u8 *use_mem,
   u32 use_tmout = afl->fsrv.exec_tmout;
   u8 *old_sn = afl->stage_name;
 
+  DEBUG_PRINT("calibrate_case....\r\n");
+
   /* Be a bit more generous about timeouts when resuming sessions, or when
      trying to calibrate already-added finds. This helps avoid trouble due
      to intermittent latency. */
@@ -736,6 +738,9 @@ void sync_fuzzers(afl_state_t *afl) {
 u8 trim_case(afl_state_t *afl, struct queue_entry *q, u8 *in_buf) {
 
   u32 orig_len = q->len;
+
+  
+  DEBUG_PRINT("trim_case....\r\n");
 
   /* Custom mutator trimmer */
   if (afl->custom_mutators_count) {

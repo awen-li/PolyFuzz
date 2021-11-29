@@ -319,6 +319,8 @@ u8 trim_case_custom(afl_state_t *afl, struct queue_entry *q, u8 *in_buf,
   afl->stage_name = afl->stage_name_buf;
   afl->bytes_trim_in += q->len;
 
+  DEBUG_PRINT("trim_case_custom....\r\n");
+
   /* Initialize trimming in the custom mutator */
   afl->stage_cur = 0;
   s32 retval = mutator->afl_custom_init_trim(mutator->data, in_buf, q->len);

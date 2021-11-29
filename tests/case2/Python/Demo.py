@@ -28,13 +28,17 @@ def ParseText (TxtFile):
     Content = ""
     with open(TxtFile, 'r', encoding='latin1') as txfile:
         for line in txfile:
-            Content = line
+            Content = line.replace("\n", "")
             break
     return Content
     
 if __name__ == '__main__':
     Test = sys.argv[1]
-    Input = int (ParseText (Test))
+    Str = ParseText (Test)
+    if Str.isdigit() == False:
+    	print ("Input invalid....")
+    	exit (0)
+    Input = int (Str)
     print ("Input = " + str(Input))
     Value = Trace (Input)
     print ("Value = " + str(Value))

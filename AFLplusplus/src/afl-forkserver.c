@@ -59,11 +59,13 @@ static list_t fsrv_list = {.element_prealloc_count = 0};
 
 static void fsrv_exec_child(afl_forkserver_t *fsrv, char **argv) {
 
-  if (fsrv->qemu_mode) { setenv("AFL_DISABLE_LLVM_INSTRUMENTATION", "1", 0); }
+    DEBUG_PRINT("fsrv_exec_child...\r\n");
 
-  execv(fsrv->target_path, argv);
+    if (fsrv->qemu_mode) { setenv("AFL_DISABLE_LLVM_INSTRUMENTATION", "1", 0); }
 
-  WARNF("Execv failed in forkserver.");
+    execv(fsrv->target_path, argv);
+
+    WARNF("Execv failed in forkserver.");
 
 }
 
@@ -365,6 +367,13 @@ void afl_fsrv_start(afl_forkserver_t *fsrv, char **argv,
   s32   rlen;
   char *ignore_autodict = getenv("AFL_NO_AUTODICT");
 
+  int tmp = 0;
+  while (argv[tmp] != NULL)
+  {
+    DEBUG_PRINT ("[%d] arg = %s \r\n", tmp, argv[tmp]);
+    tmp++;
+  }
+
   if (!be_quiet) { ACTF("Spinning up the fork server..."); }
 
 #ifdef AFL_PERSISTENT_RECORD
@@ -409,6 +418,7 @@ void afl_fsrv_start(afl_forkserver_t *fsrv, char **argv,
   if (!fsrv->fsrv_pid) {
 
     /* CHILD PROCESS */
+    DEBUG_PRINT("FORK server chikd process.....\r\n");
 
     // enable terminating on sigpipe in the childs
     struct sigaction sa;
@@ -584,6 +594,8 @@ void afl_fsrv_start(afl_forkserver_t *fsrv, char **argv,
   }
 
   /* PARENT PROCESS */
+
+  DEBUG_PRINT("FUZZER main process.....\r\n");
 
   char pid_buf[16];
   sprintf(pid_buf, "%d", fsrv->fsrv_pid);

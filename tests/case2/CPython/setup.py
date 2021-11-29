@@ -8,7 +8,7 @@ os.environ["CXX"] = "afl-cc++"
 
 module1 = Extension('DemoTrace',
                     define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')],
-                    #extra_link_args=[]
+                    extra_link_args=['-lxFuzztrace'],
                     #extra_compile_args=[]
                     include_dirs = ['../C/include'],
                     #libraries = ['DemoTrace'],

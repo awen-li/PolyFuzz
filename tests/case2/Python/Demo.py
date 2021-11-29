@@ -1,17 +1,38 @@
 #!/usr/bin/python
+import pyprob
 from PyDemo import *
+
+Modules = ['Demo.py']
+pyprob.Setup(Modules, 'branch_variables.xml')
 
 class Demo ():
     def __init__ (self, value):
-        self.v = value
+        if value < 0:
+            self.v = 0 - value
+        else:
+            self.v = value
     
 def Trace (val):
     D = Demo (val)
     PwdInfo (D.v)
-    Tag = "show"
-    New = Tag + "->" + str(D.v)
-    print ("Infor: ", New)
+    Hint = D.v % 8
+    if Hint == 1:
+        return (Hint+2)
+    elif Hint == 2:
+        return (Hint*2)
+    else:
+        return (8 / Hint)
 
-if __name__ == '__main__':  
-    Trace (8)
+def ParseText (TxtFile):
+    Content = []
+    with open(TxtFile, 'r', encoding='latin1') as txfile:
+        for line in txfile:
+            Content = Content + list (line.split ())
+    return Content
+    
+if __name__ == '__main__':
+    Test = sys.argv[1]
+    Input = int (ParseText (Test)) 
+    Value = Trace (Input)
+    printf ("Value = " + str(Value))
 

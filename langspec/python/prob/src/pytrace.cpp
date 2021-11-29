@@ -124,7 +124,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;
         OV->Length = sizeof(OV->Value);
         OV->Value  = PyLong_AsLong(Var);
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] [T: LONG, A:%u L: %u, V:%lx]", OV->Length, OV->Attr, OV->Length, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] [T: LONG, A:%u L: %u, V:%lx]", OV->Length, OV->Attr, OV->Length, OV->Value);
     }
     else if (PyUnicode_Check (Var))
     {
@@ -149,7 +149,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
             }
             OV->Length = sizeof(OV->Value);
         }
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Unicode, Var:%lx -> %s", OV->Length, OV->Value, UcVar);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Unicode, Var:%lx -> %s", OV->Length, OV->Value, UcVar);
     }
     else if (PyTuple_Check (Var))
     {
@@ -157,7 +157,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
         
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Tuple, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Tuple, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyList_Check (Var))
     {
@@ -172,7 +172,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
             GetValue (Item, &OVi);
             OV->Value ^= OVi.Value;
         }
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] List, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] List, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyDict_Check (Var))
     {
@@ -180,22 +180,22 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
         
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Dict, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Dict, Var:%lx ", OV->Length, OV->Value);
     }
     else if (PyBytes_Check (Var))
     {
         OV->Type   = VT_STRING;
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
-        DEBUG_PRINT ("\n\t >>>>>>>>[Size:%u] Bytes, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Bytes, Var:%lx ", OV->Length, OV->Value);
     }
     else if (Var == Py_None)
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>NoneType, Var:%p ", Var);
+        PY_PRINT ("\n\t >>>>>>>>NoneType, Var:%p ", Var);
     }
     else
     {
-        DEBUG_PRINT ("\n\t >>>>>>>>Other:%s, Var:%lx ", Var->ob_type->tp_name, OV->Value);
+        PY_PRINT ("\n\t >>>>>>>>Other:%s, Var:%lx ", Var->ob_type->tp_name, OV->Value);
     }
     
     return;
@@ -239,7 +239,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
         return;
     }
 
-    DEBUG_PRINT("\t > OPCODE[%d-%d]: %s ", opcode, oparg, Op2Name(opcode).c_str());
+    PY_PRINT("\t > OPCODE[%d-%d]: %s ", opcode, oparg, Op2Name(opcode).c_str());
     PyObject *co_names = frame->f_code->co_names;
     PyObject *co_varnames = frame->f_code->co_varnames;
 
@@ -260,7 +260,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             PyObject* left = frame->f_stacktop[-2];
             PyObject* right = frame->f_stacktop[-1];
 
-            DEBUG_PRINT ("left = %p, right = %p ", left, right);
+            PY_PRINT ("left = %p, right = %p ", left, right);
             GetValue(left, &OV);
             GetValue(right, &OV);
             cout<<endl;
@@ -276,12 +276,12 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             if (BVs->find (StrUseName) != BVs->end ())
             {
                 UseVal  = frame->f_stacktop[-1];
-                DEBUG_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);           
+                PY_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);           
                 GetValue(UseVal, &OV);
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_FAST);                
             }
-            DEBUG_PRINT ("\r\n");
+            PY_PRINT ("\r\n");
             break;
         }
         case STORE_NAME:
@@ -294,12 +294,12 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             if (BVs->find (StrUseName) != BVs->end ())
             {
                 UseVal  = frame->f_stacktop[-1];
-                DEBUG_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);
+                PY_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);
                 GetValue(UseVal, &OV);
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_NAME); 
             }
-            DEBUG_PRINT ("\r\n");
+            PY_PRINT ("\r\n");
             break;
         }
         case STORE_GLOBAL:
@@ -316,7 +316,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_GLOBAL); 
             }
-            DEBUG_PRINT ("\r\n");
+            PY_PRINT ("\r\n");
             break;
         }
         case STORE_DEREF:
@@ -330,7 +330,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             /* LOAD_FAST valnum -> push co_varnames[valnum] (frame->f_localsplus[oparg]) onto stack */
             UseName = PyTuple_GET_ITEM (co_varnames, oparg);
             UseVal  = frame->f_localsplus[oparg];
-            DEBUG_PRINT ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
+            PY_PRINT ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
             GetValue(UseVal, &OV);
             cout<<endl;
             break;
@@ -339,7 +339,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
         {
             /* LOAD_NAME namei -> push co_names[namei] onto stack */
             UseName = PyTuple_GET_ITEM (co_names, oparg);
-            DEBUG_PRINT ("Name = %s ", PyUnicode_AsUTF8(UseName));
+            PY_PRINT ("Name = %s ", PyUnicode_AsUTF8(UseName));
             if (PyDict_CheckExact(frame->f_locals)) 
             {
                 UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
@@ -400,7 +400,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     {
         return 0;
     }
-    DEBUG_PRINT ("%s : %s : %d --- length(BVs)-> %u ", FileName.c_str(), FuncName, frame->f_lineno, (unsigned)BVs->size ());
+    PY_PRINT ("%s : %s : %d --- length(BVs)-> %u ", FileName.c_str(), FuncName, frame->f_lineno, (unsigned)BVs->size ());
 
     
     // enable PyTrace_OPCODE
@@ -411,50 +411,50 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     {
         case PyTrace_LINE:
         {
-            DEBUG_PRINT("PyTrace_LINE:%d\n", what);
+            PY_PRINT("PyTrace_LINE:%d\n", what);
             break;
         }
         case PyTrace_CALL:
         {
-            DEBUG_PRINT("PyTrace_CALL:%d, frame->f_localsplus = %p\n", what, frame->f_localsplus);
+            PY_PRINT("PyTrace_CALL:%d, frame->f_localsplus = %p\n", what, frame->f_localsplus);
             break;
         }
         case PyTrace_EXCEPTION:
         {
-            DEBUG_PRINT("PyTrace_EXCEPTION:%d\n", what);
+            PY_PRINT("PyTrace_EXCEPTION:%d\n", what);
             break;
         }
         case PyTrace_RETURN:
         {
-            DEBUG_PRINT("PyTrace_RETURN:%d\n", what);
+            PY_PRINT("PyTrace_RETURN:%d\n", what);
             break;
         }
         case PyTrace_OPCODE:
         {
             unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
             unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
-            DEBUG_PRINT("PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
+            PY_PRINT("PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
             OpCodeProc (frame, opcode, oparg, BVs);
             break;
         }
         case PyTrace_C_CALL:
         {
-            DEBUG_PRINT("PyTrace_C_CALL:%d\n", what);
+            PY_PRINT("PyTrace_C_CALL:%d\n", what);
             break;
         }
         case PyTrace_C_EXCEPTION:
         {
-            DEBUG_PRINT("PyTrace_C_EXCEPTION:%d\n", what);
+            PY_PRINT("PyTrace_C_EXCEPTION:%d\n", what);
             break;
         }
         case PyTrace_C_RETURN:
         {
-            DEBUG_PRINT("PyTrace_C_RETURN:%d\n", what);
+            PY_PRINT("PyTrace_C_RETURN:%d\n", what);
             break;
         }
         default:
         {
-            DEBUG_PRINT("default: %d\n", what);
+            PY_PRINT("default: %d\n", what);
             break;
         }
     }

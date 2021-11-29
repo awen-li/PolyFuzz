@@ -20,10 +20,10 @@ void PyInit(const vector<string>& Modules, string BrValXml);
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg);
 
 
-#if 1
-#define DEBUG_PRINT(format, ...) printf(format, ##__VA_ARGS__)
+#if 0
+#define PY_PRINT("<Python>"format, ...) printf(format, ##__VA_ARGS__)
 #else
-#define DEBUG_PRINT(format, ...) 
+#define PY_PRINT(format, ...) 
 #endif
 
 

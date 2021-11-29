@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 import pyprob
 from PyDemo import *
 
@@ -24,15 +25,17 @@ def Trace (val):
         return (8 / Hint)
 
 def ParseText (TxtFile):
-    Content = []
+    Content = ""
     with open(TxtFile, 'r', encoding='latin1') as txfile:
         for line in txfile:
-            Content = Content + list (line.split ())
+            Content = line
+            break
     return Content
     
 if __name__ == '__main__':
     Test = sys.argv[1]
-    Input = int (ParseText (Test)) 
+    Input = int (ParseText (Test))
+    print ("Input = " + str(Input))
     Value = Trace (Input)
-    printf ("Value = " + str(Value))
+    print ("Value = " + str(Value))
 

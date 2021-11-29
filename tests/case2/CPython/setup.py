@@ -6,7 +6,7 @@ from distutils.core import setup, Extension
 os.environ["CC"]  = "afl-cc"
 os.environ["CXX"] = "afl-cc++"
 
-module1 = Extension('DemoTrace',
+module1 = Extension('PyDemo',
                     define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')],
                     extra_link_args=['-lxFuzztrace'],
                     #extra_compile_args=[]

@@ -5,6 +5,7 @@ static PyObject *PwdInfo(PyObject *self, PyObject *args)
 {
     int Value = 0;
 
+    printf ("PwdInfo ....\r\n");
     if (!PyArg_ParseTuple(args, "i", &Value))
     {
         return NULL;

@@ -6,6 +6,7 @@
 #include <set>
 #include <unordered_map>
 #include <assert.h>
+#include "macro.h"
 
 namespace pyprob {
 
@@ -30,12 +31,12 @@ struct BV_function
 
     inline void View ()
     {
-        cout<<"@@@ "<<m_FuncName<<" -> BrVals: ";
+        PY_PRINT("%s -> branch variables: ", m_FuncName.c_str());
         for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
         {
-            cout<<*It<<" ";
+            PY_PRINT ("%s ", (*It).c_str());
         }
-        cout<<endl;
+        PY_PRINT ("\r\n");
     }
 };
 

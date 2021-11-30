@@ -31,15 +31,21 @@ def ParseText (TxtFile):
             Content = line.replace("\n", "")
             break
     return Content
-    
-if __name__ == '__main__':
-    Test = sys.argv[1]
+  
+def main (Test):
     Str = ParseText (Test)
     if Str.isdigit() == False:
-    	print ("Input invalid....")
     	exit (0)
     Input = int (Str)
-    print ("Input = " + str(Input))
     Value = Trace (Input)
-    print ("Value = " + str(Value))
+  
+if __name__ == '__main__':
+    try:
+        main (sys.argv[1])
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+
+
+    
+    
 

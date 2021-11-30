@@ -10,6 +10,7 @@ namespace pyprob {
 PYBIND11_MODULE(pyprob, PyModule) {
 
     PyModule.def("Setup",  &SetupTracer);
+    PyModule.def("PyExcept",  &PyExcept);
 
 }
 

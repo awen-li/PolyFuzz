@@ -1,4 +1,5 @@
 #include "loadbrval.h"
+#include "macro.h"
 #include <stdio.h>
 #include<mxml.h>
 
@@ -25,7 +26,7 @@ void BV_set::LoadBrVals(string BrValXml)
     FILE *fp = fopen(BrValXml.c_str(), "r");
     if (fp == NULL)
     {
-        cout<<"@@@ LoadBrVals: open fail -----> "<<BrValXml<<endl;
+        PY_PRINT("LoadBrVals: open %s fail\r\n", BrValXml.c_str());
         return;
     }    
     mxml_node_t* tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
@@ -35,7 +36,7 @@ void BV_set::LoadBrVals(string BrValXml)
     mxml_node_t* bvNode = mxmlFindElement(tree, tree, "branch_variables", NULL, NULL, MXML_DESCEND);
     if (bvNode == NULL)
     {
-        cout<<"@@@ No tag branch_variables exist, load a right file?..."<<endl;
+        PY_PRINT("No tag branch_variables exist, load a right file?...");
         exit (0);
     }
 
@@ -83,8 +84,7 @@ void BV_set::LoadBrVals(string BrValXml)
     }
 
     mxmlDelete(tree);
-    cout<<"@@@ LoadBrVals: load done -----> "<<BrValXml<<", file number: "<<FileNo
-        <<", function number: "<<FuncNo<<endl;
+    PY_PRINT("LoadBrVals: load %s done, file number:%d , function number:%d\r\n", BrValXml.c_str(), FileNo, FuncNo);
 
 
     return;

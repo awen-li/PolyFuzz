@@ -12,8 +12,8 @@ INCLUDE_PATH = include
 OBJ_PATH     = obj
 INSTALL_HEADER = /usr/include/ctrace
 
-#CFLAGS    = -fPIC -O3 -I$(INCLUDE_PATH) -I$(AFLPP)/include
-CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -I$(AFLPP)/include -D__DEBUG__ 
+CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH) -I$(AFLPP)/include
+#CFLAGS    = -fPIC -g -I$(INCLUDE_PATH) -I$(AFLPP)/include -D__DEBUG__ 
 LD_CFLAGS  = -fPIC -shared -lpthread -ldl $(AFLPP)/afl-llvm-rt-64.o
 
 $SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)

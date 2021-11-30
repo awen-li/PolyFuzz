@@ -20,7 +20,7 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     for (auto It = Modules.begin (); It != Modules.end (); It++)
     {
         RegModule.insert (*It);
-        cout<<">>>>>>>>>>>>>>>>> add module: "<<*It<<endl;
+        PY_PRINT("Add module: %s\r\n", (*It).c_str());
     }
 
     /* load all branch variables for each function */
@@ -143,7 +143,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         else
         {
             char *Value = (char *)(&OV->Value);
-            for (int off = 0; off < sizeof(OV->Value); off++)
+            for (unsigned off = 0; off < sizeof(OV->Value); off++)
             {
                 Value[off] = UcVar[off * Scale];
             }
@@ -263,7 +263,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             PY_PRINT ("left = %p, right = %p ", left, right);
             GetValue(left, &OV);
             GetValue(right, &OV);
-            cout<<endl;
+            PY_PRINT ("\r\n");
             break;
         }
         case STORE_FAST:
@@ -332,7 +332,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             UseVal  = frame->f_localsplus[oparg];
             PY_PRINT ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
             GetValue(UseVal, &OV);
-            cout<<endl;
+            PY_PRINT ("\r\n");
             break;
         }
         case LOAD_NAME:
@@ -354,7 +354,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
                 GetValue(UseVal, &OV);
             }
                 
-            cout<<endl;
+            PY_PRINT ("\r\n");
             break;
         }
         case LOAD_GLOBAL:
@@ -380,7 +380,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
         }
     }
 
-    cout<<endl;
+    PY_PRINT ("\r\n");
     return;
 }
 

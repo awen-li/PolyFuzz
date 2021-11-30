@@ -82,7 +82,7 @@ void InitQueue (unsigned QueueNum)
 
     if (g_Queue != NULL)
     {
-        printf ("@@@@@ Warning: Repeat comimg into InitQueue: %p-%u\r\n", g_Queue, g_SharedId);
+        DEBUG ("@@@@@ Warning: Repeat comimg into InitQueue: %p-%u\r\n", g_Queue, g_SharedId);
         exit (0);
     }
  
@@ -90,7 +90,7 @@ void InitQueue (unsigned QueueNum)
     Q = (Queue *)GetQueueMemory (TRUE, Size);
     if (Q->NodeNum == 0)
     {
-        printf ("@@@@@ start InitQueue[%u]\r\n", QueueNum);
+        DEBUG ("@@@@@ start InitQueue[%u]\r\n", QueueNum);
         Q->NodeNum  = QueueNum;
         Q->Exit     = FALSE;
         Q->MaxNodeNum = 0;

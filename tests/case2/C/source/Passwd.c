@@ -7,9 +7,19 @@
 char* Getpasswd (int Index)
 {
     int CallIndex = Index%2;
-    printf ("---------->>>>> CallIndex = %d \r\n", CallIndex);
 
-    return "pwd";
+    if (CallIndex == 0)
+    {
+        return "pwd0";
+    }
+    else if (CallIndex == 1)
+    {
+        return "pwd1";
+    }
+    else
+    {
+        return "pwd2";
+    }
 }
 
 

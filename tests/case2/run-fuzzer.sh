@@ -14,5 +14,8 @@ afl-system-config
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
 
+#enable crash exit code 
+export AFL_CRASH_EXITCODE=100
+
 cp ../branch_variables.xml ./
 afl-fuzz -i in/ -o out -m none -d -- python ../Demo.py  @@

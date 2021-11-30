@@ -15,7 +15,9 @@ void PyExcept (string Type, string FileName, long LineNo)
     Exception Exceps (Type, FileName, (unsigned)LineNo);
 
     Exceps.Dump ();
-    return;
+
+    /* exit code to info fork server */
+    exit (100);
 }
 
 

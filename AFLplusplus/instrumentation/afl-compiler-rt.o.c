@@ -893,7 +893,6 @@ static void __afl_start_snapshots(void) {
 
 static void __afl_start_forkserver(void) {
 
-  DEBUG_PRINT ("Wen -> __afl_start_forkserver.... \r\n");
   if (__afl_already_initialized_forkserver) return;
   __afl_already_initialized_forkserver = 1;
 
@@ -1126,7 +1125,7 @@ static void __afl_start_forkserver(void) {
     if (WIFSTOPPED(status)) child_stopped = 1;
 
     /* Relay wait status to pipe, then loop back. */
-
+    DEBUG_PRINT ("Wen -> __afl_start_forkserver: child[%d] exit, status = %d \r\n", child_pid, WEXITSTATUS(status));
     if (write(FORKSRV_FD + 1, &status, 4) != 4) {
 
       write_error("writing to afl-fuzz");

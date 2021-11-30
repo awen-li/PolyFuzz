@@ -28,6 +28,7 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, TraceKey Tk)
 
 void DynTraceInit ()
 {
+    /* init fork server */
     __afl_manual_init ();
     return;
 }

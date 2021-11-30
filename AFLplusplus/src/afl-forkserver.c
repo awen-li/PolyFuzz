@@ -1299,6 +1299,7 @@ fsrv_run_result_t afl_fsrv_run_target(afl_forkserver_t *fsrv, u32 timeout,
 
   if (!WIFSTOPPED(fsrv->child_status)) { fsrv->child_pid = 0; }
 
+  DEBUG_PRINT("fuzzer -> fsrv->child_status = %d \r\n", WEXITSTATUS(fsrv->child_status));
   fsrv->total_execs++;
 
   /* Any subsequent operations on fsrv->trace_bits must not be moved by the

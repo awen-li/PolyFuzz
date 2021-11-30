@@ -28,7 +28,7 @@
 // c = release, a = volatile github dev, e = experimental branch
 #define VERSION "++3.14a"
 
-#if 1
+#if 0
 #define DEBUG_PRINT(format, ...) printf("@@@ Wen -> "format, ##__VA_ARGS__)
 #else
 #define DEBUG_PRINT(format, ...) 

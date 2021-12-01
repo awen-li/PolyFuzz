@@ -231,7 +231,7 @@ class ModuleSanitizerCoverageLegacyPass : public ModulePass {
   }
 
   bool runOnModule(Module &M) override {
-
+    errs()<< "@@@ <Wen> ======================== runOnModule -> "<<M.getName()<<" ======================== \r\n";
     ModuleSanitizerCoverage ModuleSancov(Options
 #if LLVM_MAJOR > 10
                                          ,
@@ -246,8 +246,7 @@ class ModuleSanitizerCoverageLegacyPass : public ModulePass {
 
     auto PDTCallback = [this](Function &F) -> const PostDominatorTree * {
 
-      return &this->getAnalysis<PostDominatorTreeWrapperPass>(F)
-                  .getPostDomTree();
+      return &this->getAnalysis<PostDominatorTreeWrapperPass>(F).getPostDomTree();
 
     };
 
@@ -372,8 +371,7 @@ Function *ModuleSanitizerCoverage::CreateInitCallsForSections(
 
 }
 
-bool ModuleSanitizerCoverage::instrumentModule(
-    Module &M, DomTreeCallback DTCallback, PostDomTreeCallback PDTCallback) {
+bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCallback, PostDomTreeCallback PDTCallback) {
 
   setvbuf(stdout, NULL, _IONBF, 0);
   if (getenv("AFL_DEBUG")) debug = 1;
@@ -382,9 +380,9 @@ bool ModuleSanitizerCoverage::instrumentModule(
 
     SAYF(cCYA "SanitizerCoveragePCGUARD" VERSION cRST "\n");
 
-  } else
-
+  } else {  
     be_quiet = 1;
+  }
 
   skip_nozero = getenv("AFL_LLVM_SKIP_NEVERZERO");
   use_threadsafe_counters = getenv("AFL_LLVM_THREADSAFE_INST");
@@ -674,12 +672,11 @@ void ModuleSanitizerCoverage::instrumentFunction(
   // Don't instrument functions using SEH for now. Splitting basic blocks like
   // we do for coverage breaks WinEHPrepare.
   // FIXME: Remove this when SEH no longer uses landingpad pattern matching.
-  if (F.hasPersonalityFn() &&
-      isAsynchronousEHPersonality(classifyEHPersonality(F.getPersonalityFn())))
+  if (F.hasPersonalityFn() && isAsynchronousEHPersonality(classifyEHPersonality(F.getPersonalityFn())))
     return;
   if (Options.CoverageType >= SanitizerCoverageOptions::SCK_Edge)
-    SplitAllCriticalEdges(
-        F, CriticalEdgeSplittingOptions().setIgnoreUnreachableDests());
+    SplitAllCriticalEdges(F, CriticalEdgeSplittingOptions().setIgnoreUnreachableDests());
+  
   SmallVector<Instruction *, 8>       IndirCalls;
   SmallVector<BasicBlock *, 16>       BlocksToInstrument;
   SmallVector<Instruction *, 8>       CmpTraceTargets;
@@ -730,6 +727,7 @@ void ModuleSanitizerCoverage::instrumentFunction(
 
   }
 
+  errs()<<"@@@ <Wen> Instrument function -> "<<F.getName()<<"\r\n";
   InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
   InjectCoverageForIndirectCalls(F, IndirCalls);
   InjectTraceForCmp(F, CmpTraceTargets);

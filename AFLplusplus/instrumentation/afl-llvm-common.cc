@@ -308,8 +308,7 @@ void scanForDangerousFunctions(llvm::Module *M) {
 
       for (unsigned i = 0, e = InitList->getNumOperands(); i != e; ++i) {
 
-        if (ConstantStruct *CS =
-                dyn_cast<ConstantStruct>(InitList->getOperand(i))) {
+        if (ConstantStruct *CS = dyn_cast<ConstantStruct>(InitList->getOperand(i))) {
 
           if (CS->getNumOperands() >= 2) {
 

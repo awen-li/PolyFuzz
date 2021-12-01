@@ -3,7 +3,7 @@ BASE_DIR=`pwd`
 
 # 1. build AFL++
 cd $BASE_DIR/AFLplusplus
-if [ -f "afl-cc" ]; then
+if [ ! -f "afl-cc" ]; then
     make source-only
 else
     make

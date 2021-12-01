@@ -429,9 +429,8 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
   Int1Ty = IRB.getInt1Ty();
   LLVMContext &Ctx = M.getContext();
 
-  AFLMapPtr =
-      new GlobalVariable(M, PointerType::get(Int8Ty, 0), false,
-                         GlobalValue::ExternalLinkage, 0, "__afl_area_ptr");
+  AFLMapPtr = new GlobalVariable(M, PointerType::get(Int8Ty, 0), false,
+                                 GlobalValue::ExternalLinkage, 0, "__afl_area_ptr");
   One = ConstantInt::get(IntegerType::getInt8Ty(Ctx), 1);
   Zero = ConstantInt::get(IntegerType::getInt8Ty(Ctx), 0);
 

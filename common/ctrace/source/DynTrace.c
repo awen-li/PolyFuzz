@@ -9,6 +9,7 @@
 extern "C"{
 #endif
 
+extern char* __afl_area_ptr; /* defined in AFL++ */
 extern void __afl_manual_init(void); /* defined in AFL++ */
 
 
@@ -26,11 +27,11 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, TraceKey Tk)
 }
 
 
-void DynTraceInit ()
+char* DynTraceInit ()
 {
     /* init fork server */
     __afl_manual_init ();
-    return;
+    return __afl_area_ptr;
 }
 
 void DynTraceExit ()

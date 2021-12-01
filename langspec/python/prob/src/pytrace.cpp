@@ -12,6 +12,7 @@ using namespace std;
 
 static set<string> RegModule;
 static BV_set BvSet;
+static char* afl_area_ptr = NULL;
 
 void PyInit(const vector<string>& Modules, string BrValXml) 
 {
@@ -27,7 +28,8 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     BvSet.LoadBrVals(BrValXml);
 
     /* Init tracing: shared memory ALF++, etc. */
-    DynTraceInit ();
+    afl_area_ptr = DynTraceInit ();
+    assert (afl_area_ptr != NULL);
 
     return;
 }

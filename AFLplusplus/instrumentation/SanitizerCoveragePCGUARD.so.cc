@@ -48,6 +48,10 @@
 #include "debug.h"
 #include "afl-llvm-common.h"
 
+
+#define DB_PRINT(format, ...) if (debug) printf("@@@ Wen -> " format, ##__VA_ARGS__)
+
+
 using namespace llvm;
 
 #define DEBUG_TYPE "sancov"
@@ -223,7 +227,7 @@ public:
     }
 
     bool runOnModule(Module &M) override {
-        errs()<< "@@@ <Wen> ======================== runOnModule -> "<<M.getName()<<" ======================== \r\n";
+        DB_PRINT ("@@@ <Wen> ======================== runOnModule -> %s ======================== \r\n", M.getName().data());
         ModuleSanitizerCoverage ModuleSancov(Options
 #if LLVM_MAJOR > 10
                                              ,
@@ -368,22 +372,20 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     initInstrumentList();
     scanForDangerousFunctions(&M);
 
-    if (debug) {
-        fprintf(stderr,
-                "SANCOV: covtype:%u indirect:%d stack:%d noprune:%d "\
-                "traceCmp:%d traceDiv:%d traceGep:%d "\
-                "createtable:%d tracepcguard:%d tracepc:%d\n",
-                Options.CoverageType, 
-                Options.IndirectCalls == true ? 1 : 0,
-                Options.StackDepth == true ? 1 : 0, 
-                Options.NoPrune == true ? 1 : 0,
-                Options.TraceCmp == true ? 1 : 0,
-                Options.TraceDiv == true ? 1 : 0,
-                Options.TraceGep == true ? 1 : 0,
-                Options.PCTable == true ? 1 : 0,
-                Options.TracePCGuard == true ? 1 : 0,
-                Options.TracePC == true ? 1 : 0);
-    }
+    
+    DB_PRINT("SANCOV: covtype:%u indirect:%d stack:%d noprune:%d "\
+              "traceCmp:%d traceDiv:%d traceGep:%d "\
+              "createtable:%d tracepcguard:%d tracepc:%d\n",
+              Options.CoverageType, 
+              Options.IndirectCalls == true ? 1 : 0,
+              Options.StackDepth == true ? 1 : 0, 
+              Options.NoPrune == true ? 1 : 0,
+              Options.TraceCmp == true ? 1 : 0,
+              Options.TraceDiv == true ? 1 : 0,
+              Options.TraceGep == true ? 1 : 0,
+              Options.PCTable == true ? 1 : 0,
+              Options.TracePCGuard == true ? 1 : 0,
+              Options.TracePC == true ? 1 : 0);
 
     if (Options.CoverageType == SanitizerCoverageOptions::SCK_None) return false;
     
@@ -468,21 +470,18 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     Function *Ctor = nullptr;
 
     if (FunctionGuardArray) {
-        printf ("******************* FunctionGuardArray *******************\r\n");
         Ctor = CreateInitCallsForSections(M, SanCovModuleCtorTracePcGuardName,
                                           SanCovTracePCGuardInitName, Int32PtrTy,
                                           SanCovGuardsSectionName);
     }
   
     if (Function8bitCounterArray) {
-        printf ("******************* Function8bitCounterArray *******************\r\n");
         Ctor = CreateInitCallsForSections(M, SanCovModuleCtor8bitCountersName,
                                           SanCov8bitCountersInitName, Int8PtrTy,
                                           SanCovCountersSectionName);
     }
   
     if (FunctionBoolArray) {
-        printf ("******************* FunctionBoolArray *******************\r\n");
         Ctor = CreateInitCallsForSections(M, SanCovModuleCtorBoolFlagName,
                                           SanCovBoolFlagInitName, Int1PtrTy,
                                           SanCovBoolFlagSectionName);
@@ -690,14 +689,11 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
 
     }
 
-    if (debug) {
-        fprintf(stderr,
-                "@@@ <Wen> Instrument %s -> "
-                "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu\r\n",
-                F.getName().data(), 
-                BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
-                SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size());
-    }
+    DB_PRINT("Instrument %s -> "
+             "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu\r\n",
+             F.getName().data(), 
+             BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
+             SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size());
     
     InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
     InjectCoverageForIndirectCalls(F, IndirCalls);
@@ -769,22 +765,28 @@ GlobalVariable *ModuleSanitizerCoverage::CreatePCArray(Function &F, ArrayRef<Bas
 
 void ModuleSanitizerCoverage::CreateFunctionLocalArrays(Function &F, ArrayRef<BasicBlock *> AllBlocks, uint32_t special) {
 
-    if (Options.TracePCGuard)
+    if (Options.TracePCGuard) {
+        DB_PRINT("CreateFunctionLocalArrays: TracePCGuard \r\n");
         FunctionGuardArray = CreateFunctionLocalArrayInSection(AllBlocks.size() + special, F, Int32Ty, SanCovGuardsSectionName);
+    }
 
-    if (Options.Inline8bitCounters)
+    if (Options.Inline8bitCounters) {
+        DB_PRINT("CreateFunctionLocalArrays: Inline8bitCounters \r\n");
         Function8bitCounterArray = CreateFunctionLocalArrayInSection(AllBlocks.size(), F, Int8Ty, SanCovCountersSectionName);
+    }
   
     /*
         if (Options.InlineBoolFlag)
         FunctionBoolArray = CreateFunctionLocalArrayInSection(
             AllBlocks.size(), F, Int1Ty, SanCovBoolFlagSectionName);
     */
-    if (Options.PCTable) FunctionPCsArray = CreatePCArray(F, AllBlocks);
-
+    if (Options.PCTable) {
+        DB_PRINT("CreateFunctionLocalArrays: PCTable \r\n");
+        FunctionPCsArray = CreatePCArray(F, AllBlocks);
+    }
 }
 
-bool ModuleSanitizerCoverage::InjectCoverage(Function &             F,
+bool ModuleSanitizerCoverage::InjectCoverage(Function &       F,
                                                     ArrayRef<BasicBlock *> AllBlocks,
                                                     bool IsLeafFunc) {
 
@@ -800,14 +802,15 @@ bool ModuleSanitizerCoverage::InjectCoverage(Function &             F,
 
                 Function *Callee = callInst->getCalledFunction();
                 if (!Callee) continue;
+                
                 if (callInst->getCallingConv() != llvm::CallingConv::C) continue;
+                
                 StringRef FuncName = Callee->getName();
                 if (FuncName.compare(StringRef("__afl_coverage_interesting"))) continue;
 
                 uint32_t id = 1 + instr + (uint32_t)AllBlocks.size() + special++;
                 Value *  val = ConstantInt::get(Int32Ty, id);
                 callInst->setOperand(1, val);
-
             }
 
         }

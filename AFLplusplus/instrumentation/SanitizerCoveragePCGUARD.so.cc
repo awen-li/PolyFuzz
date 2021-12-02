@@ -50,6 +50,7 @@
 
 
 #define DB_PRINT(format, ...) if (debug) printf("@@@ Wen -> " format, ##__VA_ARGS__)
+#define DB_SHOWINST(Idx, Inst) if (debug) errs ()<<Idx<<": "<<Inst<<"\r\n";
 
 
 using namespace llvm;
@@ -368,6 +369,7 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
 
     skip_nozero = getenv("AFL_LLVM_SKIP_NEVERZERO");
     use_threadsafe_counters = getenv("AFL_LLVM_THREADSAFE_INST");
+    DB_PRINT("skip_nozero = %p, use_threadsafe_counters = %p \r\n", skip_nozero, use_threadsafe_counters);
 
     initInstrumentList();
     scanForDangerousFunctions(&M);
@@ -710,7 +712,7 @@ GlobalVariable *ModuleSanitizerCoverage::CreateFunctionLocalArrayInSection(size_
     ArrayType *ArrayTy = ArrayType::get(Ty, NumElements);
     auto       Array = new GlobalVariable(*CurModule, ArrayTy, false, GlobalVariable::PrivateLinkage,
                                           Constant::getNullValue(ArrayTy), "__sancov_gen_");
-
+    
 #if LLVM_VERSION_MAJOR > 12
     if (TargetTriple.supportsCOMDAT() && (TargetTriple.isOSBinFormatELF() || !F.isInterposable()))
         if (auto Comdat = getOrCreateFunctionComdat(F, TargetTriple))
@@ -768,6 +770,7 @@ void ModuleSanitizerCoverage::CreateFunctionLocalArrays(Function &F, ArrayRef<Ba
     if (Options.TracePCGuard) {
         DB_PRINT("CreateFunctionLocalArrays: TracePCGuard \r\n");
         FunctionGuardArray = CreateFunctionLocalArrayInSection(AllBlocks.size() + special, F, Int32Ty, SanCovGuardsSectionName);
+        DB_SHOWINST(__LINE__, *FunctionGuardArray);
     }
 
     if (Options.Inline8bitCounters) {
@@ -978,40 +981,41 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, BasicBlock &BB,
                                                               size_t Idx, bool   IsLeafFunc) {
 
     BasicBlock::iterator IP = BB.getFirstInsertionPt();
-     bool                 IsEntryBB = &BB == &F.getEntryBlock();
+    bool         IsEntryBB  = (&BB == &F.getEntryBlock());
 
     if (IsEntryBB) {
-
         // Keep allocas and llvm.localescape calls in the entry block.  Even
         // if we aren't splitting the block, it's nice for allocas to be before
         // calls.
         IP = PrepareToSplitEntryBlock(BB, IP);
-
     }
 
     IRBuilder<> IRB(&*IP);
 
     if (Options.TracePC) {
-
         IRB.CreateCall(SanCovTracePC);
         //        ->setCannotMerge();  // gets the PC using GET_CALLER_PC.
-
     }
 
     if (Options.TracePCGuard) {
 
         /* Get CurLoc */
-        Value *GuardPtr = IRB.CreateIntToPtr(IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
-                                                            ConstantInt::get(IntptrTy, Idx * 4)),
-                                              Int32PtrTy);
+        Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
+                                        ConstantInt::get(IntptrTy, Idx * 4));
+        DB_SHOWINST (100, *AddPtr);
+        Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
+        DB_SHOWINST (100, *GuardPtr);
 
         LoadInst *CurLoc = IRB.CreateLoad(GuardPtr);
+        DB_SHOWINST (Idx, *CurLoc);
 
         /* Load SHM pointer */
         LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);
+        DB_SHOWINST (Idx, *MapPtr);
 
         /* Load counter for CurLoc */
         Value *MapPtrIdx = IRB.CreateGEP(MapPtr, CurLoc);
+        DB_SHOWINST (Idx, *MapPtrIdx);
 
         if (use_threadsafe_counters) {
 
@@ -1022,21 +1026,28 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, BasicBlock &BB,
                                 llvm::AtomicOrdering::Monotonic);
 
         } else {
-
             LoadInst *Counter = IRB.CreateLoad(MapPtrIdx);
+            DB_SHOWINST (Idx, *Counter);
+            
             /* Update bitmap */
             Value *Incr = IRB.CreateAdd(Counter, One);
-
+            DB_SHOWINST (Idx, *Incr);
+            
             if (skip_nozero == NULL) {
 
                 auto cf = IRB.CreateICmpEQ(Incr, Zero);
+                DB_SHOWINST (Idx, *cf);
+                
                 auto carry = IRB.CreateZExt(cf, Int8Ty);
+                DB_SHOWINST (Idx, *carry);
+                
                 Incr = IRB.CreateAdd(Incr, carry);
-
+                DB_SHOWINST (Idx, *Incr);
             }
 
-            IRB.CreateStore(Incr, MapPtrIdx);
-
+            StoreInst *StInst = IRB.CreateStore(Incr, MapPtrIdx);
+            assert (StInst != NULL);
+            DB_SHOWINST (Idx, *StInst);
         }
 
         // done :)

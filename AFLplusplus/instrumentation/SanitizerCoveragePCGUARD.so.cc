@@ -116,6 +116,10 @@ SanitizerCoverageOptions OverrideFromCL(SanitizerCoverageOptions Options) {
         Options.TracePCGuard = true;  // TracePCGuard is default.
     }
 
+    if (getenv("AFL_TRACECMP")) {
+        Options.TraceCmp = true;
+    }
+
     return Options;
 
 }
@@ -315,10 +319,11 @@ std::pair<Value *, Value *> ModuleSanitizerCoverage::CreateSecStartEnd(Module &M
 Function *ModuleSanitizerCoverage::CreateInitCallsForSections(Module &M, const char *CtorName, const char *InitFunctionName, 
                                                                            Type *Ty, const char *Section) {
 
-    auto      SecStartEnd = CreateSecStartEnd(M, Section, Ty);
-    auto      SecStart = SecStartEnd.first;
-    auto      SecEnd = SecStartEnd.second;
+    auto SecStartEnd = CreateSecStartEnd(M, Section, Ty);
+    auto SecStart    = SecStartEnd.first;
+    auto SecEnd      = SecStartEnd.second;
     Function *CtorFunc;
+    
     std::tie(CtorFunc, std::ignore) = createSanitizerCtorAndInitFunctions(M, CtorName, InitFunctionName, {Ty, Ty}, {SecStart, SecEnd});
     assert(CtorFunc->getName() == CtorName);
 
@@ -365,19 +370,26 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
 
     if (debug) {
         fprintf(stderr,
-                "SANCOV: covtype:%u indirect:%d stack:%d noprune:%d "
+                "SANCOV: covtype:%u indirect:%d stack:%d noprune:%d "\
+                "traceCmp:%d traceDiv:%d traceGep:%d "\
                 "createtable:%d tracepcguard:%d tracepc:%d\n",
-                Options.CoverageType, Options.IndirectCalls == true ? 1 : 0,
-                Options.StackDepth == true ? 1 : 0, Options.NoPrune == true ? 1 : 0,
-                // Options.InlineBoolFlag == true ? 1 : 0,
+                Options.CoverageType, 
+                Options.IndirectCalls == true ? 1 : 0,
+                Options.StackDepth == true ? 1 : 0, 
+                Options.NoPrune == true ? 1 : 0,
+                Options.TraceCmp == true ? 1 : 0,
+                Options.TraceDiv == true ? 1 : 0,
+                Options.TraceGep == true ? 1 : 0,
                 Options.PCTable == true ? 1 : 0,
                 Options.TracePCGuard == true ? 1 : 0,
                 Options.TracePC == true ? 1 : 0);
     }
 
     if (Options.CoverageType == SanitizerCoverageOptions::SCK_None) return false;
+    
     C = &(M.getContext());
     DL = &M.getDataLayout();
+    
     CurModule = &M;
     CurModuleUniqueId = getUniqueModuleId(CurModule);
     TargetTriple = Triple(M.getTargetTriple());
@@ -387,6 +399,7 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     FunctionPCsArray = nullptr;
     IntptrTy = Type::getIntNTy(*C, DL->getPointerSizeInBits());
     IntptrPtrTy = PointerType::getUnqual(IntptrTy);
+    
     Type *      VoidTy = Type::getVoidTy(*C);
     IRBuilder<> IRB(*C);
     Int64PtrTy = PointerType::getUnqual(IRB.getInt64Ty());
@@ -553,14 +566,13 @@ bool shouldInstrumentBlock(const Function &F, const BasicBlock *BB,
 
     if (Options.NoPrune || &F.getEntryBlock() == BB) return true;
 
-    if (Options.CoverageType == SanitizerCoverageOptions::SCK_Function &&
-        &F.getEntryBlock() != BB)
+    if (Options.CoverageType == SanitizerCoverageOptions::SCK_Function && &F.getEntryBlock() != BB)
         return false;
 
     // Do not instrument full dominators, or full post-dominators with multiple
-    // predecessors.
+    // predecessors. 
     return !isFullDominator(BB, DT) &&
-            !(isFullPostDominator(BB, PDT) && !BB->getSinglePredecessor());
+           !(isFullPostDominator(BB, PDT) && !BB->getSinglePredecessor());
 
 }
 
@@ -615,6 +627,7 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
         return;
     
     if (isa<UnreachableInst>(F.getEntryBlock().getTerminator())) return;
+    
     // Don't instrument functions using SEH for now. Splitting basic blocks like
     // we do for coverage breaks WinEHPrepare.
     // FIXME: Remove this when SEH no longer uses landingpad pattern matching.
@@ -631,50 +644,61 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     SmallVector<BinaryOperator *, 8>    DivTraceTargets;
     SmallVector<GetElementPtrInst *, 8> GepTraceTargets;
 
-    const DominatorTree *    DT = DTCallback(F);
+    const DominatorTree *    DT  = DTCallback(F);
     const PostDominatorTree *PDT = PDTCallback(F);
-    bool                     IsLeafFunc = true;
+    bool              IsLeafFunc = true;
 
     for (auto &BB : F) {
 
-        if (shouldInstrumentBlock(F, &BB, DT, PDT, Options))
+        if (shouldInstrumentBlock(F, &BB, DT, PDT, Options)) {
             BlocksToInstrument.push_back(&BB);
+        }
             
         for (auto &Inst : BB) {
 
             if (Options.IndirectCalls) {
-
                 CallBase *CB = dyn_cast<CallBase>(&Inst);
-                if (CB && !CB->getCalledFunction()) IndirCalls.push_back(&Inst);
-
+                if (CB && !CB->getCalledFunction()) {
+                    IndirCalls.push_back(&Inst);
+                }
             }
 
             if (Options.TraceCmp) {
-
                 if (ICmpInst *CMP = dyn_cast<ICmpInst>(&Inst))
                     if (IsInterestingCmp(CMP, DT, Options))
                         CmpTraceTargets.push_back(&Inst);
                 if (isa<SwitchInst>(&Inst)) SwitchTraceTargets.push_back(&Inst);
-
             }
 
-            if (Options.TraceDiv)
+            if (Options.TraceDiv) {
                 if (BinaryOperator *BO = dyn_cast<BinaryOperator>(&Inst))
                     if (BO->getOpcode() == Instruction::SDiv ||
                         BO->getOpcode() == Instruction::UDiv)
                         DivTraceTargets.push_back(BO);
-            if (Options.TraceGep)
+            }
+                        
+            if (Options.TraceGep) {
                 if (GetElementPtrInst *GEP = dyn_cast<GetElementPtrInst>(&Inst))
                     GepTraceTargets.push_back(GEP);
-            if (Options.StackDepth)
+            }
+            
+            if (Options.StackDepth) {
                 if (isa<InvokeInst>(Inst) || (isa<CallInst>(Inst) && !isa<IntrinsicInst>(Inst)))
                     IsLeafFunc = false;
-
+            }
         }
 
     }
 
-    errs()<<"@@@ <Wen> Instrument function -> "<<F.getName()<<"\r\n";
+    if (debug) {
+        fprintf(stderr,
+                "@@@ <Wen> Instrument %s -> "
+                "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu\r\n",
+                F.getName().data(), 
+                BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
+                SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size());
+    }
+    
     InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
     InjectCoverageForIndirectCalls(F, IndirCalls);
     InjectTraceForCmp(F, CmpTraceTargets);

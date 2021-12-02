@@ -177,6 +177,14 @@ private:
 
     }
 
+    inline void InjectPrintf(IRBuilder<> &IRB, const char* FormatStr, Value* Target, size_t Tag)
+    {
+        Value *Format = IRB.CreateGlobalStringPtr(FormatStr);
+        CallInst *CallPrintf = IRB.CreateCall(DbPrintf, {Format, Target});
+        DB_SHOWINST (Tag, *CallPrintf);
+        return;
+    }
+
     std::string     getSectionName(const std::string &Section) const;
     std::string     getSectionStart(const std::string &Section) const;
     std::string     getSectionEnd(const std::string &Section) const;
@@ -187,6 +195,8 @@ private:
     FunctionCallee  SanCovTraceDivFunction[2];
     FunctionCallee  SanCovTraceGepFunction;
     FunctionCallee  SanCovTraceSwitchFunction;
+    FunctionCallee  DbPrintf;
+    
     GlobalVariable *SanCovLowestStack;
     Type *IntptrTy, *IntptrPtrTy, *Int64Ty, *Int64PtrTy, *Int32Ty, *Int32PtrTy,
          *Int16Ty, *Int8Ty, *Int8PtrTy, *Int1Ty, *Int1PtrTy;
@@ -331,6 +341,7 @@ Function *ModuleSanitizerCoverage::CreateInitCallsForSections(Module &M, const c
     
     std::tie(CtorFunc, std::ignore) = createSanitizerCtorAndInitFunctions(M, CtorName, InitFunctionName, {Ty, Ty}, {SecStart, SecEnd});
     assert(CtorFunc->getName() == CtorName);
+    DB_SHOWINST(__LINE__, *CtorFunc);
 
     if (TargetTriple.supportsCOMDAT()) {
         // Use comdat to dedup CtorFunc.
@@ -451,6 +462,11 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     SanCovTraceDivFunction[1] = M.getOrInsertFunction(SanCovTraceDiv8, VoidTy, Int64Ty);
     SanCovTraceGepFunction    = M.getOrInsertFunction(SanCovTraceGep, VoidTy, IntptrTy);
     SanCovTraceSwitchFunction = M.getOrInsertFunction(SanCovTraceSwitchName, VoidTy, Int64Ty, Int64PtrTy);
+
+
+    Type *ArgTypes[] = {Type::getInt32Ty (*C), Type::getInt8PtrTy(*C), };
+    FunctionType *PrintType = FunctionType::get(Type::getVoidTy(*C), ArgTypes, true);          
+    DbPrintf =  CurModule->getOrInsertFunction("printf", PrintType);
 
     Constant *SanCovLowestStackConstant = M.getOrInsertGlobal(SanCovLowestStackName, IntptrTy);
     SanCovLowestStack = dyn_cast<GlobalVariable>(SanCovLowestStackConstant);
@@ -1002,12 +1018,14 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, BasicBlock &BB,
         /* Get CurLoc */
         Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
                                         ConstantInt::get(IntptrTy, Idx * 4));
-        DB_SHOWINST (100, *AddPtr);
+        DB_SHOWINST (__LINE__, *AddPtr);
         Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
-        DB_SHOWINST (100, *GuardPtr);
+        DB_SHOWINST (__LINE__, *GuardPtr);
 
         LoadInst *CurLoc = IRB.CreateLoad(GuardPtr);
         DB_SHOWINST (Idx, *CurLoc);
+
+        InjectPrintf(IRB, "DbPrintf -> %u\r\n", CurLoc, Idx);
 
         /* Load SHM pointer */
         LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);

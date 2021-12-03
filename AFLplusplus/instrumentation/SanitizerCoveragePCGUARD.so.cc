@@ -185,6 +185,77 @@ private:
         return;
     }
 
+    inline void InjectCovByInstruction (IRBuilder<> &IRB, size_t Idx)
+    {
+        /* Get CurLoc */
+        Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
+                                        ConstantInt::get(IntptrTy, Idx * 4));
+        DB_SHOWINST (__LINE__, *AddPtr);
+        Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
+        DB_SHOWINST (__LINE__, *GuardPtr);
+
+        LoadInst *CurLoc = IRB.CreateLoad(GuardPtr);
+        DB_SHOWINST (Idx, *CurLoc);
+
+        InjectPrintf(IRB, "DbPrintf ->load from Array: %u\r\n", CurLoc, Idx);
+
+        /* Load SHM pointer */
+        LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);
+        DB_SHOWINST (Idx, *MapPtr);
+
+        /* Load counter for CurLoc */
+        Value *MapPtrIdx = IRB.CreateGEP(MapPtr, CurLoc);
+        DB_SHOWINST (Idx, *MapPtrIdx);
+
+        if (use_threadsafe_counters) {
+
+            IRB.CreateAtomicRMW(llvm::AtomicRMWInst::BinOp::Add, MapPtrIdx, One,
+#if LLVM_VERSION_MAJOR >= 13
+                                llvm::MaybeAlign(1),
+#endif
+                                llvm::AtomicOrdering::Monotonic);
+
+        } else {
+            LoadInst *Counter = IRB.CreateLoad(MapPtrIdx);
+            InjectPrintf(IRB, "DbPrintf ->load from shm: %u\r\n", Counter, Idx);
+            
+            /* Update bitmap */
+            Value *Incr = IRB.CreateAdd(Counter, One);
+            DB_SHOWINST (Idx, *Incr);
+            
+            if (skip_nozero == NULL) {
+
+                auto cf = IRB.CreateICmpEQ(Incr, Zero);
+                DB_SHOWINST (Idx, *cf);
+                
+                auto carry = IRB.CreateZExt(cf, Int8Ty);
+                DB_SHOWINST (Idx, *carry);
+                
+                Incr = IRB.CreateAdd(Incr, carry);
+                DB_SHOWINST (Idx, *Incr);
+            }
+
+            StoreInst *StInst = IRB.CreateStore(Incr, MapPtrIdx);
+            assert (StInst != NULL);
+            DB_SHOWINST (Idx, *StInst);
+        }
+
+        return;
+    }
+
+    inline void InjectCovByCallee (IRBuilder<> &IRB, size_t Idx)
+    {
+        Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
+                                        ConstantInt::get(IntptrTy, Idx * 4));
+        DB_SHOWINST (__LINE__, *AddPtr);
+        Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
+        DB_SHOWINST (__LINE__, *GuardPtr);
+
+        IRB.CreateCall(SanCovTracePCGuard, GuardPtr)->setCannotMerge();
+        return;
+    }
+
+    bool IsInjectByInst;
     std::string     getSectionName(const std::string &Section) const;
     std::string     getSectionStart(const std::string &Section) const;
     std::string     getSectionEnd(const std::string &Section) const;
@@ -319,13 +390,13 @@ std::pair<Value *, Value *> ModuleSanitizerCoverage::CreateSecStartEnd(Module &M
                                                 GlobalVariable::ExternalWeakLinkage, nullptr, getSectionEnd(Section));
     SecEnd->setVisibility(GlobalValue::HiddenVisibility);
 
-    IRBuilder<> IRB(M.getContext());
     if (!TargetTriple.isOSBinFormatCOFF())
         return std::make_pair(SecStart, SecEnd);
 
     // Account for the fact that on windows-msvc __start_* symbols actually
     // point to a uint64_t before the start of the array.
-    auto SecStartI8Ptr = IRB.CreatePointerCast(SecStart, Int8PtrTy);
+    IRBuilder<> IRB(M.getContext());
+    auto SecStartI8Ptr = IRB.CreatePointerCast(SecStart, Int8PtrTy);    
     auto GEP = IRB.CreateGEP(Int8Ty, SecStartI8Ptr, ConstantInt::get(IntptrTy, sizeof(uint64_t)));
 
     return std::make_pair(IRB.CreatePointerCast(GEP, Ty), SecEnd);
@@ -427,6 +498,7 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     Int8Ty = IRB.getInt8Ty();
     Int1Ty = IRB.getInt1Ty();
     LLVMContext &Ctx = M.getContext();
+    IsInjectByInst = (bool)(getenv ("AFL_INJECT_BY_INST") != NULL);
 
     AFLMapPtr = new GlobalVariable(M, PointerType::get(Int8Ty, 0), false,
                                    GlobalValue::ExternalLinkage, 0, "__afl_area_ptr");
@@ -510,7 +582,6 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
         FunctionCallee InitFunction = declareSanitizerInitFunction(M, SanCovPCsInitName, {IntptrPtrTy, IntptrPtrTy});
         IRBuilder<> IRBCtor(Ctor->getEntryBlock().getTerminator());
         IRBCtor.CreateCall(InitFunction, {SecStartEnd.first, SecStartEnd.second});
-
     }
 
     // We don't reference these arrays directly in any of our runtime functions,
@@ -1015,65 +1086,14 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, BasicBlock &BB,
 
     if (Options.TracePCGuard) {
 
-        /* Get CurLoc */
-        Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
-                                        ConstantInt::get(IntptrTy, Idx * 4));
-        DB_SHOWINST (__LINE__, *AddPtr);
-        Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
-        DB_SHOWINST (__LINE__, *GuardPtr);
-
-        LoadInst *CurLoc = IRB.CreateLoad(GuardPtr);
-        DB_SHOWINST (Idx, *CurLoc);
-
-        InjectPrintf(IRB, "DbPrintf -> %u\r\n", CurLoc, Idx);
-
-        /* Load SHM pointer */
-        LoadInst *MapPtr = IRB.CreateLoad(AFLMapPtr);
-        DB_SHOWINST (Idx, *MapPtr);
-
-        /* Load counter for CurLoc */
-        Value *MapPtrIdx = IRB.CreateGEP(MapPtr, CurLoc);
-        DB_SHOWINST (Idx, *MapPtrIdx);
-
-        if (use_threadsafe_counters) {
-
-            IRB.CreateAtomicRMW(llvm::AtomicRMWInst::BinOp::Add, MapPtrIdx, One,
-#if LLVM_VERSION_MAJOR >= 13
-                                llvm::MaybeAlign(1),
-#endif
-                                llvm::AtomicOrdering::Monotonic);
-
-        } else {
-            LoadInst *Counter = IRB.CreateLoad(MapPtrIdx);
-            DB_SHOWINST (Idx, *Counter);
-            
-            /* Update bitmap */
-            Value *Incr = IRB.CreateAdd(Counter, One);
-            DB_SHOWINST (Idx, *Incr);
-            
-            if (skip_nozero == NULL) {
-
-                auto cf = IRB.CreateICmpEQ(Incr, Zero);
-                DB_SHOWINST (Idx, *cf);
-                
-                auto carry = IRB.CreateZExt(cf, Int8Ty);
-                DB_SHOWINST (Idx, *carry);
-                
-                Incr = IRB.CreateAdd(Incr, carry);
-                DB_SHOWINST (Idx, *Incr);
-            }
-
-            StoreInst *StInst = IRB.CreateStore(Incr, MapPtrIdx);
-            assert (StInst != NULL);
-            DB_SHOWINST (Idx, *StInst);
+        if (IsInjectByInst) {
+            InjectCovByInstruction(IRB, Idx);
+        }
+        else {
+            InjectCovByCallee(IRB, Idx);
         }
 
-        // done :)
-
-        //    IRB.CreateCall(SanCovTracePCGuard, Offset)->setCannotMerge();
-        //    IRB.CreateCall(SanCovTracePCGuard, GuardPtr)->setCannotMerge();
         ++instr;
-
     }
 
     if (Options.Inline8bitCounters) {

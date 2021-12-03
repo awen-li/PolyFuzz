@@ -1329,47 +1329,13 @@ __attribute__((constructor(0))) void __afl_auto_first(void) {
 
 void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
-  // For stability analysis, if you want to know to which function unstable
-  // edge IDs belong - uncomment, recompile+install llvm_mode, recompile
-  // the target. libunwind and libbacktrace are better solutions.
-  // Set AFL_DEBUG_CHILD=1 and run afl-fuzz with 2>file to capture
-  // the backtrace output
-  /*
-  uint32_t unstable[] = { ... unstable edge IDs };
-  uint32_t idx;
-  char bt[1024];
-  for (idx = 0; i < sizeof(unstable)/sizeof(uint32_t); i++) {
-
-    if (unstable[idx] == __afl_area_ptr[*guard]) {
-
-      int bt_size = backtrace(bt, 256);
-      if (bt_size > 0) {
-
-        char **bt_syms = backtrace_symbols(bt, bt_size);
-        if (bt_syms) {
-
-          fprintf(stderr, "DEBUG: edge=%u caller=%s\n", unstable[idx],
-  bt_syms[0]);
-          free(bt_syms);
-
-        }
-
-      }
-
-    }
-
-  }
-
-  */
-
+    printf ("__sanitizer_cov_trace_pc_guard -> guard = %u \r\n", *guard);
 #if (LLVM_VERSION_MAJOR < 9)
-
-  __afl_area_ptr[*guard]++;
+    __afl_area_ptr[*guard]++;
 
 #else
-
-  __afl_area_ptr[*guard] =
-      __afl_area_ptr[*guard] + 1 + (__afl_area_ptr[*guard] == 255 ? 1 : 0);
+    u8 cov_val = __afl_area_ptr[*guard];
+    __afl_area_ptr[*guard] = cov_val + 1 + (cov_val == 255 ? 1 : 0);
 
 #endif
 
@@ -1378,7 +1344,6 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 /* Init callback. Populates instrumentation IDs. Note that we're using
    ID of 0 as a special value to indicate non-instrumented bits. That may
    still touch the bitmap, but in a fairly harmless way. */
-
 void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
   u32   inst_ratio = 100;

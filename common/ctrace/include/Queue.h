@@ -18,12 +18,9 @@ extern "C"{
 #define  QUEUE_SIZE (16 * 1024)
 #define  BUF_SIZE   (64)
 
-typedef size_t TraceKey;
-
-
 typedef struct tag_QNode
 {
-    TraceKey Tk;
+    DWORD TrcKey;
     DWORD ThreadId;
     DWORD Flag;
     char QBuf [BUF_SIZE];

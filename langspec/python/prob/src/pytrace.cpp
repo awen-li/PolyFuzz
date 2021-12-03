@@ -220,7 +220,7 @@ static inline void ShowVariables (PyObject *co_varnames)
     }
 }
 
-static inline void StartTracing (const char* VarName, PyObject *VarAddr, ObjValue *VarValue, TraceKey Tk)
+static inline void StartTracing (const char* VarName, PyObject *VarAddr, ObjValue *VarValue, unsigned TrcKey)
 {
     EVENT_HANDLE Eh = AllocEvent();
     assert (Eh != NULL);
@@ -229,7 +229,7 @@ static inline void StartTracing (const char* VarName, PyObject *VarAddr, ObjValu
     Esize = EncodeEvent(Eh, Esize, ET_VALNAME, strlen(VarName), (BYTE*)VarName);
     Esize = EncodeEvent(Eh, Esize, ET_VALADDR, sizeof (char*), (BYTE*)VarAddr);
     Esize = EncodeEvent(Eh, Esize, ET_VALUE, sizeof (ObjValue), (BYTE*)VarValue);
-    DynTrace(Eh, Esize, Tk);
+    DynTrace(Eh, Esize, TrcKey);
 
     return;
 }

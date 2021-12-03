@@ -1346,106 +1346,94 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
    still touch the bitmap, but in a fairly harmless way. */
 void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
-  u32   inst_ratio = 100;
-  char *x;
+    u32   inst_ratio = 100;
+    char *x;
 
-  _is_sancov = 1;
-
-  if (__afl_debug) {
-
-    fprintf(stderr,
-            "Running __sanitizer_cov_trace_pc_guard_init: %p-%p (%lu edges) "
-            "after_fs=%u\n",
-            start, stop, (unsigned long)(stop - start),
-            __afl_already_initialized_forkserver);
-
-  }
-
-  if (start == stop || *start) return;
-
-  x = getenv("AFL_INST_RATIO");
-  if (x) inst_ratio = (u32)atoi(x);
-
-  if (!inst_ratio || inst_ratio > 100) {
-
-    fprintf(stderr, "[-] ERROR: Invalid AFL_INST_RATIO (must be 1-100).\n");
-    abort();
-
-  }
-
-  /* instrumented code is loaded *after* our forkserver is up. this is a
-     problem. We cannot prevent collisions then :( */
-  if (__afl_already_initialized_forkserver &&
-      __afl_final_loc + 1 + stop - start > __afl_map_size) {
+    _is_sancov = 1;
 
     if (__afl_debug) {
+        fprintf(stderr,
+                "Running __sanitizer_cov_trace_pc_guard_init: %p-%p (%lu edges) "
+                "after_fs=%u\n",
+                start, stop, (unsigned long)(stop - start),
+                __afl_already_initialized_forkserver);
+    }
 
-      fprintf(stderr, "Warning: new instrumented code after the forkserver!\n");
+    if (start == stop || *start) return;
+
+    x = getenv("AFL_INST_RATIO");
+    if (x) inst_ratio = (u32)atoi(x);
+
+    if (!inst_ratio || inst_ratio > 100) {
+        fprintf(stderr, "[-] ERROR: Invalid AFL_INST_RATIO (must be 1-100).\n");
+        abort();
+    }
+
+    /* instrumented code is loaded *after* our forkserver is up. this is a
+        problem. We cannot prevent collisions then :( */
+    if (__afl_already_initialized_forkserver &&
+        __afl_final_loc + 1 + stop - start > __afl_map_size) {
+
+        if (__afl_debug) {
+            fprintf(stderr, "Warning: new instrumented code after the forkserver!\n");
+        }
+
+        __afl_final_loc = 2;
+
+        if (1 + stop - start > __afl_map_size) {
+        
+            *(start++) = ++__afl_final_loc;
+            while (start < stop) {
+
+                if (R(100) < inst_ratio)
+                    *start = ++__afl_final_loc % __afl_map_size;
+                else
+                    *start = 0;
+
+                start++;
+            }
+
+            return;
+
+        }
 
     }
 
-    __afl_final_loc = 2;
+    /* Make sure that the first element in the range is always set - we use that
+        to avoid duplicate calls (which can happen as an artifact of the underlying
+        implementation in LLVM). */
 
-    if (1 + stop - start > __afl_map_size) {
-
-      *(start++) = ++__afl_final_loc;
-
-      while (start < stop) {
+    *(start++) = ++__afl_final_loc;
+    while (start < stop) {
 
         if (R(100) < inst_ratio)
-          *start = ++__afl_final_loc % __afl_map_size;
+          *start = ++__afl_final_loc;
         else
           *start = 0;
 
         start++;
 
-      }
-
-      return;
-
     }
-
-  }
-
-  /* Make sure that the first element in the range is always set - we use that
-     to avoid duplicate calls (which can happen as an artifact of the underlying
-     implementation in LLVM). */
-
-  *(start++) = ++__afl_final_loc;
-
-  while (start < stop) {
-
-    if (R(100) < inst_ratio)
-      *start = ++__afl_final_loc;
-    else
-      *start = 0;
-
-    start++;
-
-  }
-
-  if (__afl_debug) {
-
-    fprintf(stderr,
-            "Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n",
-            __afl_final_loc);
-
-  }
-
-  if (__afl_already_initialized_shm && __afl_final_loc > __afl_map_size) {
 
     if (__afl_debug) {
 
-      fprintf(stderr, "Reinit shm necessary (+%u)\n",
-              __afl_final_loc - __afl_map_size);
-
+        fprintf(stderr,
+                "Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n",
+                __afl_final_loc);
     }
 
-    __afl_unmap_shm();
-    __afl_map_shm();
+    if (__afl_already_initialized_shm && __afl_final_loc > __afl_map_size) {
 
-  }
+        if (__afl_debug) {
+          fprintf(stderr, "Reinit shm necessary (+%u)\n",
+                  __afl_final_loc - __afl_map_size);
+        }
 
+        __afl_unmap_shm();
+        __afl_map_shm();
+    }
+
+    return;
 }
 
 ///// CmpLog instrumentation

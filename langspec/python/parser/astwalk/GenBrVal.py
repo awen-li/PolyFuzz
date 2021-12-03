@@ -37,6 +37,7 @@ def GenBrVal (PyDir, ExpList=None):
 
     SrcApiList = {}
     FuncDefList = {}
+    BranchNum = 0
     
     PyDirs = os.walk(PyDir) 
     for Path, Dirs, Pys in PyDirs:
@@ -57,6 +58,8 @@ def GenBrVal (PyDir, ExpList=None):
                 Ast = parse(PyF.read(), PyFile, 'exec')
                 Visitor= ASTWalk()
                 Visitor.visit(Ast)
+
+                BranchNum += Visitor.BranchNum*2
  
                 # function definition retrieve
                 FuncDef = Visitor.FuncDef
@@ -73,6 +76,7 @@ def GenBrVal (PyDir, ExpList=None):
                     FuncNode.setAttribute ("name",  FuncName)
                     FuncNode.setAttribute ("brval", " ".join(BrVals))
 
+    Root.setAttribute ("branchs", str(BranchNum+4))
     # write to xml
     f = open(PyDir+"branch_variables.xml", "w")
     f.write(doc.toprettyxml(indent="  "))

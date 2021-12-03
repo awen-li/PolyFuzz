@@ -24,6 +24,7 @@ class ASTWalk(NodeVisitor):
         self.FId = 1
         self.IfTest  = False
         self.CurFunc = None
+        self.BranchNum = 0
     
     def visit(self, node):
         """Visit a node."""
@@ -96,6 +97,7 @@ class ASTWalk(NodeVisitor):
         #print (ast.dump (node))
         Test = node.test
         self.IfTest = True
+        self.BranchNum += 1
         self.visit(Test)
         self.IfTest = False
         

@@ -20,6 +20,9 @@ class FuncDef ():
         self.BrVal.append (Val)
 
     def AddBB (self, BBno):
+        if len (self.BBNo) > 0 and int (self.BBNo[-1]) == BBno:
+            return
+        
         self.BBNo.append (str(BBno))
         
     def View (self):
@@ -36,6 +39,7 @@ class ASTWalk(NodeVisitor):
     def InsertBB (self, BB):
         if self.CurFunc == None:
             return
+
         self.CurFunc.AddBB(BB)
   
     def visit(self, node):

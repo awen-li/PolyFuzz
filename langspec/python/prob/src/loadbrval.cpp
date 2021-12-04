@@ -40,10 +40,8 @@ void BV_set::LoadBrVals(string BrValXml)
         exit (0);
     }
     const char *Branchs = mxmlElementGetAttr(bvNode, "branchs");
-    if (Branchs != NULL)
-    {
-        m_Branchs = (unsigned) atoi (Branchs);
-    }
+    assert (Branchs != NULL);
+    m_Branchs = (unsigned) atoi (Branchs);
 
     int FileNo = 0;
     int FuncNo = 0;
@@ -67,15 +65,28 @@ void BV_set::LoadBrVals(string BrValXml)
             const char *ValList  = mxmlElementGetAttr(Function, "brval");
             assert (ValList != NULL);
 
+            const char *BBList   = mxmlElementGetAttr(Function, "bbs");
+            assert (BBList != NULL);
+
             BV_function *BVfunc = BVfile->Insert(FuncName, FuncNo+1);
             assert (BVfunc != NULL);
-            
+
+            /* branch variables */
             const char *Val = strtok ((char *)ValList, " ");
             while(Val != NULL) 
             {
-                BVfunc->Insert(Val);   
+                BVfunc->InsertBv(Val);   
                 Val = strtok(NULL, " ");
             }
+
+            /* bbs */
+            const char *Bb = strtok ((char *)BBList, " ");
+            while(Bb != NULL) 
+            {
+                BVfunc->InsertBb(Bb);   
+                Bb = strtok(NULL, " ");
+            }
+            
             BVfunc->View();
 
             /* next function node */

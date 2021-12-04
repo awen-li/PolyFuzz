@@ -1,6 +1,6 @@
 #include "pytrace.h"
 #include "op_code.h"
-#include "loadbrval.h"
+#include "prob_rt.h"
 #include "DynTrace.h"
 #include <cstddef>
 #include <set>
@@ -10,26 +10,28 @@ namespace pyprob {
 
 using namespace std;
 
-static set<string> RegModule;
-static BV_set BvSet;
-static char* afl_area_ptr = NULL;
+static PRT __Prt;
 
 void PyInit(const vector<string>& Modules, string BrValXml) 
 {
     /* init tracing modules */
-    RegModule.clear ();
+    set<string> *RegModule = &__Prt.RegModule;
     for (auto It = Modules.begin (); It != Modules.end (); It++)
     {
-        RegModule.insert (*It);
+        RegModule->insert (*It);
         PY_PRINT("Add module: %s\r\n", (*It).c_str());
     }
 
     /* load all branch variables for each function */
-    BvSet.LoadBrVals(BrValXml);
+    BV_set *BvSet = &__Prt.BvSet;
+    BvSet->LoadBrVals(BrValXml);
 
     /* Init tracing: shared memory ALF++, etc. */
-    afl_area_ptr = DynTraceInit (BvSet.m_Branchs);
-    assert (afl_area_ptr != NULL);
+    __Prt.afl_area_ptr = DynTraceInit (BvSet->m_Branchs);
+    assert (__Prt.afl_area_ptr != NULL);
+
+    /* Init Rtfs */
+    __Prt.InitRtfs(0);
 
     return;
 }
@@ -38,17 +40,6 @@ void PyInit(const vector<string>& Modules, string BrValXml)
 static inline string BaseName(string const &Path)
 {
     return Path.substr(Path.find_last_of("/") + 1);
-}
-
-static inline bool IsRegModule (string Module)
-{
-    auto It = RegModule.find (Module);
-    if (It == RegModule.end ())
-    {
-        return false;
-    }
-    
-    return true;
 }
 
 
@@ -334,20 +325,23 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     PyCodeObject *f_code  = frame->f_code;
 
     string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));
-    if (!IsRegModule (FileName))
+    if (!__Prt.IsRegModule (FileName))
     {
         return 0;
     }
 
     unsigned Idx;
     const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
-    set <string> *BVs = BvSet.GetBvSet (FileName, FuncName, &Idx);
+    set <string> *BVs = __Prt.BvSet.GetBvSet (FileName, FuncName, &Idx);
     if (BVs == NULL)
     {
         return 0;
     }
-    PY_PRINT ("%s : [%u]%s : %d --- length(BVs)-> %u ", FileName.c_str(), Idx, FuncName, frame->f_lineno, (unsigned)BVs->size ());
 
+    /* init runtime for current function */
+    PRT_function* Rtf = __Prt.GetRtf (Idx);
+    PY_PRINT ("%s : [%u]%s : %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
+              FileName.c_str(), Idx, FuncName, frame->f_lineno, (unsigned)BVs->size (), Rtf);
     
     // enable PyTrace_OPCODE
     frame->f_trace_opcodes = true;     

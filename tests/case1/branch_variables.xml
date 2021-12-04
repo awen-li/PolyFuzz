@@ -2,7 +2,7 @@
 <branch_variables branchs="20">
   <file name="DemoAdd.py">
     <function bbs="8 10 13" brval="addvar" class="DemoAdd" name="_add_"/>
-    <function bbs="15 16 19 20 20 22" brval="b" class="DemoAdd" name="Add"/>
+    <function bbs="15 16 19 20 22" brval="b" class="DemoAdd" name="Add"/>
   </file>
   <file name="Demo.py">
     <function bbs="9 11 15 19" brval="Var Da List" class="" name="DemoTr"/>

@@ -16,7 +16,10 @@ class DemoAdd ():
         if b < 0:
             return self._add_ (b)
         else:
-            return (self.Left + b)
+            vf = 0
+            for i in range (1, b):
+                vf += b 
+            return (self.Left + vf)
 
     def __eq__(self, other):
         if not hasattr(self, 'Left') or not isinstance (other, DemoAdd):

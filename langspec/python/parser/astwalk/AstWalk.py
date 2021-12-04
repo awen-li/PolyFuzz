@@ -93,14 +93,30 @@ class ASTWalk(NodeVisitor):
     def visit_call (self, node):
         pass
 
+    def visit_for (self, node):
+        print (ast.dump (node))
+        self.BranchNum += 1
+
+    def visit_while (self, node):
+        self.BranchNum += 1
+
     def visit_if(self, node):
         #print (ast.dump (node))
+        # check test
         Test = node.test
         self.IfTest = True
         self.BranchNum += 1
         self.visit(Test)
         self.IfTest = False
-        
+
+        # continue to body
+        for s in node.body:
+            self.visit(s)
+
+        # continue to else
+        for s in node.orelse:
+            self.visit(s)
+            
         return
 
     

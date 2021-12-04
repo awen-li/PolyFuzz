@@ -67,7 +67,7 @@ void BV_set::LoadBrVals(string BrValXml)
             const char *ValList  = mxmlElementGetAttr(Function, "brval");
             assert (ValList != NULL);
 
-            BV_function *BVfunc = BVfile->Insert(FuncName);
+            BV_function *BVfunc = BVfile->Insert(FuncName, FuncNo+1);
             assert (BVfunc != NULL);
             
             const char *Val = strtok ((char *)ValList, " ");
@@ -96,13 +96,14 @@ void BV_set::LoadBrVals(string BrValXml)
 }
 
 
-set <string> *BV_set::GetBvSet (string File, string Func)
+set <string> *BV_set::GetBvSet (string File, string Func, unsigned *Idx)
 {
     if (m_BVFileCatch != NULL && m_BVFileCatch->m_FileName == File)
     {
         BV_function *BVFuncCatch = m_BVFileCatch->m_BVFuncCatch;
         if (BVFuncCatch != NULL && BVFuncCatch->m_FuncName == Func)
         {
+            *Idx = BVFuncCatch->m_Idx;
             return &BVFuncCatch->m_BrVals;
         }
         else
@@ -111,6 +112,7 @@ set <string> *BV_set::GetBvSet (string File, string Func)
             m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
             if (BVFuncCatch != NULL)
             {
+                *Idx = BVFuncCatch->m_Idx;
                 return &BVFuncCatch->m_BrVals;
             }
             else
@@ -131,6 +133,7 @@ set <string> *BV_set::GetBvSet (string File, string Func)
         m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
         if (BVFuncCatch != NULL)
         {
+            *Idx = BVFuncCatch->m_Idx;
             return &BVFuncCatch->m_BrVals;
         }
         else

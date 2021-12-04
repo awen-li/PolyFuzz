@@ -14,11 +14,13 @@ using namespace std;
 
 struct BV_function
 {
+    unsigned m_Idx;
     string m_FuncName;
     set <string> m_BrVals;
 
-    BV_function (string FuncName)
+    BV_function (string FuncName, unsigned Idx)
     {
+        m_Idx = Idx;
         m_FuncName = FuncName;
         m_BrVals.clear ();
     }
@@ -31,12 +33,17 @@ struct BV_function
 
     inline void View ()
     {
-        PY_PRINT("%s -> branch variables: ", m_FuncName.c_str());
+        if (m_BrVals.size() == 0)
+        {
+            return;
+        }
+        
+        printf("%s -> branch variables: ", m_FuncName.c_str());
         for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
         {
-            PY_PRINT ("%s ", (*It).c_str());
+            printf ("%s ", (*It).c_str());
         }
-        PY_PRINT ("\r\n");
+        printf ("\r\n");
     }
 };
 
@@ -55,9 +62,9 @@ struct BV_file
         m_BVFuncCatch = NULL;
     }
     
-    inline BV_function* Insert (string FuncName)
+    inline BV_function* Insert (string FuncName, unsigned Idx)
     {
-        auto It = m_Fname2BVfunc.insert (make_pair(FuncName, BV_function (FuncName))).first;
+        auto It = m_Fname2BVfunc.insert (make_pair(FuncName, BV_function (FuncName, Idx))).first;
         assert (It != NULL);
         return &It->second;
     }
@@ -105,7 +112,7 @@ struct BV_set
     }
 
     void LoadBrVals(string BrValXml);
-    set <string> *GetBvSet (string File, string Func);
+    set <string> *GetBvSet (string File, string Func, unsigned *Idx);
 };
 
 

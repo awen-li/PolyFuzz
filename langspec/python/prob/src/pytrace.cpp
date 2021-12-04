@@ -320,6 +320,15 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
     return;
 }
 
+
+static inline void InjectCov(unsigned FIdx) 
+{
+    
+
+    return;
+}
+
+
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 {   
     PyCodeObject *f_code  = frame->f_code;
@@ -329,14 +338,15 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     {
         return 0;
     }
+
+    unsigned Idx;
     const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
-  
-    set <string> *BVs = BvSet.GetBvSet (FileName, FuncName);
+    set <string> *BVs = BvSet.GetBvSet (FileName, FuncName, &Idx);
     if (BVs == NULL)
     {
         return 0;
     }
-    PY_PRINT ("%s : %s : %d --- length(BVs)-> %u ", FileName.c_str(), FuncName, frame->f_lineno, (unsigned)BVs->size ());
+    PY_PRINT ("%s : [%u]%s : %d --- length(BVs)-> %u ", FileName.c_str(), Idx, FuncName, frame->f_lineno, (unsigned)BVs->size ());
 
     
     // enable PyTrace_OPCODE

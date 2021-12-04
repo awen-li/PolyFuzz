@@ -6,14 +6,21 @@ import ast
 from ast import *
 
 class FuncDef ():
-    def __init__(self, Cls, FName, Fid):
+    def __init__(self, Cls, FName, Fid, SNo):
         self.Cls   = Cls
         self.Id    = Fid
         self.Name  = FName
         self.BrVal = []
 
+        self.BBNo  = []
+        if SNo != None:
+            self.BBNo.append (str(SNo))
+
     def AddBrVal (self, Val):
         self.BrVal.append (Val)
+
+    def AddBB (self, BBno):
+        self.BBNo.append (str(BBno))
         
     def View (self):
         print ("FuncDef: Id = ", self.Id, " Name = ", self.Name, " BrVals = ", self.BrVal)
@@ -25,7 +32,12 @@ class ASTWalk(NodeVisitor):
         self.IfTest  = False
         self.CurFunc = None
         self.BranchNum = 0
-    
+
+    def InsertBB (self, BB):
+        if self.CurFunc == None:
+            return
+        self.CurFunc.AddBB(BB)
+  
     def visit(self, node):
         """Visit a node."""
         if node is None:
@@ -49,31 +61,32 @@ class ASTWalk(NodeVisitor):
         Fid = self._GetFuncId ()
 
         if ClfName == None:
-            return FuncDef ("", Stmt.name, Fid)
+            return FuncDef ("", Stmt.name, Fid, Stmt.lineno)
         else:
             #FullName = ClfName + "." + Stmt.name
-            return FuncDef (ClfName, Stmt.name, Fid)
+            return FuncDef (ClfName, Stmt.name, Fid, Stmt.lineno)
 
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None:
-            FDef = self.FuncDef.get (self.CurFunc)
+            FDef = self.FuncDef.get (self.CurFunc.Name)
             FDef.AddBrVal (node.id)
-            print ("====> visit variable name: " + self.CurFunc + " --- " + node.id)
+            print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id)
         return node.id
 
     def visit_functiondef(self, node, ClfName=None):
         if self._IsBuiltin (node.name) == True:
             return
-        
+
+        print ("#visit %s : %d"  %(node.name, node.lineno))
         Def = self._GetFuncDef (node, ClfName)
         self.FuncDef [Def.Name] = Def
 
-        self.CurFunc = Def.Name
+        self.CurFunc = Def
         Body = node.body
         for Stmt in Body:
             self.visit (Stmt)
+        
         self.CurFunc = None
-
         return
 
     def visit_classdef(self, node):
@@ -94,14 +107,20 @@ class ASTWalk(NodeVisitor):
         pass
 
     def visit_for (self, node):
-        print (ast.dump (node))
+        print ("#line-no for: %d" %node.lineno)
+        self.InsertBB (node.lineno)
         self.BranchNum += 1
 
     def visit_while (self, node):
+        print ("#line-no while: %d" %node.lineno)
+        self.InsertBB (node.lineno)
         self.BranchNum += 1
 
     def visit_if(self, node):
         #print (ast.dump (node))
+        print ("#line-no if: %d" %node.lineno)
+        self.InsertBB (node.lineno)
+        
         # check test
         Test = node.test
         self.IfTest = True
@@ -115,6 +134,8 @@ class ASTWalk(NodeVisitor):
 
         # continue to else
         for s in node.orelse:
+            print ("#line-no else: %d" %s.lineno)
+            self.InsertBB (s.lineno)
             self.visit(s)
             
         return

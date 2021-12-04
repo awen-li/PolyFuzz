@@ -55,6 +55,7 @@ def GenBrVal (PyDir, ExpList=None):
                 continue
             
             with open(PyFile) as PyF:
+                print ("#visit " + PyFile)
                 Ast = parse(PyF.read(), PyFile, 'exec')
                 Visitor= ASTWalk()
                 Visitor.visit(Ast)
@@ -75,6 +76,7 @@ def GenBrVal (PyDir, ExpList=None):
                     FuncNode.setAttribute ("class", Def.Cls)
                     FuncNode.setAttribute ("name",  FuncName)
                     FuncNode.setAttribute ("brval", " ".join(BrVals))
+                    FuncNode.setAttribute ("bbs", " ".join(Def.BBNo))
 
     Root.setAttribute ("branchs", str(BranchNum+4))
     # write to xml

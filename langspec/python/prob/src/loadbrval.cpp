@@ -107,15 +107,14 @@ void BV_set::LoadBrVals(string BrValXml)
 }
 
 
-set <string> *BV_set::GetBvSet (string File, string Func, unsigned *Idx)
+BV_function* BV_set::GetBvSet (string File, string Func)
 {
     if (m_BVFileCatch != NULL && m_BVFileCatch->m_FileName == File)
     {
         BV_function *BVFuncCatch = m_BVFileCatch->m_BVFuncCatch;
         if (BVFuncCatch != NULL && BVFuncCatch->m_FuncName == Func)
         {
-            *Idx = BVFuncCatch->m_Idx;
-            return &BVFuncCatch->m_BrVals;
+            return BVFuncCatch;
         }
         else
         {
@@ -123,8 +122,7 @@ set <string> *BV_set::GetBvSet (string File, string Func, unsigned *Idx)
             m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
             if (BVFuncCatch != NULL)
             {
-                *Idx = BVFuncCatch->m_Idx;
-                return &BVFuncCatch->m_BrVals;
+                return BVFuncCatch;
             }
             else
             {
@@ -144,8 +142,7 @@ set <string> *BV_set::GetBvSet (string File, string Func, unsigned *Idx)
         m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
         if (BVFuncCatch != NULL)
         {
-            *Idx = BVFuncCatch->m_Idx;
-            return &BVFuncCatch->m_BrVals;
+            return BVFuncCatch;
         }
         else
         {

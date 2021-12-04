@@ -167,7 +167,7 @@ struct BV_set
     }
 
     void LoadBrVals(string BrValXml);
-    set <string> *GetBvSet (string File, string Func, unsigned *Idx);
+    BV_function* GetBvSet (string File, string Func);
 };
 
 

@@ -35,7 +35,7 @@ struct PRT_function
         assert (m_ScancovGen != NULL);
         PY_PRINT("[%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
 
-        //InitScanCov (BBno);
+        InitScanCov (BBno);
     }
 
     ~PRT_function () 
@@ -67,7 +67,7 @@ struct PRT_function
                 int EndBB = m_BBs->at(CurBB);
                 for (LineNo = m_BBs->at(CurBB-1); LineNo < EndBB; LineNo++)
                 {
-                    m_ScancovGen [LineNo] = BBno;
+                    m_ScancovGen [LineNo-m_SBB] = BBno;
                 }
                 PY_PRINT("InitScanCov: line[%d-%d] -> block[%d] \r\n", 
                          m_BBs->at(CurBB-1), m_BBs->at(CurBB), BBno);
@@ -75,7 +75,7 @@ struct PRT_function
                 BBno++;
             }
 
-            m_ScancovGen [LineNo] = BBno;
+            m_ScancovGen [LineNo-m_SBB] = BBno;
             assert (LineNo == m_EBB);
             PY_PRINT("InitScanCov: line[%d-++] -> block[%d] \r\n", LineNo, BBno);
 
@@ -114,7 +114,7 @@ struct PRT
         }
     }
 
-    inline void InitRtfs (int BBno)
+    inline void InitRtfs (int &BBno)
     {
         if (BBno == 0)
         {

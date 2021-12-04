@@ -94,6 +94,7 @@ static u32 __afl_fuzz_len_dummy;
 u32 *      __afl_fuzz_len = &__afl_fuzz_len_dummy;
 
 u32 __afl_external_loc;
+u32 __afl_interal_loc;
 u32 __afl_final_loc;
 u32 __afl_map_size = MAP_SIZE;
 u32 __afl_dictionary_len;
@@ -1206,6 +1207,11 @@ void __afl_set_ext_loc (u32 ext_loc) {
     return;
 }
 
+int __afl_get_interal_loc (void) {
+    return __afl_interal_loc+1;
+}
+
+
 char* __afl_get_area_ptr (void) {
     return __afl_area_ptr;
 }
@@ -1221,8 +1227,8 @@ void __afl_shm_init (void) {
     
         AFL_DEBUG_SHOW("final_loc = %u, external_loc = %u, map_size = %u\n", 
                        __afl_final_loc, __afl_external_loc, __afl_map_size);
+        __afl_interal_loc = __afl_final_loc;
         __afl_final_loc += __afl_external_loc;
- 
         if (__afl_final_loc > __afl_map_size) {
 
             AFL_DEBUG_SHOW("Reinit shm necessary (+%u)\n", __afl_final_loc - __afl_map_size);

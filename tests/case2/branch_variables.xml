@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<branch_variables branchs="14">
+  <file name="Demo.py">
+    <function bbs="16 20 22 25" brval="Hint" class="" name="Trace"/>
+    <function bbs="27 30" brval="" class="" name="ParseText"/>
+    <function bbs="35 37" brval="" class="" name="main"/>
+  </file>
+  <file name="setup.py"/>
+</branch_variables>

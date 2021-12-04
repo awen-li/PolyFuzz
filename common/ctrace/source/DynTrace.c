@@ -9,9 +9,11 @@
 extern "C"{
 #endif
 
-extern char* __afl_get_area_ptr (void); /* defined in AFL++ */
-extern void __afl_set_ext_loc (unsigned ext_loc);
-extern void __afl_manual_init(void); /* defined in AFL++ */
+/* defined in AFL++ */
+extern char* __afl_get_area_ptr (void); 
+extern void  __afl_set_ext_loc (unsigned ext_loc);
+extern int   __afl_get_interal_loc (void);
+extern void  __afl_manual_init(void); 
 
 
 void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
@@ -28,13 +30,15 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
 }
 
 
-char* DynTraceInit (unsigned BBs)
+char* DynTraceInit (unsigned BBs, int *FinalLoc)
 {
     /* set external language BBs */
     __afl_set_ext_loc (BBs);
     
     /* init fork server */
     __afl_manual_init ();
+
+    *FinalLoc = __afl_get_interal_loc ();
     return __afl_get_area_ptr ();
 }
 

@@ -27,12 +27,14 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     BvSet->LoadBrVals(BrValXml);
 
     /* Init tracing: shared memory ALF++, etc. */
-    __Prt.afl_area_ptr = DynTraceInit (BvSet->m_Branchs);
+    int FinalLoc = 0;
+    __Prt.afl_area_ptr = DynTraceInit (BvSet->m_Branchs, &FinalLoc);
     assert (__Prt.afl_area_ptr != NULL);
 
     /* Init Rtfs */
-    __Prt.InitRtfs(0);
-
+    __Prt.InitRtfs(FinalLoc);
+    PY_PRINT (">>>>>>>>Get FinalLoc = %d after InitRtfs of python\r\n", FinalLoc);
+    
     return;
 }
 
@@ -51,7 +53,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;
         OV->Length = sizeof(OV->Value);
         OV->Value  = PyLong_AsLong(Var);
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] [T: LONG, A:%u L: %u, V:%lx]", OV->Length, OV->Attr, OV->Length, OV->Value);
+        PY_PRINT ("\t > [Size:%u] [T: LONG, A:%u L: %u, V:%lx] \r\n", OV->Length, OV->Attr, OV->Length, OV->Value);
     }
     else if (PyUnicode_Check (Var))
     {
@@ -76,7 +78,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
             }
             OV->Length = sizeof(OV->Value);
         }
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Unicode, Var:%lx -> %s", OV->Length, OV->Value, UcVar);
+        PY_PRINT ("\t > [Size:%u] Unicode, Var:%lx -> %s \r\n", OV->Length, OV->Value, UcVar);
     }
     else if (PyTuple_Check (Var))
     {
@@ -84,7 +86,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
         
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Tuple, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\t > [Size:%u] Tuple, Var:%lx  \r\n", OV->Length, OV->Value);
     }
     else if (PyList_Check (Var))
     {
@@ -99,7 +101,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
             GetValue (Item, &OVi);
             OV->Value ^= OVi.Value;
         }
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] List, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\t > [Size:%u] List, Var:%lx  \r\n", OV->Length, OV->Value);
     }
     else if (PyDict_Check (Var))
     {
@@ -107,22 +109,22 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
         
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Dict, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\t > [Size:%u] Dict, Var:%lx  \r\n", OV->Length, OV->Value);
     }
     else if (PyBytes_Check (Var))
     {
         OV->Type   = VT_STRING;
         OV->Attr   = 0;    
         OV->Length = (unsigned short)Py_SIZE(Var);
-        PY_PRINT ("\n\t >>>>>>>>[Size:%u] Bytes, Var:%lx ", OV->Length, OV->Value);
+        PY_PRINT ("\t > [Size:%u] Bytes, Var:%lx  \r\n", OV->Length, OV->Value);
     }
     else if (Var == Py_None)
     {
-        PY_PRINT ("\n\t >>>>>>>>NoneType, Var:%p ", Var);
+        PY_PRINT ("\t > NoneType, Var:%p  \r\n", Var);
     }
     else
     {
-        PY_PRINT ("\n\t >>>>>>>>Other:%s, Var:%lx ", Var->ob_type->tp_name, OV->Value);
+        PY_PRINT ("\t > Other:%s, Var:%lx  \r\n", Var->ob_type->tp_name, OV->Value);
     }
     
     return;
@@ -166,7 +168,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
         return;
     }
 
-    PY_PRINT("\t > OPCODE[%d-%d]: %s ", opcode, oparg, Op2Name(opcode).c_str());
+    PY_PRINT("\t > OPCODE[%d-%d]: %s \r\n", opcode, oparg, Op2Name(opcode).c_str());
     PyObject *co_names = frame->f_code->co_names;
     PyObject *co_varnames = frame->f_code->co_varnames;
 
@@ -187,10 +189,9 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             PyObject* left = frame->f_stacktop[-2];
             PyObject* right = frame->f_stacktop[-1];
 
-            PY_PRINT ("left = %p, right = %p ", left, right);
+            PY_PRINT ("\t > left = %p, right = %p \r\n", left, right);
             GetValue(left, &OV);
             GetValue(right, &OV);
-            PY_PRINT ("\r\n");
             break;
         }
         case STORE_FAST:
@@ -203,12 +204,11 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             if (BVs->find (StrUseName) != BVs->end ())
             {
                 UseVal  = frame->f_stacktop[-1];
-                PY_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);           
+                PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);           
                 GetValue(UseVal, &OV);
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_FAST);                
             }
-            PY_PRINT ("\r\n");
             break;
         }
         case STORE_NAME:
@@ -221,12 +221,11 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             if (BVs->find (StrUseName) != BVs->end ())
             {
                 UseVal  = frame->f_stacktop[-1];
-                PY_PRINT ("Name = %s, Ov = %p ", StrUseName, UseVal);
+                PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);
                 GetValue(UseVal, &OV);
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_NAME); 
             }
-            PY_PRINT ("\r\n");
             break;
         }
         case STORE_GLOBAL:
@@ -243,7 +242,6 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
 
                 StartTracing (StrUseName, UseVal, &OV, STORE_GLOBAL); 
             }
-            PY_PRINT ("\r\n");
             break;
         }
         case STORE_DEREF:
@@ -257,16 +255,15 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             /* LOAD_FAST valnum -> push co_varnames[valnum] (frame->f_localsplus[oparg]) onto stack */
             UseName = PyTuple_GET_ITEM (co_varnames, oparg);
             UseVal  = frame->f_localsplus[oparg];
-            PY_PRINT ("Name = %s, Ov = %p ", PyUnicode_AsUTF8(UseName), UseVal);
+            PY_PRINT ("\t > Name = %s, Ov = %p \r\n", PyUnicode_AsUTF8(UseName), UseVal);
             GetValue(UseVal, &OV);
-            PY_PRINT ("\r\n");
             break;
         }
         case LOAD_NAME:
         {
             /* LOAD_NAME namei -> push co_names[namei] onto stack */
             UseName = PyTuple_GET_ITEM (co_names, oparg);
-            PY_PRINT ("Name = %s ", PyUnicode_AsUTF8(UseName));
+            PY_PRINT ("\t > Name = %s \r\n", PyUnicode_AsUTF8(UseName));
             if (PyDict_CheckExact(frame->f_locals)) 
             {
                 UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
@@ -280,8 +277,7 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
             {
                 GetValue(UseVal, &OV);
             }
-                
-            PY_PRINT ("\r\n");
+            
             break;
         }
         case LOAD_GLOBAL:
@@ -307,7 +303,6 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
         }
     }
 
-    PY_PRINT ("\r\n");
     return;
 }
 
@@ -330,18 +325,17 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         return 0;
     }
 
-    unsigned Idx;
     const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
-    set <string> *BVs = __Prt.BvSet.GetBvSet (FileName, FuncName, &Idx);
-    if (BVs == NULL)
+    BV_function* Bvf = __Prt.BvSet.GetBvSet (FileName, FuncName);
+    if (Bvf == NULL)
     {
         return 0;
     }
 
     /* init runtime for current function */
-    PRT_function* Rtf = __Prt.GetRtf (Idx);
-    PY_PRINT ("%s : [%u]%s : %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), Idx, FuncName, frame->f_lineno, (unsigned)BVs->size (), Rtf);
+    PRT_function* Rtf = __Prt.GetRtf (Bvf->m_Idx);
+    PY_PRINT ("@@@ %s : [%u]%s : %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
+              FileName.c_str(), Bvf->m_Idx, FuncName, frame->f_lineno, (unsigned)Bvf->m_BrVals.size(), Rtf);
     
     // enable PyTrace_OPCODE
     frame->f_trace_opcodes = true;     
@@ -373,8 +367,8 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         {
             unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
             unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
-            PY_PRINT("PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
-            OpCodeProc (frame, opcode, oparg, BVs);
+            PY_PRINT("\t > PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
+            OpCodeProc (frame, opcode, oparg, &Bvf->m_BrVals);
             break;
         }
         case PyTrace_C_CALL:

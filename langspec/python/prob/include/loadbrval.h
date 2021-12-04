@@ -77,11 +77,13 @@ struct BV_file
 struct BV_set
 {
     BV_file *m_BVFileCatch;
+    unsigned m_Branchs;
     unordered_map <string, BV_file> m_Fname2BVfile;
 
     BV_set ()
     {
         m_BVFileCatch = NULL;
+        m_Branchs = 0;
         m_Fname2BVfile.clear ();
     }
 

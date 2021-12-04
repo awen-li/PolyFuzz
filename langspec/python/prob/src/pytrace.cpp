@@ -28,7 +28,7 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     BvSet.LoadBrVals(BrValXml);
 
     /* Init tracing: shared memory ALF++, etc. */
-    afl_area_ptr = DynTraceInit ();
+    afl_area_ptr = DynTraceInit (BvSet.m_Branchs);
     assert (afl_area_ptr != NULL);
 
     return;

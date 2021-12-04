@@ -93,6 +93,7 @@ u8 *       __afl_fuzz_ptr;
 static u32 __afl_fuzz_len_dummy;
 u32 *      __afl_fuzz_len = &__afl_fuzz_len_dummy;
 
+u32 __afl_external_loc;
 u32 __afl_final_loc;
 u32 __afl_map_size = MAP_SIZE;
 u32 __afl_dictionary_len;
@@ -134,6 +135,8 @@ static u8 _is_sancov;
 /* Debug? */
 
 static u32 __afl_debug;
+#define AFL_DEBUG_SHOW(format, ...) if (__afl_debug) fprintf(stderr, "@@@ AFL -> " format, ##__VA_ARGS__)
+
 
 /* Already initialized markers */
 
@@ -1198,34 +1201,67 @@ int __afl_persistent_loop(unsigned int max_cnt) {
 
 /* This one can be called from user code when deferred forkserver mode
     is enabled. */
+void __afl_set_ext_loc (u32 ext_loc) {
+    __afl_external_loc = ext_loc;
+    return;
+}
+
+char* __afl_get_area_ptr (void) {
+    return __afl_area_ptr;
+}
+
+void __afl_shm_init (void) {
+    if (__afl_already_initialized_shm == 0) {
+        AFL_DEBUG_SHOW("Start init shm necessary (%u)\n", __afl_map_size);
+
+        __afl_unmap_shm();
+        __afl_map_shm();
+    }
+    else {
+    
+        AFL_DEBUG_SHOW("final_loc = %u, external_loc = %u, map_size = %u\n", 
+                       __afl_final_loc, __afl_external_loc, __afl_map_size);
+        __afl_final_loc += __afl_external_loc;
+ 
+        if (__afl_final_loc > __afl_map_size) {
+
+            AFL_DEBUG_SHOW("Reinit shm necessary (+%u)\n", __afl_final_loc - __afl_map_size);
+
+            __afl_unmap_shm();
+            __afl_map_shm();
+        }
+    }
+
+    return;
+}
 
 void __afl_manual_init(void) {
 
-  static u8 init_done;
+    static u8 init_done;
 
-  if (getenv("AFL_DISABLE_LLVM_INSTRUMENTATION")) {
+    AFL_DEBUG_SHOW("%s:%u final_loc = %u, external_loc = %u, init_done = %u\r\n", 
+                   __FUNCTION__, __LINE__, __afl_final_loc, __afl_external_loc, (u32)init_done);
 
-    init_done = 1;
-    is_persistent = 0;
-    __afl_sharedmem_fuzzing = 0;
-    if (__afl_area_ptr == NULL) __afl_area_ptr = __afl_area_ptr_dummy;
+    if (getenv("AFL_DISABLE_LLVM_INSTRUMENTATION")) {
 
-    if (__afl_debug) {
+        init_done = 1;
+        is_persistent = 0;
+        __afl_sharedmem_fuzzing = 0;
+        if (__afl_area_ptr == NULL) __afl_area_ptr = __afl_area_ptr_dummy;
 
-      fprintf(stderr,
-              "DEBUG: disabled instrumentation because of "
-              "AFL_DISABLE_LLVM_INSTRUMENTATION\n");
-
+        AFL_DEBUG_SHOW("DEBUG: disabled instrumentation because of "
+                       "AFL_DISABLE_LLVM_INSTRUMENTATION\n");
     }
 
-  }
+    if (!init_done) {
 
-  if (!init_done) {
-
-    __afl_start_forkserver();
-    init_done = 1;
-
-  }
+        __afl_start_forkserver();
+        init_done = 1;
+    }
+    else {
+        /* try to reinit shm if necessary */
+        __afl_shm_init ();
+    }
 
 }
 
@@ -1351,13 +1387,10 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
     _is_sancov = 1;
 
-    if (__afl_debug) {
-        fprintf(stderr,
-                "Running __sanitizer_cov_trace_pc_guard_init: %p-%p (%lu edges) "
-                "after_fs=%u\n",
-                start, stop, (unsigned long)(stop - start),
-                __afl_already_initialized_forkserver);
-    }
+    AFL_DEBUG_SHOW("Running __sanitizer_cov_trace_pc_guard_init: %p-%p (%lu edges), external_loc=%u "
+                   "after_fs=%u\n",
+                   start, stop, (unsigned long)(stop - start), __afl_external_loc,
+                   __afl_already_initialized_forkserver);
 
     if (start == stop || *start) return;
 
@@ -1374,9 +1407,7 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
     if (__afl_already_initialized_forkserver &&
         __afl_final_loc + 1 + stop - start > __afl_map_size) {
 
-        if (__afl_debug) {
-            fprintf(stderr, "Warning: new instrumented code after the forkserver!\n");
-        }
+        AFL_DEBUG_SHOW("Warning: new instrumented code after the forkserver!\n");
 
         __afl_final_loc = 2;
 
@@ -1415,23 +1446,9 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
     }
 
-    if (__afl_debug) {
+    AFL_DEBUG_SHOW("Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n", __afl_final_loc);
 
-        fprintf(stderr,
-                "Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n",
-                __afl_final_loc);
-    }
-
-    if (__afl_already_initialized_shm && __afl_final_loc > __afl_map_size) {
-
-        if (__afl_debug) {
-          fprintf(stderr, "Reinit shm necessary (+%u)\n",
-                  __afl_final_loc - __afl_map_size);
-        }
-
-        __afl_unmap_shm();
-        __afl_map_shm();
-    }
+    __afl_shm_init ();
 
     return;
 }

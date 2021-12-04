@@ -39,6 +39,11 @@ void BV_set::LoadBrVals(string BrValXml)
         PY_PRINT("No tag branch_variables exist, load a right file?...");
         exit (0);
     }
+    const char *Branchs = mxmlElementGetAttr(bvNode, "branchs");
+    if (Branchs != NULL)
+    {
+        m_Branchs = (unsigned) atoi (Branchs);
+    }
 
     int FileNo = 0;
     int FuncNo = 0;
@@ -84,8 +89,8 @@ void BV_set::LoadBrVals(string BrValXml)
     }
 
     mxmlDelete(tree);
-    PY_PRINT("LoadBrVals: load %s done, file number:%d , function number:%d\r\n", BrValXml.c_str(), FileNo, FuncNo);
-
+    PY_PRINT("LoadBrVals: load %s done, file number:%d , function number:%d, branchs:%u\r\n", 
+             BrValXml.c_str(), FileNo, FuncNo, m_Branchs);
 
     return;
 }

@@ -1371,7 +1371,6 @@ __attribute__((constructor(0))) void __afl_auto_first(void) {
 
 void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
-    printf ("__sanitizer_cov_trace_pc_guard -> guard = %u \r\n", *guard);
 #if (LLVM_VERSION_MAJOR < 9)
     __afl_area_ptr[*guard]++;
 

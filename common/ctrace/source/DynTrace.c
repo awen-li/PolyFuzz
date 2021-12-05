@@ -10,6 +10,7 @@ extern "C"{
 #endif
 
 /* defined in AFL++ */
+static char* afl_area_ptr = NULL;
 extern char* __afl_get_area_ptr (void); 
 extern void  __afl_set_ext_loc (unsigned ext_loc);
 extern int   __afl_get_interal_loc (void);
@@ -24,13 +25,17 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
     Node->TrcKey   = TrcKey;
     Node->Flag     = TRUE;
 
+    
+    unsigned char CovVal = afl_area_ptr[TrcKey];
+    afl_area_ptr[TrcKey] = CovVal + 1 + (CovVal == 255 ? 1 : 0);
+
     DEBUG ("[DynTrace][T:%u][L:%u]%lx\r\n", Node->ThreadId, Length, TrcKey);
 
     return;   
 }
 
 
-char* DynTraceInit (unsigned BBs, int *FinalLoc)
+int DynTraceInit (unsigned BBs)
 {
     /* set external language BBs */
     __afl_set_ext_loc (BBs);
@@ -38,8 +43,9 @@ char* DynTraceInit (unsigned BBs, int *FinalLoc)
     /* init fork server */
     __afl_manual_init ();
 
-    *FinalLoc = __afl_get_interal_loc ();
-    return __afl_get_area_ptr ();
+    afl_area_ptr = __afl_get_area_ptr ();
+
+    return __afl_get_interal_loc ();
 }
 
 void DynTraceExit ()

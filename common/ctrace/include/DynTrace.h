@@ -17,7 +17,7 @@ extern "C"{
 #endif 
 
 
-char* DynTraceInit (unsigned BBs, int *FinalLoc);
+int  DynTraceInit (unsigned BBs);
 void DynTraceExit ();
 void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned Tk);
 

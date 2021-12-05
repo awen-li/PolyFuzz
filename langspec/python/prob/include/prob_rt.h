@@ -19,6 +19,8 @@ struct PRT_function
     vector<int> *m_BBs;
     int *m_ScancovGen;
 
+    int m_CurBB;
+
     PRT_function (unsigned Idx, int &BBno, vector<int> *BBs)
     {
         assert (BBs != NULL);
@@ -36,6 +38,8 @@ struct PRT_function
         PY_PRINT("[%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
 
         InitScanCov (BBno);
+
+        m_CurBB = 0;
     }
 
     ~PRT_function () 
@@ -45,6 +49,18 @@ struct PRT_function
         {
             delete m_ScancovGen;
             m_ScancovGen = NULL;
+        }
+    }
+
+    void inline UpdateCurBB (int LineNo)
+    {
+        if (LineNo < m_EBB)
+        {
+            m_CurBB = m_ScancovGen [LineNo - m_SBB];
+        }
+        else
+        {
+            m_CurBB = m_ScancovGen [m_EBB - m_SBB];
         }
     }
 
@@ -89,8 +105,6 @@ struct PRT_function
 
 struct PRT
 {
-    char* afl_area_ptr;
-
     set<string> RegModule;
     BV_set BvSet;
     
@@ -99,7 +113,6 @@ struct PRT
 
     PRT () 
     {
-        afl_area_ptr = NULL;
         m_CatchRtf   = NULL;
         
         RegModule.clear ();
@@ -150,10 +163,11 @@ struct PRT
         return true;
     }
 
-    inline PRT_function* GetRtf (unsigned Idx)
+    inline PRT_function* GetRtf (unsigned Idx, int LineNo)
     {
         if (m_CatchRtf != NULL && m_CatchRtf->m_Idx == Idx)
         {
+            m_CatchRtf->UpdateCurBB (LineNo);
             return m_CatchRtf;
         }
         
@@ -161,6 +175,7 @@ struct PRT
         if (It != m_Idx2Rtf.end ())
         {
             m_CatchRtf = It->second;
+            m_CatchRtf->UpdateCurBB (LineNo);
             return m_CatchRtf;
         }
         else

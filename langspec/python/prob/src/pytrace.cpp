@@ -27,9 +27,7 @@ void PyInit(const vector<string>& Modules, string BrValXml)
     BvSet->LoadBrVals(BrValXml);
 
     /* Init tracing: shared memory ALF++, etc. */
-    int FinalLoc = 0;
-    __Prt.afl_area_ptr = DynTraceInit (BvSet->m_Branchs, &FinalLoc);
-    assert (__Prt.afl_area_ptr != NULL);
+    int FinalLoc = DynTraceInit (BvSet->m_Branchs);
 
     /* Init Rtfs */
     __Prt.InitRtfs(FinalLoc);
@@ -333,9 +331,9 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     }
 
     /* init runtime for current function */
-    PRT_function* Rtf = __Prt.GetRtf (Bvf->m_Idx);
-    PY_PRINT ("@@@ %s : [%u]%s : %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), Bvf->m_Idx, FuncName, frame->f_lineno, (unsigned)Bvf->m_BrVals.size(), Rtf);
+    PRT_function* Rtf = __Prt.GetRtf (Bvf->m_Idx, frame->f_lineno);
+    PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
+              FileName.c_str(), Bvf->m_Idx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Bvf->m_BrVals.size(), Rtf);
     
     // enable PyTrace_OPCODE
     frame->f_trace_opcodes = true;     

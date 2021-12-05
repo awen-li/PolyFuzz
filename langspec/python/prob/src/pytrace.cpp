@@ -159,19 +159,23 @@ static inline void StartTracing (const char* VarName, PyObject *VarAddr, ObjValu
     return;
 }
 
-static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned oparg, set <string> *BVs)
+static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
 {
+    PyCodeObject *f_code  = frame->f_code;
+    
+    unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
+    unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
+
     if (!HAS_ARG(opcode))
     {
         return;
     }
 
     PY_PRINT("\t > OPCODE[%d-%d]: %s \r\n", opcode, oparg, Op2Name(opcode).c_str());
-    PyObject *co_names = frame->f_code->co_names;
-    PyObject *co_varnames = frame->f_code->co_varnames;
 
-    Py_ssize_t CoSize = Py_SIZE (co_names);
-    Py_ssize_t CoVarSize = Py_SIZE (co_varnames);
+    set <string> *BVs = Rtf->m_BrVals;
+    PyObject *co_names = f_code->co_names;
+    PyObject *co_varnames = f_code->co_varnames;
 
     PyObject *UseName = NULL;
     PyObject *UseVal  = NULL;
@@ -305,10 +309,24 @@ static inline void OpCodeProc (PyFrameObject *frame, unsigned opcode, unsigned o
 }
 
 
-static inline void InjectCov(unsigned FIdx) 
+static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf) 
 {
-    
+    PY_PRINT("InjectCov: [PreBB : CurBB]  = [%d : %d] \r\n", Rtf->m_PreBB, Rtf->m_CurBB);
+    if (Rtf->m_PreBB == 0)
+    {
+        DynTrace (NULL, 0, Rtf->m_CurBB);
+        return;
+    }
+    else
+    {
+        if (Rtf->m_PreBB != Rtf->m_CurBB)
+        {
+            DynTrace (NULL, 0, Rtf->m_CurBB);
+            return;
+        }
+    }  
 
+    PY_PRINT("InjectCov: Ignore current block [%d]... \r\n", Rtf->m_CurBB);
     return;
 }
 
@@ -322,23 +340,23 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     {
         return 0;
     }
-
     const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
-    BV_function* Bvf = __Prt.BvSet.GetBvSet (FileName, FuncName);
-    if (Bvf == NULL)
+    
+    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName);
+    if (FIdx == 0)
     {
         return 0;
     }
 
     /* init runtime for current function */
-    PRT_function* Rtf = __Prt.GetRtf (Bvf->m_Idx, frame->f_lineno);
+    PRT_function* Rtf = __Prt.GetRtf (FIdx, frame->f_lineno);
     PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), Bvf->m_Idx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Bvf->m_BrVals.size(), Rtf);
+              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVals->size(), Rtf);
     
     // enable PyTrace_OPCODE
     frame->f_trace_opcodes = true;     
     //ShowVariables (co_varnames);
- 
+
     switch(what)
     {
         case PyTrace_LINE:
@@ -363,10 +381,8 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
         }
         case PyTrace_OPCODE:
         {
-            unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
-            unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
-            PY_PRINT("\t > PyTrace_OPCODE:%d[%u|%u]\n", what, opcode, oparg);
-            OpCodeProc (frame, opcode, oparg, &Bvf->m_BrVals);
+            PY_PRINT("PyTrace_OPCODE:%d\n", what);
+            InjectOpCode (frame, Rtf);
             break;
         }
         case PyTrace_C_CALL:
@@ -390,7 +406,8 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
             break;
         }
     }
-    
+
+    InjectCov (frame, Rtf);
     return 0;
 }
 

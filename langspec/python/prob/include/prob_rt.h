@@ -17,16 +17,20 @@ struct PRT_function
     int m_CovSize;
     
     vector<int> *m_BBs;
+    set<string> *m_BrVals;
+    
     int *m_ScancovGen;
 
+    int m_PreBB;
     int m_CurBB;
 
-    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs)
+    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, set<string> *BrVals)
     {
         assert (BBs != NULL);
         
         m_Idx = Idx;
         m_BBs = BBs;
+        m_BrVals = BrVals;
         
         m_SBB = BBs->front ();
         m_EBB = BBs->back ();
@@ -39,6 +43,7 @@ struct PRT_function
 
         InitScanCov (BBno);
 
+        m_PreBB = 0;
         m_CurBB = 0;
     }
 
@@ -54,6 +59,7 @@ struct PRT_function
 
     void inline UpdateCurBB (int LineNo)
     {
+        m_PreBB = m_CurBB;
         if (LineNo < m_EBB)
         {
             m_CurBB = m_ScancovGen [LineNo - m_SBB];
@@ -62,6 +68,8 @@ struct PRT_function
         {
             m_CurBB = m_ScancovGen [m_EBB - m_SBB];
         }
+
+        return;
     }
 
     void inline InitScanCov (int &BBno)
@@ -142,7 +150,7 @@ struct PRT
                 BV_function* BvFunc = fIt->second;
 
                 PY_PRINT("@@@ Start init Rtf: [%d][%s] \r\n", BvFunc->m_Idx, BvFunc->m_FuncName.c_str());
-                PRT_function *Rtf = new PRT_function (BvFunc->m_Idx, BBno, &BvFunc->m_BBs);
+                PRT_function *Rtf = new PRT_function (BvFunc->m_Idx, BBno, &BvFunc->m_BBs, &BvFunc->m_BrVals);
                 assert (Rtf != NULL);
 
                 m_Idx2Rtf [BvFunc->m_Idx] = Rtf;     

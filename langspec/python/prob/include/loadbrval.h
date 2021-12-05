@@ -17,7 +17,7 @@ struct BV_function
 {
     unsigned m_Idx;
     string m_FuncName;
-    set <string> m_BrVals;
+    set<string> m_BrVals;
     vector<int> m_BBs;
 
     BV_function (string FuncName, unsigned Idx)
@@ -167,7 +167,7 @@ struct BV_set
     }
 
     void LoadBrVals(string BrValXml);
-    BV_function* GetBvSet (string File, string Func);
+    int GetFIdx (string File, string Func);
 };
 
 

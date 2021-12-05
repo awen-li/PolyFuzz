@@ -209,7 +209,7 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
                 PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);           
                 GetValue(UseVal, &OV);
 
-                StartTracing (StrUseName, UseVal, &OV, STORE_FAST);                
+                StartTracing (StrUseName, UseVal, &OV, Rtf->m_CurBB);                
             }
             break;
         }
@@ -226,7 +226,7 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
                 PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);
                 GetValue(UseVal, &OV);
 
-                StartTracing (StrUseName, UseVal, &OV, STORE_NAME); 
+                StartTracing (StrUseName, UseVal, &OV, Rtf->m_CurBB); 
             }
             break;
         }
@@ -242,7 +242,7 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
                 UseVal  = frame->f_stacktop[-1];
                 GetValue(UseVal, &OV);
 
-                StartTracing (StrUseName, UseVal, &OV, STORE_GLOBAL); 
+                StartTracing (StrUseName, UseVal, &OV, Rtf->m_CurBB); 
             }
             break;
         }

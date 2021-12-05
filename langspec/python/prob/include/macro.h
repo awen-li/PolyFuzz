@@ -6,7 +6,7 @@
 
 namespace pyprob {
 
-#if 1
+#if 0
 #define PY_PRINT(format, ...) printf("<Python>" format, ##__VA_ARGS__)
 #else
 #define PY_PRINT(format, ...) 

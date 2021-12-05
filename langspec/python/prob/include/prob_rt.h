@@ -183,6 +183,8 @@ struct PRT
         if (It != m_Idx2Rtf.end ())
         {
             m_CatchRtf = It->second;
+
+            m_CatchRtf->m_CurBB = 0;
             m_CatchRtf->UpdateCurBB (LineNo);
             return m_CatchRtf;
         }

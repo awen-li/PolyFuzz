@@ -19,17 +19,20 @@ extern void  __afl_manual_init(void);
 
 void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
 {
-    QNode *Node = QBUF2QNODE (Eh);
+    if (Eh != NULL)
+    {
+        QNode *Node = QBUF2QNODE (Eh);
 
-    Node->ThreadId = pthread_self ();
-    Node->TrcKey   = TrcKey;
-    Node->Flag     = TRUE;
+        Node->ThreadId = pthread_self ();
+        Node->TrcKey   = TrcKey;
+        Node->Flag     = TRUE;
+    }
 
     
     unsigned char CovVal = afl_area_ptr[TrcKey];
     afl_area_ptr[TrcKey] = CovVal + 1 + (CovVal == 255 ? 1 : 0);
 
-    DEBUG ("[DynTrace][T:%u][L:%u]%lx\r\n", Node->ThreadId, Length, TrcKey);
+    DEBUG ("[TraceKey:%u][Length=%u]\r\n", TrcKey, Length);
 
     return;   
 }

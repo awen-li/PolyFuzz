@@ -6,26 +6,13 @@
 
 char* Getpasswd2 (int Index)
 {
-    if (Index == 6)
+    int Val = Index * 4;
+    if (Val == 16)
     {
         return "pwd6";
     }
-    else if (Index == 7)
-    {
-        return "pwd7";
-    }
-    else if (Index == 8)
-    {
-        return "pwd8";
-    }
-    else if (Index == 9)
-    {
-        return "pwd9";
-    }
-    else
-    {
-        return "pwd88";
-    }
+    
+    return "default";
 }
 
 
@@ -59,7 +46,7 @@ char* Getpasswd (int Index)
     }
     else
     {
-        return Getpasswd2 (Index);
+        return Getpasswd2 (CallIndex);
     }
 }
 

@@ -37,7 +37,7 @@ extern "C"{
 
 
 #ifdef __DEBUG__
-#define DEBUG(format, ...) printf(format, ##__VA_ARGS__)
+#define DEBUG(format, ...) printf("<DynTrace>" format, ##__VA_ARGS__)
 #else
 #define DEBUG(format, ...) 
 #endif

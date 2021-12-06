@@ -129,6 +129,30 @@ SanitizerCoverageOptions OverrideFromCL(SanitizerCoverageOptions Options) {
 
 }
 
+
+class ModuleDuCov {
+
+public:
+    ModuleDuCov (Function *F) {
+        CurFunc = F;
+    }
+
+    inline void InsertBrInst (Instruction *Br) {
+        BrInsts.push_back(Br);
+        return;
+    }
+
+    inline size_t Size ()
+    {
+        return BrInsts.size ();
+    }
+
+private:
+    Function *CurFunc;
+    SmallVector<Instruction *, 32>  BrInsts;
+    
+};
+
 using DomTreeCallback = function_ref<const DominatorTree *(Function &F)>;
 using PostDomTreeCallback = function_ref<const PostDominatorTree *(Function &F)>;
 
@@ -247,15 +271,19 @@ private:
     {
         Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
                                         ConstantInt::get(IntptrTy, Idx * 4));
-        DB_SHOWINST (__LINE__, *AddPtr);
         Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
-        DB_SHOWINST (__LINE__, *GuardPtr);
 
-        IRB.CreateCall(SanCovTracePCGuard, GuardPtr)->setCannotMerge();
+        CallInst* Ci = IRB.CreateCall(SanCovTracePCGuard, GuardPtr);
+        Ci->setCannotMerge();
+        
+        DB_SHOWINST (__LINE__, *Ci);
+        
         return;
     }
 
     bool IsInjectByInst;
+    bool IsBrDefUse;
+    
     std::string     getSectionName(const std::string &Section) const;
     std::string     getSectionStart(const std::string &Section) const;
     std::string     getSectionEnd(const std::string &Section) const;
@@ -498,7 +526,9 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     Int8Ty = IRB.getInt8Ty();
     Int1Ty = IRB.getInt1Ty();
     LLVMContext &Ctx = M.getContext();
+    
     IsInjectByInst = (bool)(getenv ("AFL_INJECT_BY_INST") != NULL);
+    IsBrDefUse     = true;
 
     AFLMapPtr = new GlobalVariable(M, PointerType::get(Int8Ty, 0), false,
                                    GlobalValue::ExternalLinkage, 0, "__afl_area_ptr");
@@ -731,11 +761,13 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     SmallVector<Instruction *, 8>       SwitchTraceTargets;
     SmallVector<BinaryOperator *, 8>    DivTraceTargets;
     SmallVector<GetElementPtrInst *, 8> GepTraceTargets;
+    ModuleDuCov MDu (&F);
 
     const DominatorTree *    DT  = DTCallback(F);
     const PostDominatorTree *PDT = PDTCallback(F);
     bool              IsLeafFunc = true;
 
+    errs ()<<"=========================== "<<F.getName ()<<"=========================== \r\n";
     for (auto &BB : F) {
 
         if (shouldInstrumentBlock(F, &BB, DT, PDT, Options)) {
@@ -744,6 +776,8 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
             
         for (auto &Inst : BB) {
 
+            errs ()<<"Inst ======> "<<Inst<<"\r\n";
+            
             if (Options.IndirectCalls) {
                 CallBase *CB = dyn_cast<CallBase>(&Inst);
                 if (CB && !CB->getCalledFunction()) {
@@ -751,11 +785,20 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
                 }
             }
 
-            if (Options.TraceCmp) {
-                if (ICmpInst *CMP = dyn_cast<ICmpInst>(&Inst))
-                    if (IsInterestingCmp(CMP, DT, Options))
+            if (ICmpInst *CMP = dyn_cast<ICmpInst>(&Inst)) {
+                if (IsInterestingCmp(CMP, DT, Options)) {
+                    if (Options.TraceCmp)
                         CmpTraceTargets.push_back(&Inst);
-                if (isa<SwitchInst>(&Inst)) SwitchTraceTargets.push_back(&Inst);
+                    if (IsBrDefUse == true)
+                        MDu.InsertBrInst(&Inst);
+                }
+            }
+
+            if (isa<SwitchInst>(&Inst)) {
+                if (Options.TraceCmp)
+                    SwitchTraceTargets.push_back(&Inst);
+                if (IsBrDefUse == true)
+                    MDu.InsertBrInst(&Inst);
             }
 
             if (Options.TraceDiv) {
@@ -779,10 +822,10 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     }
 
     DB_PRINT("Instrument %s -> "
-             "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu\r\n",
+             "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu Du:%lu\r\n",
              F.getName().data(), 
              BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
-             SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size());
+             SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size(), MDu.Size ());
     
     InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
     InjectCoverageForIndirectCalls(F, IndirCalls);

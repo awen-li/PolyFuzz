@@ -152,7 +152,9 @@ public:
         assert (Ist != NULL);
         
         BrDef2Use[Br] = Ist;
-        BfBBs.insert (Br->getParent ());
+        if (BB2FirstInst.find (Br->getParent ()) == BB2FirstInst.end ()) {
+            BB2FirstInst [Br->getParent ()] = Br;
+        }
         return;
     }
 
@@ -160,35 +162,51 @@ public:
         return BrDef2Use.size ();
     }
 
+    inline Instruction* GetBBFirstInst (BasicBlock *BB) {
+        auto It = BB2FirstInst.find (BB);
+        if (It == BB2FirstInst.end ()) {
+            return NULL;
+        }
+        
+        return It->second;
+    }
+
     inline void CollectDus () {
     
-        for (auto &BB : *CurFunc) {
-            
-            for (auto &IN : BB) {
- 
+        for (auto &BB : *CurFunc) 
+        {    
+            for (auto &IN : BB) 
+            {
                 Instruction *Inst = &IN;
                 if (isa<DbgInfoIntrinsic>(Inst) || 
                     isa<UnreachableInst>(Inst) || 
                     isa<IntrinsicInst>(Inst)) {
                     continue;
                 }
+                
                 unsigned OpNum = Inst->getNumOperands ();  
-                while (OpNum > 0)
+                while (OpNum > 0) 
                 {
                     OpNum--;
                     Value *Use = Inst->getOperand(OpNum);
 
                     auto It = BrDef2Use.find ((Instruction*)Use);
-                    if (It != BrDef2Use.end ()) {
-                        It->second->insert (Inst);
-                        BfBBs.insert (Inst->getParent ());
-                        break;
+                    if (It == BrDef2Use.end ()) {
+                        continue;
                     }
+
+                    It->second->insert (Inst);
+
+                    BasicBlock *CurBB = &BB;
+                    if (BB2FirstInst.find (CurBB) == BB2FirstInst.end ()) {
+                        BB2FirstInst [CurBB] = Inst;
+                    }
+                    break;
                 }
             }               
         }
 
-        DB_PRINT("BrVariables: %u, BB Num: %u\r\n", (unsigned)BrDef2Use.size(), (unsigned)BfBBs.size());
+        DB_PRINT("BrVariables: %u, BB Num: %u\r\n", (unsigned)BrDef2Use.size(), (unsigned)BB2FirstInst.size());
 
         return;
     }
@@ -199,7 +217,7 @@ public:
 
 private:
     Function *CurFunc;
-    std::set<BasicBlock *> BfBBs;
+    DenseMap<BasicBlock*, Instruction*> BB2FirstInst;    
     DenseMap<Instruction*, T_InstSet*> BrDef2Use;
     
 };
@@ -1002,8 +1020,8 @@ bool ModuleSanitizerCoverage::InjectCoverage(Function &       F, ModuleDuCov &MD
 
     CreateFunctionLocalArrays(F, AllBlocks, special);
     for (size_t i = 0, N = AllBlocks.size(); i < N; i++) {
-        
-        InjectCoverageAtBlock(F, MDu, *AllBlocks[i], i, IsLeafFunc);
+        BasicBlock *BB = AllBlocks[i];
+        InjectCoverageAtBlock(F, MDu, *BB, i, IsLeafFunc);
     }
 
     instr += special;
@@ -1169,10 +1187,18 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
         // Keep allocas and llvm.localescape calls in the entry block.  Even
         // if we aren't splitting the block, it's nice for allocas to be before
         // calls.
-        IP = PrepareToSplitEntryBlock(BB, IP);
+        IP = PrepareToSplitEntryBlock(BB, IP);    
     }
 
-    IRBuilder<> IRB(&*IP);
+    Instruction *InjectInst = &*IP;
+    Instruction *InjectDu = MDu.GetBBFirstInst(&BB);
+    if (InjectDu != NULL) {
+        errs ()<<"REPLACE: "<<*InjectInst<<" ==== WITH ==== "<<*InjectDu<<"\r\n";
+        assert (InjectInst->getParent() == InjectDu->getParent());
+        InjectInst = InjectDu;
+    }
+
+    IRBuilder<> IRB(InjectInst);
 
     if (Options.TracePC) {
         IRB.CreateCall(SanCovTracePC);

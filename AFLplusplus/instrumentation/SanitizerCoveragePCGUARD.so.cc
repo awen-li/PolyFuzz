@@ -147,6 +147,20 @@ public:
         }
     }
 
+    inline void SetInjected (Instruction *Inst) {
+        InjectedInsts.insert (Inst);
+    }
+
+    inline bool IsInjected (Instruction *Inst) {
+        auto It = InjectedInsts.find (Inst);
+        if (It == InjectedInsts.end ()) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     inline void InsertBrInst (Instruction *Br) {
         T_InstSet* Ist = new T_InstSet ();
         assert (Ist != NULL);
@@ -183,6 +197,10 @@ public:
                     isa<IntrinsicInst>(Inst)) {
                     continue;
                 }
+
+                if (isa<StoreInst>(Inst)) {
+                    AllDefs.insert (Inst);
+                }
                 
                 unsigned OpNum = Inst->getNumOperands ();  
                 while (OpNum > 0) 
@@ -206,19 +224,22 @@ public:
             }               
         }
 
-        DB_PRINT("BrVariables: %u, BB Num: %u\r\n", (unsigned)BrDef2Use.size(), (unsigned)BB2FirstInst.size());
+        printf("AllDefs: %u, BrVariables: %u, BB Num: %u\r\n", 
+               (unsigned)AllDefs.size(), (unsigned)BrDef2Use.size(), (unsigned)BB2FirstInst.size());
 
         return;
     }
 
-    inline void Run (ArrayRef<BasicBlock *> AllBlocks) {
-
+    inline void RunInject () {
+        return;
     }
 
 private:
     Function *CurFunc;
     DenseMap<BasicBlock*, Instruction*> BB2FirstInst;    
     DenseMap<Instruction*, T_InstSet*> BrDef2Use;
+    std::set<Instruction*> InjectedInsts;
+    std::set<Instruction*> AllDefs;
     
 };
 
@@ -1024,6 +1045,8 @@ bool ModuleSanitizerCoverage::InjectCoverage(Function &       F, ModuleDuCov &MD
         InjectCoverageAtBlock(F, MDu, *BB, i, IsLeafFunc);
     }
 
+    MDu.RunInject();
+    
     instr += special;
 
     return true;
@@ -1196,6 +1219,7 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
         errs ()<<"REPLACE: "<<*InjectInst<<" ==== WITH ==== "<<*InjectDu<<"\r\n";
         assert (InjectInst->getParent() == InjectDu->getParent());
         InjectInst = InjectDu;
+        MDu.SetInjected(InjectInst);
     }
 
     IRBuilder<> IRB(InjectInst);

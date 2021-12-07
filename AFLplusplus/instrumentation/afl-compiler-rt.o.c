@@ -1368,9 +1368,8 @@ __attribute__((constructor(0))) void __afl_auto_first(void) {
 
    The first function (__sanitizer_cov_trace_pc_guard) is called back on every
    edge (as opposed to every basic block). */
-
-void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
-
+static inline void __sanitizer_cov_trace_pc_guard__ (uint32_t *guard)
+{
 #if (LLVM_VERSION_MAJOR < 9)
     __afl_area_ptr[*guard]++;
 
@@ -1379,8 +1378,20 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
     __afl_area_ptr[*guard] = cov_val + 1 + (cov_val == 255 ? 1 : 0);
 
 #endif
+}
+
+void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
+
+    __sanitizer_cov_trace_pc_guard__ (guard);
 
 }
+
+void __sanitizer_cov_trace_pc_guard_du (uint32_t *guard, void *Value) {
+
+    __sanitizer_cov_trace_pc_guard__ (guard);
+
+}
+
 
 /* Init callback. Populates instrumentation IDs. Note that we're using
    ID of 0 as a special value to indicate non-instrumented bits. That may

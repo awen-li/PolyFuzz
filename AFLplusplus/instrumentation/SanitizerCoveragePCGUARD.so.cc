@@ -133,23 +133,74 @@ SanitizerCoverageOptions OverrideFromCL(SanitizerCoverageOptions Options) {
 class ModuleDuCov {
 
 public:
+    typedef std::set<llvm::Instruction*> T_InstSet;
+
     ModuleDuCov (Function *F) {
         CurFunc = F;
     }
 
+    ~ModuleDuCov () {
+        for (auto It = BrDef2Use.begin (), End = BrDef2Use.end (); It != End; It++)
+        {
+            T_InstSet *Is = It->second;
+            delete Is;            
+        }
+    }
+
     inline void InsertBrInst (Instruction *Br) {
-        BrInsts.push_back(Br);
+        T_InstSet* Ist = new T_InstSet ();
+        assert (Ist != NULL);
+        
+        BrDef2Use[Br] = Ist;
+        BfBBs.insert (Br->getParent ());
         return;
     }
 
-    inline size_t Size ()
-    {
-        return BrInsts.size ();
+    inline size_t Size () {
+        return BrDef2Use.size ();
+    }
+
+    inline void CollectDus () {
+    
+        for (auto &BB : *CurFunc) {
+            
+            for (auto &IN : BB) {
+ 
+                Instruction *Inst = &IN;
+                if (isa<DbgInfoIntrinsic>(Inst) || 
+                    isa<UnreachableInst>(Inst) || 
+                    isa<IntrinsicInst>(Inst)) {
+                    continue;
+                }
+                unsigned OpNum = Inst->getNumOperands ();  
+                while (OpNum > 0)
+                {
+                    OpNum--;
+                    Value *Use = Inst->getOperand(OpNum);
+
+                    auto It = BrDef2Use.find ((Instruction*)Use);
+                    if (It != BrDef2Use.end ()) {
+                        It->second->insert (Inst);
+                        BfBBs.insert (Inst->getParent ());
+                        break;
+                    }
+                }
+            }               
+        }
+
+        DB_PRINT("BrVariables: %u, BB Num: %u\r\n", (unsigned)BrDef2Use.size(), (unsigned)BfBBs.size());
+
+        return;
+    }
+
+    inline void Run (ArrayRef<BasicBlock *> AllBlocks) {
+
     }
 
 private:
     Function *CurFunc;
-    SmallVector<Instruction *, 32>  BrInsts;
+    std::set<BasicBlock *> BfBBs;
+    DenseMap<Instruction*, T_InstSet*> BrDef2Use;
     
 };
 
@@ -184,12 +235,12 @@ private:
                                    ArrayRef<GetElementPtrInst *> GepTraceTargets);
     void InjectTraceForSwitch(Function &              F,
                                         ArrayRef<Instruction *> SwitchTraceTargets);
-    bool InjectCoverage(Function &F, ArrayRef<BasicBlock *> AllBlocks, bool IsLeafFunc = true);
+    bool InjectCoverage(Function &F, ModuleDuCov &MDu, ArrayRef<BasicBlock *> AllBlocks, bool IsLeafFunc = true);
     GlobalVariable *CreateFunctionLocalArrayInSection(size_t    NumElements, Function &F, Type *Ty, const char *Section);
 
     GlobalVariable *CreatePCArray(Function &F, ArrayRef<BasicBlock *> AllBlocks);
     void CreateFunctionLocalArrays(Function &F, ArrayRef<BasicBlock *> AllBlocks, uint32_t special);
-    void InjectCoverageAtBlock(Function &F, BasicBlock &BB, size_t Idx, bool IsLeafFunc = true);
+    void InjectCoverageAtBlock(Function &F, ModuleDuCov &MDu, BasicBlock &BB, size_t Idx, bool IsLeafFunc = true);
     Function *CreateInitCallsForSections(Module &M, const char *CtorName,
                                                       const char *InitFunctionName, Type *Ty,
                                                       const char *Section);
@@ -776,8 +827,6 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
             
         for (auto &Inst : BB) {
 
-            errs ()<<"Inst ======> "<<Inst<<"\r\n";
-            
             if (Options.IndirectCalls) {
                 CallBase *CB = dyn_cast<CallBase>(&Inst);
                 if (CB && !CB->getCalledFunction()) {
@@ -826,8 +875,9 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
              F.getName().data(), 
              BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
              SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size(), MDu.Size ());
-    
-    InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
+
+    MDu.CollectDus();
+    InjectCoverage(F, MDu, BlocksToInstrument, IsLeafFunc);
     InjectCoverageForIndirectCalls(F, IndirCalls);
     InjectTraceForCmp(F, CmpTraceTargets);
     InjectTraceForSwitch(F, SwitchTraceTargets);
@@ -919,7 +969,7 @@ void ModuleSanitizerCoverage::CreateFunctionLocalArrays(Function &F, ArrayRef<Ba
     }
 }
 
-bool ModuleSanitizerCoverage::InjectCoverage(Function &       F,
+bool ModuleSanitizerCoverage::InjectCoverage(Function &       F, ModuleDuCov &MDu,
                                                     ArrayRef<BasicBlock *> AllBlocks,
                                                     bool IsLeafFunc) {
 
@@ -951,8 +1001,10 @@ bool ModuleSanitizerCoverage::InjectCoverage(Function &       F,
     }
 
     CreateFunctionLocalArrays(F, AllBlocks, special);
-    for (size_t i = 0, N = AllBlocks.size(); i < N; i++)
-        InjectCoverageAtBlock(F, *AllBlocks[i], i, IsLeafFunc);
+    for (size_t i = 0, N = AllBlocks.size(); i < N; i++) {
+        
+        InjectCoverageAtBlock(F, MDu, *AllBlocks[i], i, IsLeafFunc);
+    }
 
     instr += special;
 
@@ -1107,8 +1159,8 @@ void ModuleSanitizerCoverage::InjectTraceForCmp(Function &, ArrayRef<Instruction
     }
 }
 
-void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, BasicBlock &BB,
-                                                              size_t Idx, bool   IsLeafFunc) {
+void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MDu,
+                                                              BasicBlock &BB, size_t Idx, bool IsLeafFunc) {
 
     BasicBlock::iterator IP = BB.getFirstInsertionPt();
     bool         IsEntryBB  = (&BB == &F.getEntryBlock());

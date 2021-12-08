@@ -3,8 +3,7 @@ import os
 import pyprob
 from DemoAdd import DemoAdd
 
-Modules = ['Demo.py', 'DemoAdd.py']
-pyprob.Setup(Modules, 'branch_variables.xml')
+pyprob.Setup('py_summary.xml')
  
 def DemoTr (Value, List):
     Var = os.getenv("CASE1")

@@ -16,7 +16,7 @@ namespace pyprob {
 
 using namespace std;
 
-void PyInit(const vector<string>& Modules, string BrValXml);
+void PyInit(string BrValXml);
 
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg);
 

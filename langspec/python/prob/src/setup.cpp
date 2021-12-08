@@ -4,9 +4,9 @@ namespace pyprob {
 
 using namespace std;
 
-void SetupTracer(const vector<string>& Modules, string BrValXml) 
+void SetupTracer(string PySummary) 
 {
-    PyInit(Modules, BrValXml);
+    PyInit(PySummary);
     PyEval_SetTrace((Py_tracefunc)Tracer, (PyObject*)NULL);
     //PyEval_SetProfile ((Py_tracefunc)Tracer, (PyObject*)NULL);
 }

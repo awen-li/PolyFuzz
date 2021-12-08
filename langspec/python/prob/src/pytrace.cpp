@@ -12,16 +12,8 @@ using namespace std;
 
 static PRT __Prt;
 
-void PyInit(const vector<string>& Modules, string BrValXml) 
+void PyInit(string BrValXml) 
 {
-    /* init tracing modules */
-    set<string> *RegModule = &__Prt.RegModule;
-    for (auto It = Modules.begin (); It != Modules.end (); It++)
-    {
-        RegModule->insert (*It);
-        PY_PRINT("Add module: %s\r\n", (*It).c_str());
-    }
-
     /* load all branch variables for each function */
     BV_set *BvSet = &__Prt.BvSet;
     BvSet->LoadBrVals(BrValXml);
@@ -336,11 +328,9 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     PyCodeObject *f_code  = frame->f_code;
 
     string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));
-    if (!__Prt.IsRegModule (FileName))
-    {
-        return 0;
-    }
     const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
+
+    //PY_PRINT ("@@@ %s : %s: %d\r\n", FileName.c_str(), FuncName, frame->f_lineno);
     
     int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName);
     if (FIdx == 0)

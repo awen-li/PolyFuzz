@@ -12,7 +12,7 @@ namespace pyprob {
 
 using namespace std;
 
-void SetupTracer(const vector<string>& Modules, string BrValXml);
+void SetupTracer(string PySummary);
 
 void PyExcept (string Type, string FileName, long LineNo);
 

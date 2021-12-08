@@ -33,7 +33,7 @@ def _AddChildNode (Doc, Parent, Child, Value=None):
 
 def GenBrVal (PyDir, ExpList=None):
     doc  = Document()  
-    Root = _AddChildNode (doc, doc, "branch_variables")
+    Root = _AddChildNode (doc, doc, "py_summary")
 
     SrcApiList = {}
     FuncDefList = {}
@@ -80,7 +80,7 @@ def GenBrVal (PyDir, ExpList=None):
 
     Root.setAttribute ("branchs", str(BranchNum+4))
     # write to xml
-    f = open(PyDir+"branch_variables.xml", "w")
+    f = open(PyDir+"py_summary.xml", "w")
     f.write(doc.toprettyxml(indent="  "))
     f.close()
 

@@ -3,8 +3,7 @@ import sys
 import pyprob
 from PyDemo import *
 
-Modules = ['Demo.py']
-pyprob.Setup(Modules, 'branch_variables.xml')
+pyprob.Setup('py_summary.xml')
 
 class Demo ():
     def __init__ (self, value):

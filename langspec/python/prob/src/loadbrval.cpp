@@ -33,7 +33,7 @@ void BV_set::LoadBrVals(string BrValXml)
     fclose(fp);
 
     /* read branch_variables tag as entry */
-    mxml_node_t* bvNode = mxmlFindElement(tree, tree, "branch_variables", NULL, NULL, MXML_DESCEND);
+    mxml_node_t* bvNode = mxmlFindElement(tree, tree, "py_summary", NULL, NULL, MXML_DESCEND);
     if (bvNode == NULL)
     {
         PY_PRINT("No tag branch_variables exist, load a right file?...");

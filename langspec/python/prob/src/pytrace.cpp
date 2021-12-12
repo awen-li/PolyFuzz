@@ -283,8 +283,8 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
         }
         case LOAD_DEREF:
         {
-            cout<<"Unsupported Opcode!!!!\r\n";
-            assert (0);
+            //cout<<"Unsupported Opcode!!!!\r\n";
+            //assert (0);
             break;
         }
         case CALL_FUNCTION:

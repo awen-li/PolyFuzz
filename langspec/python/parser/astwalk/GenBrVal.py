@@ -31,7 +31,7 @@ def _AddChildNode (Doc, Parent, Child, Value=None):
     return CNode
     
 
-def GenBrVal (PyDir, ExpList=None):
+def GenPySummary (PyDir, ExpList=None):
     doc  = Document()  
     Root = _AddChildNode (doc, doc, "py_summary")
 

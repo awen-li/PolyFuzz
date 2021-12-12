@@ -6,7 +6,7 @@ import argparse
 import time
 import xml.dom.minidom
 from xml.dom.minidom import parse
-from astwalk import GenBrVal
+from astwalk import GenPySummary
 
  
 InitTicks = time.time()
@@ -34,7 +34,7 @@ def main():
     if opts.dirname is None:
         parser.error('dirname is missing: required with the main options')
         
-    GenBrVal (opts.dirname)
+    GenPySummary (opts.dirname)
 
     print ("Run successful.....")
 

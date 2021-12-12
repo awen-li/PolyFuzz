@@ -1,0 +1,1047 @@
+<?xml version="1.0" ?>
+<py_summary branchs="2330">
+  <file name="uri_parser.py">
+    <function bbs="39 46" brval="" class="" name="_unquoted_percent"/>
+    <function bbs="55 66 73" brval="user userinfo" class="" name="parse_userinfo"/>
+    <function bbs="79 91 96" brval="i" class="" name="parse_ipv6_literal_host"/>
+    <function bbs="101 115 117 119 120 126 127" brval="entity" class="" name="parse_host"/>
+    <function bbs="146 151" brval="" class="" name="_parse_options"/>
+    <function bbs="167 177 178 187 188 194 199 200 207" brval="tlsinsecure tlscrlfile tlsallowinvalidcerts options" class="" name="_handle_security_options"/>
+    <function bbs="208 209 211" brval="val" class="" name="truth_value"/>
+    <function bbs="223 232" brval="" class="" name="_handle_option_deprecations"/>
+    <function bbs="259 269 270 274" brval="tlsinsecure" class="" name="_normalize_options"/>
+    <function bbs="282" brval="" class="" name="validate_options"/>
+    <function bbs="298 314 316 318 320 323 331 334 336" brval="normalize semi_idx and_idx validate" class="" name="split_options"/>
+    <function bbs="343 357" brval="" class="" name="split_hosts"/>
+    <function bbs="378 380 384 385 388 391" brval="" class="" name="_check_options"/>
+    <function bbs="396 449 452 453 463 466 476 480 484 486 488 490 493 495 497 499 503 505 512 513 518 523 534 537 541 544 547 549 551 554 558" brval="srv_max_hosts port dbase _HAVE_DNSPYTHON host_part hosts dns_options opts _ALLOWED_TXT_OPTS srv_service_name options scheme_free path_part is_srv" class="" name="parse_uri"/>
+    <function bbs="573 575 577 580" brval="kms_tls_options" class="" name="_parse_kms_tls_options"/>
+  </file>
+  <file name="encryption.py">
+    <function bbs="70" brval="" class="" name="_wrap_encryption_errors"/>
+    <function bbs="99 112 130" brval="ctx" class="_EncryptionIO" name="kms_request"/>
+    <function bbs="138 153" brval="" class="_EncryptionIO" name="collection_info"/>
+    <function bbs="156" brval="" class="_EncryptionIO" name="spawn"/>
+    <function bbs="167 177 187" brval="self" class="_EncryptionIO" name="mark_command"/>
+    <function bbs="195 205" brval="" class="_EncryptionIO" name="fetch_keys"/>
+    <function bbs="208 219" brval="" class="_EncryptionIO" name="insert_data_key"/>
+    <function bbs="225" brval="" class="_EncryptionIO" name="bson_encode"/>
+    <function bbs="591 602" brval="self" class="ClientEncryption" name="close"/>
+    <function bbs="529 548" brval="UUID_SUBTYPE key_id" class="ClientEncryption" name="encrypt"/>
+    <function bbs="560 571" brval="value" class="ClientEncryption" name="decrypt"/>
+    <function bbs="587 588" brval="self" class="ClientEncryption" name="_check_closed"/>
+    <function bbs="456" brval="" class="ClientEncryption" name="create_data_key"/>
+  </file>
+  <file name="driver_info.py"/>
+  <file name="message.py">
+    <function bbs="90" brval="" class="" name="_randint"/>
+    <function bbs="95 104 107" brval="ReadPreference spec mode" class="" name="_maybe_add_read_preference"/>
+    <function bbs="113" brval="" class="" name="_convert_exception"/>
+    <function bbs="119 126 128 134 137 139 140 141 144 145 149" brval="result operation affected errmsg" class="" name="_convert_write_result"/>
+    <function bbs="181 186 189 191 194 196 198 200 202 204 206 208 210 212" brval="read_concern skip options cmd session allow_disk_use batch_size spec projection collation limit" class="" name="_gen_find_command"/>
+    <function bbs="220 224 226" brval="max_await_time_ms batch_size" class="" name="_gen_get_more_command"/>
+    <function bbs="472" brval="" class="_CursorAddress" name="namespace"/>
+    <function bbs="453 456 459" brval="sock_info self" class="_RawBatchGetMore" name="use_command"/>
+    <function bbs="396 399 406 412" brval="client self" class="_GetMore" name="as_command"/>
+    <function bbs="419 425 427 430" brval="self use_cmd" class="_GetMore" name="get_message"/>
+    <function bbs="495" brval="" class="" name="_compress"/>
+    <function bbs="529 541 552" brval="identifier" class="" name="_op_msg_no_header"/>
+    <function bbs="556" brval="" class="" name="_op_msg_compressed"/>
+    <function bbs="565" brval="" class="" name="_op_msg_uncompressed"/>
+    <function bbs="575 580 581 585 594 601" brval="read_preference identifier ctx command secondary_ok" class="" name="_op_msg"/>
+    <function bbs="605 609 612" brval="field_selector" class="" name="_query_impl"/>
+    <function bbs="623" brval="" class="" name="_query_compressed"/>
+    <function bbs="639" brval="" class="" name="_query_uncompressed"/>
+    <function bbs="656 659" brval="ctx" class="" name="_query"/>
+    <function bbs="670" brval="" class="" name="_get_more_impl"/>
+    <function bbs="679" brval="" class="" name="_get_more_compressed"/>
+    <function bbs="685" brval="" class="" name="_get_more_uncompressed"/>
+    <function bbs="693 695" brval="ctx" class="" name="_get_more"/>
+    <function bbs="862 866" brval="to_send" class="_EncryptedBulkWriteContext" name="_batch_command"/>
+    <function bbs="875" brval="" class="_EncryptedBulkWriteContext" name="execute"/>
+    <function bbs="883" brval="" class="_EncryptedBulkWriteContext" name="execute_unack"/>
+    <function bbs="747" brval="" class="_BulkWriteContext" name="max_bson_size"/>
+    <function bbs="752 755" brval="self" class="_BulkWriteContext" name="max_message_size"/>
+    <function bbs="760" brval="" class="_BulkWriteContext" name="max_write_batch_size"/>
+    <function bbs="890" brval="" class="_EncryptedBulkWriteContext" name="max_split_size"/>
+    <function bbs="770 773 779 781 785 788 790 793 796" brval="result self" class="_BulkWriteContext" name="unack_write"/>
+    <function bbs="803 806 812 816 818 821" brval="self" class="_BulkWriteContext" name="write_command"/>
+    <function bbs="828" brval="" class="_BulkWriteContext" name="_start"/>
+    <function bbs="837" brval="" class="_BulkWriteContext" name="_succeed"/>
+    <function bbs="844" brval="" class="_BulkWriteContext" name="_fail"/>
+    <function bbs="896 898 906" brval="operation" class="" name="_raise_document_too_large"/>
+    <function bbs="918 945" brval="" class="" name="_batched_op_msg_impl"/>
+    <function bbs="980" brval="" class="" name="_encode_batched_op_msg"/>
+    <function bbs="994" brval="" class="" name="_batched_op_msg_compressed"/>
+    <function bbs="1009" brval="" class="" name="_batched_op_msg"/>
+    <function bbs="1034 1040 1043 1044" brval="command ctx" class="" name="_do_batched_op_msg"/>
+    <function bbs="1054" brval="" class="" name="_encode_batched_write_command"/>
+    <function bbs="1067 1102" brval="" class="" name="_batched_write_command_impl"/>
+    <function bbs="1261" brval="" class="_OpMsg" name="raw_response"/>
+    <function bbs="1271" brval="" class="_OpMsg" name="unpack_response"/>
+    <function bbs="1286" brval="" class="_OpMsg" name="command_response"/>
+    <function bbs="1290" brval="" class="_OpMsg" name="raw_command_response"/>
+    <function bbs="1294" brval="" class="_OpMsg" name="more_to_come"/>
+    <function bbs="1299 1303 1304 1309 1312 1317" brval="first_payload_type flags first_payload_size cls" class="_OpMsg" name="unpack"/>
+  </file>
+  <file name="compression_support.py">
+    <function bbs="45 53" brval="" class="" name="validate_compressors"/>
+    <function bbs="75 80" brval="level" class="" name="validate_zlib_compression_level"/>
+    <function bbs="91 92 94 96 98" brval="compressors chosen" class="CompressionSettings" name="get_compression_context"/>
+    <function bbs="102" brval="" class="" name="_zlib_no_compress"/>
+    <function bbs="133" brval="" class="ZstdContext" name="compress"/>
+    <function bbs="140 141 147 149 154" brval="SnappyContext ZlibContext ZstdContext compressor_id" class="" name="decompress"/>
+  </file>
+  <file name="collection.py">
+    <function bbs="182" brval="" class="Collection" name="_socket_for_reads"/>
+    <function bbs="186" brval="" class="Collection" name="_socket_for_writes"/>
+    <function bbs="189" brval="" class="Collection" name="_command"/>
+    <function bbs="302" brval="" class="Collection" name="full_name"/>
+    <function bbs="310" brval="" class="Collection" name="name"/>
+    <function bbs="315" brval="" class="Collection" name="database"/>
+    <function bbs="322" brval="" class="Collection" name="with_options"/>
+    <function bbs="361 431 439" brval="bulk_api_result" class="Collection" name="bulk_write"/>
+    <function bbs="443 451" brval="write_concern" class="Collection" name="_insert_one"/>
+    <function bbs="454 455" brval="bypass_doc_val" class="" name="_insert_command"/>
+    <function bbs="475 514" brval="document" class="Collection" name="insert_one"/>
+    <function bbs="525 566" brval="documents" class="Collection" name="insert_many"/>
+    <function bbs="571 573" brval="" class="" name="gen"/>
+    <function bbs="664" brval="" class="" name="_update"/>
+    <function bbs="658" brval="" class="Collection" name="_update_retryable"/>
+    <function bbs="676" brval="" class="Collection" name="replace_one"/>
+    <function bbs="753" brval="" class="Collection" name="update_one"/>
+    <function bbs="834" brval="" class="Collection" name="update_many"/>
+    <function bbs="914" brval="" class="Collection" name="drop"/>
+    <function bbs="992" brval="" class="" name="_delete"/>
+    <function bbs="987" brval="" class="Collection" name="_delete_retryable"/>
+    <function bbs="1003" brval="" class="Collection" name="delete_one"/>
+    <function bbs="1053" brval="" class="Collection" name="delete_many"/>
+    <function bbs="1103 1128 1133" brval="filter" class="Collection" name="find_one"/>
+    <function bbs="1137" brval="" class="Collection" name="find"/>
+    <function bbs="1326 1353" brval="self" class="Collection" name="find_raw_batches"/>
+    <function bbs="1359 1372" brval="" class="Collection" name="_count_cmd"/>
+    <function bbs="1376 1389" brval="result" class="Collection" name="_aggregate_one_result"/>
+    <function bbs="1394 1412" brval="kwargs" class="Collection" name="estimated_document_count"/>
+    <function bbs="2223" brval="" class="" name="_cmd"/>
+    <function bbs="1441 1496 1498 1504" brval="kwargs" class="Collection" name="count_documents"/>
+    <function bbs="1519" brval="" class="Collection" name="create_indexes"/>
+    <function bbs="1594 1692" brval="kwargs" class="Collection" name="create_index"/>
+    <function bbs="1697" brval="" class="Collection" name="drop_indexes"/>
+    <function bbs="1723 1760 1763" brval="" class="Collection" name="drop_index"/>
+    <function bbs="1776" brval="" class="Collection" name="list_indexes"/>
+    <function bbs="1825 1853" brval="" class="Collection" name="index_information"/>
+    <function bbs="1859 1884 1888 1892" brval="result options" class="Collection" name="options"/>
+    <function bbs="1897" brval="" class="Collection" name="_aggregate"/>
+    <function bbs="1907" brval="" class="Collection" name="aggregate"/>
+    <function bbs="1989 2014" brval="self" class="Collection" name="aggregate_raw_batches"/>
+    <function bbs="2026" brval="" class="Collection" name="watch"/>
+    <function bbs="2128 2156 2159 2161 2163" brval="new_name" class="Collection" name="rename"/>
+    <function bbs="2179 2213 2217 2218" brval="filter kwargs" class="Collection" name="distinct"/>
+    <function bbs="2232 2234 2237" brval="raw_wc" class="Collection" name="_write_concern_for_cmd"/>
+    <function bbs="2301" brval="" class="Collection" name="find_one_and_delete"/>
+    <function bbs="2378" brval="" class="Collection" name="find_one_and_replace"/>
+    <function bbs="2464" brval="" class="Collection" name="find_one_and_update"/>
+  </file>
+  <file name="socket_checker.py">
+    <function bbs="27 28 30" brval="exc" class="" name="_errno_from_exception"/>
+    <function bbs="43 48" brval="" class="SocketChecker" name="select"/>
+    <function bbs="82" brval="" class="SocketChecker" name="socket_closed"/>
+  </file>
+  <file name="network.py">
+    <function bbs="41 89 91 92 94 96 100 104 107 111 119 123 127 132 140 145 146 147 150 151 153 158 160 163 168 175" brval="publish read_concern size session reply client unacknowledged _NO_COMPRESSION check max_bson_size use_op_msg collation compression_ctx max_doc_size is_mongos message" class="" name="command"/>
+    <function bbs="184 187 190 195 196 199 202 205 212" brval="op_code length timeout request_id response_to max_message_size" class="" name="receive_message"/>
+    <function bbs="225 229 231" brval="context" class="" name="wait_for_read"/>
+    <function bbs="251 255" brval="" class="" name="_receive_data_on_socket"/>
+  </file>
+  <file name="client_options.py">
+    <function bbs="33 37" brval="mechanism username" class="" name="_parse_credentials"/>
+    <function bbs="43 45" brval="options" class="" name="_parse_read_preference"/>
+    <function bbs="55" brval="" class="" name="_parse_write_concern"/>
+    <function bbs="64" brval="" class="" name="_parse_read_concern"/>
+    <function bbs="70 73 85 90 96 97 100 107" brval="use_tls enabled_tls_opts" class="" name="_parse_ssl_options"/>
+    <function bbs="120 127" brval="max_pool_size min_pool_size" class="" name="_parse_pool_options"/>
+    <function bbs="193" brval="" class="ClientOptions" name="_options"/>
+    <function bbs="198" brval="" class="ClientOptions" name="connect"/>
+    <function bbs="203" brval="" class="ClientOptions" name="codec_options"/>
+    <function bbs="208" brval="" class="ClientOptions" name="direct_connection"/>
+    <function bbs="213" brval="" class="ClientOptions" name="local_threshold_ms"/>
+    <function bbs="218" brval="" class="ClientOptions" name="server_selection_timeout"/>
+    <function bbs="223" brval="" class="ClientOptions" name="server_selector"/>
+    <function bbs="227" brval="" class="ClientOptions" name="heartbeat_frequency"/>
+    <function bbs="232" brval="" class="ClientOptions" name="pool_options"/>
+    <function bbs="237" brval="" class="ClientOptions" name="read_preference"/>
+    <function bbs="242" brval="" class="ClientOptions" name="replica_set_name"/>
+    <function bbs="247" brval="" class="ClientOptions" name="write_concern"/>
+    <function bbs="252" brval="" class="ClientOptions" name="read_concern"/>
+    <function bbs="257" brval="" class="ClientOptions" name="retry_writes"/>
+    <function bbs="262" brval="" class="ClientOptions" name="retry_reads"/>
+    <function bbs="267" brval="" class="ClientOptions" name="auto_encryption_opts"/>
+    <function bbs="272" brval="" class="ClientOptions" name="load_balanced"/>
+    <function bbs="277" brval="" class="ClientOptions" name="event_listeners"/>
+  </file>
+  <file name="ocsp_cache.py">
+    <function bbs="33" brval="" class="_OCSPCache" name="_get_cache_key"/>
+  </file>
+  <file name="bulk.py">
+    <function bbs="67" brval="" class="_Run" name="index"/>
+    <function bbs="75" brval="" class="_Run" name="add"/>
+    <function bbs="87 92 95 98 100 102 108 112 113 123" brval="upserted _INSERT write_errors run wce _DELETE _UPDATE" class="" name="_merge_command"/>
+    <function bbs="127 130" brval="full_result" class="" name="_raise_bulk_write_error"/>
+    <function bbs="159 162 165" brval="encrypter" class="_Bulk" name="bulk_ctx_class"/>
+    <function bbs="167 172" brval="document" class="_Bulk" name="add_insert"/>
+    <function bbs="176 184 187 190 193" brval="multi array_filters hint collation" class="_Bulk" name="add_update"/>
+    <function bbs="198 206 209" brval="hint collation" class="_Bulk" name="add_replace"/>
+    <function bbs="214 219 222 225" brval="_DELETE_ALL hint collation limit" class="_Bulk" name="add_delete"/>
+    <function bbs="230 235" brval="" class="_Bulk" name="gen_ordered"/>
+    <function bbs="244 249 252" brval="" class="_Bulk" name="gen_unordered"/>
+    <function bbs="256 262 269" brval="self" class="_Bulk" name="_execute_command"/>
+    <function bbs="321" brval="" class="_Bulk" name="execute_command"/>
+    <function bbs="337" brval="" class="" name="retryable_bulk"/>
+    <function bbs="351 359 363" brval="self" class="_Bulk" name="execute_op_msg_no_results"/>
+    <function bbs="380" brval="" class="_Bulk" name="execute_command_no_results"/>
+    <function bbs="405 408 411 414 418 422" brval="self" class="_Bulk" name="execute_no_results"/>
+    <function bbs="426 429 431 438 441 444 448" brval="write_concern self" class="_Bulk" name="execute"/>
+  </file>
+  <file name="saslprep.py">
+    <function bbs="47 63 66 69 86 87 99 102" brval="prohibit_unassigned_code_points" class="" name="saslprep"/>
+  </file>
+  <file name="monitoring.py">
+    <function bbs="372" brval="" class="ServerHeartbeatListener" name="started"/>
+    <function bbs="380" brval="" class="ServerHeartbeatListener" name="succeeded"/>
+    <function bbs="388" brval="" class="ServerHeartbeatListener" name="failed"/>
+    <function bbs="248" brval="" class="ConnectionPoolListener" name="pool_created"/>
+    <function bbs="258" brval="" class="ConnectionPoolListener" name="pool_ready"/>
+    <function bbs="270" brval="" class="ConnectionPoolListener" name="pool_cleared"/>
+    <function bbs="280" brval="" class="ConnectionPoolListener" name="pool_closed"/>
+    <function bbs="290" brval="" class="ConnectionPoolListener" name="connection_created"/>
+    <function bbs="300" brval="" class="ConnectionPoolListener" name="connection_ready"/>
+    <function bbs="311" brval="" class="ConnectionPoolListener" name="connection_closed"/>
+    <function bbs="321" brval="" class="ConnectionPoolListener" name="connection_check_out_started"/>
+    <function bbs="331" brval="" class="ConnectionPoolListener" name="connection_check_out_failed"/>
+    <function bbs="341" brval="" class="ConnectionPoolListener" name="connection_checked_out"/>
+    <function bbs="351" brval="" class="ConnectionPoolListener" name="connection_checked_in"/>
+    <function bbs="438" brval="" class="ServerListener" name="opened"/>
+    <function bbs="446" brval="" class="ServerListener" name="description_changed"/>
+    <function bbs="454" brval="" class="ServerListener" name="closed"/>
+    <function bbs="463" brval="" class="" name="_to_micros"/>
+    <function bbs="468 470 472" brval="" class="" name="_validate_event_listeners"/>
+    <function bbs="481 489 494 496 498 500 502" brval="" class="" name="register"/>
+    <function bbs="515 516" brval="HelloCompat doc" class="" name="_is_speculative_authenticate"/>
+    <function bbs="536" brval="" class="_CommandEvent" name="command_name"/>
+    <function bbs="541" brval="" class="_CommandEvent" name="request_id"/>
+    <function bbs="1160" brval="" class="_ServerHeartbeatEvent" name="connection_id"/>
+    <function bbs="771" brval="" class="PoolClearedEvent" name="service_id"/>
+    <function bbs="559" brval="" class="_CommandEvent" name="operation_id"/>
+    <function bbs="594" brval="" class="CommandStartedEvent" name="command"/>
+    <function bbs="599" brval="" class="CommandStartedEvent" name="database_name"/>
+    <function bbs="680" brval="" class="CommandFailedEvent" name="duration_micros"/>
+    <function bbs="1239" brval="" class="ServerHeartbeatFailedEvent" name="reply"/>
+    <function bbs="685" brval="" class="CommandFailedEvent" name="failure"/>
+    <function bbs="965" brval="" class="ConnectionCheckOutFailedEvent" name="address"/>
+    <function bbs="732" brval="" class="PoolCreatedEvent" name="options"/>
+    <function bbs="972" brval="" class="ConnectionCheckOutFailedEvent" name="reason"/>
+    <function bbs="1021" brval="" class="_ServerEvent" name="server_address"/>
+    <function bbs="1093" brval="" class="TopologyEvent" name="topology_id"/>
+    <function bbs="1116" brval="" class="TopologyDescriptionChangedEvent" name="previous_description"/>
+    <function bbs="1122" brval="" class="TopologyDescriptionChangedEvent" name="new_description"/>
+    <function bbs="1234" brval="" class="ServerHeartbeatFailedEvent" name="duration"/>
+    <function bbs="1244" brval="" class="ServerHeartbeatFailedEvent" name="awaited"/>
+    <function bbs="1294" brval="" class="_EventListeners" name="enabled_for_commands"/>
+    <function bbs="1299" brval="" class="_EventListeners" name="enabled_for_server"/>
+    <function bbs="1304" brval="" class="_EventListeners" name="enabled_for_server_heartbeat"/>
+    <function bbs="1309" brval="" class="_EventListeners" name="enabled_for_topology"/>
+    <function bbs="1314" brval="" class="_EventListeners" name="enabled_for_cmap"/>
+    <function bbs="1319" brval="" class="_EventListeners" name="event_listeners"/>
+    <function bbs="1327 1342 1347" brval="op_id" class="_EventListeners" name="publish_command_start"/>
+    <function bbs="1353 1370 1372 1379" brval="op_id speculative_hello" class="_EventListeners" name="publish_command_success"/>
+    <function bbs="1385 1401 1406" brval="op_id" class="_EventListeners" name="publish_command_failure"/>
+    <function bbs="1412 1420" brval="" class="_EventListeners" name="publish_server_heartbeat_started"/>
+    <function bbs="1426 1440" brval="" class="_EventListeners" name="publish_server_heartbeat_succeeded"/>
+    <function bbs="1446 1460" brval="" class="_EventListeners" name="publish_server_heartbeat_failed"/>
+    <function bbs="1466 1475" brval="" class="_EventListeners" name="publish_server_opened"/>
+    <function bbs="1481 1490" brval="" class="_EventListeners" name="publish_server_closed"/>
+    <function bbs="1496 1511" brval="" class="_EventListeners" name="publish_server_description_changed"/>
+    <function bbs="1517 1525" brval="" class="_EventListeners" name="publish_topology_opened"/>
+    <function bbs="1531 1539" brval="" class="_EventListeners" name="publish_topology_closed"/>
+    <function bbs="1545 1557" brval="" class="_EventListeners" name="publish_topology_description_changed"/>
+    <function bbs="1563 1567" brval="" class="_EventListeners" name="publish_pool_created"/>
+    <function bbs="1573 1577" brval="" class="_EventListeners" name="publish_pool_ready"/>
+    <function bbs="1583 1587" brval="" class="_EventListeners" name="publish_pool_cleared"/>
+    <function bbs="1593 1597" brval="" class="_EventListeners" name="publish_pool_closed"/>
+    <function bbs="1603 1608" brval="" class="_EventListeners" name="publish_connection_created"/>
+    <function bbs="1614 1618" brval="" class="_EventListeners" name="publish_connection_ready"/>
+    <function bbs="1624 1629" brval="" class="_EventListeners" name="publish_connection_closed"/>
+    <function bbs="1635 1640" brval="" class="_EventListeners" name="publish_connection_check_out_started"/>
+    <function bbs="1646 1651" brval="" class="_EventListeners" name="publish_connection_check_out_failed"/>
+    <function bbs="1657 1662" brval="" class="_EventListeners" name="publish_connection_checked_out"/>
+    <function bbs="1668 1673" brval="" class="_EventListeners" name="publish_connection_checked_in"/>
+  </file>
+  <file name="server.py">
+    <function bbs="44 49" brval="self" class="Server" name="open"/>
+    <function bbs="52" brval="" class="Server" name="reset"/>
+    <function bbs="56 61" brval="self" class="Server" name="close"/>
+    <function bbs="67" brval="" class="Server" name="request_check"/>
+    <function bbs="71 88 94 97 99 101 109 112 113 116 120 121 126 131 133 136 143 147 149 152 155 158 165 166 172 174 180 181 193" brval="publish use_cmd operation client more_to_come" class="Server" name="run_operation"/>
+    <function bbs="203" brval="" class="Server" name="get_socket"/>
+    <function bbs="210" brval="" class="Server" name="description"/>
+    <function bbs="215" brval="" class="Server" name="pool"/>
+    <function bbs="219 225 229 230" brval="" class="Server" name="_split_message"/>
+  </file>
+  <file name="change_stream.py">
+    <function bbs="389" brval="" class="DatabaseChangeStream" name="_aggregation_command_class"/>
+    <function bbs="393" brval="" class="DatabaseChangeStream" name="_client"/>
+    <function bbs="406" brval="" class="ClusterChangeStream" name="_change_stream_options"/>
+    <function bbs="135 138 140" brval="self" class="ChangeStream" name="_command_options"/>
+    <function bbs="144" brval="" class="ChangeStream" name="_aggregation_pipeline"/>
+    <function bbs="151 159 160 162 168" brval="sock_info result self" class="ChangeStream" name="_process_result"/>
+    <function bbs="173" brval="" class="ChangeStream" name="_run_aggregation_cmd"/>
+    <function bbs="186" brval="" class="ChangeStream" name="_create_cursor"/>
+    <function bbs="192" brval="" class="ChangeStream" name="_resume"/>
+    <function bbs="200" brval="" class="ChangeStream" name="close"/>
+    <function bbs="207" brval="" class="ChangeStream" name="resume_token"/>
+    <function bbs="216 248" brval="" class="ChangeStream" name="next"/>
+    <function bbs="257" brval="" class="ChangeStream" name="alive"/>
+    <function bbs="268 308 314 320 325 341 353" brval="self exc change is_resumable" class="ChangeStream" name="try_next"/>
+  </file>
+  <file name="read_preferences.py">
+    <function bbs="41 44 47 50 55" brval="tag_sets" class="" name="_validate_tag_sets"/>
+    <function bbs="65" brval="" class="" name="_invalid_max_staleness_msg"/>
+    <function bbs="71 73 76 79" brval="max_staleness" class="" name="_validate_max_staleness"/>
+    <function bbs="85 87 90" brval="hedge" class="" name="_validate_hedge"/>
+    <function bbs="110" brval="" class="_ServerMode" name="name"/>
+    <function bbs="116" brval="" class="_ServerMode" name="mongos_mode"/>
+    <function bbs="122 127 129 131" brval="self" class="_ServerMode" name="document"/>
+    <function bbs="135" brval="" class="_ServerMode" name="mode"/>
+    <function bbs="141" brval="" class="_ServerMode" name="tag_sets"/>
+    <function bbs="156" brval="" class="_ServerMode" name="max_staleness"/>
+    <function bbs="163" brval="" class="_ServerMode" name="hedge"/>
+    <function bbs="187" brval="" class="_ServerMode" name="min_wire_version"/>
+    <function bbs="444 446 451" brval="common_wv" class="_AggWritePref" name="selection_hook"/>
+    <function bbs="470 471 472 475" brval="tag_sets _PRIMARY max_staleness mode" class="" name="make_read_preference"/>
+    <function bbs="548" brval="" class="" name="read_pref_mode_from_name"/>
+    <function bbs="559 560 565 570" brval="sample self" class="MovingAverage" name="add_sample"/>
+    <function bbs="572" brval="" class="MovingAverage" name="get"/>
+    <function bbs="576" brval="" class="MovingAverage" name="reset"/>
+  </file>
+  <file name="read_concern.py">
+    <function bbs="39" brval="" class="ReadConcern" name="level"/>
+    <function bbs="44" brval="" class="ReadConcern" name="ok_for_legacy"/>
+    <function bbs="50 59" brval="self" class="ReadConcern" name="document"/>
+  </file>
+  <file name="collation.py">
+    <function bbs="192" brval="" class="Collation" name="document"/>
+    <function bbs="216 217 219 221" brval="value" class="" name="validate_collation_or_none"/>
+  </file>
+  <file name="database.py">
+    <function bbs="30 33 36" brval="name" class="" name="_check_name"/>
+    <function bbs="109" brval="" class="Database" name="client"/>
+    <function bbs="114" brval="" class="Database" name="name"/>
+    <function bbs="119" brval="" class="Database" name="with_options"/>
+    <function bbs="198" brval="" class="Database" name="get_collection"/>
+    <function bbs="241 324" brval="name s" class="Database" name="create_collection"/>
+    <function bbs="333" brval="" class="Database" name="aggregate"/>
+    <function bbs="403" brval="" class="Database" name="watch"/>
+    <function bbs="495 501" brval="" class="Database" name="_command"/>
+    <function bbs="519 604" brval="read_preference" class="Database" name="command"/>
+    <function bbs="613 617" brval="read_preference" class="Database" name="_retryable_read_command"/>
+    <function bbs="677" brval="" class="" name="_cmd"/>
+    <function bbs="629" brval="" class="Database" name="_list_collections"/>
+    <function bbs="653 672" brval="filter" class="Database" name="list_collections"/>
+    <function bbs="685 709 714 715 716" brval="filter" class="Database" name="list_collection_names"/>
+    <function bbs="722 743 746" brval="" class="Database" name="drop_collection"/>
+    <function bbs="757 790 793 800 807 809 812 813 824 827" brval="background result valid" class="Database" name="validate_collection"/>
+    <function bbs="845 866 868" brval="dbref self" class="Database" name="dereference"/>
+  </file>
+  <file name="topology_description.py">
+    <function bbs="87 89" brval="" class="TopologyDescription" name="_init_incompatible_err"/>
+    <function bbs="123 129" brval="self" class="TopologyDescription" name="check_compatible"/>
+    <function bbs="132" brval="" class="TopologyDescription" name="has_server"/>
+    <function bbs="135" brval="" class="TopologyDescription" name="reset_server"/>
+    <function bbs="140 142 145" brval="TOPOLOGY_TYPE self" class="TopologyDescription" name="reset"/>
+    <function bbs="159" brval="" class="TopologyDescription" name="server_descriptions"/>
+    <function bbs="164" brval="" class="TopologyDescription" name="topology_type"/>
+    <function bbs="169" brval="" class="TopologyDescription" name="topology_type_name"/>
+    <function bbs="177" brval="" class="TopologyDescription" name="replica_set_name"/>
+    <function bbs="182" brval="" class="TopologyDescription" name="max_set_version"/>
+    <function bbs="187" brval="" class="TopologyDescription" name="max_election_id"/>
+    <function bbs="192" brval="" class="TopologyDescription" name="logical_session_timeout_minutes"/>
+    <function bbs="197" brval="" class="TopologyDescription" name="known_servers"/>
+    <function bbs="203" brval="" class="TopologyDescription" name="has_known_servers"/>
+    <function bbs="209" brval="" class="TopologyDescription" name="readable_servers"/>
+    <function bbs="214 218" brval="servers" class="TopologyDescription" name="common_wire_version"/>
+    <function bbs="223" brval="" class="TopologyDescription" name="heartbeat_frequency"/>
+    <function bbs="227" brval="" class="TopologyDescription" name="srv_max_hosts"/>
+    <function bbs="231 232" brval="selection" class="TopologyDescription" name="_apply_local_threshold"/>
+    <function bbs="241 257 259 266 269 271 275 282 286" brval="custom_selector self TOPOLOGY_TYPE selection address common_wv selector" class="TopologyDescription" name="apply_selector"/>
+    <function bbs="291" brval="" class="TopologyDescription" name="has_readable_server"/>
+    <function bbs="308" brval="" class="TopologyDescription" name="has_writable_server"/>
+    <function bbs="339 366 368 384 385 386 390 391 394 395 398 399 402 412 419 420 424 434 443" brval="server_description topology_type set_name SERVER_TYPE TOPOLOGY_TYPE server_type" class="" name="updated_topology_description"/>
+    <function bbs="454 466 471 475 478 481 483" brval="topology_description n_to_add" class="" name="_updated_topology_description_srv_polling"/>
+    <function bbs="495 510 513 523 524 536 543 554 559" brval="replica_set_name server_description max_election_tuple max_set_version" class="" name="_update_rs_from_primary"/>
+    <function bbs="570 583 585" brval="replica_set_name server_description" class="" name="_update_rs_with_primary_from_member"/>
+    <function bbs="593 605 608 614 618" brval="replica_set_name server_description" class="" name="_update_rs_no_primary_from_member"/>
+    <function bbs="625 632" brval="" class="" name="_check_has_primary"/>
+  </file>
+  <file name="server_description.py">
+    <function bbs="85" brval="" class="ServerDescription" name="address"/>
+    <function bbs="90" brval="" class="ServerDescription" name="server_type"/>
+    <function bbs="95" brval="" class="ServerDescription" name="server_type_name"/>
+    <function bbs="103" brval="" class="ServerDescription" name="all_hosts"/>
+    <function bbs="108" brval="" class="ServerDescription" name="tags"/>
+    <function bbs="112" brval="" class="ServerDescription" name="replica_set_name"/>
+    <function bbs="117" brval="" class="ServerDescription" name="primary"/>
+    <function bbs="122" brval="" class="ServerDescription" name="max_bson_size"/>
+    <function bbs="126" brval="" class="ServerDescription" name="max_message_size"/>
+    <function bbs="130" brval="" class="ServerDescription" name="max_write_batch_size"/>
+    <function bbs="134" brval="" class="ServerDescription" name="min_wire_version"/>
+    <function bbs="138" brval="" class="ServerDescription" name="max_wire_version"/>
+    <function bbs="142" brval="" class="ServerDescription" name="set_version"/>
+    <function bbs="146" brval="" class="ServerDescription" name="election_id"/>
+    <function bbs="150" brval="" class="ServerDescription" name="cluster_time"/>
+    <function bbs="154" brval="" class="ServerDescription" name="election_tuple"/>
+    <function bbs="158" brval="" class="ServerDescription" name="me"/>
+    <function bbs="162" brval="" class="ServerDescription" name="logical_session_timeout_minutes"/>
+    <function bbs="166" brval="" class="ServerDescription" name="last_write_date"/>
+    <function bbs="170" brval="" class="ServerDescription" name="last_update_time"/>
+    <function bbs="174 178" brval="self" class="ServerDescription" name="round_trip_time"/>
+    <function bbs="183" brval="" class="ServerDescription" name="error"/>
+    <function bbs="188" brval="" class="ServerDescription" name="is_writable"/>
+    <function bbs="192" brval="" class="ServerDescription" name="is_readable"/>
+    <function bbs="196" brval="" class="ServerDescription" name="mongos"/>
+    <function bbs="200" brval="" class="ServerDescription" name="is_server_type_known"/>
+    <function bbs="204" brval="" class="ServerDescription" name="retryable_writes_supported"/>
+    <function bbs="212" brval="" class="ServerDescription" name="retryable_reads_supported"/>
+    <function bbs="217" brval="" class="ServerDescription" name="topology_version"/>
+    <function bbs="221" brval="" class="ServerDescription" name="to_unknown"/>
+  </file>
+  <file name="pyopenssl_context.py">
+    <function bbs="79" brval="" class="" name="_is_ip_address"/>
+    <function bbs="92" brval="" class="" name="_ragged_eof"/>
+    <function bbs="107 109 111" brval="timeout" class="_sslConn" name="_call"/>
+    <function bbs="121" brval="" class="_sslConn" name="do_handshake"/>
+    <function bbs="124 129" brval="self" class="_sslConn" name="recv"/>
+    <function bbs="133 138" brval="self" class="_sslConn" name="recv_into"/>
+    <function bbs="142 147" brval="" class="_sslConn" name="sendall"/>
+    <function bbs="193" brval="" class="SSLContext" name="protocol"/>
+    <function bbs="254 265" brval="password" class="SSLContext" name="load_cert_chain"/>
+    <function bbs="266" brval="" class="" name="_pwcb"/>
+    <function bbs="276" brval="" class="SSLContext" name="load_verify_locations"/>
+    <function bbs="284 286 289" brval="_HAVE_CERTIFI" class="SSLContext" name="_load_certifi"/>
+    <function bbs="295 299" brval="" class="SSLContext" name="_load_wincerts"/>
+    <function bbs="306 311 313 318" brval="_sys" class="SSLContext" name="load_default_certs"/>
+    <function bbs="322" brval="" class="SSLContext" name="set_default_verify_paths"/>
+    <function bbs="329 337 339 343 347 350 353 360 362 365" brval="server_side do_handshake_on_connect _stdlibssl self session server_hostname" class="SSLContext" name="wrap_socket"/>
+  </file>
+  <file name="cursor.py">
+    <function bbs="118" brval="" class="_SocketManager" name="update_exhaust"/>
+    <function bbs="363" brval="" class="Cursor" name="close"/>
+    <function bbs="263" brval="" class="Cursor" name="collection"/>
+    <function bbs="270" brval="" class="Cursor" name="retrieved"/>
+    <function bbs="279" brval="" class="Cursor" name="rewind"/>
+    <function bbs="297" brval="" class="Cursor" name="clone"/>
+    <function bbs="307 309 310 313 324" brval="self deepcopy base" class="Cursor" name="_clone"/>
+    <function bbs="329" brval="" class="Cursor" name="_clone_base"/>
+    <function bbs="432 438 442 443 445" brval="mask _QUERY_OPTIONS self" class="Cursor" name="add_option"/>
+    <function bbs="453 459 463" brval="mask _QUERY_OPTIONS" class="Cursor" name="remove_option"/>
+    <function bbs="469 484" brval="" class="Cursor" name="allow_disk_use"/>
+    <function bbs="491 504 506" brval="self" class="Cursor" name="limit"/>
+    <function bbs="514 533 535" brval="batch_size" class="Cursor" name="batch_size"/>
+    <function bbs="542 554 556" brval="skip" class="Cursor" name="skip"/>
+    <function bbs="563 576" brval="max_time_ms" class="Cursor" name="max_time_ms"/>
+    <function bbs="584 601 607" brval="max_await_time_ms CursorType self" class="Cursor" name="max_await_time_ms"/>
+    <function bbs="694" brval="" class="Cursor" name="max_scan"/>
+    <function bbs="714 730" brval="" class="Cursor" name="max"/>
+    <function bbs="737 753" brval="" class="Cursor" name="min"/>
+    <function bbs="760" brval="" class="Cursor" name="sort"/>
+    <function bbs="806 824 826 828 830" brval="self" class="Cursor" name="distinct"/>
+    <function bbs="1250" brval="" class="RawBatchCursor" name="explain"/>
+    <function bbs="866" brval="" class="Cursor" name="hint"/>
+    <function bbs="891" brval="" class="Cursor" name="comment"/>
+    <function bbs="906 937" brval="" class="Cursor" name="where"/>
+    <function bbs="943" brval="" class="Cursor" name="collation"/>
+    <function bbs="1240 1244" brval="legacy_response" class="RawBatchCursor" name="_unpack_response"/>
+    <function bbs="1043 1044" brval="self" class="Cursor" name="_read_preference"/>
+    <function bbs="1050 1057 1060 1063 1064 1085 1086 1088 1091" brval="self" class="Cursor" name="_refresh"/>
+    <function bbs="1108" brval="" class="Cursor" name="alive"/>
+    <function bbs="1130" brval="" class="Cursor" name="cursor_id"/>
+    <function bbs="1138" brval="" class="Cursor" name="address"/>
+    <function bbs="1147 1153" brval="self" class="Cursor" name="session"/>
+    <function bbs="1159 1161 1163 1166" brval="self" class="Cursor" name="next"/>
+    <function bbs="1190 1196 1199 1201 1204 1208" brval="memo val_id" class="Cursor" name="_deepcopy"/>
+  </file>
+  <file name="results.py">
+    <function bbs="28 30" brval="self" class="_WriteResult" name="_raise_if_unacknowledged"/>
+    <function bbs="36" brval="" class="_WriteResult" name="acknowledged"/>
+    <function bbs="66" brval="" class="InsertOneResult" name="inserted_id"/>
+    <function bbs="82" brval="" class="InsertManyResult" name="inserted_ids"/>
+    <function bbs="144" brval="" class="DeleteResult" name="raw_result"/>
+    <function bbs="184" brval="" class="BulkWriteResult" name="matched_count"/>
+    <function bbs="190" brval="" class="BulkWriteResult" name="modified_count"/>
+    <function bbs="125" brval="" class="UpdateResult" name="upserted_id"/>
+    <function bbs="196" brval="" class="BulkWriteResult" name="deleted_count"/>
+    <function bbs="173" brval="" class="BulkWriteResult" name="bulk_api_result"/>
+    <function bbs="178" brval="" class="BulkWriteResult" name="inserted_count"/>
+    <function bbs="202" brval="" class="BulkWriteResult" name="upserted_count"/>
+    <function bbs="208 212" brval="self" class="BulkWriteResult" name="upserted_ids"/>
+  </file>
+  <file name="srv_resolver.py">
+    <function bbs="31 32" brval="" class="" name="maybe_decode"/>
+    <function bbs="38 39" brval="" class="" name="_resolve"/>
+    <function bbs="71 80" brval="" class="_SrvResolver" name="get_options"/>
+    <function bbs="86 91" brval="encapsulate_errors" class="_SrvResolver" name="_resolve_uri"/>
+    <function bbs="98 107 114" brval="self" class="_SrvResolver" name="_get_srv_response_and_hosts"/>
+    <function bbs="118" brval="" class="_SrvResolver" name="get_hosts"/>
+    <function bbs="122" brval="" class="_SrvResolver" name="get_hosts_and_min_ttl"/>
+  </file>
+  <file name="ocsp_support.py">
+    <function bbs="69 77" brval="" class="" name="_load_trusted_ca_certs"/>
+    <function bbs="83 85 93 94" brval="trusted_ca_certs" class="" name="_get_issuer_cert"/>
+    <function bbs="100 104 106 108 111" brval="" class="" name="_verify_signature"/>
+    <function bbs="117" brval="" class="" name="_get_extension"/>
+    <function bbs="124 130 133 137" brval="" class="" name="_public_key_hash"/>
+    <function bbs="144" brval="" class="" name="_get_certs_by_key_hash"/>
+    <function bbs="151" brval="" class="" name="_get_certs_by_name"/>
+    <function bbs="158 164 169 173 174 178 179 180 185 188 189 192 205" brval="ikey_hash issuer ret responder_certs response _ExtendedKeyUsageOID name ext rkey_hash" class="" name="_verify_response_signature"/>
+    <function bbs="210" brval="" class="" name="_build_ocsp_request"/>
+    <function bbs="217 221 228 232" brval="response res now" class="" name="_verify_response"/>
+    <function bbs="238 253 259 265 268" brval="response ocsp_request ocsp_response _OCSPResponseStatus" class="" name="_get_ocsp_response"/>
+    <function bbs="277 280 285 293 294 302 304 307 313 320 324 330 349 357 359 364" brval="_OCSPResponseStatus chain _OCSPCertStatus cert issuer uris user_data response ocsp_bytes must_staple ext" class="" name="_ocsp_callback"/>
+  </file>
+  <file name="auth.py">
+    <function bbs="104 107 109 110 122 123 126 132 133 136 146 150 151 153" brval="user source passwd mech" class="" name="_build_credentials_tuple"/>
+    <function bbs="157" brval="" class="" name="_xor"/>
+    <function bbs="162" brval="" class="" name="_parse_scram_response"/>
+    <function bbs="167" brval="" class="" name="_authenticate_scram_start"/>
+    <function bbs="181 184 189 190 191 199 203 205 210 214 218 221 225 246 251 256" brval="iterations cache citerations salt res ctx client_key mechanism csalt" class="" name="_authenticate_scram"/>
+    <function bbs="260 263 265 267" brval="" class="" name="_password_digest"/>
+    <function bbs="276" brval="" class="" name="_auth_key"/>
+    <function bbs="286" brval="" class="" name="_canonicalize_hostname"/>
+    <function bbs="300 303 314 317 320 321 329 332 333 337 340 348 364 386 391" brval="kerberos result HAVE_KERBEROS password props _USE_PRINCIPAL username" class="" name="_authenticate_gssapi"/>
+    <function bbs="410" brval="" class="" name="_authenticate_plain"/>
+    <function bbs="424 428" brval="ctx" class="" name="_authenticate_x509"/>
+    <function bbs="436" brval="" class="" name="_authenticate_mongo_cr"/>
+    <function bbs="455 456 457 460 461 462 463 466 469 471" brval="sock_info mechs" class="" name="_authenticate_default"/>
+    <function bbs="493 496" brval="spec_cls" class="_AuthContext" name="from_credentials"/>
+    <function bbs="527 530" brval="self" class="_X509Context" name="speculate_command"/>
+    <function bbs="503" brval="" class="_AuthContext" name="parse_response"/>
+    <function bbs="506" brval="" class="_AuthContext" name="speculate_succeeded"/>
+    <function bbs="544" brval="" class="" name="authenticate"/>
+  </file>
+  <file name="daemon.py">
+    <function bbs="33" brval="" class="" name="_popen_wait"/>
+    <function bbs="42 52" brval="popen" class="" name="_silence_resource_warning"/>
+    <function bbs="109 113 124" brval="sys" class="" name="_spawn_daemon"/>
+    <function bbs="85" brval="" class="" name="_spawn"/>
+    <function bbs="99" brval="" class="" name="_spawn_daemon_double_popen"/>
+  </file>
+  <file name="server_selectors.py">
+    <function bbs="23 27" brval="" class="Selection" name="from_topology_description"/>
+    <function bbs="47" brval="" class="Selection" name="with_server_descriptions"/>
+    <function bbs="53 55" brval="secondaries" class="Selection" name="secondary_with_max_last_write_date"/>
+    <function bbs="59" brval="" class="Selection" name="primary_selection"/>
+    <function bbs="64" brval="" class="Selection" name="heartbeat_frequency"/>
+    <function bbs="68" brval="" class="Selection" name="topology_type"/>
+    <function bbs="79" brval="" class="" name="any_server_selector"/>
+    <function bbs="83" brval="" class="" name="readable_server_selector"/>
+    <function bbs="88" brval="" class="" name="writable_server_selector"/>
+    <function bbs="93" brval="" class="" name="secondary_server_selector"/>
+    <function bbs="99" brval="" class="" name="arbiter_server_selector"/>
+    <function bbs="105" brval="" class="" name="writable_preferred_server_selector"/>
+    <function bbs="111" brval="" class="" name="apply_single_tag_set"/>
+    <function bbs="119 120" brval="" class="" name="tags_match"/>
+    <function bbs="130 139" brval="" class="" name="apply_tag_sets"/>
+    <function bbs="147" brval="" class="" name="secondary_with_tags_server_selector"/>
+    <function bbs="152" brval="" class="" name="member_with_tags_server_selector"/>
+  </file>
+  <file name="pool.py">
+    <function bbs="68" brval="" class="" name="is_ip_address"/>
+    <function bbs="85" brval="" class="" name="_set_non_inheritable_non_atomic"/>
+    <function bbs="99" brval="" class="" name="_query"/>
+    <function bbs="143" brval="" class="" name="_set_keepalive_times"/>
+    <function bbs="130 131 138" brval="default max_value" class="" name="_set_tcp_option"/>
+    <function bbs="862 878 881 884 887" brval="self" class="SocketInfo" name="_raise_connection_failure"/>
+    <function bbs="253" brval="" class="" name="_cond_wait"/>
+    <function bbs="331" brval="" class="PoolOptions" name="_credentials"/>
+    <function bbs="336 343 345 347 349 351" brval="MAX_CONNECTING self MAX_POOL_SIZE WAIT_QUEUE_TIMEOUT MIN_POOL_SIZE MAX_IDLE_TIME_SEC" class="PoolOptions" name="non_default_options"/>
+    <function bbs="355" brval="" class="PoolOptions" name="max_pool_size"/>
+    <function bbs="370" brval="" class="PoolOptions" name="min_pool_size"/>
+    <function bbs="377" brval="" class="PoolOptions" name="max_connecting"/>
+    <function bbs="384" brval="" class="PoolOptions" name="pause_enabled"/>
+    <function bbs="388" brval="" class="PoolOptions" name="max_idle_time_seconds"/>
+    <function bbs="396" brval="" class="PoolOptions" name="connect_timeout"/>
+    <function bbs="402" brval="" class="PoolOptions" name="socket_timeout"/>
+    <function bbs="408" brval="" class="PoolOptions" name="wait_queue_timeout"/>
+    <function bbs="415" brval="" class="PoolOptions" name="_ssl_context"/>
+    <function bbs="421" brval="" class="PoolOptions" name="tls_allow_invalid_hostnames"/>
+    <function bbs="427" brval="" class="PoolOptions" name="_event_listeners"/>
+    <function bbs="433" brval="" class="PoolOptions" name="appname"/>
+    <function bbs="439" brval="" class="PoolOptions" name="driver"/>
+    <function bbs="445" brval="" class="PoolOptions" name="_compression_settings"/>
+    <function bbs="449" brval="" class="PoolOptions" name="metadata"/>
+    <function bbs="455" brval="" class="PoolOptions" name="server_api"/>
+    <function bbs="461" brval="" class="PoolOptions" name="load_balanced"/>
+    <function bbs="472" brval="" class="_CancellationContext" name="cancel"/>
+    <function bbs="476" brval="" class="_CancellationContext" name="cancelled"/>
+    <function bbs="537" brval="" class="SocketInfo" name="pin_txn"/>
+    <function bbs="541" brval="" class="SocketInfo" name="pin_cursor"/>
+    <function bbs="545 547 550" brval="pool" class="SocketInfo" name="unpin"/>
+    <function bbs="552 553 556" brval="self" class="SocketInfo" name="hello_cmd"/>
+    <function bbs="558" brval="" class="SocketInfo" name="hello"/>
+    <function bbs="561 565 568 570 572 577 581 585 586 589 592 597 600 612 618 620 622 624 625" brval="cluster_time _MOCK_SERVICE_ID self creds performing_handshake topology_version hello auth_ctx" class="SocketInfo" name="_hello"/>
+    <function bbs="633 640" brval="self" class="SocketInfo" name="_next_reply"/>
+    <function bbs="644 685 688 692 697 703" brval="session write_concern collation self" class="SocketInfo" name="command"/>
+    <function bbs="724 729" brval="max_doc_size self" class="SocketInfo" name="send_message"/>
+    <function bbs="741" brval="" class="SocketInfo" name="receive_message"/>
+    <function bbs="751 755" brval="unacknowledged self" class="SocketInfo" name="_raise_if_not_writable"/>
+    <function bbs="760" brval="" class="SocketInfo" name="unack_write"/>
+    <function bbs="772" brval="" class="SocketInfo" name="write_command"/>
+    <function bbs="789 796 798 801" brval="creds self" class="SocketInfo" name="authenticate"/>
+    <function bbs="804 809 810" brval="session client" class="SocketInfo" name="validate_session"/>
+    <function bbs="815 817 820" brval="reason self" class="SocketInfo" name="close_socket"/>
+    <function bbs="824 826 829" brval="self" class="SocketInfo" name="_close_socket"/>
+    <function bbs="838" brval="" class="SocketInfo" name="socket_closed"/>
+    <function bbs="842 844" brval="client" class="SocketInfo" name="send_cluster_time"/>
+    <function bbs="847 849" brval="self" class="SocketInfo" name="add_server_api"/>
+    <function bbs="852" brval="" class="SocketInfo" name="update_last_checkin_time"/>
+    <function bbs="1194 1200" brval="" class="Pool" name="update_is_writable"/>
+    <function bbs="858" brval="" class="SocketInfo" name="idle_time_seconds"/>
+    <function bbs="906 916 917 934 938 963 970" brval="host err socket" class="" name="_create_connection"/>
+    <function bbs="973 983 993 996 1008" brval="ssl_context options _HAVE_SNI _IPADDR_SAFE" class="" name="_configured_socket"/>
+    <function bbs="1035 1037" brval="service_id" class="_PoolGeneration" name="get"/>
+    <function bbs="1041" brval="" class="_PoolGeneration" name="get_overall"/>
+    <function bbs="1045 1048 1049 1052" brval="service_id" class="_PoolGeneration" name="inc"/>
+    <function bbs="1054" brval="" class="_PoolGeneration" name="stale"/>
+    <function bbs="1133 1136 1138" brval="PoolState self" class="Pool" name="ready"/>
+    <function bbs="1141" brval="" class="Pool" name="closed"/>
+    <function bbs="1145 1148 1150 1155 1159 1162 1163 1164 1169 1170 1172 1182 1183 1185 1188 1191" brval="self service_id PoolState old_state close newpid pause" class="Pool" name="_reset"/>
+    <function bbs="1203" brval="" class="Pool" name="reset"/>
+    <function bbs="1206" brval="" class="Pool" name="reset_without_pause"/>
+    <function bbs="1209" brval="" class="Pool" name="close"/>
+    <function bbs="1212" brval="" class="Pool" name="stale_generation"/>
+    <function bbs="1215 1223 1226 1228 1233" brval="PoolState self" class="Pool" name="remove_stale_sockets"/>
+    <function bbs="1270 1283 1289 1293 1300" brval="self" class="Pool" name="connect"/>
+    <function bbs="1311 1330 1334 1345 1350 1353 1357 1361" brval="sock_info handler pinned self" class="Pool" name="get_socket"/>
+    <function bbs="1364 1365 1366" brval="PoolState emit_event self" class="Pool" name="_raise_if_not_ready"/>
+    <function bbs="1372 1377 1380 1381 1392 1395 1399 1418 1451 1456 1460" brval="sock_info emitted_event incremented self" class="Pool" name="_get_socket"/>
+    <function bbs="1468 1481 1483 1486 1488 1490 1495 1498 1502 1503 1504 1506 1509 1511" brval="sock_info txn cursor self" class="Pool" name="return_socket"/>
+    <function bbs="1518 1534 1539 1542 1546" brval="idle_time_seconds self" class="Pool" name="_perished"/>
+    <function bbs="1552 1554 1557" brval="self" class="Pool" name="_raise_wait_queue_timeout"/>
+  </file>
+  <file name="periodic_executor.py">
+    <function bbs="55 61 80" brval="started self" class="PeriodicExecutor" name="open"/>
+    <function bbs="87" brval="" class="PeriodicExecutor" name="close"/>
+    <function bbs="95 96" brval="self" class="PeriodicExecutor" name="join"/>
+    <function bbs="103" brval="" class="PeriodicExecutor" name="wake"/>
+    <function bbs="107" brval="" class="PeriodicExecutor" name="update_interval"/>
+    <function bbs="110" brval="" class="PeriodicExecutor" name="skip_sleep"/>
+    <function bbs="120 121" brval="" class="PeriodicExecutor" name="_run"/>
+    <function bbs="154" brval="" class="" name="_register_executor"/>
+    <function bbs="159" brval="" class="" name="_on_executor_deleted"/>
+    <function bbs="163 164 171 177" brval="_EXECUTORS" class="" name="_shutdown_executors"/>
+  </file>
+  <file name="auth_aws.py">
+    <function bbs="37" brval="" class="_AwsSaslContext" name="binary_type"/>
+    <function bbs="41" brval="" class="_AwsSaslContext" name="bson_encode"/>
+    <function bbs="45" brval="" class="_AwsSaslContext" name="bson_decode"/>
+    <function bbs="50 53 58 73" brval="sock_info _HAVE_MONGODB_AWS" class="" name="_authenticate_aws"/>
+  </file>
+  <file name="monitor.py">
+    <function bbs="33" brval="" class="" name="_sanitize"/>
+    <function bbs="76" brval="" class="MonitorBase" name="open"/>
+    <function bbs="157" brval="" class="Monitor" name="gc_safe_close"/>
+    <function bbs="354" brval="" class="_RttMonitor" name="close"/>
+    <function bbs="94" brval="" class="MonitorBase" name="join"/>
+    <function bbs="98" brval="" class="MonitorBase" name="request_check"/>
+    <function bbs="135 142" brval="context" class="Monitor" name="cancel_check"/>
+    <function bbs="148 154" brval="self" class="Monitor" name="_start_rtt_monitor"/>
+    <function bbs="169" brval="" class="Monitor" name="_reset_connection"/>
+    <function bbs="375" brval="" class="_RttMonitor" name="_run"/>
+    <function bbs="206 227 232" brval="self" class="Monitor" name="_check_server"/>
+    <function bbs="238 244 247 252 257" brval="response self" class="Monitor" name="_check_once"/>
+    <function bbs="262 269 272 281" brval="conn self" class="Monitor" name="_check_with_socket"/>
+    <function bbs="312 322" brval="" class="SrvMonitor" name="_get_seedlist"/>
+    <function bbs="360" brval="" class="_RttMonitor" name="add_sample"/>
+    <function bbs="365" brval="" class="_RttMonitor" name="average"/>
+    <function bbs="370" brval="" class="_RttMonitor" name="reset"/>
+    <function bbs="388 391" brval="self" class="_RttMonitor" name="_ping"/>
+    <function bbs="404" brval="" class="" name="_register"/>
+    <function bbs="409" brval="" class="" name="_unregister"/>
+    <function bbs="413 414 421" brval="_MONITORS" class="" name="_shutdown_monitors"/>
+    <function bbs="429 432 435" brval="shutdown" class="" name="_shutdown_resources"/>
+  </file>
+  <file name="response.py">
+    <function bbs="40" brval="" class="Response" name="data"/>
+    <function bbs="45" brval="" class="Response" name="address"/>
+    <function bbs="50" brval="" class="Response" name="request_id"/>
+    <function bbs="55" brval="" class="Response" name="duration"/>
+    <function bbs="60" brval="" class="Response" name="from_command"/>
+    <function bbs="65" brval="" class="Response" name="docs"/>
+    <function bbs="98" brval="" class="PinnedResponse" name="socket_info"/>
+    <function bbs="108" brval="" class="PinnedResponse" name="more_to_come"/>
+  </file>
+  <file name="aggregation.py">
+    <function bbs="200" brval="" class="_DatabaseAggregationCommand" name="_aggregation_target"/>
+    <function bbs="204" brval="" class="_DatabaseAggregationCommand" name="_cursor_namespace"/>
+    <function bbs="212" brval="" class="_DatabaseAggregationCommand" name="_cursor_collection"/>
+    <function bbs="208" brval="" class="_DatabaseAggregationCommand" name="_database"/>
+    <function bbs="95 96" brval="self" class="_AggregationCommand" name="_process_result"/>
+    <function bbs="100 101 104" brval="pref ReadPreference self" class="_AggregationCommand" name="get_read_preference"/>
+    <function bbs="108 118 123 128 131 151 155" brval="cmd result sock_info self" class="_AggregationCommand" name="get_cursor"/>
+  </file>
+  <file name="max_staleness_selectors.py">
+    <function bbs="40 43 50" brval="heartbeat_frequency IDLE_WRITE_PERIOD SMALLEST_MAX_STALENESS max_staleness" class="" name="_validate_max_staleness"/>
+    <function bbs="57 62" brval="" class="" name="_with_primary"/>
+    <function bbs="78 82 88" brval="smax" class="" name="_no_primary"/>
+    <function bbs="103 105 113 116" brval="selection max_staleness" class="" name="select"/>
+  </file>
+  <file name="command_cursor.py">
+    <function bbs="95" brval="" class="CommandCursor" name="close"/>
+    <function bbs="100 116 118" brval="batch_size" class="CommandCursor" name="batch_size"/>
+    <function bbs="124" brval="" class="CommandCursor" name="_has_next"/>
+    <function bbs="129" brval="" class="CommandCursor" name="_post_batch_resume_token"/>
+    <function bbs="135 137 139 144 147" brval="self" class="CommandCursor" name="_maybe_pin_connection"/>
+    <function bbs="313 317" brval="legacy_response" class="RawBatchCommandCursor" name="_unpack_response"/>
+    <function bbs="195 202 205 220" brval="self" class="CommandCursor" name="_refresh"/>
+    <function bbs="224" brval="" class="CommandCursor" name="alive"/>
+    <function bbs="241" brval="" class="CommandCursor" name="cursor_id"/>
+    <function bbs="246" brval="" class="CommandCursor" name="address"/>
+    <function bbs="254 260" brval="self" class="CommandCursor" name="session"/>
+    <function bbs="266 269" brval="" class="CommandCursor" name="next"/>
+    <function bbs="278 280 282 285" brval="get_more_allowed self" class="CommandCursor" name="_try_next"/>
+  </file>
+  <file name="client_session.py">
+    <function bbs="196" brval="" class="SessionOptions" name="causal_consistency"/>
+    <function bbs="201" brval="" class="SessionOptions" name="default_transaction_options"/>
+    <function bbs="210" brval="" class="SessionOptions" name="snapshot"/>
+    <function bbs="276" brval="" class="TransactionOptions" name="read_concern"/>
+    <function bbs="281" brval="" class="TransactionOptions" name="write_concern"/>
+    <function bbs="286" brval="" class="TransactionOptions" name="read_preference"/>
+    <function bbs="292" brval="" class="TransactionOptions" name="max_commit_time_ms"/>
+    <function bbs="301 306 307 313 316" brval="session write_concern" class="" name="_validate_session_write_concern"/>
+    <function bbs="360" brval="" class="_Transaction" name="active"/>
+    <function bbs="363" brval="" class="_Transaction" name="starting"/>
+    <function bbs="366 368" brval="self" class="_Transaction" name="pinned_conn"/>
+    <function bbs="372 375" brval="server SERVER_TYPE" class="_Transaction" name="pin"/>
+    <function bbs="379 381" brval="self" class="_Transaction" name="unpin"/>
+    <function bbs="999" brval="" class="_ServerSessionPool" name="reset"/>
+    <function bbs="400" brval="" class="" name="_reraise_with_unknown_commit"/>
+    <function bbs="406" brval="" class="" name="_max_time_expired_error"/>
+    <function bbs="425" brval="" class="" name="_within_time_limit"/>
+    <function bbs="454" brval="" class="ClientSession" name="end_session"/>
+    <function bbs="461 462 464" brval="self" class="ClientSession" name="_end_session"/>
+    <function bbs="473 474" brval="self" class="ClientSession" name="_check_ended"/>
+    <function bbs="483" brval="" class="ClientSession" name="client"/>
+    <function bbs="490" brval="" class="ClientSession" name="options"/>
+    <function bbs="495" brval="" class="ClientSession" name="session_id"/>
+    <function bbs="501" brval="" class="ClientSession" name="cluster_time"/>
+    <function bbs="508" brval="" class="ClientSession" name="operation_time"/>
+    <function bbs="515 517 521" brval="val" class="ClientSession" name="_inherit_option"/>
+    <function bbs="525 613" brval="" class="ClientSession" name="with_transaction"/>
+    <function bbs="652 665 669 676 678" brval="opts max_commit_time_ms self" class="ClientSession" name="start_transaction"/>
+    <function bbs="688 695 697 701 704 722" brval="state _TxnState exc _UNKNOWN_COMMIT_ERROR_CODES" class="ClientSession" name="commit_transaction"/>
+    <function bbs="732 740 742 746 748" brval="state _TxnState" class="ClientSession" name="abort_transaction"/>
+    <function bbs="761" brval="" class="ClientSession" name="_finish_transaction_with_retry"/>
+    <function bbs="767" brval="" class="" name="func"/>
+    <function bbs="771 776 777 783 789" brval="command_name opts self" class="ClientSession" name="_finish_transaction"/>
+    <function bbs="799 801 803 804" brval="cluster_time self" class="ClientSession" name="_advance_cluster_time"/>
+    <function bbs="807 815 818" brval="" class="ClientSession" name="advance_cluster_time"/>
+    <function bbs="822 824 826 827" brval="operation_time self" class="ClientSession" name="_advance_operation_time"/>
+    <function bbs="830 838" brval="" class="ClientSession" name="advance_operation_time"/>
+    <function bbs="843 847 848 851 853 855" brval="reply recovery_token self" class="ClientSession" name="_process_response"/>
+    <function bbs="858" brval="" class="ClientSession" name="has_ended"/>
+    <function bbs="863" brval="" class="ClientSession" name="in_transaction"/>
+    <function bbs="871" brval="" class="ClientSession" name="_starting_transaction"/>
+    <function bbs="877 880" brval="" class="ClientSession" name="_pinned_address"/>
+    <function bbs="884" brval="" class="ClientSession" name="_pinned_connection"/>
+    <function bbs="889" brval="" class="ClientSession" name="_pin"/>
+    <function bbs="893" brval="" class="ClientSession" name="_unpin"/>
+    <function bbs="897 899" brval="self" class="ClientSession" name="_txn_read_preference"/>
+    <function bbs="903 906 912 916 917 922 927 929" brval="read_preference rc _TxnState self is_retryable ReadPreference" class="ClientSession" name="_apply_to"/>
+    <function bbs="936" brval="" class="ClientSession" name="_start_retryable_write"/>
+    <function bbs="940 941 945 946 951" brval="sock_info self" class="ClientSession" name="_update_read_concern"/>
+    <function bbs="967" brval="" class="_ServerSession" name="mark_dirty"/>
+    <function bbs="975" brval="" class="_ServerSession" name="timed_out"/>
+    <function bbs="981" brval="" class="_ServerSession" name="transaction_id"/>
+    <function bbs="986" brval="" class="_ServerSession" name="inc_transaction_id"/>
+    <function bbs="1003 1005" brval="" class="_ServerSessionPool" name="pop_all"/>
+    <function bbs="1009 1018" brval="" class="_ServerSessionPool" name="get_server_session"/>
+    <function bbs="1025 1026 1028" brval="session_timeout_minutes" class="_ServerSessionPool" name="return_server_session"/>
+    <function bbs="1032 1035" brval="server_session self" class="_ServerSessionPool" name="return_server_session_no_lock"/>
+    <function bbs="1039 1041" brval="" class="_ServerSessionPool" name="_clear_stale"/>
+  </file>
+  <file name="settings.py">
+    <function bbs="76" brval="" class="TopologySettings" name="seeds"/>
+    <function bbs="81" brval="" class="TopologySettings" name="replica_set_name"/>
+    <function bbs="85" brval="" class="TopologySettings" name="pool_class"/>
+    <function bbs="89" brval="" class="TopologySettings" name="pool_options"/>
+    <function bbs="93" brval="" class="TopologySettings" name="monitor_class"/>
+    <function bbs="97" brval="" class="TopologySettings" name="condition_class"/>
+    <function bbs="101" brval="" class="TopologySettings" name="local_threshold_ms"/>
+    <function bbs="105" brval="" class="TopologySettings" name="server_selection_timeout"/>
+    <function bbs="109" brval="" class="TopologySettings" name="server_selector"/>
+    <function bbs="113" brval="" class="TopologySettings" name="heartbeat_frequency"/>
+    <function bbs="117" brval="" class="TopologySettings" name="fqdn"/>
+    <function bbs="121" brval="" class="TopologySettings" name="direct"/>
+    <function bbs="129" brval="" class="TopologySettings" name="load_balanced"/>
+    <function bbs="134" brval="" class="TopologySettings" name="srv_service_name"/>
+    <function bbs="139" brval="" class="TopologySettings" name="srv_max_hosts"/>
+    <function bbs="144 145 147 149 152" brval="self" class="TopologySettings" name="get_topology_type"/>
+    <function bbs="154" brval="" class="TopologySettings" name="get_server_descriptions"/>
+  </file>
+  <file name="hello.py">
+    <function bbs="31 33 36 38 40 41 43 45 47 49 52 53 56" brval="" class="" name="_get_server_type"/>
+    <function bbs="81" brval="" class="Hello" name="document"/>
+    <function bbs="89" brval="" class="Hello" name="server_type"/>
+    <function bbs="93" brval="" class="Hello" name="all_hosts"/>
+    <function bbs="101" brval="" class="Hello" name="tags"/>
+    <function bbs="106 109 112" brval="" class="Hello" name="primary"/>
+    <function bbs="114" brval="" class="Hello" name="replica_set_name"/>
+    <function bbs="119" brval="" class="Hello" name="max_bson_size"/>
+    <function bbs="123" brval="" class="Hello" name="max_message_size"/>
+    <function bbs="127" brval="" class="Hello" name="max_write_batch_size"/>
+    <function bbs="131" brval="" class="Hello" name="min_wire_version"/>
+    <function bbs="135" brval="" class="Hello" name="max_wire_version"/>
+    <function bbs="139" brval="" class="Hello" name="set_version"/>
+    <function bbs="143" brval="" class="Hello" name="election_id"/>
+    <function bbs="147" brval="" class="Hello" name="cluster_time"/>
+    <function bbs="151" brval="" class="Hello" name="logical_session_timeout_minutes"/>
+    <function bbs="155" brval="" class="Hello" name="is_writable"/>
+    <function bbs="159" brval="" class="Hello" name="is_readable"/>
+    <function bbs="163 166" brval="me" class="Hello" name="me"/>
+    <function bbs="169" brval="" class="Hello" name="last_write_date"/>
+    <function bbs="173" brval="" class="Hello" name="compressors"/>
+    <function bbs="177" brval="" class="Hello" name="sasl_supported_mechs"/>
+    <function bbs="189" brval="" class="Hello" name="speculative_authenticate"/>
+    <function bbs="194" brval="" class="Hello" name="topology_version"/>
+    <function bbs="198" brval="" class="Hello" name="awaitable"/>
+    <function bbs="202" brval="" class="Hello" name="service_id"/>
+    <function bbs="206" brval="" class="Hello" name="hello_ok"/>
+  </file>
+  <file name="encryption_options.py"/>
+  <file name="mongo_client.py">
+    <function bbs="779" brval="" class="MongoClient" name="_duplicate"/>
+    <function bbs="784" brval="" class="MongoClient" name="_server_property"/>
+    <function bbs="800" brval="" class="MongoClient" name="watch"/>
+    <function bbs="892" brval="" class="MongoClient" name="topology_description"/>
+    <function bbs="914 929 934" brval="TOPOLOGY_TYPE topology_type" class="MongoClient" name="address"/>
+    <function bbs="941" brval="" class="MongoClient" name="primary"/>
+    <function bbs="954" brval="" class="MongoClient" name="secondaries"/>
+    <function bbs="967" brval="" class="MongoClient" name="arbiters"/>
+    <function bbs="977" brval="" class="MongoClient" name="is_primary"/>
+    <function bbs="988" brval="" class="MongoClient" name="is_mongos"/>
+    <function bbs="996" brval="" class="MongoClient" name="nodes"/>
+    <function bbs="1010" brval="" class="MongoClient" name="options"/>
+    <function bbs="1021 1029 1032" brval="sock_info" class="MongoClient" name="_end_sessions"/>
+    <function bbs="1042 1058 1065" brval="session_ids self" class="MongoClient" name="close"/>
+    <function bbs="1069" brval="" class="MongoClient" name="_get_topology"/>
+    <function bbs="1080 1085 1090 1094" brval="SERVER_TYPE self session server in_txn sock_info" class="MongoClient" name="_get_socket"/>
+    <function bbs="1102 1115 1118 1121 1125 1129" brval="session address server" class="MongoClient" name="_select_server"/>
+    <function bbs="1134" brval="" class="MongoClient" name="_socket_for_writes"/>
+    <function bbs="1138" brval="" class="MongoClient" name="_secondaryok_for_server"/>
+    <function bbs="1155" brval="" class="MongoClient" name="_socket_for_reads"/>
+    <function bbs="1173" brval="" class="MongoClient" name="_should_pin_cursor"/>
+    <function bbs="1177 1186" brval="operation" class="MongoClient" name="_run_operation"/>
+    <function bbs="1198" brval="" class="" name="_cmd"/>
+    <function bbs="1207" brval="" class="MongoClient" name="_retry_with_session"/>
+    <function bbs="1219" brval="" class="MongoClient" name="_retry_internal"/>
+    <function bbs="1225" brval="" class="" name="is_retrying"/>
+    <function bbs="1276 1291" brval="" class="MongoClient" name="_retryable_read"/>
+    <function bbs="1325" brval="" class="MongoClient" name="_retryable_write"/>
+    <function bbs="1341" brval="" class="MongoClient" name="_repr_helper"/>
+    <function bbs="1342 1344 1345 1348 1350" brval="common dict option value" class="" name="option_repr"/>
+    <function bbs="1400 1416 1417 1418 1425 1428 1432 1434" brval="locks_allowed session explicit_session cursor_id sock_mgr" class="MongoClient" name="_cleanup_cursor"/>
+    <function bbs="1437" brval="" class="MongoClient" name="_close_cursor_soon"/>
+    <function bbs="1441 1447 1451 1457" brval="sock_mgr" class="MongoClient" name="_close_cursor_now"/>
+    <function bbs="1463 1465 1471" brval="address" class="MongoClient" name="_kill_cursors"/>
+    <function bbs="1476" brval="" class="MongoClient" name="_kill_cursor_impl"/>
+    <function bbs="1482 1488 1499 1513 1515" brval="address_to_cursor_ids" class="MongoClient" name="_process_kill_cursors"/>
+    <function bbs="1527 1534 1537" brval="self" class="MongoClient" name="_process_periodic_tasks"/>
+    <function bbs="1546" brval="" class="MongoClient" name="start_session"/>
+    <function bbs="1573" brval="" class="MongoClient" name="_get_server_session"/>
+    <function bbs="1577" brval="" class="MongoClient" name="_return_server_session"/>
+    <function bbs="1581 1583" brval="session" class="MongoClient" name="_ensure_session"/>
+    <function bbs="1594 1597 1603 1607 1615 1618" brval="session s close" class="MongoClient" name="_tmp_session"/>
+    <function bbs="1620 1623 1624 1627 1629 1630" brval="cluster_time session_time topology_time" class="MongoClient" name="_send_cluster_time"/>
+    <function bbs="1633 1635" brval="session" class="MongoClient" name="_process_response"/>
+    <function bbs="1638" brval="" class="MongoClient" name="server_info"/>
+    <function bbs="1652" brval="" class="MongoClient" name="list_databases"/>
+    <function bbs="1681" brval="" class="MongoClient" name="list_database_names"/>
+    <function bbs="1693 1719 1722" brval="" class="MongoClient" name="drop_database"/>
+    <function bbs="1735 1777" brval="default self" class="MongoClient" name="get_default_database"/>
+    <function bbs="1785 1830 1831" brval="name self" class="MongoClient" name="get_database"/>
+    <function bbs="1839" brval="" class="MongoClient" name="_database_default_options"/>
+    <function bbs="1861 1863 1869" brval="" class="" name="_retryable_error_doc"/>
+    <function bbs="1874 1876 1879 1886 1888 1891 1896" brval="max_wire_version code helpers doc" class="" name="_add_retryable_write_error"/>
+    <function bbs="1921" brval="" class="_MongoClientErrorHandler" name="contribute_socket"/>
+    <function bbs="1928 1929 1932 1933 1934 1938 1939" brval="exc_type self" class="_MongoClientErrorHandler" name="handle"/>
+  </file>
+  <file name="topology.py">
+    <function bbs="55 57 60" brval="q" class="" name="process_events_queue"/>
+    <function bbs="146 158 161" brval="self" class="Topology" name="open"/>
+    <function bbs="175 194 197" brval="server_selection_timeout" class="Topology" name="select_servers"/>
+    <function bbs="206 213" brval="" class="Topology" name="_select_servers_loop"/>
+    <function bbs="237 244 247 250" brval="server1 server2" class="Topology" name="select_server"/>
+    <function bbs="252" brval="" class="Topology" name="select_server_by_address"/>
+    <function bbs="275 282 289 293 298 308 316 322 324" brval="server_description self server TOPOLOGY_TYPE new_td suppress_event reset_pool td_old SRV_POLLING_TOPOLOGIES" class="Topology" name="_process_change"/>
+    <function bbs="330 342" brval="self" class="Topology" name="on_change"/>
+    <function bbs="346 356" brval="self" class="Topology" name="_process_srv_update"/>
+    <function bbs="361 365" brval="self" class="Topology" name="on_srv_update"/>
+    <function bbs="368" brval="" class="Topology" name="get_server_by_address"/>
+    <function bbs="378" brval="" class="Topology" name="has_server"/>
+    <function bbs="381 386" brval="TOPOLOGY_TYPE topology_type" class="Topology" name="get_primary"/>
+    <function bbs="391 396" brval="TOPOLOGY_TYPE topology_type" class="Topology" name="_get_replica_set_members"/>
+    <function bbs="402" brval="" class="Topology" name="get_secondaries"/>
+    <function bbs="406" brval="" class="Topology" name="get_arbiters"/>
+    <function bbs="410" brval="" class="Topology" name="max_cluster_time"/>
+    <function bbs="414 421 423" brval="cluster_time self" class="Topology" name="_receive_cluster_time_no_lock"/>
+    <function bbs="428" brval="" class="Topology" name="receive_cluster_time"/>
+    <function bbs="432" brval="" class="Topology" name="request_check_all"/>
+    <function bbs="438 443" brval="TOPOLOGY_TYPE self" class="Topology" name="data_bearing_servers"/>
+    <function bbs="447 452 457" brval="" class="Topology" name="update_pool"/>
+    <function bbs="465 470 475 480 487 490" brval="self" class="Topology" name="close"/>
+    <function bbs="493" brval="" class="Topology" name="description"/>
+    <function bbs="497" brval="" class="Topology" name="pop_all_sessions"/>
+    <function bbs="502 505 507 508 513 520" brval="TOPOLOGY_TYPE session_timeout self" class="Topology" name="_check_session_support"/>
+    <function bbs="525 529 533" brval="self" class="Topology" name="get_server_session"/>
+    <function bbs="536 537 544" brval="lock" class="Topology" name="return_server_session"/>
+    <function bbs="546" brval="" class="Topology" name="_new_selection"/>
+    <function bbs="553 558 561 566 570 574 582" brval="SRV_POLLING_TOPOLOGIES self" class="Topology" name="_ensure_opened"/>
+    <function bbs="585 587 591 600 601" brval="server error" class="Topology" name="_is_stale_error"/>
+    <function bbs="606 607 614 621 624 633 637 638 639 642 644 648 650 654 657" brval="self helpers err_code err_ctx is_shutting_down" class="Topology" name="_handle_error"/>
+    <function bbs="666" brval="" class="Topology" name="handle_error"/>
+    <function bbs="675 677" brval="" class="Topology" name="_request_check_all"/>
+    <function bbs="680 685 716" brval="" class="Topology" name="_update_servers"/>
+    <function bbs="721" brval="" class="Topology" name="_create_pool_for_server"/>
+    <function bbs="724" brval="" class="Topology" name="_create_pool_for_monitor"/>
+    <function bbs="745 754 756 759 761 763 764 767 769 771 772 773 774 779 782 783 784 785 789 799" brval="writable_server_selector self TOPOLOGY_TYPE servers same is_replica_set selector error" class="Topology" name="_error_message"/>
+    <function bbs="808" brval="" class="Topology" name="eq_props"/>
+    <function bbs="834 836 838" brval="error_tv current_tv" class="" name="_is_stale_error_topology_version"/>
+    <function bbs="843 846 848" brval="new_tv current_tv" class="" name="_is_stale_server_description"/>
+  </file>
+  <file name="helpers.py">
+    <function bbs="60" brval="" class="" name="_gen_index_name"/>
+    <function bbs="65 70 73 75 77 80" brval="direction" class="" name="_index_list"/>
+    <function bbs="83 88 92 95 99" brval="" class="" name="_index_document"/>
+    <function bbs="110 115 122 125 129 135 136 147 148 149 151 155 156 158 163 165 167" brval="parse_write_concern_error _labels errmsg _NOT_PRIMARY_CODES HelloCompat response code allowable_errors" class="" name="_check_command_response"/>
+    <function bbs="173 177" brval="" class="" name="_raise_last_write_error"/>
+    <function bbs="182 183" brval="error" class="" name="_raise_write_concern_error"/>
+    <function bbs="191 194 198" brval="error_labels wce" class="" name="_get_wce_doc"/>
+    <function bbs="203 208 212" brval="wce write_errors" class="" name="_check_write_command_response"/>
+    <function bbs="216 225 228 229" brval="" class="" name="_fields_list_to_dict"/>
+    <function bbs="238 244" brval="sys" class="" name="_handle_exception"/>
+  </file>
+  <file name="ssl_support.py">
+    <function bbs="91" brval="" class="" name="get_ssl_context"/>
+  </file>
+  <file name="server_api.py">
+    <function bbs="129" brval="" class="ServerApi" name="version"/>
+    <function bbs="137" brval="" class="ServerApi" name="strict"/>
+    <function bbs="145" brval="" class="ServerApi" name="deprecation_errors"/>
+    <function bbs="155 162 165 167" brval="server_api" class="" name="_add_to_command"/>
+  </file>
+  <file name="ssl_context.py"/>
+  <file name="event_loggers.py">
+    <function bbs="102" brval="" class="HeartbeatLogger" name="started"/>
+    <function bbs="106" brval="" class="HeartbeatLogger" name="succeeded"/>
+    <function bbs="112" brval="" class="HeartbeatLogger" name="failed"/>
+    <function bbs="127" brval="" class="TopologyLogger" name="opened"/>
+    <function bbs="131 136 144 146" brval="previous_topology_type new_topology_type" class="TopologyLogger" name="description_changed"/>
+    <function bbs="149" brval="" class="TopologyLogger" name="closed"/>
+    <function bbs="171" brval="" class="ConnectionPoolLogger" name="pool_created"/>
+    <function bbs="174" brval="" class="ConnectionPoolLogger" name="pool_ready"/>
+    <function bbs="177" brval="" class="ConnectionPoolLogger" name="pool_cleared"/>
+    <function bbs="180" brval="" class="ConnectionPoolLogger" name="pool_closed"/>
+    <function bbs="183" brval="" class="ConnectionPoolLogger" name="connection_created"/>
+    <function bbs="187" brval="" class="ConnectionPoolLogger" name="connection_ready"/>
+    <function bbs="191" brval="" class="ConnectionPoolLogger" name="connection_closed"/>
+    <function bbs="196" brval="" class="ConnectionPoolLogger" name="connection_check_out_started"/>
+    <function bbs="200" brval="" class="ConnectionPoolLogger" name="connection_check_out_failed"/>
+    <function bbs="204" brval="" class="ConnectionPoolLogger" name="connection_checked_out"/>
+    <function bbs="208" brval="" class="ConnectionPoolLogger" name="connection_checked_in"/>
+  </file>
+  <file name="operations.py">
+    <function bbs="356" brval="" class="UpdateMany" name="_add_to_bulk"/>
+    <function bbs="439" brval="" class="IndexModel" name="document"/>
+  </file>
+  <file name="__init__.py">
+    <function bbs="58 59" brval="" class="" name="get_version_string"/>
+    <function bbs="81" brval="" class="" name="has_c"/>
+  </file>
+  <file name="errors.py">
+    <function bbs="37" brval="" class="PyMongoError" name="has_error_label"/>
+    <function bbs="44" brval="" class="PyMongoError" name="_add_error_label"/>
+    <function bbs="48" brval="" class="PyMongoError" name="_remove_error_label"/>
+    <function bbs="91 92" brval="details" class="" name="_format_detailed_error"/>
+    <function bbs="152" brval="" class="OperationFailure" name="_max_wire_version"/>
+    <function bbs="156" brval="" class="OperationFailure" name="code"/>
+    <function bbs="162" brval="" class="OperationFailure" name="details"/>
+    <function bbs="271" brval="" class="EncryptionError" name="cause"/>
+  </file>
+  <file name="server_type.py"/>
+  <file name="common.py">
+    <function bbs="119 124 126" brval="idx" class="" name="partition_node"/>
+    <function bbs="131" brval="" class="" name="clean_node"/>
+    <function bbs="142" brval="" class="" name="raise_config_error"/>
+    <function bbs="157 159" brval="" class="" name="validate_boolean"/>
+    <function bbs="164 166 167" brval="value" class="" name="validate_boolean_or_string"/>
+    <function bbs="174 177 179" brval="" class="" name="validate_integer"/>
+    <function bbs="188 192" brval="val" class="" name="validate_positive_integer"/>
+    <function bbs="198 202" brval="val" class="" name="validate_non_negative_integer"/>
+    <function bbs="208 211" brval="value" class="" name="validate_readable"/>
+    <function bbs="220 223" brval="value" class="" name="validate_positive_integer_or_none"/>
+    <function bbs="228 231" brval="value" class="" name="validate_non_negative_integer_or_none"/>
+    <function bbs="236 239" brval="" class="" name="validate_string"/>
+    <function bbs="245 248" brval="value" class="" name="validate_string_or_none"/>
+    <function bbs="253 256 258" brval="" class="" name="validate_int_or_basestring"/>
+    <function bbs="267 270 272" brval="" class="" name="validate_non_negative_int_or_basestring"/>
+    <function bbs="282 296" brval="value" class="" name="validate_positive_float"/>
+    <function bbs="302 306" brval="value" class="" name="validate_positive_float_or_zero"/>
+    <function bbs="311 315" brval="value" class="" name="validate_timeout_or_none"/>
+    <function bbs="320 326 328" brval="value" class="" name="validate_timeout_or_zero"/>
+    <function bbs="333 338" brval="value" class="" name="validate_timeout_or_none_or_zero"/>
+    <function bbs="343 345" brval="value" class="" name="validate_max_staleness"/>
+    <function bbs="351 354" brval="" class="" name="validate_read_preference"/>
+    <function bbs="359 366" brval="_MONGOS_MODES value" class="" name="validate_read_preference_mode"/>
+    <function bbs="371 374" brval="MECHANISMS value" class="" name="validate_auth_mechanism"/>
+    <function bbs="379" brval="" class="" name="validate_uuid_representation"/>
+    <function bbs="390 393 397" brval="" class="" name="validate_read_preference_tags"/>
+    <function bbs="419 423" brval="" class="" name="validate_auth_mechanism_properties"/>
+    <function bbs="446 448" brval="" class="" name="validate_document_class"/>
+    <function bbs="455 457" brval="value" class="" name="validate_type_registry"/>
+    <function bbs="463 465" brval="" class="" name="validate_list"/>
+    <function bbs="470 472" brval="value" class="" name="validate_list_or_none"/>
+    <function bbs="477 479" brval="" class="" name="validate_list_or_mapping"/>
+    <function bbs="485 487" brval="" class="" name="validate_is_mapping"/>
+    <function bbs="493 495" brval="" class="" name="validate_is_document_type"/>
+    <function bbs="502 504 508" brval="value" class="" name="validate_appname_or_none"/>
+    <function bbs="513 515 517" brval="value" class="" name="validate_driver_or_none"/>
+    <function bbs="522 524 526" brval="value" class="" name="validate_server_api_or_none"/>
+    <function bbs="531 533 535" brval="value" class="" name="validate_is_callable_or_none"/>
+    <function bbs="540 544 546" brval="replacement" class="" name="validate_ok_for_replace"/>
+    <function bbs="550 554 559" brval="is_document update" class="" name="validate_ok_for_update"/>
+    <function bbs="566 569" brval="_UNICODE_DECODE_ERROR_HANDLERS value" class="" name="validate_unicode_decode_error_handler"/>
+    <function bbs="576 579" brval="value" class="" name="validate_tzinfo"/>
+    <function bbs="584 586 589" brval="value" class="" name="validate_auto_encryption_opts_or_none"/>
+    <function bbs="725 729" brval="lower _AUTH_OPTIONS" class="" name="validate_auth_option"/>
+    <function bbs="735" brval="" class="" name="validate"/>
+    <function bbs="744 754 759 760 761 763" brval="" class="" name="get_validated_options"/>
+    <function bbs="821" brval="" class="BaseObject" name="codec_options"/>
+    <function bbs="828" brval="" class="BaseObject" name="write_concern"/>
+    <function bbs="838 842" brval="session" class="BaseObject" name="_write_concern_for"/>
+    <function bbs="846" brval="" class="BaseObject" name="read_preference"/>
+    <function bbs="855 859" brval="session" class="BaseObject" name="_read_preference_for"/>
+    <function bbs="863" brval="" class="BaseObject" name="read_concern"/>
+    <function bbs="915" brval="" class="_CaseInsensitiveDictionary" name="get"/>
+    <function bbs="918" brval="" class="_CaseInsensitiveDictionary" name="pop"/>
+    <function bbs="923" brval="" class="_CaseInsensitiveDictionary" name="popitem"/>
+    <function bbs="928" brval="" class="_CaseInsensitiveDictionary" name="clear"/>
+    <function bbs="932 934 937 938 939" brval="key self" class="_CaseInsensitiveDictionary" name="setdefault"/>
+    <function bbs="941 942 943 946" brval="" class="_CaseInsensitiveDictionary" name="update"/>
+    <function bbs="949" brval="" class="_CaseInsensitiveDictionary" name="cased_key"/>
+  </file>
+  <file name="write_concern.py">
+    <function bbs="86" brval="" class="WriteConcern" name="is_server_default"/>
+    <function bbs="91" brval="" class="WriteConcern" name="document"/>
+    <function bbs="101" brval="" class="WriteConcern" name="acknowledged"/>
+  </file>
+</py_summary>

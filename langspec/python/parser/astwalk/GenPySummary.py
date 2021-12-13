@@ -4,7 +4,7 @@ import os
 import sys, getopt
 import marshal
 from ast import parse
-from .AstWalk import ASTWalk
+from .AstPySum import AstPySum
 from os.path import join, abspath, splitext, realpath
 from xml.dom.minidom import Document
 import pickle
@@ -57,7 +57,7 @@ def GenPySummary (PyDir, ExpList=None):
             with open(PyFile) as PyF:
                 print ("#visit " + PyFile)
                 Ast = parse(PyF.read(), PyFile, 'exec')
-                Visitor= ASTWalk()
+                Visitor= AstPySum()
                 Visitor.visit(Ast)
 
                 BranchNum += Visitor.BranchNum*2

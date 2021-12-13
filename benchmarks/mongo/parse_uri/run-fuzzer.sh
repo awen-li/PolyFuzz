@@ -3,7 +3,7 @@ export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
     mkdir -p fuzz/in
-    cp ./tests/* fuzz/in/
+    cp ./parse_uri/* fuzz/in/
 fi
 
 cd fuzz
@@ -17,4 +17,4 @@ export AFL_DEBUG_CHILD=1
 export AFL_CRASH_EXITCODE=100
 
 cp ../../py_summary.xml ./
-afl-fuzz -i in/ -o out -m none -d -- python ../parse_url.py  @@
+afl-fuzz -i in/ -o out -m none -d -- python ../parse_uri.py  @@

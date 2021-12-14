@@ -4,7 +4,7 @@ echo "git clone from https://github.com/mongodb/mongo-python-driver"
 echo "------------------------------------------------------------"
 git clone https://github.com/mongodb/mongo-python-driver.git
 cd mongo-python-driver/
-python setup.py install
+python setup-fuzzing.py install
 echo "------------------------------------------------------------"
 echo "mongo-python-driver installed"
 echo "------------------------------------------------------------"

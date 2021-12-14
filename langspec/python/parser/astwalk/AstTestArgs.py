@@ -16,6 +16,7 @@ class TestApi ():
 class AstTestArgs(NodeVisitor):
     def __init__(self, ApiName):
         self.TestApi = []
+        self.Imports = []
         self.ApiName = ApiName
   
     def visit(self, node):
@@ -32,22 +33,53 @@ class AstTestArgs(NodeVisitor):
         else:
             return False
 
+    def visit_import(self, node):
+        #print (ast.dump (node))
+        Import = "import "
+        for alias in node.names:
+            if alias.name == "unittest":
+                continue
+            
+            Import += alias.name
+            if alias.asname != None:
+                Import += " as " + alias.asname
+            if alias != node.names[-1]:
+                Import += ", "
+        if (len (Import) <= 8):
+            return
+        
+        Import += "\n"
+        self.Imports.append (Import)
+
+    def visit_importfrom(self, node):
+        #print (ast.dump (node))
+        module = node.module
+        if module == "test":
+            return
+        
+        Import = "from " + module + " import "
+        for alias in node.names:
+            Import += alias.name
+            if alias.asname != None:
+                Import += " as " + alias.asname
+            if alias != node.names[-1]:
+                Import += ", "
+        Import += "\n"
+        self.Imports.append (Import)
+
     def visit_functiondef(self, node, ClfName=None):
         if self._IsBuiltin (node.name) == True:
             return
-
         Body = node.body
         for Stmt in Body:
-            self.visit (Stmt)
-        
+            self.visit (Stmt)       
         return
 
     def visit_classdef(self, node):
         Body = node.body
         for Fdef in Body:
             if not isinstance (Fdef, FunctionDef):
-                continue
-            
+                continue         
             self.visit_functiondef (Fdef, node.name)
         return
 

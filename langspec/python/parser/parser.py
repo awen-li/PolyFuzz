@@ -20,6 +20,7 @@ def InitArgument (parser):
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
     grp.add_argument('-t', '--test', help='parse the test cases of api name')
+    grp.add_argument('-e', '--expression', action='store_true', help='the input is considered as a python expression')
                      
     parser.add_argument('dirname', nargs='?', help='source dir to process')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')
@@ -34,7 +35,7 @@ def main():
         parser.error('dirname is missing: required with the main options')
 
     if opts.test != None:
-        GenTestArgs (opts.dirname, opts.test)
+        GenTestArgs (opts.dirname, opts.test, opts.expression)
     else:
         GenPySummary (opts.dirname)
 

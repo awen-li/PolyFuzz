@@ -270,6 +270,7 @@ u8 *afl_shm_init(sharedmem_t *shm, size_t map_size,
        with better auto-detection later on, perhaps? */
 
     setenv(SHM_ENV_VAR, shm_str, 1);
+    printf ("@@@@ set SHM_ENV_VAR = %s \r\n", shm_str);
 
     ck_free(shm_str);
 

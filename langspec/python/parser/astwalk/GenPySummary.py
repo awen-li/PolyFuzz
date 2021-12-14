@@ -38,6 +38,7 @@ def GenPySummary (PyDir, ExpList=None):
     SrcApiList = {}
     FuncDefList = {}
     BranchNum = 0
+    FileId = 1
     
     PyDirs = os.walk(PyDir) 
     for Path, Dirs, Pys in PyDirs:
@@ -68,6 +69,8 @@ def GenPySummary (PyDir, ExpList=None):
                 # add childnode file
                 FileNode = _AddChildNode (doc, Root, "file")
                 FileNode.setAttribute ("name", py)
+                FileNode.setAttribute ("id", str(FileId))
+                FileId += 1
 
                 for FuncName, Def in FuncDef.items ():
                     BrVals = list(set (Def.BrVal))

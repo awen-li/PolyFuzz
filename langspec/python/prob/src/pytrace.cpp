@@ -20,6 +20,7 @@ void PyInit(string BrValXml)
 
     /* Init tracing: shared memory ALF++, etc. */
     int FinalLoc = DynTraceInit (BvSet->m_Branchs);
+    PY_PRINT (">>>>>>>>Get FinalLoc = %d before InitRtfs of python\r\n", FinalLoc);
 
     /* Init Rtfs */
     __Prt.InitRtfs(FinalLoc);

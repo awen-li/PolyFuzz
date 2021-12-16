@@ -2,7 +2,7 @@ export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
    mkdir -p fuzz/in
-   cp ./parse_uri/* fuzz/in/
+   cp ./tests/* fuzz/in/
 fi
 
 cd fuzz

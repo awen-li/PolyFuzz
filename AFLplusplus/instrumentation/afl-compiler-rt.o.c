@@ -1383,6 +1383,10 @@ static inline void __sanitizer_cov_trace_pc_guard__ (uint32_t *guard)
     __afl_area_ptr[*guard] = cov_val + 1 + (cov_val == 255 ? 1 : 0);
 
 #endif
+
+#if 0
+    fprintf(stderr, "@@@ trace_pc_guard -> interal_loc = %u, guard = %u \r\n", __afl_interal_loc, *guard);
+#endif
 }
 
 void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {

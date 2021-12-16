@@ -4,6 +4,19 @@ import os
 from ast import parse
 from .AstTestArgs import AstTestArgs
 
+TestDir = "tests"
+
+
+def PrepareDir (ApiName):
+    # driver dir
+    if not os.path.exists (ApiName):
+        os.makedirs(ApiName)
+
+        # tests
+        os.makedirs(ApiName + "/" + TestDir)
+    
+    os.chdir (ApiName)
+    return
 
 def GenTestArgs (PyFile, ApiName, Exp=False):
 
@@ -13,13 +26,12 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
         Visitor = AstTestArgs(ApiName)
         Visitor.visit(Ast)
 
-        if not os.path.exists (ApiName):
-            os.makedirs(ApiName)
+        PrepareDir (ApiName)   
 
         # Gen tests
         TestNo = 0
         for TtApi in Visitor.TestApi:
-            TestFile = ApiName + "/test-" + str (TestNo)
+            TestFile = TestDir + "/test-" + str (TestNo)
             with open(TestFile, 'w') as TF:
                 for No, Arg in TtApi.Arg2Value.items ():
                     TF.write(Arg)
@@ -27,7 +39,7 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
             TestNo += 1
 
         # Gen driver
-        CurApiName = ApiName
+        CurApiName = Visitor.ApiName
         CurInport  = "".join (Visitor.Imports)
 
         Eval = ""
@@ -67,7 +79,7 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "export AFL_SKIP_BIN_CHECK=1\n\n"
                     "if [ ! -d \"fuzz\" ]; then\n"
                     "   mkdir -p fuzz/in\n"
-                    f"   cp ./{ApiName}/* fuzz/in/\n"
+                    f"   cp ./{TestDir}/* fuzz/in/\n"
                     "fi\n\n"
                     "cd fuzz\n"
                     "afl-system-config\n\n"

@@ -4,6 +4,7 @@ import os
 import re
 import ast
 from ast import *
+import astunparse
 
 class TestApi ():
     def __init__(self, ):
@@ -17,6 +18,7 @@ class AstTestArgs(NodeVisitor):
     def __init__(self, ApiName):
         self.TestApi = []
         self.Imports = []
+        self.Callee  = ""
         self.ApiName = ApiName
   
     def visit(self, node):
@@ -54,7 +56,7 @@ class AstTestArgs(NodeVisitor):
     def visit_importfrom(self, node):
         #print (ast.dump (node))
         module = node.module
-        if module == "test":
+        if module[0:4] == "test":
             return
         
         Import = "from " + module + " import "
@@ -67,9 +69,14 @@ class AstTestArgs(NodeVisitor):
         Import += "\n"
         self.Imports.append (Import)
 
+    def visit_expr(self, node):
+        node = node.value
+        self.visit (node)   
+
     def visit_functiondef(self, node, ClfName=None):
         if self._IsBuiltin (node.name) == True:
             return
+
         Body = node.body
         for Stmt in Body:
             self.visit (Stmt)       
@@ -83,19 +90,55 @@ class AstTestArgs(NodeVisitor):
             self.visit_functiondef (Fdef, node.name)
         return
 
+    def visit_attribute(self, node):
+        value = node.value
+        if isinstance (value, Name):
+            self.Callee += value.id + "." + node.attr
+        elif isinstance(value, Attribute):
+            self.visit_attribute (value)
+            self.Callee += "." + node.attr
+        else:
+            pass
+
+    def get_args (self, Args):
+        Ta = TestApi ()
+
+        for arg in Args:
+            if isinstance (arg, Str):
+                print (ast.dump (arg))
+                Ta.AddArg(arg.s)
+            else:
+                sArg = astunparse.unparse(arg)
+                Ta.AddArg(sArg)
+                print ("sArg ===> " + sArg)
+        
+        return Ta
+
     def visit_call (self, node):
         Callee = node.func
         if isinstance (Callee, Name):
             if Callee.id == self.ApiName:
+                TA = self.get_args (node.args)
+                if len (TA.Arg2Value) == 0:
+                    return             
+                self.TestApi.append (TA)
+            else:
+                pass
+                
+        elif isinstance (Callee, Attribute):
+            #print (ast.dump (node))
+            self.Callee = ""
+            self.visit_attribute (Callee)
+            if self.Callee.find (self.ApiName) != -1:
+                self.ApiName = self.Callee
+                TA = self.get_args (node.args)
+                if len (TA.Arg2Value) == 0:
+                    return             
+                self.TestApi.append (TA)
+            else:
                 Args = node.args
-                ArgNo = 0
-                Ta = TestApi ()
                 for arg in Args:
-                    if isinstance (arg, Str):
-                        Ta.AddArg(arg.s)
-                        print (ast.dump (arg))
-                if len (Ta.Arg2Value) != 0:
-                    self.TestApi.append (Ta)
+                    self.visit (arg)
         else:
             Args = node.args
             for arg in Args:

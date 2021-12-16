@@ -4,9 +4,9 @@ import os
 import sys, getopt
 import argparse
 import time
-import xml.dom.minidom
-from xml.dom.minidom import parse
-from astwalk import GenBrVal
+from astwalk import GenPySummary
+from astwalk import GenTestArgs
+
 
  
 InitTicks = time.time()
@@ -19,8 +19,8 @@ def InitArgument (parser):
     parser.add_argument('--version', action='version', version='trace 2.0')
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
-    grp.add_argument('-b', '--branch', action='store_true',
-                     help='extract branch variables by function ')
+    grp.add_argument('-t', '--test', help='parse the test cases of api name')
+    grp.add_argument('-e', '--expression', action='store_true', help='the input is considered as a python expression')
                      
     parser.add_argument('dirname', nargs='?', help='source dir to process')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')
@@ -33,8 +33,11 @@ def main():
     opts = parser.parse_args()
     if opts.dirname is None:
         parser.error('dirname is missing: required with the main options')
-        
-    GenBrVal (opts.dirname)
+
+    if opts.test != None:
+        GenTestArgs (opts.dirname, opts.test, opts.expression)
+    else:
+        GenPySummary (opts.dirname)
 
     print ("Run successful.....")
 

@@ -20,6 +20,7 @@ void PyInit(string BrValXml)
 
     /* Init tracing: shared memory ALF++, etc. */
     int FinalLoc = DynTraceInit (BvSet->m_Branchs);
+    PY_PRINT (">>>>>>>>Get FinalLoc = %d before InitRtfs of python\r\n", FinalLoc);
 
     /* Init Rtfs */
     __Prt.InitRtfs(FinalLoc);
@@ -283,8 +284,8 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
         }
         case LOAD_DEREF:
         {
-            cout<<"Unsupported Opcode!!!!\r\n";
-            assert (0);
+            //cout<<"Unsupported Opcode!!!!\r\n";
+            //assert (0);
             break;
         }
         case CALL_FUNCTION:

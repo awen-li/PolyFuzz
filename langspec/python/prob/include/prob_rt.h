@@ -59,6 +59,11 @@ struct PRT_function
 
     void inline UpdateCurBB (int LineNo)
     {
+        if (LineNo < m_SBB)
+        {
+            return;
+        }
+        
         m_PreBB = m_CurBB;
         if (LineNo < m_EBB)
         {

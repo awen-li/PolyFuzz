@@ -17,6 +17,8 @@ class FuncDef ():
             self.BBNo.append (str(SNo))
 
     def AddBrVal (self, Val):
+        if Val == 'self':
+            return
         self.BrVal.append (Val)
 
     def AddBB (self, BBno):
@@ -28,7 +30,7 @@ class FuncDef ():
     def View (self):
         print ("FuncDef: Id = ", self.Id, " Name = ", self.Name, " BrVals = ", self.BrVal)
 
-class ASTWalk(NodeVisitor):
+class AstPySum(NodeVisitor):
     def __init__(self):
         self.FuncDef   = {}
         self.FId = 1
@@ -114,11 +116,29 @@ class ASTWalk(NodeVisitor):
         print ("#line-no for: %d" %node.lineno)
         self.InsertBB (node.lineno)
         self.BranchNum += 1
+        for s in node.body:
+            self.visit(s)
 
     def visit_while (self, node):
         print ("#line-no while: %d" %node.lineno)
         self.InsertBB (node.lineno)
         self.BranchNum += 1
+        for s in node.body:
+            self.visit(s)
+
+    def visit_with(self, node):
+        for s in node.body:
+            self.visit(s)
+
+    def visit_try(self, node):
+        for s in node.body:
+            self.visit(s)
+
+        for s in node.orelse:
+            self.visit(s)
+
+        for s in node.finalbody:
+            self.visit(s)
 
     def visit_if(self, node):
         #print (ast.dump (node))

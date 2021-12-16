@@ -1,0 +1,1 @@
+mongodb://%2Ftmp%2Fmongodb-27017.sock,example2.com:27017/test.yield_historical.in

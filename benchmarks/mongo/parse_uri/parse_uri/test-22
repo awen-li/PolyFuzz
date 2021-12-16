@@ -1,0 +1,1 @@
+mongodb://user:@localhost/?authMechanism=MONGODB-CR

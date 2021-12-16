@@ -4,7 +4,7 @@ import os
 import sys, getopt
 import marshal
 from ast import parse
-from .AstWalk import ASTWalk
+from .AstPySum import AstPySum
 from os.path import join, abspath, splitext, realpath
 from xml.dom.minidom import Document
 import pickle
@@ -31,13 +31,14 @@ def _AddChildNode (Doc, Parent, Child, Value=None):
     return CNode
     
 
-def GenBrVal (PyDir, ExpList=None):
+def GenPySummary (PyDir, ExpList=None):
     doc  = Document()  
     Root = _AddChildNode (doc, doc, "py_summary")
 
     SrcApiList = {}
     FuncDefList = {}
     BranchNum = 0
+    FileId = 1
     
     PyDirs = os.walk(PyDir) 
     for Path, Dirs, Pys in PyDirs:
@@ -57,7 +58,7 @@ def GenBrVal (PyDir, ExpList=None):
             with open(PyFile) as PyF:
                 print ("#visit " + PyFile)
                 Ast = parse(PyF.read(), PyFile, 'exec')
-                Visitor= ASTWalk()
+                Visitor= AstPySum()
                 Visitor.visit(Ast)
 
                 BranchNum += Visitor.BranchNum*2
@@ -68,6 +69,8 @@ def GenBrVal (PyDir, ExpList=None):
                 # add childnode file
                 FileNode = _AddChildNode (doc, Root, "file")
                 FileNode.setAttribute ("name", py)
+                FileNode.setAttribute ("id", str(FileId))
+                FileId += 1
 
                 for FuncName, Def in FuncDef.items ():
                     BrVals = list(set (Def.BrVal))

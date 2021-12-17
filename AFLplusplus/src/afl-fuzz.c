@@ -433,7 +433,7 @@ int main(int argc, char **argv_orig, char **envp) {
 
   while ((opt = getopt(
               argc, argv,
-              "+b:B:c:CdDe:E:hi:I:f:F:l:L:m:M:nNOo:p:RQs:S:t:T:UV:Wx:Z")) > 0) {
+              "+b:B:c:CdDe:E:hi:I:f:F:l:L:m:M:nNOo:p:RQs:S:t:T:UV:Wx:ZP")) > 0) {
 
     switch (opt) {
 
@@ -1099,7 +1099,13 @@ int main(int argc, char **argv_orig, char **envp) {
             "(custom_mutators/radamsa/).");
 
         break;
-
+        
+      case 'P':
+      {
+        /* enable pattern recognization fuzzing */
+        afl->is_patreg_fuzzing = true;
+        break;
+      }
       default:
         if (!show_help) { show_help = 1; }
 

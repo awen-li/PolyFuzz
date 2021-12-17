@@ -5454,6 +5454,13 @@ void pso_updating(afl_state_t *afl) {
 
 }
 
+/* fuzzing-based pattern recognization of input seeds */
+u8 patreg_fuzzing(afl_state_t *afl) {
+    printf ("patreg_fuzzing: %p \r\n", afl);
+    return 0;
+}
+
+
 /* larger change for MOpt implementation: the original fuzz_one was renamed
    to fuzz_one_original. All documentation references to fuzz_one therefore
    mean fuzz_one_original */
@@ -5479,6 +5486,10 @@ u8 fuzz_one(afl_state_t *afl) {
   }
 
 #endif
+
+  if (afl->is_patreg_fuzzing) {
+    return patreg_fuzzing(afl);
+  }  
 
   // if limit_time_sig == -1 then both are run after each other
 

@@ -759,6 +759,9 @@ typedef struct afl_state {
   u32   bitsmap_size;
 #endif
 
+  /* fuzzing-based pattern recognization flag: default=false */
+  u8  is_patreg_fuzzing;
+
 } afl_state_t;
 
 struct custom_mutator {

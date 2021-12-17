@@ -88,7 +88,7 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "#enable crash exit code\n" 
                     "export AFL_CRASH_EXITCODE=100\n\n"
                     "cp ../../py_summary.xml ./\n"
-                    f"afl-fuzz -i in/ -o out -m none -d -- python ../{PyScript}  @@\n"
+                    f"afl-fuzz $1 -i in/ -o out -m none -d -- python ../{PyScript}  @@\n"
                     )
         Fuzzer = open ("run-fuzzer.sh", "w")
         print (ShTemplate, file=Fuzzer)

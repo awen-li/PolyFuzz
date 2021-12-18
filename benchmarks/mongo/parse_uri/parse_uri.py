@@ -11,7 +11,7 @@ import sys
 import pyprob
 
 
-pyprob.Setup('py_summary.xml')
+pyprob.Setup('py_summary.xml', 'parse_uri.py')
 
 def LoadInput (TxtFile):
     Content = ""
@@ -22,8 +22,8 @@ def LoadInput (TxtFile):
     return Content
 
 if __name__ == '__main__':
-    data = (LoadInput (sys.argv[1]))
     try:
+        data = (LoadInput (sys.argv[1]))
         res = parse_uri(data)
     except Exception as e:
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)

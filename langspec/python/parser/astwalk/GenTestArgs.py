@@ -46,13 +46,14 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
         if Exp == True:
             Eval = "eval"
 
+        PyScript   = ApiName+".py"
         PyTemplate = (
                     f"{CurInport}\n"
                     "import sys\n"
                     "import pyprob\n"
                     "\n"
                     "\n"
-                    "pyprob.Setup('py_summary.xml')\n"
+                    f"pyprob.Setup('py_summary.xml', \'{PyScript}\')\n"
                     "\n"
                     "def LoadInput (TxtFile):\n"
                     "    Content = \"\"\n"
@@ -63,14 +64,13 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "    return Content\n"
                     "\n"
                     "if __name__ == '__main__':\n"
-                    f"    data = {Eval}(LoadInput (sys.argv[1]))\n"
                     "    try:\n"
+                    f"        data = {Eval}(LoadInput (sys.argv[1]))\n"
                     f"        res = {CurApiName}(data)\n"
                     "    except Exception as e:\n"
                     "        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)\n"
                     )
 
-        PyScript = ApiName+".py"
         Driver = open (PyScript, "w")
         print (PyTemplate, file=Driver)
         Driver.close ()

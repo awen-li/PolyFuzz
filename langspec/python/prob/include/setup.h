@@ -12,7 +12,7 @@ namespace pyprob {
 
 using namespace std;
 
-void SetupTracer(string PySummary);
+void SetupTracer(string PySummary, string DriverFile);
 
 void PyExcept (string Type, string FileName, long LineNo);
 

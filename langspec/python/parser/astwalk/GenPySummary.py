@@ -38,7 +38,8 @@ def GenPySummary (PyDir, ExpList=None):
     SrcApiList = {}
     FuncDefList = {}
     BranchNum = 0
-    FileId = 1
+
+    FileId    = 1
     
     PyDirs = os.walk(PyDir) 
     for Path, Dirs, Pys in PyDirs:
@@ -60,8 +61,6 @@ def GenPySummary (PyDir, ExpList=None):
                 Ast = parse(PyF.read(), PyFile, 'exec')
                 Visitor= AstPySum()
                 Visitor.visit(Ast)
-
-                BranchNum += Visitor.BranchNum*2
  
                 # function definition retrieve
                 FuncDef = Visitor.FuncDef
@@ -80,6 +79,8 @@ def GenPySummary (PyDir, ExpList=None):
                     FuncNode.setAttribute ("name",  FuncName)
                     FuncNode.setAttribute ("brval", " ".join(BrVals))
                     FuncNode.setAttribute ("bbs", " ".join(Def.BBNo))
+
+                    BranchNum += len (Def.BBNo) + 1
 
     Root.setAttribute ("branchs", str(BranchNum+4))
     # write to xml

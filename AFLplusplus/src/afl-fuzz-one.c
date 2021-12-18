@@ -5456,22 +5456,46 @@ void pso_updating(afl_state_t *afl) {
 
 /* fuzzing-based pattern recognization of input seeds */
 u8 patreg_fuzzing(afl_state_t *afl) {
-
-    printf ("patreg_fuzzing: %s[%u]\r\n", afl->queue_cur->fname, afl->queue_cur->len);
     
-    u8 *in_buf, *out_buf, *orig_in;   
-    orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
+    u8 *in_buf = queue_testcase_get(afl, afl->queue_cur);
     u32 len = afl->queue_cur->len;
+    
+    u32 map_size = afl->fsrv.map_size;
+    u8 * trace_bits = afl->fsrv.trace_bits;
+
+    printf ("patreg_fuzzing: %s[%u], map_size:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, map_size);
 
     u32 pos = 0;
     while (pos < len) {
+        u8  origin   = in_buf[pos];
 
-        u32 byte_val = 0;
-        
-        while (byte_val < 255) {
-            
+        u32 byte_val = 0;        
+        while (byte_val < 256) {
+
+            printf ("[%u/%u]%u -> %u \r\n", pos, len, (u32)origin, byte_val);
+
+            in_buf[pos] = (u8)byte_val;
+            u8 res = calibrate_case(afl, afl->queue_cur, in_buf, afl->queue_cycle - 1, 0);
+            if (unlikely(res == FSRV_RUN_ERROR)) {
+                FATAL("Unable to execute target application");
+            }
+
+
+            printf ("Path: ");
+            for (u32 i = 0; i < map_size; i++)
+            {
+                if (trace_bits[i]) {
+                    printf ("[%u]%u ", i, (u32)trace_bits[i]); 
+                }
+            }
+            printf ("\n");
+
+            sleep (1);
+            byte_val++;
         }
 
+        in_buf[pos] = origin;
+        pos++;
     }
 
     return 0;

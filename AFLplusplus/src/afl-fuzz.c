@@ -384,9 +384,10 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
     cull_queue(afl);
 
     afl->current_entry = 0;
+    afl->queue_cycle++;
     while (afl->current_entry < afl->queued_paths) {
 
-        printf ("current_entry[%u ] paths[%u] - ", afl->current_entry, afl->queued_paths);
+        printf ("queue_cycle[%llu] current_entry[%u] paths[%u] - ", afl->queue_cycle, afl->current_entry, afl->queued_paths);
 
         afl->queue_cur = afl->queue_buf[afl->current_entry];
         fuzz_one(afl);

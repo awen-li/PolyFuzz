@@ -425,6 +425,10 @@ static void check_term_size(afl_state_t *afl) {
 
 void show_stats(afl_state_t *afl) {
 
+  if (afl->is_patreg_fuzzing) {
+    return;
+  }
+
   double t_byte_ratio, stab_ratio;
 
   u64 cur_ms;

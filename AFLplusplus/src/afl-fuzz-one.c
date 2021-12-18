@@ -5456,7 +5456,24 @@ void pso_updating(afl_state_t *afl) {
 
 /* fuzzing-based pattern recognization of input seeds */
 u8 patreg_fuzzing(afl_state_t *afl) {
-    printf ("patreg_fuzzing: %p \r\n", afl);
+
+    printf ("patreg_fuzzing: %s[%u]\r\n", afl->queue_cur->fname, afl->queue_cur->len);
+    
+    u8 *in_buf, *out_buf, *orig_in;   
+    orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
+    u32 len = afl->queue_cur->len;
+
+    u32 pos = 0;
+    while (pos < len) {
+
+        u32 byte_val = 0;
+        
+        while (byte_val < 255) {
+            
+        }
+
+    }
+
     return 0;
 }
 

@@ -377,6 +377,28 @@ static void fasan_check_afl_preload(char *afl_preload) {
 
 }
 
+
+static void patreg_fuzzing_loop (afl_state_t *afl) {
+
+    printf ("****** patreg_fuzzing_loop ****** \r\n");
+    cull_queue(afl);
+
+    afl->current_entry = 0;
+    while (afl->current_entry < afl->queued_paths) {
+
+        printf ("current_entry[%u ] paths[%u] - ", afl->current_entry, afl->queued_paths);
+
+        afl->queue_cur = afl->queue_buf[afl->current_entry];
+        fuzz_one(afl);
+        
+        sleep (1);
+        ++afl->current_entry;
+    }
+
+    
+    return;
+}
+
 /* Main entry point */
 
 int main(int argc, char **argv_orig, char **envp) {
@@ -1958,6 +1980,11 @@ int main(int argc, char **argv_orig, char **envp) {
   setvbuf(afl->introspection_file, NULL, _IONBF, 0);
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
+
+  if (afl->is_patreg_fuzzing) {
+    patreg_fuzzing_loop (afl);
+    goto stop_fuzzing;
+  }
 
   DEBUG_PRINT("Run into fuzzing loop....\r\n");
   while (likely(!afl->stop_soon)) {

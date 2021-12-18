@@ -18,4 +18,5 @@ export AFL_DEBUG_CHILD=1
 export AFL_CRASH_EXITCODE=100
 
 cp ../py_summary.xml ./
-afl-fuzz -i in/ -o out -m none -d -- python ../Demo.py  @@
+afl-fuzz $1 -i in/ -o out -m none -d -- python ../Demo.py  @@
+

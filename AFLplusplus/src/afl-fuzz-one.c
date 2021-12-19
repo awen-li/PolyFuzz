@@ -5454,6 +5454,68 @@ void pso_updating(afl_state_t *afl) {
 
 }
 
+static inline void add_pat_to_list (char_pat *char_pat_list, u32 pos, u8 *char_val, u32 char_num) {
+
+    if (char_num == 0) {
+        return;
+    }
+
+    char_pat *cur_char_pat = char_pat_list + pos;
+
+    cur_char_pat->char_num = char_num;
+    cur_char_pat->char_val = (u8*) malloc (sizeof (u8) * char_num);
+    assert (cur_char_pat->char_val != NULL);
+
+    memcpy (cur_char_pat->char_val, char_val, char_num);
+    
+    return;
+}
+
+
+static inline patreg_seed* add_patreg (afl_state_t *afl, u32 seed_len) {
+
+    patreg_seed *ps = (patreg_seed*) malloc (sizeof (patreg_seed) + sizeof (char_pat) * seed_len);
+    assert (ps != NULL);
+    
+    ps->char_pat_list = (char_pat*)(ps + 1);
+    ps->seed_len      = seed_len;
+    ps->seed          = afl->queue_cur;
+    
+    ps->next = afl->patreg_seed_head;
+    afl->patreg_seed_head = ps;
+    
+    return ps;
+}
+
+static inline void del_patreg (afl_state_t *afl) {
+
+    patreg_seed *ps = afl->patreg_seed_head;
+    while (ps != NULL) {
+        afl->patreg_seed_head = ps->next;
+
+        char_pat *cp = ps->char_pat_list;
+        u32 pos = 0;
+        while (pos < ps->seed_len) {
+            free (cp->char_val);
+            cp->char_val = NULL;
+
+            pos++;
+            cp++;
+        }
+
+        free (ps);
+        ps = afl->patreg_seed_head;
+    }
+
+    return;
+}
+
+void gen_pattern (afl_state_t *afl) {
+
+    del_patreg (afl);
+    return;
+}
+
 /* fuzzing-based pattern recognization of input seeds */
 u8 patreg_fuzzing(afl_state_t *afl) {
     
@@ -5463,16 +5525,26 @@ u8 patreg_fuzzing(afl_state_t *afl) {
     u32 map_size = afl->fsrv.map_size;
     u8 * trace_bits = afl->fsrv.trace_bits;
 
-    printf ("patreg_fuzzing: %s[%u], map_size:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, map_size);
+    u32 bb_num = map_size;
+    u8 *str_bb = getenv ("AFL_BB_NUM");
+    if (str_bb != NULL) {
+        bb_num = (u32)atoi(str_bb);
+    }
 
+    printf ("patreg_fuzzing: %s[%u], bb_num:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, bb_num);
+    
+    patreg_seed *ps = add_patreg (afl, len);
+    char_pat *char_pat_list = ps->char_pat_list;
+    
     u32 pos = 0;
     while (pos < len) {
         u8  origin   = in_buf[pos];
 
+        u8 char_val[256];
+        u32 char_num = 0;
+        
         u32 byte_val = 0;        
         while (byte_val < 256) {
-
-            printf ("[%u/%u]%u -> %u \r\n", pos, len, (u32)origin, byte_val);
 
             in_buf[pos] = (u8)byte_val;
             u8 res = calibrate_case(afl, afl->queue_cur, in_buf, afl->queue_cycle - 1, 0);
@@ -5481,23 +5553,28 @@ u8 patreg_fuzzing(afl_state_t *afl) {
             }
 
 
-            printf ("Path: ");
-            for (u32 i = 0; i < map_size; i++)
-            {
+            u32 path_len = 0;
+            for (u32 i = 0; i < bb_num; i++) {
                 if (trace_bits[i]) {
-                    printf ("[%u]%u ", i, (u32)trace_bits[i]); 
+                    path_len++; 
                 }
             }
-            printf ("\n");
 
-            sleep (1);
+            if (path_len) {
+                char_val[char_num++] = byte_val;
+                printf ("(%u)[%u -> %u]path_length: %u\n", pos, (u32)origin, (u32)byte_val, path_len);
+            }
+
             byte_val++;
         }
 
+        add_pat_to_list (char_pat_list, pos, char_val, char_num);
+        
         in_buf[pos] = origin;
         pos++;
     }
 
+    exit (0);
     return 0;
 }
 

@@ -25,7 +25,7 @@ void PyInit(string BrValXml)
     /* Init Rtfs */
     __Prt.InitRtfs(FinalLoc);
     PY_PRINT (">>>>>>>>Get FinalLoc = %d after InitRtfs of python\r\n", FinalLoc);
-    
+
     return;
 }
 

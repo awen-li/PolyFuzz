@@ -83,12 +83,14 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "fi\n\n"
                     "cd fuzz\n"
                     "afl-system-config\n\n"
+                    "#pilot fuzzing: max path length\n"
+                    "export AFL_BB_NUM=1024\n\n"
                     "#enable debug for child process\n"
                     "#export AFL_DEBUG_CHILD=1\n\n"
                     "#enable crash exit code\n" 
                     "export AFL_CRASH_EXITCODE=100\n\n"
                     "cp ../../py_summary.xml ./\n"
-                    f"afl-fuzz $1 -i in/ -o out -m none -d -- python ../{PyScript}  @@\n"
+                    f"afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../{PyScript}  @@\n"
                     )
         Fuzzer = open ("run-fuzzer.sh", "w")
         print (ShTemplate, file=Fuzzer)

@@ -212,6 +212,20 @@ struct auto_extra_data {
 
 };
 
+typedef struct char_pat {
+    u32 char_num;
+    u8  *char_val;
+} char_pat;
+
+typedef struct patreg_seed {
+  struct queue_entry *seed;             /* seed */
+
+  u32 seed_len;
+  char_pat *char_pat_list;
+
+  struct patreg_seed* next;
+} patreg_seed;
+
 /* Fuzzing stages */
 
 enum {
@@ -421,6 +435,8 @@ typedef struct afl_state {
   afl_env_vars_t   afl_env;
 
   char **argv;                                            /* argv if needed */
+
+  patreg_seed *patreg_seed_head;
 
   /* MOpt:
     Lots of globals, but mostly for the status UI and other things where it
@@ -761,6 +777,7 @@ typedef struct afl_state {
 
   /* fuzzing-based pattern recognization flag: default=false */
   u8  is_patreg_fuzzing;
+  u32 threshold_path_len;
 
 } afl_state_t;
 

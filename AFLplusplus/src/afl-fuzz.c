@@ -377,10 +377,9 @@ static void fasan_check_afl_preload(char *afl_preload) {
 
 }
 
-
+void gen_pattern (afl_state_t *afl);
 static void patreg_fuzzing_loop (afl_state_t *afl) {
 
-    printf ("****** patreg_fuzzing_loop ****** \r\n");
     cull_queue(afl);
 
     afl->current_entry = 0;
@@ -396,7 +395,7 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
         ++afl->current_entry;
     }
 
-    
+    gen_pattern (afl);
     return;
 }
 
@@ -456,7 +455,7 @@ int main(int argc, char **argv_orig, char **envp) {
 
   while ((opt = getopt(
               argc, argv,
-              "+b:B:c:CdDe:E:hi:I:f:F:l:L:m:M:nNOo:p:RQs:S:t:T:UV:Wx:ZP")) > 0) {
+              "+b:B:c:CdDe:E:hi:I:f:F:l:L:m:M:nNOo:p:RQs:S:t:T:UV:Wx:ZP:")) > 0) {
 
     switch (opt) {
 
@@ -1126,7 +1125,8 @@ int main(int argc, char **argv_orig, char **envp) {
       case 'P':
       {
         /* enable pattern recognization fuzzing */
-        afl->is_patreg_fuzzing = true;
+        afl->is_patreg_fuzzing  = true;
+        afl->threshold_path_len = (u32)atoi (optarg);
         break;
       }
       default:

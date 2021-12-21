@@ -221,6 +221,7 @@ typedef struct patreg_seed {
   struct queue_entry *seed;             /* seed */
 
   u32 seed_len;
+  u8* seed_ctx;
   char_pat *char_pat_list;
 
   struct patreg_seed* next;

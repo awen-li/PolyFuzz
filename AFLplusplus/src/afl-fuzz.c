@@ -390,8 +390,7 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
 
         afl->queue_cur = afl->queue_buf[afl->current_entry];
         fuzz_one(afl);
-        
-        sleep (1);
+
         ++afl->current_entry;
     }
 

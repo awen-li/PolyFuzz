@@ -5456,30 +5456,35 @@ void pso_updating(afl_state_t *afl) {
 
 static inline void add_pat_to_list (char_pat *char_pat_list, u32 pos, u8 *char_val, u32 char_num) {
 
-    if (char_num == 0) {
-        return;
-    }
-
     char_pat *cur_char_pat = char_pat_list + pos;
 
     cur_char_pat->char_num = char_num;
+    if (char_num == 0) {
+        cur_char_pat->char_val = NULL;
+        return;
+    }
+    
     cur_char_pat->char_val = (u8*) malloc (sizeof (u8) * char_num);
     assert (cur_char_pat->char_val != NULL);
-
     memcpy (cur_char_pat->char_val, char_val, char_num);
     
     return;
 }
 
 
-static inline patreg_seed* add_patreg (afl_state_t *afl, u32 seed_len) {
+static inline patreg_seed* add_patreg (afl_state_t *afl, u8 *seed_ctx, u32 seed_len) {
 
-    patreg_seed *ps = (patreg_seed*) malloc (sizeof (patreg_seed) + sizeof (char_pat) * seed_len);
+    patreg_seed *ps = (patreg_seed*) malloc (sizeof (patreg_seed) + 
+                                             sizeof (u8) * seed_len +
+                                             sizeof (char_pat) * seed_len + 1);
     assert (ps != NULL);
     
     ps->char_pat_list = (char_pat*)(ps + 1);
     ps->seed_len      = seed_len;
     ps->seed          = afl->queue_cur;
+    ps->seed_ctx      = (u8*) (ps->char_pat_list + seed_len);
+    memcpy (ps->seed_ctx, seed_ctx, seed_len);
+    ps->seed_ctx [seed_len] = 0;
     
     ps->next = afl->patreg_seed_head;
     afl->patreg_seed_head = ps;
@@ -5511,6 +5516,37 @@ static inline void del_patreg (afl_state_t *afl) {
 }
 
 void gen_pattern (afl_state_t *afl) {
+    
+    patreg_seed *ps = afl->patreg_seed_head;
+    while (ps != NULL) {
+        u8 pattern[128] = {0};
+        u32 pat_len = 0;
+
+        u8* seed_ctx = ps->seed_ctx;
+        
+        char_pat *cp = ps->char_pat_list;
+        u32 pos = 0;
+        while (pos < ps->seed_len) {
+            /* char num eq 0, means we can not replace it with any other chars */
+            if (cp->char_num == 0) {
+                if (pat_len != 0) {
+                    /* for simple implemt, we use .* to match all chars */
+                    pattern[pat_len++] = '.';
+                    pattern[pat_len++] = '*';
+                }
+                pattern[pat_len++] = seed_ctx[pos];
+            }
+            else {
+                
+            }
+            
+            pos++;
+            cp++;
+        }
+        printf ("pattern recog: %s -> %s \r\n", seed_ctx, pattern);
+
+        ps = ps->next;
+    }
 
     del_patreg (afl);
     return;
@@ -5533,7 +5569,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 
     printf ("patreg_fuzzing: %s[%u], bb_num:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, bb_num);
     
-    patreg_seed *ps = add_patreg (afl, len);
+    patreg_seed *ps = add_patreg (afl, in_buf, len);
     char_pat *char_pat_list = ps->char_pat_list;
     
     u32 pos = 0;
@@ -5545,6 +5581,11 @@ u8 patreg_fuzzing(afl_state_t *afl) {
         
         u32 byte_val = 0;        
         while (byte_val < 256) {
+
+            if (byte_val == origin) {
+                byte_val++;
+                continue;
+            }
 
             in_buf[pos] = (u8)byte_val;
             u8 res = calibrate_case(afl, afl->queue_cur, in_buf, afl->queue_cycle - 1, 0);
@@ -5562,7 +5603,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 
             if (path_len) {
                 char_val[char_num++] = byte_val;
-                printf ("(%u)[%u -> %u]path_length: %u\n", pos, (u32)origin, (u32)byte_val, path_len);
+                //printf ("(%u)[%u -> %u]path_length: %u\n", pos, (u32)origin, (u32)byte_val, path_len);
             }
 
             byte_val++;
@@ -5574,7 +5615,6 @@ u8 patreg_fuzzing(afl_state_t *afl) {
         pos++;
     }
 
-    exit (0);
     return 0;
 }
 

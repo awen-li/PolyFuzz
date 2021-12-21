@@ -134,6 +134,8 @@ void afl_state_init(afl_state_t *afl, uint32_t map_size) {
   afl->fsrv.child_pid = -1;
   afl->fsrv.out_dir_fd = -1;
 
+  afl->patreg_seed_head = NULL;
+
   init_mopt_globals(afl);
 
   list_append(&afl_states, afl);

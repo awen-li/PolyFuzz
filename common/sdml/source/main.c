@@ -1,15 +1,18 @@
-#include "macro.h"
+#include "mutator.h"
 
 
 int main(int argc, char *argv[])
 {
+    InitMutators ();
+    
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "d:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:")) > 0) 
     {
         switch (Opt) 
         {
-            case 'd':
+            case 's':
             {
+                GetMutator((BYTE*)optarg);
                 break;
             }
             default:

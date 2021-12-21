@@ -30,7 +30,8 @@ typedef VOID (*DelData) (VOID *Data);
 
 VOID ListVisit (List *L, ProcData Proc);
 VOID ListDel (List *L, DelData Del);
-BOOL ListSearch (List *L, CompData Proc, VOID *Data);
+BOOL IsInList (List *L, CompData Proc, VOID *Data);
+VOID* ListSearch (List *L, CompData Proc, VOID *Data);
 
 
 #endif 

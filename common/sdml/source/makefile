@@ -1,5 +1,5 @@
-SOURCE_DIR = mutators
-HEADER_DIR = mutators
+SOURCE_DIR = def_mutators
+HEADER_DIR = def_mutators
 
 CUR_INCLUDES = $(INCLUDE_PATH) -I$(HEADER_DIR)
 CUR_CFLAGS = $(CFLAGS) -fpic
@@ -16,6 +16,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ_FILES)
 	@if [ ! -d $(LIB_PATH) ];then mkdir $(LIB_PATH); fi
 	$(LD) -shared -o $@ $^
+	@cp $(TARGET) /usr/lib/ -f
 	
 $(OBJ_PATH)/%.o: $(SOURCE_DIR)/%.c
 	@if [ ! -d $(OBJ_PATH) ];then mkdir $(OBJ_PATH); fi

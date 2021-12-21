@@ -8,15 +8,17 @@ typedef VOID (*__mutator_entry__) (BYTE* SeedBuf, DWORD SeedLen);
 typedef struct _mutator
 {
     BYTE *Pattern;
+    BYTE *MuName;
 
-    __mutator_entry__ MutatorEntry;
+    __mutator_entry__ MuEntry;
     
 } Mutator;
 
 
-VOID reg_mutator (BYTE* Pattern, __mutator_entry__ Mue);
+VOID InitMutators ();
+VOID RegMutator (BYTE* Pattern, BYTE* MuName);
 
-Mutator* get_mutator (BYTE* SeedFile);
+Mutator* GetMutator (BYTE* SeedFile);
 
 
 #endif

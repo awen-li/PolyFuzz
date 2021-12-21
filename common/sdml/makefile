@@ -4,7 +4,7 @@ TARGET = sdml
 
 export SDML_PATH = $(PWD)
 
-export CC = clang
+export CC = gcc
 export LD = $(CC)
 
 export SOURCE_PATH  = $(SDML_PATH)/source
@@ -27,10 +27,11 @@ MUTATORS = source
 all: $(TARGET)
 
 $(TARGET): $(OBJ_FILES)
-	$(LD) -o $@ $^ $(LD_CFLAGS)
-	@cp $(TARGET) -rf /usr/bin/
 	@make -C ./source clean
 	@make -C ./source
+	$(LD) -o $@ $^ $(LD_CFLAGS)
+	@cp $(TARGET) -rf /usr/bin/
+	
 	
 $(OBJ_PATH)/%.o: $(SOURCE_PATH)/%.c
 	@if [ ! -d $(OBJ_PATH) ];then mkdir $(OBJ_PATH); fi

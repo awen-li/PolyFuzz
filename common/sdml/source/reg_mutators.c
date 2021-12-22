@@ -1,9 +1,72 @@
 #include "mutator.h"
+#include "seed.h"
 #include "list.h"
 #include <dirent.h>
 #include <sys/stat.h>
 
 static List g_MuList;
+static List g_SeedList;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
+{
+    struct stat ST;
+
+    SDWORD S = stat(SeedFile, &ST);
+    assert (S != -1);
+
+    FILE *FS = fopen (SeedFile, "rb");
+    assert (FS != NULL);
+
+    *SeedLen  = (DWORD)ST.st_size;
+    BYTE* Buf = (BYTE*) malloc (ST.st_size+1);
+    assert (Buf != NULL);
+
+    fread (Buf, 1, ST.st_size, FS);
+    Buf[ST.st_size] = 0;
+    
+    fclose (FS);
+    
+    return Buf;
+}
+
+
+static inline VOID InitSeedList (BYTE* SeedDir)
+{
+    DIR *Dir;
+    struct dirent *SD;
+
+    Dir = opendir((const char*)SeedDir);
+    if (Dir == NULL)
+    {
+        return;
+    }
+    
+    while (SD = readdir(Dir))
+    {
+        if (SD->d_name[0] == '.')
+        {
+            continue;
+        }
+
+        Seed *Ss = (Seed *) malloc (sizeof (Seed));
+        assert (Ss != NULL);
+
+        snprintf (Ss->SName, sizeof(Ss->SName), "%s/%s", SeedDir, SD->d_name);
+        Ss->SeedCtx = ReadFile (Ss->SName, &Ss->SeedLen);
+
+        ListInsert(&g_SeedList, Ss);  
+    }
+    
+    closedir (Dir);
+    return;
+}
+
+VOID DelSeed (Seed *Ss)
+{
+    free (Ss->SeedCtx);
+    free (Ss);
+}
 
 static inline BOOL MutatorCmp (Mutator* Mu1, Mutator* Mu2)
 {
@@ -51,64 +114,32 @@ VOID RegMutator (BYTE* Pattern, BYTE* MuName)
     return;
 }
 
-static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
+
+static inline BOOL MutatorMatch (Mutator* Mu, Seed* Ss)
 {
-    struct stat ST;
 
-    SDWORD S = stat(SeedFile, &ST);
-    assert (S != -1);
-
-    FILE *FS = fopen (SeedFile, "rb");
-    assert (FS != NULL);
-
-    *SeedLen  = (DWORD)ST.st_size;
-    BYTE* Buf = (BYTE*) malloc (ST.st_size+1);
-    assert (Buf != NULL);
-
-    fread (Buf, 1, ST.st_size, FS);
-    Buf[ST.st_size] = 0;
-    
-    fclose (FS);
-    
-    return Buf;
-}
-
-
-static inline BOOL MutatorMatch (Mutator* Mu, BYTE* SeedFile)
-{
-    DWORD SeedLen = 0;
-    BYTE *SeedCtx = ReadFile (SeedFile, &SeedLen);
-    printf ("read -> %s, length = %u:[%s]\r\n", SeedFile, SeedLen, SeedCtx);
-
-    free (SeedCtx);
     return FALSE;
 }
 
 
 Mutator* GetMutator (BYTE* SeedDir)
 {
-    DIR *Dir;
-    struct dirent *SD;
-    BYTE WholePath[1024];
-    
-    Dir = opendir((const char*)SeedDir);
-    if (Dir == NULL)
-    {
-        return NULL;
-    }
-    
-    while (SD = readdir(Dir))
-    {
-        if (SD->d_name[0] == '.')
+    InitSeedList (SeedDir);
+
+    LNode *Hdr = g_SeedList.Header;
+    DWORD Num = g_SeedList.NodeNum;
+    while (Num > 0)
+    {   
+        Mutator *Mu = ListSearch(&g_MuList, (CompData)MutatorMatch, Hdr->Data);
+        if (Mu != NULL)
         {
-            continue;
+            return Mu;
         }
 
-        snprintf (WholePath, sizeof(WholePath), "%s/%s", SeedDir, SD->d_name);
-        ListSearch(&g_MuList, (CompData)MutatorMatch, WholePath);
+        Hdr = Hdr->Nxt;
+        Num--;
     }
-    
-    closedir (Dir);
+
     return NULL;
 }
 
@@ -204,6 +235,7 @@ VOID InitMutators ()
 VOID DeInitMutators ()
 {
     ListDel(&g_MuList, (DelData) free);
+    ListDel(&g_SeedList, (DelData) DelSeed);
     return;
 }
 

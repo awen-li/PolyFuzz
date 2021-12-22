@@ -5,8 +5,34 @@
 
 static List g_MuList;
 
-VOID RegMutator (BYTE* Pattern, BYTE* MuName)
+static inline BOOL MutatorCmp (Mutator* Mu1, Mutator* Mu2)
 {
+    if (strcmp (Mu1->Pattern, Mu2->Pattern) == 0 &&
+        strcmp (Mu1->MuName, Mu2->MuName) == 0)
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
+static inline BOOL IsMutatorExist (BYTE* Pattern, BYTE* MuName)
+{
+    Mutator Mu = {Pattern, MuName, NULL};
+
+    return IsInList (&g_MuList, (CompData)MutatorCmp, &Mu);
+}
+
+
+VOID RegMutator (BYTE* Pattern, BYTE* MuName)
+{   
+    if (IsMutatorExist (Pattern, MuName))
+    {
+        return;
+    }
+
     DWORD PatLen  = strlen ((char*)Pattern) + 1;
     DWORD NameLen = strlen ((char*)MuName) + 1;
     Mutator *Mu = (Mutator*) malloc (sizeof (Mutator) + PatLen + NameLen);
@@ -36,10 +62,12 @@ static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
     assert (FS != NULL);
 
     *SeedLen  = (DWORD)ST.st_size;
-    BYTE* Buf = (BYTE*) malloc (ST.st_size);
+    BYTE* Buf = (BYTE*) malloc (ST.st_size+1);
     assert (Buf != NULL);
 
     fread (Buf, 1, ST.st_size, FS);
+    Buf[ST.st_size] = 0;
+    
     fclose (FS);
     
     return Buf;
@@ -48,6 +76,11 @@ static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
 
 static inline BOOL MutatorMatch (Mutator* Mu, BYTE* SeedFile)
 {
+    DWORD SeedLen = 0;
+    BYTE *SeedCtx = ReadFile (SeedFile, &SeedLen);
+    printf ("read -> %s, length = %u:[%s]\r\n", SeedFile, SeedLen, SeedCtx);
+
+    free (SeedCtx);
     return FALSE;
 }
 
@@ -56,6 +89,7 @@ Mutator* GetMutator (BYTE* SeedDir)
 {
     DIR *Dir;
     struct dirent *SD;
+    BYTE WholePath[1024];
     
     Dir = opendir((const char*)SeedDir);
     if (Dir == NULL)
@@ -70,20 +104,91 @@ Mutator* GetMutator (BYTE* SeedDir)
             continue;
         }
 
-        printf ("read -> %s \r\n", SD->d_name);
-        ListSearch(&g_MuList, (CompData)MutatorMatch, SD->d_name);
+        snprintf (WholePath, sizeof(WholePath), "%s/%s", SeedDir, SD->d_name);
+        ListSearch(&g_MuList, (CompData)MutatorMatch, WholePath);
     }
     
     closedir (Dir);
     return NULL;
+}
 
-    return NULL;
+
+VOID DumpOneMutator (Mutator *Mu)
+{
+    FILE *Fm = fopen (MUTATOR_LIB, "ab");
+    assert (Fm != NULL);
+
+    /* pattern */
+    DWORD PatLength = strlen (Mu->Pattern);
+    DWORD MuLength  = strlen (Mu->MuName);
+    assert (PatLength > 0 && MuLength > 0);
+    
+    fwrite (&PatLength, 1, sizeof (DWORD), Fm);
+    fwrite (&MuLength,  1, sizeof (DWORD), Fm);
+    
+    fwrite (Mu->Pattern, 1, PatLength, Fm);   
+    fwrite (Mu->MuName, 1,  MuLength, Fm);
+
+    fclose (Fm);
+    
+    return;
+}
+
+VOID DumpMutator ()
+{
+    ListVisit(&g_MuList, (ProcData)DumpOneMutator);
+    return;
+}
+
+
+
+VOID LoadMutator ()
+{
+    FILE *Fm = fopen (MUTATOR_LIB, "rb");
+    if (Fm == NULL)
+    {
+        return;
+    }
+
+    DWORD PatLength = 0;
+    DWORD MuLength  = 0;
+
+    BYTE  Pattern[1024];
+    BYTE  MuName[1024];
+    
+    while (!feof (Fm))
+    {
+        PatLength = MuLength = 0;
+        fread (&PatLength, 1, sizeof (DWORD), Fm);
+        fread (&MuLength, 1, sizeof (DWORD), Fm);
+
+        if (PatLength == 0 || MuLength == 0)
+        {
+            break;
+        }
+
+        memset (Pattern, 0, sizeof (Pattern));
+        fread (Pattern, 1, PatLength, Fm);
+        
+        memset (MuName, 0, sizeof (MuName));
+        fread (MuName, 1, MuLength, Fm);
+
+        RegMutator (Pattern, MuName);
+    }
+
+    fclose (Fm);
+    return;
 }
 
 
 VOID InitMutators ()
 {
+    LoadMutator ();
+    ////////////////////////////////////////////////////////////////
+    
     RegMutator ("[.*]", "DefaultMu");
+
+    printf ("g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
     return;
 }
 

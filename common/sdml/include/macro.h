@@ -33,9 +33,7 @@ typedef unsigned         BOOL;
 #define TRUE                      (1)
 #define FALSE                     (0)
 
-#define ALIGN_8(x)                (((x)%8)?(((x)&~7) + 8):(x))
-
-#define INLINE                    inline
+#define MUTATOR_LIB               ("/usr/bin/libmutators.bin")
 
 
 #ifdef __DEBUG__

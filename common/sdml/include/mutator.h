@@ -3,20 +3,23 @@
 #define __MUTATOR_H__
 #include "macro.h"
 
-typedef VOID (*__mutator_entry__) (BYTE* SeedBuf, DWORD SeedLen);
+typedef VOID (*_mutator_entry_) (BYTE* SeedBuf, DWORD SeedLen);
 
-typedef struct _mutator
+typedef struct _mutator_
 {
     BYTE *Pattern;
     BYTE *MuName;
 
-    __mutator_entry__ MuEntry;
+    _mutator_entry_ MuEntry;
     
 } Mutator;
 
 
 VOID InitMutators ();
 VOID RegMutator (BYTE* Pattern, BYTE* MuName);
+VOID DumpMutator ();
+VOID LoadMutator ();
+
 
 Mutator* GetMutator (BYTE* SeedFile);
 

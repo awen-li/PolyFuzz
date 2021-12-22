@@ -113,6 +113,13 @@ Mutator* GetMutator (BYTE* SeedDir)
 }
 
 
+VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir)
+{
+    return;
+}
+
+
+
 VOID DumpOneMutator (Mutator *Mu)
 {
     FILE *Fm = fopen (MUTATOR_LIB, "ab");
@@ -136,6 +143,7 @@ VOID DumpOneMutator (Mutator *Mu)
 
 VOID DumpMutator ()
 {
+    remove (MUTATOR_LIB);
     ListVisit(&g_MuList, (ProcData)DumpOneMutator);
     return;
 }
@@ -191,5 +199,13 @@ VOID InitMutators ()
     printf ("g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
     return;
 }
+
+
+VOID DeInitMutators ()
+{
+    ListDel(&g_MuList, (DelData) free);
+    return;
+}
+
 
 

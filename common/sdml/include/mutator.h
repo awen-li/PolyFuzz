@@ -16,13 +16,19 @@ typedef struct _mutator_
 
 
 VOID InitMutators ();
+VOID DeInitMutators ();
+
+
 VOID RegMutator (BYTE* Pattern, BYTE* MuName);
 VOID DumpMutator ();
 VOID LoadMutator ();
 
 
 Mutator* GetMutator (BYTE* SeedFile);
+VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir);
 
+
+Mutator* MutatorLearning (BYTE* SeedDir);
 
 #endif
 

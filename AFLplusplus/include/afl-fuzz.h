@@ -438,7 +438,8 @@ typedef struct afl_state {
   char **argv;                                            /* argv if needed */
 
   patreg_seed *patreg_seed_head;
-
+  u32 patreg_seed_num;
+  
   /* MOpt:
     Lots of globals, but mostly for the status UI and other things where it
     really makes no sense to haul them around as function parameters. */

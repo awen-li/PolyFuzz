@@ -27,6 +27,19 @@ static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir)
     return;
 }
 
+static inline VOID FormatPath (BYTE *Path)
+{
+    DWORD Len = strlen (Path);
+    assert (Len != 0);
+    
+    if (Path[Len-1] == '/')
+    {
+        Path[Len-1] = 0;
+    }
+
+    return;
+}
+
 int main(int argc, char *argv[])
 {
     BYTE *SeedDir = NULL;
@@ -43,12 +56,14 @@ int main(int argc, char *argv[])
             {
                 SeedDir = (BYTE *)strdup (optarg);
                 assert (SeedDir != NULL);
+                FormatPath (SeedDir);
                 break;
             }
             case 'd':
             {
                 DriverDir = (BYTE *)strdup (optarg);
                 assert (DriverDir != NULL);
+                FormatPath (DriverDir);
                 break;
             }
             default:

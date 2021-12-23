@@ -1,6 +1,9 @@
 #include "mutator.h"
+#include "seed.h"
 #include <dirent.h>
 #include <sys/stat.h>
+
+static List g_SeedPats;
 
 static inline BYTE* GetFuzzDir (BYTE* DriverDir)
 {
@@ -57,15 +60,47 @@ static inline VOID RunPilotFuzzing (BYTE* DriverDir)
     return;
 }
 
+static inline BYTE* BaseName (BYTE* Path)
+{
+    BYTE* Pos = NULL;
+    while (*Path != 0)
+    {
+        if (*Path == '/')
+        {
+            Pos = Path;
+        }
+        Path++;
+    }
+
+    return Pos;
+}
+
 Mutator* MutatorLearning (BYTE* DriverDir)
 {
-    RunPilotFuzzing (DriverDir);
+    BYTE SeedPat[512];
+    //RunPilotFuzzing (DriverDir);
 
     BYTE *FuzzDir = GetFuzzDir(DriverDir);
     assert (FuzzDir != NULL);
-    printf ("DriverDir = %s, Get FuzzDir = %s \r\n", DriverDir, FuzzDir);
+
+    List *SL = GetSeedList();
+    LNode *Sh = SL->Header;
+    while (Sh != NULL)
+    {
+        Seed *S = (Seed*)Sh->Data;
+
+        BYTE* SeedName = BaseName(S->SName);
+        assert (SeedName != NULL);
+        
+        snprintf (SeedPat, sizeof (SeedPat), "%s/in/%s.pat", FuzzDir, SeedName+1);
+        printf ("%s ---> %s \n", S->SName, SeedPat);
+
+        Sh = Sh->Nxt;
+    }
     
     
+
+    free (FuzzDir);
     return NULL;
 }
 

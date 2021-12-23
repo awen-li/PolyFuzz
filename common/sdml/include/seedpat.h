@@ -2,6 +2,7 @@
 #ifndef __SEEDPAT_H__
 #define __SEEDPAT_H__
 #include "macro.h"
+#include "seed.h"
 
 typedef struct CharPat {
     DWORD CharNum;
@@ -11,13 +12,9 @@ typedef struct CharPat {
 
 typedef struct SeedPat 
 {
-  struct queue_entry *seed;             /* seed */
+  Seed *Ss;  
 
-  DWORD SeedLen;
-  u8* seed_ctx;
-  char_pat *char_pat_list;
-
-  struct patreg_seed* next;
+  CharPat *CharList;
 } SeedPat;
 
 

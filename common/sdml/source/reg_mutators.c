@@ -1,11 +1,23 @@
 #include "mutator.h"
 #include "seed.h"
-#include "list.h"
 #include <dirent.h>
 #include <sys/stat.h>
 
 static List g_MuList;
 static List g_SeedList;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+List* GetSeedList ()
+{
+    return &g_SeedList;
+}
+
+List* GetMuList ()
+{
+    return &g_MuList;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
@@ -61,6 +73,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
     closedir (Dir);
     return;
 }
+
 
 VOID DelSeed (Seed *Ss)
 {
@@ -127,8 +140,7 @@ Mutator* GetMutator (BYTE* SeedDir)
     InitSeedList (SeedDir);
 
     LNode *Hdr = g_SeedList.Header;
-    DWORD Num = g_SeedList.NodeNum;
-    while (Num > 0)
+    while (Hdr != NULL)
     {   
         Mutator *Mu = ListSearch(&g_MuList, (CompData)MutatorMatch, Hdr->Data);
         if (Mu != NULL)
@@ -137,7 +149,6 @@ Mutator* GetMutator (BYTE* SeedDir)
         }
 
         Hdr = Hdr->Nxt;
-        Num--;
     }
 
     return NULL;

@@ -2,6 +2,7 @@
 #ifndef __MUTATOR_H__
 #define __MUTATOR_H__
 #include "macro.h"
+#include "list.h"
 
 typedef VOID (*_mutator_entry_) (BYTE* SeedBuf, DWORD SeedLen);
 
@@ -29,6 +30,7 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir);
 
 
 Mutator* MutatorLearning (BYTE* SeedDir);
+List* GetMuList ();
 
 #endif
 

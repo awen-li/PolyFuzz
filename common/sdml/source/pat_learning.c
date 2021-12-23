@@ -1,5 +1,5 @@
 #include "mutator.h"
-#include "seed.h"
+#include "seedpat.h"
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -75,74 +75,181 @@ static inline BYTE* BaseName (BYTE* Path)
     return Pos;
 }
 
-Mutator* MutatorLearning (BYTE* DriverDir)
-{
-    BYTE SeedPat[512];
-    //RunPilotFuzzing (DriverDir);
 
+static inline SeedPat* LoadSp (BYTE *Spath, Seed *S)
+{
+    FILE *FS = fopen (Spath, "rb");
+    assert (FS != NULL);
+ 
+//    u32 seed_len;
+//    u32 char_size;
+//    char_pat []
+//         u32 char_num
+//         u8[] chars
+    DWORD SeedLen  = 0;
+    DWORD CharSize = 0;
+
+    fread (&SeedLen, 1, sizeof (DWORD), FS);
+    assert (SeedLen == S->SeedLen);
+    fread (&CharSize, 1, sizeof (DWORD), FS);
+
+    SeedPat *SP = (SeedPat*) malloc (sizeof (SeedPat) + 
+                                     sizeof (CharPat)*SeedLen +
+                                     CharSize);
+    assert (SP != NULL);
+    
+    memset (SP->StruPattern, 0, sizeof (SP->StruPattern));
+    memset (SP->CharPattern, 0, sizeof (SP->CharPattern));
+    SP->Ss = S;
+    SP->CharList = (CharPat *)(SP + 1);
+
+    BYTE *CharValBuf = (BYTE*)(SP->CharList + SeedLen);
+    DWORD Pos = 0;
+    CharPat *CP;
+    while (!feof (FS) && Pos < SeedLen)
+    {
+        CP = SP->CharList + Pos;
+        CP->CharNum = 0;
+        
+        fread (&CP->CharNum, 1, sizeof (DWORD), FS);
+        if (CP->CharNum != 0)
+        {
+            CP->CharVal = CharValBuf;
+            CharValBuf += CP->CharNum;
+
+            fread (CP->CharVal, 1, CP->CharNum, FS);
+        }
+
+        //printf ("\t==> Pos = %u, CP->CharNum = %u \r\n", Pos, CP->CharNum);
+        Pos++;
+    }
+
+    fclose (FS);
+    return SP;
+}
+
+
+static inline VOID InitSeedPatList (BYTE* DriverDir)
+{
     BYTE *FuzzDir = GetFuzzDir(DriverDir);
     assert (FuzzDir != NULL);
 
+    BYTE Spath[512];
     List *SL = GetSeedList();
     LNode *Sh = SL->Header;
     while (Sh != NULL)
     {
         Seed *S = (Seed*)Sh->Data;
-
+    
         BYTE* SeedName = BaseName(S->SName);
         assert (SeedName != NULL);
-        
-        snprintf (SeedPat, sizeof (SeedPat), "%s/in/%s.pat", FuzzDir, SeedName+1);
-        printf ("%s ---> %s \n", S->SName, SeedPat);
-
+            
+        snprintf (Spath, sizeof (Spath), "%s/in/%s.pat", FuzzDir, SeedName+1);
+        printf ("@Mapping: %s ---> %s \n", S->SName, Spath);
+    
+        SeedPat* SPat = LoadSp (Spath, S);
+        assert (SPat != NULL);
+    
+        ListInsert(&g_SeedPats, SPat);
+    
         Sh = Sh->Nxt;
     }
-    
-    
 
     free (FuzzDir);
+    return;
+}
+
+static inline VOID DeInitSeedPatList ()
+{
+    ListDel(&g_SeedPats, (DelData)free);
+}
+
+
+static inline SeedPat* PatSelection ()
+{
+    return NULL;
+}
+
+static inline VOID GenTemplate (SeedPat* SP)
+{
+    return;
+}
+
+static inline DWORD GetCharPatNum (SeedPat *SP)
+{
+    DWORD Pos = 0;
+    DWORD CharPatNum = 0;
+
+    while (Pos < 256)
+    {
+        if (SP->CharPattern[Pos] != 0)
+        {
+            CharPatNum++;
+        }
+
+        Pos++;
+    }
+
+    return CharPatNum;
+}
+
+
+Mutator* MutatorLearning (BYTE* DriverDir)
+{
+    //RunPilotFuzzing (DriverDir);
+
+    InitSeedPatList (DriverDir);
+    assert (g_SeedPats.NodeNum != 0);
+    
+    LNode *SPHdr = g_SeedPats.Header;
+    while (SPHdr != NULL)
+    {
+        SeedPat *SP  = (SeedPat*)SPHdr->Data;
+
+        DWORD SeedLen = SP->Ss->SeedLen;
+        BYTE* SeecCtx = SP->Ss->SeedCtx;
+
+        DWORD Pos = 0;
+        DWORD StruPatLen = 0;
+        CharPat *CP = SP->CharList;
+        while (Pos < SeedLen)
+        {
+            if (CP->CharNum == 0) 
+            {
+                if (StruPatLen != 0) 
+                {
+                    /* for simple implemt, we use .* to match all chars */
+                    SP->StruPattern[StruPatLen++] = '.';
+                    SP->StruPattern[StruPatLen++] = '*';
+                }
+                SP->StruPattern[StruPatLen++] = SeecCtx[Pos];
+            }
+            else 
+            {
+                DWORD CharIndex = 0;
+                while (CharIndex < CP->CharNum) 
+                {
+                    SP->CharPattern[CP->CharVal[CharIndex]] = 1;
+                    CharIndex++;
+                }
+            }
+
+            CP++;
+            Pos++;
+        }
+
+        printf ("[%s]STP: %s , CHARP: %u \r\n", SP->Ss->SName, SP->StruPattern, GetCharPatNum (SP));
+        SPHdr = SPHdr->Nxt;
+    }
+
+    SeedPat *SpSelect = PatSelection ();
+    assert (SpSelect != NULL);
+
+    GenTemplate (SpSelect);
+
+    DeInitSeedPatList ();
     return NULL;
 }
 
 
-#if 0
-patreg_seed *ps = afl->patreg_seed_head;
-    while (ps != NULL) {
-        u8 pattern[128] = {0};
-        u32 pat_len = 0;
-
-        u8* seed_ctx = ps->seed_ctx;
-        
-        char_pat *cp = ps->char_pat_list;
-        u32 pos = 0;
-        while (pos < ps->seed_len) {
-            /* char num eq 0, means we can not replace it with any other chars */
-            if (cp->char_num == 0) {
-                if (pat_len != 0) {
-                    /* for simple implemt, we use .* to match all chars */
-                    pattern[pat_len++] = '.';
-                    pattern[pat_len++] = '*';
-                }
-                pattern[pat_len++] = seed_ctx[pos];
-                printf ("%c", seed_ctx[pos]);
-            }
-            else {
-                u32 char_num = 0;
-                printf ("[");
-                while (char_num < cp->char_num) {
-                    printf ("%c ", cp->char_val[char_num]);
-                    char_num++;
-                }
-                printf ("]");
-            }
-            
-            pos++;
-            cp++;
-        }
-        printf ("\npattern recog: %s -> %s \r\n", seed_ctx, pattern);
-
-        ps = ps->next;
-    }
-
-#endif
 

@@ -12,9 +12,11 @@ typedef struct CharPat {
 
 typedef struct SeedPat 
 {
-  Seed *Ss;  
-
-  CharPat *CharList;
+    BYTE StruPattern[256];
+    BYTE CharPattern[256];
+    
+    Seed *Ss;  
+    CharPat *CharList;
 } SeedPat;
 
 

@@ -5535,8 +5535,8 @@ void gen_pattern (afl_state_t *afl) {
 
 //  header  
 //    u32 seed_len;
+//    u32 char_size;
 //    char_pat []
-//         u32 pos
 //         u32 char_num
 //         u8[] chars
     u8 tests_name[1024];
@@ -5546,10 +5546,21 @@ void gen_pattern (afl_state_t *afl) {
 
         snprintf (tests_name, sizeof (tests_name), "in/%s.pat", get_test_name (ps->seed->fname));
         printf ("@@@ gen test-name: %s \r\n", tests_name);
-        FILE *psf = fopen (tests_name, "wb");    
+        FILE *psf = fopen (tests_name, "wb");
+        assert (psf != NULL);
+        
         fwrite (&ps->seed_len, 1, sizeof (u32), psf);
 
+        u32 char_size = 0;
         u32 pos = 0;
+        while (pos < ps->seed_len) {
+            char_size += ps->char_pat_list[pos].char_num;
+            char_size += sizeof (u32);
+            pos++;
+        }
+        fwrite (&char_size, 1, sizeof (u32), psf);
+
+        pos = 0;
         char_pat *cp = ps->char_pat_list;
         while (pos < ps->seed_len) {
 
@@ -5557,7 +5568,8 @@ void gen_pattern (afl_state_t *afl) {
             if (cp->char_num != 0) {
                 fwrite (cp->char_val, 1, cp->char_num * sizeof (u8), psf);
             }
-            
+
+            //printf ("\t==> Pos = %u, CP->CharNum = %u \r\n", pos, cp->char_num);
             pos++;
             cp++;
         }

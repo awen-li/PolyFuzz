@@ -5,6 +5,16 @@
 
 static List g_SeedPats;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+List* GetSeedPatList ()
+{
+    return &g_SeedPats;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 static inline BYTE* GetFuzzDir (BYTE* DriverDir)
 {
     DIR *Dir;
@@ -169,7 +179,7 @@ static VOID DelSeedPat (SeedPat *SP)
     return;
 }
 
-static inline VOID DeInitSeedPatList ()
+VOID DeInitSeedPatList ()
 {
     ListDel(&g_SeedPats, (DelData)DelSeedPat);
 }
@@ -263,7 +273,7 @@ static inline DWORD GetCharPatNum (SeedPat *SP)
 }
 
 
-Mutator* MutatorLearning (BYTE* DriverDir)
+SeedPat* MutatorLearning (BYTE* DriverDir)
 {
     //RunPilotFuzzing (DriverDir);
 
@@ -329,10 +339,7 @@ Mutator* MutatorLearning (BYTE* DriverDir)
     SeedPat *SpSelect = PatSelection ();
     assert (SpSelect != NULL);
 
-    GenTemplate (SpSelect);
-
-    DeInitSeedPatList ();
-    return NULL;
+    return SpSelect;
 }
 
 

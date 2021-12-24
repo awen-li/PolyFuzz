@@ -3,16 +3,13 @@
 #define __MUTATOR_H__
 #include "macro.h"
 #include "list.h"
-
-typedef VOID (*_mutator_entry_) (BYTE* SeedBuf, DWORD SeedLen);
+#include "seedpat.h"
 
 typedef struct _mutator_
 {
-    BYTE *Pattern;
     BYTE *MuName;
-
-    _mutator_entry_ MuEntry;
-    
+    BYTE *StruPattern;
+    BYTE *CharPattern;
 } Mutator;
 
 
@@ -20,17 +17,21 @@ VOID InitMutators ();
 VOID DeInitMutators ();
 
 
-VOID RegMutator (BYTE* Pattern, BYTE* MuName);
+VOID RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern);
 VOID DumpMutator ();
 VOID LoadMutator ();
 
-
+List* GetMuList ();
 Mutator* GetMutator (BYTE* SeedFile);
+
+VOID GenMutator (SeedPat *SP, List *SpList, BYTE* TestName);
 VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir);
 
 
-Mutator* MutatorLearning (BYTE* SeedDir);
-List* GetMuList ();
+SeedPat* MutatorLearning (BYTE* SeedDir);
+VOID DeInitSeedPatList ();
+List* GetSeedPatList ();
+
 
 #endif
 

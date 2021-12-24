@@ -1,6 +1,6 @@
 #include "mutator.h"
 
-static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir)
+static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
 {
     do
     {
@@ -13,17 +13,18 @@ static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir)
         }
 
         /* 2. learning the pattern */
-        MutatorLearning(DriverDir);
+        SeedPat *SP = MutatorLearning(DriverDir);
 
 
         /* 3. update and gen the mutator */
-
+        GenMutator (SP, GetSeedPatList(), TestName);
 
         /* 4. dump */
         DumpMutator ();
     } while (0);
 
     DeInitMutators ();
+    DeInitSeedPatList ();
     return;
 }
 
@@ -42,13 +43,14 @@ static inline VOID FormatPath (BYTE *Path)
 
 int main(int argc, char *argv[])
 {
-    BYTE *SeedDir = NULL;
-    BYTE * DriverDir = NULL;
+    BYTE *SeedDir   = NULL;
+    BYTE *DriverDir = NULL;
+    BYTE *TestName  = NULL;
     
     InitMutators ();
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:n:")) > 0) 
     {
         switch (Opt) 
         {
@@ -66,6 +68,12 @@ int main(int argc, char *argv[])
                 FormatPath (DriverDir);
                 break;
             }
+            case 'n':
+            {
+                TestName = (BYTE *)strdup (optarg);
+                assert (TestName != NULL);
+                break;
+            }
             default:
             {
                 break;
@@ -80,8 +88,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    SDML_main (SeedDir, DriverDir);
-    
+    SDML_main (SeedDir, DriverDir, TestName);
+
+    free (TestName);
     free (SeedDir);
     free (DriverDir);
     return 0;

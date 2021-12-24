@@ -102,6 +102,7 @@ static inline SeedPat* LoadSp (BYTE *Spath, Seed *S)
     memset (SP->CharPattern, 0, sizeof (SP->CharPattern));
     SP->Ss = S;
     SP->CharList = (CharPat *)(SP + 1);
+    SP->MatchNum = 1;
 
     BYTE *CharValBuf = (BYTE*)(SP->CharList + SeedLen);
     DWORD Pos = 0;
@@ -159,15 +160,83 @@ static inline VOID InitSeedPatList (BYTE* DriverDir)
     return;
 }
 
+static VOID DelSeedPat (SeedPat *SP)
+{
+    ListDel(&SP->UnMatchList, NULL);
+    regfree (&SP->StRegex);
+    free (SP);
+
+    return;
+}
+
 static inline VOID DeInitSeedPatList ()
 {
-    ListDel(&g_SeedPats, (DelData)free);
+    ListDel(&g_SeedPats, (DelData)DelSeedPat);
 }
 
 
 static inline SeedPat* PatSelection ()
 {
-    return NULL;
+    /* 1. get all patterns' matched and unmatched info, 
+          Get the best pattern */
+
+    SeedPat *BestSP = NULL;
+    
+    LNode *SPHdr = g_SeedPats.Header;
+    while (SPHdr != NULL)
+    {
+        SeedPat *SP  = (SeedPat*)SPHdr->Data;
+
+        LNode *SPHdr2 = g_SeedPats.Header;
+        while (SPHdr2 != NULL)
+        {
+            if (SPHdr2 == SPHdr)
+            {
+                SPHdr2 = SPHdr2->Nxt;
+                continue;
+            }
+
+            SeedPat *SP2  = (SeedPat*)SPHdr2->Data;
+
+            INT Ret = regexec(&SP->StRegex, SP2->Ss->SeedCtx, 0, NULL, 0);
+            if (Ret == 0) 
+            {
+                SP->MatchNum++;
+                if (BestSP == NULL || BestSP->MatchNum < SP->MatchNum)
+                {
+                    BestSP = SP;
+                }
+            }
+            else
+            {
+                ListInsert(&SP->UnMatchList, SP2);
+            }
+
+            SPHdr2 = SPHdr2->Nxt;
+        }
+        
+        SPHdr = SPHdr->Nxt;
+    }
+
+    printf ("BestSP: %s ----> %s \r\n", BestSP->Ss->SeedCtx, BestSP->StruPattern);
+    /* 2. Merge all unmatched pattern to the BestSP */
+    List *UnMatchList = &BestSP->UnMatchList;
+    if (UnMatchList->NodeNum == 0)
+    {
+        return BestSP;
+    }
+
+    LNode* Hdr = UnMatchList->Header;
+    while (Hdr != NULL)
+    {
+        SeedPat *SP  = (SeedPat*)Hdr->Data;
+        strncat (BestSP->StruPattern, "|", sizeof (BestSP->StruPattern));
+        strncat (BestSP->StruPattern, SP->StruPattern, sizeof (BestSP->StruPattern));
+
+        Hdr = Hdr->Nxt;
+    }
+
+    return BestSP;
 }
 
 static inline VOID GenTemplate (SeedPat* SP)
@@ -222,6 +291,12 @@ Mutator* MutatorLearning (BYTE* DriverDir)
                     SP->StruPattern[StruPatLen++] = '.';
                     SP->StruPattern[StruPatLen++] = '*';
                 }
+                else
+                {
+                    SP->StruPattern[StruPatLen++] = '^';
+                }
+
+                SP->StruPattern[StruPatLen++] = '\\';
                 SP->StruPattern[StruPatLen++] = SeecCtx[Pos];
             }
             else 
@@ -238,7 +313,16 @@ Mutator* MutatorLearning (BYTE* DriverDir)
             Pos++;
         }
 
+        if (SP->StruPattern[StruPatLen] != '*')
+        {
+            SP->StruPattern[StruPatLen++] = '$';
+        }
+
         printf ("[%s]STP: %s , CHARP: %u \r\n", SP->Ss->SName, SP->StruPattern, GetCharPatNum (SP));
+        
+        INT Ret = regcomp(&SP->StRegex, SP->StruPattern, 0);
+        assert (Ret == 0);
+        
         SPHdr = SPHdr->Nxt;
     }
 

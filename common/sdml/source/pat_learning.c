@@ -2,6 +2,7 @@
 #include "seedpat.h"
 #include <dirent.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 static List g_SeedPats;
 
@@ -273,6 +274,47 @@ static inline DWORD GetCharPatNum (SeedPat *SP)
 }
 
 
+static inline DWORD MetaCharProc (BYTE* StruPat, DWORD Offset, BYTE Char)
+{
+    switch (Char)
+    {
+        case '[':
+        case ']':
+        case '(':
+        case ')':
+        {
+            StruPat[Offset++] = '\\';
+            StruPat[Offset++] = Char;
+            break;
+        }
+        case '{':
+        case '}':
+        {
+            StruPat[Offset++] = '[';
+            StruPat[Offset++] = Char;
+            StruPat[Offset++] = ']';
+            break;            
+        }
+        default:
+        {
+            if (!isprint (Char))
+            {
+                sprintf (StruPat+Offset, "\\x%x", Char);
+                Offset += 4;
+            }
+            else
+            {
+                StruPat[Offset++] = Char;
+            }
+            
+            break;
+        }
+    }
+
+    return Offset;
+}
+
+
 SeedPat* MutatorLearning (BYTE* DriverDir)
 {
     //RunPilotFuzzing (DriverDir);
@@ -293,6 +335,7 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
         CharPat *CP = SP->CharList;
         while (Pos < SeedLen)
         {
+            DEBUG ("\t[%u]CharNum: %u ---> %x\n", Pos, CP->CharNum, SeecCtx[Pos]);
             if (CP->CharNum == 0) 
             {
                 if (StruPatLen != 0) 
@@ -306,8 +349,7 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
                     SP->StruPattern[StruPatLen++] = '^';
                 }
 
-                SP->StruPattern[StruPatLen++] = '\\';
-                SP->StruPattern[StruPatLen++] = SeecCtx[Pos];
+                StruPatLen = MetaCharProc (SP->StruPattern, StruPatLen, SeecCtx[Pos]);
             }
             else 
             {
@@ -328,10 +370,16 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
             SP->StruPattern[StruPatLen++] = '$';
         }
 
-        printf ("[%s]STP: %s , CHARP: %u \r\n", SP->Ss->SName, SP->StruPattern, GetCharPatNum (SP));
+        DEBUG ("[%s]STP: %s , CHARP: %u \r\n", SP->Ss->SName, SP->StruPattern, GetCharPatNum (SP));
         
         INT Ret = regcomp(&SP->StRegex, SP->StruPattern, 0);
-        assert (Ret == 0);
+        if (Ret != 0)
+        {
+            CHAR ErrBuf[256];
+            regerror(Ret, &SP->StRegex, ErrBuf, sizeof (ErrBuf));
+            printf ("Regex [%s] compiled fail -> reason[%d]: %s \r\n", SP->StruPattern, Ret, ErrBuf);
+            return NULL;
+        }
         
         SPHdr = SPHdr->Nxt;
     }

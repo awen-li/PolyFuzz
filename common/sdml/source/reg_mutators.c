@@ -84,7 +84,7 @@ VOID DelSeed (Seed *Ss)
 static inline BOOL MutatorCmp (Mutator* Mu1, Mutator* Mu2)
 {
     if (strcmp (Mu1->StruPattern, Mu2->StruPattern) == 0 &&
-        strcmp (Mu1->CharPattern, Mu2->CharPattern) == 0)
+        memcmp (Mu1->CharPattern, Mu2->CharPattern, sizeof (Mu2->CharPattern)) == 0)
     {
         return TRUE;
     }
@@ -138,8 +138,10 @@ Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
     if (Ret != 0)
     {
         BYTE ErrBuf[256];
-        regerror(Ret, &Mu->StRegex, ErrBuf, sizeof (ErrBuf));
-        DEBUG("regcomp() failed with '%s'\n", ErrBuf);
+        printf ("[%s]Regex [%s] compiled fail -> reason[%d]: %s \r\n", 
+                MuName, Mu->StruPattern, Ret, ErrBuf);
+        free (Mu);
+        return NULL;
     }
 
     ListInsert(&g_MuList, Mu);
@@ -279,8 +281,7 @@ VOID InitMutators ()
     ////////////////////////////////////////////////////////////////
     BYTE CharPat[257];
     memset (CharPat, 1, sizeof (CharPat)); CharPat[256] = 0;
-    RegMutator ("DictMu", "\\\\{(.*:.*)+\\\\}", CharPat);
-
+    RegMutator ("DictMu", "[{].*[}]", CharPat);
 
     DEBUG ("[Init]g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
     return;

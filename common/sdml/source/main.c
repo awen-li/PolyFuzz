@@ -2,27 +2,29 @@
 
 static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
 {
+    Mutator *Mu = NULL;
     do
     {
         /* 1. search by pattern */
-        Mutator *Mu = GetMutator(SeedDir);
+        Mu = GetMutator(SeedDir);
         if (Mu != NULL)
         {
-            BindMutatorToSeeds (Mu, SeedDir);
             break;
         }
 
         /* 2. learning the pattern */
         SeedPat *SP = MutatorLearning(DriverDir);
 
-
         /* 3. update and gen the mutator */
-        GenMutator (SP, GetSeedPatList(), TestName);
+        Mu = RegMutator (TestName, SP->StruPattern, SP->CharPattern);
 
         /* 4. dump */
         DumpMutator ();
     } while (0);
 
+    assert (Mu != NULL);
+    BindMutatorToSeeds (Mu, SeedDir);
+    
     DeInitMutators ();
     DeInitSeedPatList ();
     return;

@@ -94,26 +94,36 @@ static inline BOOL MutatorCmp (Mutator* Mu1, Mutator* Mu2)
     }
 }
 
-static inline BOOL IsMutatorExist (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
+static inline Mutator* CheckMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
 {
-    Mutator Mu = {MuName, StruPattern, CharPattern};
+    Mutator Mu = {MuName, StruPattern, {0}};
+    memcpy (Mu.CharPattern, CharPattern, sizeof (Mu.CharPattern));
 
-    return IsInList (&g_MuList, (CompData)MutatorCmp, &Mu);
+    return (Mutator*)ListSearch (&g_MuList, (CompData)MutatorCmp, &Mu);
 }
 
 
-VOID RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
-{   
-    if (IsMutatorExist (MuName, StruPattern, CharPattern))
+Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
+{ 
+    BYTE DefaultName[256];   
+    Mutator *Mu;
+
+    if (MuName == NULL)
     {
-        return;
+        MuName = DefaultName;
+        snprintf (DefaultName, sizeof (DefaultName), "Default%u", (DWORD)random());
+    }
+    
+    Mu = CheckMutator (MuName, StruPattern, CharPattern);
+    if (Mu != NULL)
+    {
+        return Mu;
     }
 
     DWORD NameLen = strlen ((char*)MuName) + 1;
     DWORD StruPatLen  = strlen ((char*)StruPattern) + 1;
-    DWORD CharPatLen  = strlen ((char*)CharPattern) + 1;
     
-    Mutator *Mu = (Mutator*) malloc (sizeof (Mutator) + NameLen + StruPatLen + CharPatLen);
+    Mu = (Mutator*) malloc (sizeof (Mutator) + NameLen + StruPatLen);
     assert (Mu != NULL);
 
     Mu->MuName  = (BYTE*) (Mu + 1);
@@ -121,18 +131,30 @@ VOID RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
     
     Mu->StruPattern = Mu->MuName + NameLen;
     memcpy (Mu->StruPattern, StruPattern, StruPatLen);
-    
-    Mu->CharPattern = Mu->StruPattern + StruPatLen;
-    memcpy (Mu->CharPattern, CharPattern, CharPatLen);
+    memcpy (Mu->CharPattern, CharPattern, sizeof (Mu->CharPattern));
+
+    DEBUG ("[RegMutator]%s - %s \r\n", MuName, Mu->StruPattern);
+    INT Ret = regcomp(&Mu->StRegex, Mu->StruPattern, 0);
+    if (Ret != 0)
+    {
+        BYTE ErrBuf[256];
+        regerror(Ret, &Mu->StRegex, ErrBuf, sizeof (ErrBuf));
+        DEBUG("regcomp() failed with '%s'\n", ErrBuf);
+    }
 
     ListInsert(&g_MuList, Mu);
     
-    return;
+    return Mu;
 }
 
 
 static inline BOOL MutatorMatch (Mutator* Mu, Seed* Ss)
 {
+    INT Ret = regexec(&Mu->StRegex, Ss->SeedCtx, 0, NULL, 0);
+    if (Ret == 0)
+    {
+        return TRUE;
+    }
 
     return FALSE;
 }
@@ -148,6 +170,7 @@ Mutator* GetMutator (BYTE* SeedDir)
         Mutator *Mu = ListSearch(&g_MuList, (CompData)MutatorMatch, Hdr->Data);
         if (Mu != NULL)
         {
+            DEBUG ("[GetMutator]%s -> %s \r\n", Mu->MuName, Mu->StruPattern);
             return Mu;
         }
 
@@ -160,12 +183,8 @@ Mutator* GetMutator (BYTE* SeedDir)
 
 VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir)
 {
-    return;
-}
-
-
-VOID GenMutator (SeedPat *SP, List *SpList, BYTE* TestName)
-{
+    List *SpList = GetSeedPatList();
+    
     return;
 }
 
@@ -177,10 +196,13 @@ VOID DumpOneMutator (Mutator *Mu)
 
     /* pattern */
     DWORD MuLength  = strlen (Mu->MuName);
-    DWORD StruLength = strlen (Mu->StruPattern);
-    DWORD CharLength = strlen (Mu->CharPattern);
+    assert (MuLength > 0);
     
-    assert (MuLength > 0 && MuLength > 0 && CharLength > 0);
+    DWORD StruLength = strlen (Mu->StruPattern);
+    assert (StruLength > 0);
+     
+    DWORD CharLength = sizeof (Mu->CharPattern);
+    assert (CharLength > 0);
 
     fwrite (&MuLength,  1, sizeof (DWORD), Fm);
     fwrite (&StruLength, 1, sizeof (DWORD), Fm);
@@ -191,7 +213,8 @@ VOID DumpOneMutator (Mutator *Mu)
     fwrite (Mu->CharPattern, 1, CharLength, Fm); 
 
     fclose (Fm);
-    
+
+    DEBUG ("Dump[%s] -> %s \r\n", Mu->MuName, Mu->StruPattern);
     return;
 }
 
@@ -254,12 +277,12 @@ VOID InitMutators ()
 {
     LoadMutator ();
     ////////////////////////////////////////////////////////////////
-
     BYTE CharPat[257];
     memset (CharPat, 1, sizeof (CharPat)); CharPat[256] = 0;
-    RegMutator ("DefaultMu", ".*", CharPat);
+    RegMutator ("DictMu", "\\\\{(.*:.*)+\\\\}", CharPat);
 
-    printf ("g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
+
+    DEBUG ("[Init]g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
     return;
 }
 

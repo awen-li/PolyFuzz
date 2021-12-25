@@ -85,6 +85,8 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "afl-system-config\n\n"
                     "#pilot fuzzing: max path length\n"
                     "export AFL_BB_NUM=65535\n\n"
+                    "#timeout threshold\n"
+                    "export AFL_FORKSRV_INIT_TMOUT=2\n\n"
                     "#enable debug for child process\n"
                     "#export AFL_DEBUG_CHILD=1\n\n"
                     "#enable crash exit code\n" 

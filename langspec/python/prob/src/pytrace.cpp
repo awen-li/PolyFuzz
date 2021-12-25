@@ -302,48 +302,8 @@ static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
 }
 
 
-static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf) 
+static inline void TraceStatm(PyFrameObject *frame, int what, PRT_function* Rtf)
 {
-    PY_PRINT("InjectCov: [PreBB : CurBB]  = [%d : %d] \r\n", Rtf->m_PreBB, Rtf->m_CurBB);
-    if (Rtf->m_PreBB == 0)
-    {
-        DynTrace (NULL, 0, Rtf->m_CurBB);
-        return;
-    }
-    else
-    {
-        if (Rtf->m_PreBB != Rtf->m_CurBB)
-        {
-            DynTrace (NULL, 0, Rtf->m_CurBB);
-            return;
-        }
-    }  
-
-    PY_PRINT("InjectCov: Ignore current block [%d]... \r\n", Rtf->m_CurBB);
-    return;
-}
-
-
-int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
-{   
-    PyCodeObject *f_code  = frame->f_code;
-
-    string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));
-    const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
-
-    //PY_PRINT ("@@@ %s : %s: %d\r\n", FileName.c_str(), FuncName, frame->f_lineno);
-    
-    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName);
-    if (FIdx == 0)
-    {
-        return 0;
-    }
-
-    /* init runtime for current function */
-    PRT_function* Rtf = __Prt.GetRtf (FIdx, frame->f_lineno);
-    PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVals->size(), Rtf);
-    
     // enable PyTrace_OPCODE
     frame->f_trace_opcodes = true;     
     //ShowVariables (co_varnames);
@@ -397,6 +357,56 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
             break;
         }
     }
+
+    return;
+}
+
+
+static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf) 
+{
+    PY_PRINT("InjectCov: [PreBB : CurBB]  = [%d : %d] \r\n", Rtf->m_PreBB, Rtf->m_CurBB);
+    if (Rtf->m_PreBB == 0)
+    {
+        DynTrace (NULL, 0, Rtf->m_CurBB);
+        return;
+    }
+    else
+    {
+        if (Rtf->m_PreBB != Rtf->m_CurBB)
+        {
+            DynTrace (NULL, 0, Rtf->m_CurBB);
+            return;
+        }
+    }  
+
+    PY_PRINT("InjectCov: Ignore current block [%d]... \r\n", Rtf->m_CurBB);
+    return;
+}
+
+
+int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
+{   
+    PyCodeObject *f_code  = frame->f_code;
+
+    string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));
+    const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
+
+    //PY_PRINT ("@@@ %s : %s: %d\r\n", FileName.c_str(), FuncName, frame->f_lineno);
+    
+    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName);
+    if (FIdx == 0)
+    {
+        return 0;
+    }
+
+    /* init runtime for current function */
+    PRT_function* Rtf = __Prt.GetRtf (FIdx, frame->f_lineno);
+    PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
+              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVals->size(), Rtf);
+
+#ifdef _PROB_DATA_
+    TraceStatm (frame, what, Rtf);
+#endif
 
     InjectCov (frame, Rtf);
     return 0;

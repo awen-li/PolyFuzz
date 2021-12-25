@@ -33,6 +33,9 @@ ext_modules = [
             "/usr/include/ctrace",
             PybindHeader(),
         ],
+        extra_compile_args=[#"-D_PROB_DATA_",
+                            #"-D__DEBUG__"
+                           ],
         extra_link_args=["-lmxml", "-lxFuzztrace"],
         language="c++"),
 ]

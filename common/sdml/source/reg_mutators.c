@@ -133,6 +133,18 @@ Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
     memcpy (Mu->StruPattern, StruPattern, StruPatLen);
     memcpy (Mu->CharPattern, CharPattern, sizeof (Mu->CharPattern));
 
+    DWORD Pos = 0;
+    DEBUG ("Crucial bytes: ");
+    while (Pos < 256)
+    {
+        if (Mu->CharPattern[Pos] == CHAR_CRUCIAL)
+        {
+            printf ("%c ", Pos);
+        }
+        Pos++;
+    }
+    printf ("\n");
+
     DEBUG ("[RegMutator]%s - %s \r\n", MuName, Mu->StruPattern);
     INT Ret = regcomp(&Mu->StRegex, Mu->StruPattern, 0);
     if (Ret != 0)
@@ -185,7 +197,39 @@ Mutator* GetMutator (BYTE* SeedDir)
 
 VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir)
 {
-    List *SpList = GetSeedPatList();
+    DWORD Pos;
+    BYTE STName[520];
+    
+    List *SsList = GetSeedList();
+    LNode *SsHdr = SsList->Header;
+    while (SsHdr != NULL)
+    {
+        Seed *Ss = (Seed *)SsHdr->Data;
+        
+        BYTE *Temt = (BYTE *)malloc (Ss->SeedLen);
+        assert (Temt != NULL);
+        
+        Pos = 0;
+        while (Pos < Ss->SeedLen)
+        {
+            Temt[Pos] = Mu->CharPattern [Ss->SeedCtx[Pos]];
+            Pos++;
+        }
+
+        snprintf (STName, sizeof (STName), "%s.tmpt", Ss->SName);
+        FILE *FT = fopen (STName, "wb");
+        assert (FT != NULL);
+
+        fwrite (&Ss->SeedLen, 1, sizeof (Ss->SeedLen), FT);
+        fwrite (Temt, 1, Ss->SeedLen, FT);
+        fwrite (Mu->CharPattern, 1, sizeof (Mu->CharPattern), FT);
+
+        free (Temt);
+        Temt = NULL;
+        fclose (FT);
+        
+        SsHdr = SsHdr->Nxt;
+    }
     
     return;
 }
@@ -241,9 +285,9 @@ VOID LoadMutator ()
     DWORD StruLength = 0;
     DWORD CharLength = 0;
  
-    BYTE  MuName[512];
-    BYTE  StruPattern[512];
-    BYTE  CharPattern[512];
+    BYTE  MuName[256];
+    BYTE  StruPattern[256];
+    BYTE  CharPattern[256];
     
     while (!feof (Fm))
     {
@@ -279,8 +323,10 @@ VOID InitMutators ()
 {
     LoadMutator ();
     ////////////////////////////////////////////////////////////////
-    BYTE CharPat[257];
-    memset (CharPat, 1, sizeof (CharPat)); CharPat[256] = 0;
+    BYTE CharPat[256];
+    memset (CharPat, 1, sizeof (CharPat));
+    CharPat['{'] = CHAR_CRUCIAL;
+    CharPat['}'] = CHAR_CRUCIAL;
     RegMutator ("DictMu", "[{].*[}]", CharPat);
 
     DEBUG ("[Init]g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);

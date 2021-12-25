@@ -84,7 +84,7 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "cd fuzz\n"
                     "afl-system-config\n\n"
                     "#pilot fuzzing: max path length\n"
-                    "export AFL_BB_NUM=1024\n\n"
+                    "export AFL_BB_NUM=65535\n\n"
                     "#enable debug for child process\n"
                     "#export AFL_DEBUG_CHILD=1\n\n"
                     "#enable crash exit code\n" 

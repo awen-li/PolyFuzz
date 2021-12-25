@@ -35,6 +35,9 @@ typedef unsigned         BOOL;
 
 #define MUTATOR_LIB               ("/usr/bin/libmutators.bin")
 
+#define CHAR_NORMAL               (1)
+#define CHAR_CRUCIAL              (2)
+
 
 #ifdef __DEBUG__
 #define DEBUG(format, ...) printf("<debug>" format, ##__VA_ARGS__)

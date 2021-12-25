@@ -317,7 +317,7 @@ static inline DWORD MetaCharProc (BYTE* StruPat, DWORD Offset, BYTE Char)
 
 SeedPat* MutatorLearning (BYTE* DriverDir)
 {
-    //RunPilotFuzzing (DriverDir);
+    RunPilotFuzzing (DriverDir);
 
     InitSeedPatList (DriverDir);
     assert (g_SeedPats.NodeNum != 0);
@@ -335,7 +335,7 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
         CharPat *CP = SP->CharList;
         while (Pos < SeedLen)
         {
-            DEBUG ("\t[%u]CharNum: %u ---> %x\n", Pos, CP->CharNum, SeecCtx[Pos]);
+            DEBUG ("\t[%u]CharNum: %u ---> %c (%x): \n", Pos, CP->CharNum, SeecCtx[Pos], SeecCtx[Pos]);
             if (CP->CharNum == 0) 
             {
                 if (StruPatLen != 0) 
@@ -350,15 +350,18 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
                 }
 
                 StruPatLen = MetaCharProc (SP->StruPattern, StruPatLen, SeecCtx[Pos]);
+                SP->CharPattern[SeecCtx[Pos]] = CHAR_CRUCIAL;
             }
             else 
             {
                 DWORD CharIndex = 0;
                 while (CharIndex < CP->CharNum) 
                 {
-                    SP->CharPattern[CP->CharVal[CharIndex]] = 1;
+                    //printf ("%c ", CP->CharVal[CharIndex]);
+                    SP->CharPattern[CP->CharVal[CharIndex]] = CHAR_NORMAL;
                     CharIndex++;
                 }
+                //printf ("\n");
             }
 
             CP++;

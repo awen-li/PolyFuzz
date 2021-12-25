@@ -27,8 +27,6 @@ MUTATORS = source
 all: $(TARGET)
 
 $(TARGET): $(OBJ_FILES)
-	@make -C ./source clean
-	@make -C ./source
 	$(LD) -o $@ $^ $(LD_CFLAGS)
 	@cp $(TARGET) -rf /usr/bin/
 	

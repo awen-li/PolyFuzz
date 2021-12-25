@@ -388,8 +388,12 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
 
         printf ("queue_cycle[%llu] current_entry[%u] paths[%u] - ", afl->queue_cycle, afl->current_entry, afl->queued_paths);
 
+        long start_s = time((time_t*)NULL);
+        
         afl->queue_cur = afl->queue_buf[afl->current_entry];
         fuzz_one(afl);
+
+        printf ("@@@ time cost: %ld (s)\r\n", time((time_t*)NULL)-start_s);
 
         ++afl->current_entry;
     }

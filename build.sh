@@ -13,6 +13,9 @@ fi
 cd $BASE_DIR/common/ctrace
 make clean && make
 
+cd $BASE_DIR/common/sdml
+make clean && make
+
 # 3. build language-specific component
 # 3.1 clang
 

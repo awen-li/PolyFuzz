@@ -5652,8 +5652,92 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 
 /* pattern aware fuzzing  */
 u8 patawa_fuzzing(afl_state_t *afl) {
+    u8 ret_val = 1;
+    u8 *in_buf, *out_buf, *orig_in;
+  
+    /* Map the test case into memory. */
+    orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
+  
+    u32 len = afl->queue_cur->len;
+    out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+    assert (out_buf != NULL);
+    afl->subseq_tmouts = 0;
+    afl->cur_depth = afl->queue_cur->depth;
 
-    return 0;
+    /*******************************************
+     * CALIBRATION (only if failed earlier on) *
+     *******************************************/
+    if (unlikely(afl->queue_cur->cal_failed)) {
+        u8 res = FSRV_RUN_TMOUT;
+        if (afl->queue_cur->cal_failed < CAL_CHANCES) {
+            afl->queue_cur->exec_cksum = 0;
+            res = calibrate_case(afl, afl->queue_cur, in_buf, afl->queue_cycle - 1, 0);
+            if (res == FSRV_RUN_ERROR) FATAL("Unable to execute target application");
+        }
+
+        if (afl->stop_soon || res != afl->crash_mode) {
+            ++afl->cur_skipped_paths;
+            goto abandon_entry;
+        }
+    }
+
+    /*******************************************
+     * TRIMMING                                *
+     *******************************************/
+    if (unlikely(!afl->non_instrumented_mode && !afl->queue_cur->trim_done &&
+                 !afl->disable_trim)) {    
+        u32 old_len = afl->queue_cur->len;    
+        u8 res = trim_case(afl, afl->queue_cur, in_buf);
+        orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur); 
+        if (unlikely(res == FSRV_RUN_ERROR)) FATAL("Unable to execute target application");
+        if (unlikely(afl->stop_soon)) {  
+            ++afl->cur_skipped_paths;
+            goto abandon_entry;
+        }
+    
+        /* Don't retry trimming, even if it failed. */
+        afl->queue_cur->trim_done = 1;   
+        len = afl->queue_cur->len;
+        /* maybe current entry is not ready for splicing anymore */
+        if (unlikely(len <= 4 && old_len > 4)) --afl->ready_for_splicing_count;    
+    }    
+    memcpy(out_buf, in_buf, len);
+
+
+    
+    /*******************************************
+     * PERFORMANCE SCORE                       *
+     *******************************************/
+    u32 perf_score, orig_perf;
+    if (likely(!afl->old_seed_selection))
+        orig_perf = perf_score = afl->queue_cur->perf_score;
+    else
+        afl->queue_cur->perf_score = orig_perf = perf_score = calculate_score(afl, afl->queue_cur);    
+    if (unlikely(perf_score <= 0)) { goto abandon_entry; }
+
+
+
+    ret_val = 0;
+/* we are through with this queue entry - for this iteration */
+abandon_entry:
+
+    afl->splicing_with = -1;
+    /* Update afl->pending_not_fuzzed count if we made it through the calibration
+       cycle and have not seen this entry before. */
+    if (!afl->stop_soon && !afl->queue_cur->cal_failed &&
+        (afl->queue_cur->was_fuzzed == 0 || afl->queue_cur->fuzz_level == 0) &&
+         !afl->queue_cur->disabled) {
+
+        if (!afl->queue_cur->was_fuzzed) {
+            --afl->pending_not_fuzzed;
+            afl->queue_cur->was_fuzzed = 1;
+            afl->reinit_table = 1;
+            if (afl->queue_cur->favored) { --afl->pending_favored; }
+        }
+    }
+
+    ++afl->queue_cur->fuzz_level;
+    return ret_val;
 }
 
 

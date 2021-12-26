@@ -87,6 +87,8 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "export AFL_BB_NUM=65535\n\n"
                     "#timeout threshold\n"
                     "export AFL_FORKSRV_INIT_TMOUT=2\n\n"
+                    "#disable trim by default\n"
+                    "export AFL_DISABLE_TRIM=0\n\n"
                     "#enable debug for child process\n"
                     "#export AFL_DEBUG_CHILD=1\n\n"
                     "#enable crash exit code\n" 

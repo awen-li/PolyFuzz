@@ -227,6 +227,13 @@ typedef struct patreg_seed {
   struct patreg_seed* next;
 } patreg_seed;
 
+enum {
+
+    PF_PAT_REG=1,   /* fuzzing-based pattern recognization */
+    PF_PAT_AWA=2    /* pattern aware fuzzing */
+
+};
+
 /* Fuzzing stages */
 
 enum {
@@ -777,9 +784,10 @@ typedef struct afl_state {
   u32   bitsmap_size;
 #endif
 
-  /* fuzzing-based pattern recognization flag: default=false */
-  u8  is_patreg_fuzzing;
-  u32 threshold_path_len;
+  /* pattern fuzzing type: PF_PAT_REG=1 | PF_PAT_AWA=2 */
+  u8  pf_fuzzing_type;
+  /* threshold for path length in pattern recognization fuzzing, default:1 */
+  u32 threshold_pathlen;
 
 } afl_state_t;
 

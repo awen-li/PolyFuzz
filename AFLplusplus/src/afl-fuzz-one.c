@@ -5632,7 +5632,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
                 }
             }
 
-            if (path_len) {
+            if (path_len >= afl->threshold_pathlen) {
                 char_val[char_num++] = byte_val;
                 //printf ("(%u)[%u -> %u]path_length: %u\n", pos, (u32)origin, (u32)byte_val, path_len);
             }
@@ -5648,6 +5648,14 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 
     return 0;
 }
+
+
+/* pattern aware fuzzing  */
+u8 patawa_fuzzing(afl_state_t *afl) {
+
+    return 0;
+}
+
 
 
 /* larger change for MOpt implementation: the original fuzz_one was renamed
@@ -5676,9 +5684,15 @@ u8 fuzz_one(afl_state_t *afl) {
 
 #endif
 
-  if (afl->is_patreg_fuzzing) {
-    return patreg_fuzzing(afl);
-  }  
+  switch (afl->pf_fuzzing_type) {
+    case PF_PAT_REG:
+        return patreg_fuzzing(afl);
+    case PF_PAT_AWA:
+        return patawa_fuzzing(afl);
+    default:
+        break;
+  }
+
 
   // if limit_time_sig == -1 then both are run after each other
 

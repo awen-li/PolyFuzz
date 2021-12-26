@@ -208,6 +208,7 @@ static char *afl_environment_variables[] = {
     "AFL_TRACECMP",
     "AFL_INJECT_BY_INST",
     "AFL_BB_NUM",
+    "AFL_THRESHOL_PATHLEN",
     NULL
 
 };

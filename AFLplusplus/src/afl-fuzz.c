@@ -1128,8 +1128,19 @@ int main(int argc, char **argv_orig, char **envp) {
       case 'P':
       {
         /* enable pattern recognization fuzzing */
-        afl->is_patreg_fuzzing  = true;
-        afl->threshold_path_len = (u32)atoi (optarg);
+        afl->pf_fuzzing_type  = (u32)atoi (optarg);
+        if (afl->pf_fuzzing_type != PF_PAT_REG && 
+            afl->pf_fuzzing_type != PF_PAT_AWA) {
+            FATAL("[-P]pf_fuzzing_type: PF_PAT_REG=1 and PF_PAT_AWA=2, "
+                  "please select a correct value!");
+        }
+        
+        afl->threshold_pathlen = 1;
+        u8 *ts_len = getenv ("AFL_THRESHOL_PATHLEN");
+        if (ts_len != NULL) {
+            afl->threshold_pathlen = (u32)atoi(ts_len);
+        }
+        
         break;
       }
       default:
@@ -1985,7 +1996,7 @@ int main(int argc, char **argv_orig, char **envp) {
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
 
-  if (afl->is_patreg_fuzzing) {
+  if (afl->pf_fuzzing_type == PF_PAT_REG) {
     patreg_fuzzing_loop (afl);
     goto stop_fuzzing;
   }

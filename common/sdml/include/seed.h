@@ -4,7 +4,8 @@
 #include "macro.h"
 #include "list.h"
 
-typedef struct _Seed_ {
+typedef struct _Seed_ 
+{
     BYTE SName[512];
 
     BYTE* SeedCtx;
@@ -13,6 +14,13 @@ typedef struct _Seed_ {
     BYTE* SeedSD;
     DWORD SeedSDLen;
 } Seed;
+
+
+typedef struct _N_gram_ 
+{
+    BYTE Gram[MAX_PAT_LENGTH+4];
+    DWORD N_num;
+}N_gram;
 
 List* GetSeedList ();
 

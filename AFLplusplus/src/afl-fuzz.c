@@ -393,7 +393,7 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
         afl->queue_cur = afl->queue_buf[afl->current_entry];
         fuzz_one(afl);
 
-        printf ("@@@ time cost: %ld (s)\r\n", time((time_t*)NULL)-start_s);
+        printf ("@@@ time cost: %ld (s)           \r\n", time((time_t*)NULL)-start_s);
 
         ++afl->current_entry;
     }

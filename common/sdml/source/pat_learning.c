@@ -442,7 +442,7 @@ static inline VOID ReduceSeedCtx (List *SP)
         SeedPat *SP = (SeedPat *)SPHdr->Data;
         Seed *Ss = SP->Ss;
 
-        for (DWORD Pos = 0; Pos < Ss->SeedLen; Pos++)
+        for (DWORD Pos = 0; Pos < Ss->SeedSDLen; Pos++)
         {
             BYTE Val = Ss->SeedSD[Pos];
             if (RL == 0 || SP->CharPattern[Val] == CHAR_CRUCIAL)
@@ -462,13 +462,94 @@ static inline VOID ReduceSeedCtx (List *SP)
         }
 
         Repr[RL++] = 0;
-        DEBUG ("Reduce: %s -> %s \r\n", Ss->SeedSD, Repr);
+        DEBUG ("Reduce: %s [%u] -> %s [%u] \r\n", Ss->SeedSD, Ss->SeedSDLen, Repr, RL-1);
         memcpy (Ss->SeedSD, Repr, RL);
         Ss->SeedSDLen = RL-1;
 
         RL = 0;
         SPHdr = SPHdr->Nxt;
     }
+
+    return;
+}
+
+
+static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
+{
+    DWORD TotalLen = 0;
+    
+    LNode *SPHdr = SP->Header;
+    while (SPHdr != NULL)
+    {
+        SeedPat *SP = (SeedPat *)SPHdr->Data;
+        Seed *Ss = SP->Ss;
+
+        if (Ss->SeedSDLen < N_num+2)
+        {
+            SPHdr = SPHdr->Nxt;
+            continue;
+        }
+
+        TotalLen += Ss->SeedSDLen;
+        BYTE* SD = Ss->SeedSD;
+        for (DWORD Pos = 0; Pos < Ss->SeedSDLen; Pos++)
+        {
+            BYTE Val = SD [Pos];
+            if (SP->CharPattern[Val] == CHAR_CRUCIAL)
+            {
+                continue;
+            }
+
+            if (Pos+N_num >= Ss->SeedSDLen)
+            {
+                break;
+            }
+
+            N_gram *NG = (N_gram *) malloc (sizeof (N_gram));
+            assert (NG != NULL);
+            
+            NG->N_num = N_num;
+            memcpy (NG->Gram, SD+Pos, N_num);
+            NG->Gram [N_num] = 0;
+            ListInsert(NgramL, NG);
+            
+            Pos++;
+        }
+        
+        SPHdr = SPHdr->Nxt;
+    }
+
+    return TotalLen;
+}
+
+
+
+static inline VOID CalStruPat (List *SP)
+{  
+    for (DWORD N_num = 2; N_num < MAX_PAT_LENGTH; N_num++)
+    {
+        List NgramL;
+        NgramL.Header  = NgramL.Tail = NULL;
+        NgramL.NodeNum = 0;
+        
+        DWORD TotalLen = N_gramPat (&g_SeedPats, &NgramL, N_num);
+        if (NgramL.Header == NULL)
+        {
+            continue;
+        }
+        
+        DEBUG ("TotalLen = %u, N_grams[%u]: ", TotalLen, N_num);
+        LNode *NGhdr = NgramL.Header;
+        while (NGhdr != NULL)
+        {
+            N_gram *NG = (N_gram *)NGhdr->Data;
+            printf ("%s ", NG->Gram);
+            
+            NGhdr = NGhdr->Nxt;
+        }
+        printf ("\r\n");
+    }
+    
 
     return;
 }
@@ -491,6 +572,8 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
     ReduceSeedCtx (&g_SeedPats);
 
     /* calculate structure pattern */
+    CalStruPat (&g_SeedPats);
+    
     LNode *SPHdr = g_SeedPats.Header;
     while (SPHdr != NULL)
     {
@@ -504,7 +587,7 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
         CharPat *CP = SP->CharList;
         while (Pos < SeedLen)
         {
-            DEBUG ("\t[%u]CharNum: %u ---> %c (%x): \n", Pos, CP->CharNum, SeecCtx[Pos], SeecCtx[Pos]);
+            //DEBUG ("\t[%u]CharNum: %u ---> %c (%x): \n", Pos, CP->CharNum, SeecCtx[Pos], SeecCtx[Pos]);
             if (CP->CharNum == 0) 
             {
                 if (StruPatLen != 0) 

@@ -39,6 +39,9 @@ typedef unsigned         BOOL;
 #define CHAR_CRUCIAL              (2)
 
 
+#define MAX_PAT_LENGTH            (16)
+
+
 #ifdef __DEBUG__
 #define DEBUG(format, ...) printf("<debug>" format, ##__VA_ARGS__)
 #else

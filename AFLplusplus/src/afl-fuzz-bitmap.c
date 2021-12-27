@@ -499,15 +499,10 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
 #ifndef SIMPLE_FILES
 
-    queue_fn = alloc_printf(
-        "%s/queue/id:%06u,%s", afl->out_dir, afl->queued_paths,
-        describe_op(afl, new_bits, NAME_MAX - strlen("id:000000,")));
-
+    queue_fn = alloc_printf("%s/queue/id:%06u,%s", afl->out_dir, afl->queued_paths,
+                            describe_op(afl, new_bits, NAME_MAX - strlen("id:000000,")));
 #else
-
-    queue_fn =
-        alloc_printf("%s/queue/id_%06u", afl->out_dir, afl->queued_paths);
-
+    queue_fn = alloc_printf("%s/queue/id_%06u", afl->out_dir, afl->queued_paths);
 #endif                                                    /* ^!SIMPLE_FILES */
     fd = open(queue_fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
     if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", queue_fn); }

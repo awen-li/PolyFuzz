@@ -23,7 +23,7 @@ static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
     } while (0);
 
     assert (Mu != NULL);
-    BindMutatorToSeeds (Mu, SeedDir);
+    BindMutatorToSeeds (Mu, DriverDir);
     
     DeInitMutators ();
     DeInitSeedPatList ();

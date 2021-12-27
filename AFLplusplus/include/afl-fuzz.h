@@ -227,6 +227,15 @@ typedef struct patreg_seed {
   struct patreg_seed* next;
 } patreg_seed;
 
+typedef struct seed_tmpt
+{
+    u8* in_tmpt;
+    u8* out_tmpt;
+    u32 seed_len;
+    u32 char_num;
+    u8  char_pattern[256];
+}seed_tmpt;
+
 enum {
 
     PF_PAT_REG=1,   /* fuzzing-based pattern recognization */
@@ -446,6 +455,7 @@ typedef struct afl_state {
 
   patreg_seed *patreg_seed_head;
   u32 patreg_seed_num;
+  seed_tmpt  stmpt;
   
   /* MOpt:
     Lots of globals, but mostly for the status UI and other things where it

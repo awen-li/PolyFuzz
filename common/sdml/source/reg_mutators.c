@@ -56,7 +56,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
     
     while (SD = readdir(Dir))
     {
-        if (SD->d_name[0] == '.')
+        if (SD->d_name[0] == '.' || strstr (SD->d_name, ".tmpt") != NULL)
         {
             continue;
         }
@@ -195,10 +195,10 @@ Mutator* GetMutator (BYTE* SeedDir)
 }
 
 
-VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir)
+VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
 {
     DWORD Pos;
-    BYTE STName[520];
+    BYTE Path[520];
     
     List *SsList = GetSeedList();
     LNode *SsHdr = SsList->Header;
@@ -216,20 +216,38 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir)
             Pos++;
         }
 
-        snprintf (STName, sizeof (STName), "%s.tmpt", Ss->SName);
-        FILE *FT = fopen (STName, "wb");
+        snprintf (Path, sizeof (Path), "%s.tmpt", Ss->SName);
+        FILE *FT = fopen (Path, "wb");
         assert (FT != NULL);
 
         fwrite (&Ss->SeedLen, 1, sizeof (Ss->SeedLen), FT);
         fwrite (Temt, 1, Ss->SeedLen, FT);
-        fwrite (Mu->CharPattern, 1, sizeof (Mu->CharPattern), FT);
 
         free (Temt);
         Temt = NULL;
         fclose (FT);
+
+        DEBUG("[%s]->[%s]Seedlen: %u\r\n", Mu->MuName, Ss->SName, Ss->SeedLen);
         
         SsHdr = SsHdr->Nxt;
     }
+
+    DWORD CharNum = 0;
+    Pos = 0;
+    while (Pos < sizeof (Mu->CharPattern))
+    {
+        CharNum += (DWORD) (Mu->CharPattern[Pos] != 0);
+        Pos++;
+    }
+
+    snprintf (Path, sizeof (Path), "%s/char.pat", DriverDir);
+    FILE *FT = fopen (Path, "wb");
+    assert (FT != NULL);
+
+    fwrite (&CharNum, 1, sizeof (CharNum), FT);
+    fwrite (Mu->CharPattern, 1, sizeof (Mu->CharPattern), FT);
+    fclose (FT);
+    DEBUG("[%s]CharNum: %u\r\n", Mu->MuName, CharNum);
     
     return;
 }

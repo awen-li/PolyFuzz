@@ -5517,18 +5517,24 @@ static inline void del_patreg (afl_state_t *afl) {
 }
 
 static inline u8* get_test_name (u8 * out_name)
-{
-    /* out/default/queue/id:000000,time:0,orig:test3 */
-    u8 *pos = NULL;
-    while (*out_name != 0) {
-        if (*out_name == ':') {
-            pos = out_name;
+{   
+    if (strstr (out_name, "orig") != NULL) {
+        /* id:000000,time:0,orig:test3 */
+        u8 *pos = NULL;
+        while (*out_name != 0) {
+            if (*out_name == ':') {
+                pos = out_name;
+            }
+            out_name++;
         }
-        out_name++;
-    }
 
-    assert (pos != NULL);
-    return pos+1;
+        assert (pos != NULL);
+        return pos+1;
+    }
+    else {
+        /* id:000005,src:000002,time:198,op:havoc,rep:4 */
+        return out_name;
+    }  
 }
 
 void gen_pattern (afl_state_t *afl) {
@@ -5650,19 +5656,69 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 }
 
 
+static inline void load_test_tmpt(struct queue_entry *q, seed_tmpt *stmpt) {
+    u8 tmpt_name[1024];
+    u32 len = q->len;
+
+    if (stmpt->char_num == 0) {
+        int fd = open("char.pat", O_RDONLY);
+        assert (fd > 0);
+
+        ck_read(fd, &stmpt->char_num, sizeof (u32), tmpt_name);
+        assert (stmpt->char_num != 0);
+        printf ("stmpt->char_num = %u \r\n", stmpt->char_num);
+        ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), tmpt_name);
+        close (fd);
+    }
+
+    stmpt->seed_len = 0;
+    stmpt->in_tmpt = stmpt->out_tmpt = NULL;
+    
+    u8 *tname = get_test_name (q->fname);
+    if (tname == q->fname) {
+        snprintf (tmpt_name, sizeof (tmpt_name), "%s.tmpt", tname);
+    }
+    else {
+        snprintf (tmpt_name, sizeof (tmpt_name), "in/%s.tmpt", tname);
+    }
+
+    int fd = open(tmpt_name, O_RDONLY);
+    if (unlikely(fd < 0)) { return; }
+
+    ck_read(fd, &stmpt->seed_len, sizeof (u32), tmpt_name);
+    if (stmpt->seed_len != len) {
+        stmpt->seed_len = 0;
+        close(fd);
+        return;
+    }
+
+    stmpt->in_tmpt = (u8*) malloc (len);
+    assert (stmpt->in_tmpt != NULL);
+    ck_read(fd, stmpt->in_tmpt, len, tmpt_name);
+ 
+    stmpt->out_tmpt = NULL;  
+    close(fd);
+    return;
+}
+
+
+
 /* pattern aware fuzzing  */
 u8 patawa_fuzzing(afl_state_t *afl) {
     u8 ret_val = 1, doing_det = 0;
-    u8 *in_buf, *out_buf, *orig_in;
-    u32 temp_len;
-    u64 havoc_queued = 0, orig_hit_cnt, new_hit_cnt = 0, prev_cksum;
+    u8 *in_buf, *out_buf;
+    u32 len, temp_len;
+    u64 havoc_queued = 0, orig_hit_cnt, new_hit_cnt = 0;
   
     /* Map the test case into memory. */
-    orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
-  
-    u32 len = afl->queue_cur->len;
+    in_buf  = queue_testcase_get(afl, afl->queue_cur);
+    len     = afl->queue_cur->len;
     out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
     assert (out_buf != NULL);
+
+    seed_tmpt *stmpt = &afl->stmpt;
+    load_test_tmpt(afl->queue_cur, stmpt);
+    
     afl->subseq_tmouts = 0;
     afl->cur_depth = afl->queue_cur->depth;
 
@@ -5689,7 +5745,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     if (unlikely(!afl->non_instrumented_mode && !afl->queue_cur->trim_done && !afl->disable_trim)) {    
         u32 old_len = afl->queue_cur->len;    
         u8 res = trim_case(afl, afl->queue_cur, in_buf);
-        orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur); 
+        in_buf = queue_testcase_get(afl, afl->queue_cur); 
         if (unlikely(res == FSRV_RUN_ERROR)) FATAL("Unable to execute target application");
         if (unlikely(afl->stop_soon)) {  
             ++afl->cur_skipped_paths;
@@ -5716,28 +5772,39 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     if (unlikely(perf_score <= 0)) { goto abandon_entry; }
 
 
-#define FLIP_BIT(_ar, _b)                       \
-      do {                                      \
-                                                \
-        u8 *_arf = (u8 *)(_ar);                 \
-        u32 _bf = (_b);                         \
-        _arf[(_bf) >> 3] ^= (128 >> ((_bf)&7));\
-                                                \
-      } while (0)
-      
+    /*******************************************
+     * Following patterns: byte mutation       *
+     *******************************************/  
+    afl->stage_name  = "byte-pattern";
+    afl->stage_short = "byte-pattern";
+    afl->stage_max   = len * stmpt->char_num;
+    for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+
+    }
 
     /*******************************************
-     * Random mutate following patterns        *
+     * Following patterns: increase bytes      *
+     *******************************************/  
+    afl->stage_name  = "increase-pattern";
+    afl->stage_short = "increase-pattern";
+    afl->stage_max   = len * stmpt->char_num;
+    for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+
+    }
+
+
+    /*******************************************
+     * Random mutate: havoc                    *
      *******************************************/
     afl->stage_cur_byte = -1;
 
     /* The havoc stage mutation code is also invoked when splicing files; if the
        splice_cycle variable is set, generate different descriptions and such. */
 
-    afl->stage_name = "havoc";
+    afl->stage_name  = "havoc";
     afl->stage_short = "havoc";
-    afl->stage_max = (doing_det ? HAVOC_CYCLES_INIT : HAVOC_CYCLES) *
-                     perf_score / afl->havoc_div / 100;
+    afl->stage_max   = (doing_det ? HAVOC_CYCLES_INIT : HAVOC_CYCLES) *
+                        perf_score / afl->havoc_div / 100;
 
     if (afl->stage_max < HAVOC_MIN) { afl->stage_max = HAVOC_MIN; }
 
@@ -5745,9 +5812,16 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     orig_hit_cnt = afl->queued_paths + afl->unique_crashes;
     havoc_queued = afl->queued_paths;
 
-
     /* We essentially just do several thousand runs (depending on perf_score)
        where we take the input file and make random stacked tweaks. */
+#define FLIP_BIT(_ar, _b)                       \
+          do {                                      \
+                                                    \
+            u8 *_arf = (u8 *)(_ar);                 \
+            u32 _bf = (_b);                         \
+            _arf[(_bf) >> 3] ^= (128 >> ((_bf)&7));\
+                                                    \
+          } while (0)
 
 #define MAX_HAVOC_ENTRY 59                                      /* 55 to 60 */
 
@@ -5757,14 +5831,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
         u32 use_stacking = 1 << (1 + rand_below(afl, afl->havoc_stack_pow2));
-
         afl->stage_cur_val = use_stacking;
-
-#ifdef INTROSPECTION
-        snprintf(afl->mutation, sizeof(afl->mutation), "%s HAVOC-%u",
-                 afl->queue_cur->fname, use_stacking);
-#endif
-
         for (u32 i = 0; i < use_stacking; ++i) {
 
             switch ((r = rand_below(afl, r_max))) {
@@ -5772,22 +5839,13 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                 case 0 ... 3: {
 
                     /* Flip a single bit somewhere. Spooky! */
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " FLIP_BIT1");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     FLIP_BIT(out_buf, rand_below(afl, temp_len << 3));
                     break;
-
                 }
 
                 case 4 ... 7: {
 
                     /* Set byte to interesting value. */
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " INTERESTING8");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     out_buf[rand_below(afl, temp_len)] = interesting_8[rand_below(afl, sizeof(interesting_8))];
                     break;
                 }
@@ -5795,27 +5853,15 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                 case 8 ... 9: {
 
                     /* Set word to interesting value, randomly choosing endian. */
-
                     if (temp_len < 2) { break; }
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " INTERESTING16");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + rand_below(afl, temp_len - 1)) = interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)];
                     break;
-
                 }
 
                 case 10 ... 11: {
 
                     /* Set word to interesting value, randomly choosing endian. */
                     if (temp_len < 2) { break; }
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " INTERESTING16BE");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + rand_below(afl, temp_len - 1)) = SWAP16(interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)]);
                     break;
                 }
@@ -5824,25 +5870,14 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
                     /* Set dword to interesting value, randomly choosing endian. */
                     if (temp_len < 4) { break; }
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " INTERESTING32");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + rand_below(afl, temp_len - 3)) = interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)];
                     break;
-
                 }
 
                 case 14 ... 15: {
 
                     /* Set dword to interesting value, randomly choosing endian. */
                     if (temp_len < 4) { break; }
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " INTERESTING32BE");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + rand_below(afl, temp_len - 3)) = SWAP32(interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)]);
                     break;
                 }
@@ -5850,10 +5885,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                 case 16 ... 19: {
 
                     /* Randomly subtract from byte. */
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH8_");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     out_buf[rand_below(afl, temp_len)] -= 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5861,10 +5892,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                 case 20 ... 23: {
 
                     /* Randomly add to byte. */
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH8+");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     out_buf[rand_below(afl, temp_len)] += 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5874,11 +5901,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     /* Randomly subtract from word, little endian. */
                     if (temp_len < 2) { break; }
                     u32 pos = rand_below(afl, temp_len - 1);
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH16_-%u", pos);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5890,10 +5912,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
                     u32 pos = rand_below(afl, temp_len - 1);
                     u16 num = 1 + rand_below(afl, ARITH_MAX);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH16_BE-%u_%u", pos, num);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + pos) =
                     SWAP16(SWAP16(*(u16 *)(out_buf + pos)) - num);
                     break;
@@ -5905,10 +5923,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     if (temp_len < 2) { break; }
 
                     u32 pos = rand_below(afl, temp_len - 1);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH16+-%u", pos);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5920,10 +5934,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
                     u32 pos = rand_below(afl, temp_len - 1);
                     u16 num = 1 + rand_below(afl, ARITH_MAX);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH16+BE-%u_%u", pos, num);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u16 *)(out_buf + pos) =
                     SWAP16(SWAP16(*(u16 *)(out_buf + pos)) + num);
                     break;
@@ -5935,10 +5945,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     if (temp_len < 4) { break; }
 
                     u32 pos = rand_below(afl, temp_len - 3);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH32_-%u", pos);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5951,10 +5957,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     u32 pos = rand_below(afl, temp_len - 3);
                     u32 num = 1 + rand_below(afl, ARITH_MAX);
 
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH32_BE-%u-%u", pos, num);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + pos) =
                     SWAP32(SWAP32(*(u32 *)(out_buf + pos)) - num);
                     break;
@@ -5966,11 +5968,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     if (temp_len < 4) { break; }
 
                     u32 pos = rand_below(afl, temp_len - 3);
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH32+-%u", pos);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
                     break;
                 }
@@ -5982,10 +5979,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
                     u32 pos = rand_below(afl, temp_len - 3);
                     u32 num = 1 + rand_below(afl, ARITH_MAX);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " ARITH32+BE-%u-%u", pos,num);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     *(u32 *)(out_buf + pos) =
                     SWAP32(SWAP32(*(u32 *)(out_buf + pos)) + num);
                     break;
@@ -5996,11 +5989,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     /* Just set a random byte to a random value. Because,
                         why not. We use XOR with 1-255 to eliminate the
                         possibility of a no-op. */
-
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " RAND8");
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     out_buf[rand_below(afl, temp_len)] ^= 1 + rand_below(afl, 255);
                     break;
                 }
@@ -6014,10 +6002,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                         u32 clone_from = rand_below(afl, temp_len - clone_len + 1);
                         u32 clone_to = rand_below(afl, temp_len);
 
-#ifdef INTROSPECTION
-                        snprintf(afl->m_tmp, sizeof(afl->m_tmp), " CLONE-%s-%u-%u-%u","clone", clone_from, clone_to, clone_len);
-                        strcat(afl->mutation, afl->m_tmp);
-#endif
                         u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), temp_len + clone_len);
                         if (unlikely(!new_buf)) { PFATAL("alloc"); }
 
@@ -6044,10 +6028,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                         /* Insert a block of constant bytes (25%). */
                         u32 clone_len = choose_block_len(afl, HAVOC_BLK_XL);
                         u32 clone_to = rand_below(afl, temp_len);
-#ifdef INTROSPECTION
-                        snprintf(afl->m_tmp, sizeof(afl->m_tmp), " CLONE-%s-%u-%u","insert", clone_to, clone_len);
-                        strcat(afl->mutation, afl->m_tmp);
-#endif
+
                         u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), temp_len + clone_len);
                         if (unlikely(!new_buf)) { PFATAL("alloc"); }
 
@@ -6067,7 +6048,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     }
 
                     break;
-
                 }
 
                 case 48 ... 50: {
@@ -6080,10 +6060,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                      u32 copy_to = rand_below(afl, temp_len - copy_len + 1);
 
                      if (likely(copy_from != copy_to)) {
-#ifdef INTROSPECTION
-                        snprintf(afl->m_tmp, sizeof(afl->m_tmp), " OVERWRITE_COPY-%u-%u-%u", copy_from, copy_to, copy_len);
-                        strcat(afl->mutation, afl->m_tmp);
-#endif
                         memmove(out_buf + copy_to, out_buf + copy_from, copy_len);
                      }
                     break;
@@ -6092,15 +6068,10 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                 case 51: {
 
                     /* Overwrite bytes with fixed bytes. */
-
                     if (temp_len < 2) { break; }
 
                     u32 copy_len = choose_block_len(afl, temp_len - 1);
                     u32 copy_to = rand_below(afl, temp_len - copy_len + 1);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " OVERWRITE_FIXED-%u-%u", copy_to, copy_len);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     memset(out_buf + copy_to,
                            rand_below(afl, 2) ? rand_below(afl, 256):out_buf[rand_below(afl, temp_len)], copy_len);
                     break;
@@ -6116,10 +6087,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
                     /* Don't delete too much. */
                     u32 del_len = choose_block_len(afl, temp_len - 1);
                     u32 del_from = rand_below(afl, temp_len - del_len + 1);
-#ifdef INTROSPECTION
-                    snprintf(afl->m_tmp, sizeof(afl->m_tmp), " DEL-%u-%u", del_from, del_len);
-                    strcat(afl->mutation, afl->m_tmp);
-#endif
                     memmove(out_buf + del_from, out_buf + del_from + del_len, temp_len - del_from - del_len);
                     temp_len -= del_len;
                     break;
@@ -6143,7 +6110,6 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         /* If we're finding new stuff, let's run for a bit longer, limits permitting. */
         if (afl->queued_paths != havoc_queued) {
             if (perf_score <= afl->havoc_max_mult * 100) {
-
                 afl->stage_max *= 2;
                 perf_score *= 2;
             }
@@ -6160,7 +6126,8 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     ret_val = 0;
 /* we are through with this queue entry - for this iteration */
 abandon_entry:
-
+    free (stmpt->in_tmpt);
+    free (stmpt->out_tmpt);
     ++afl->queue_cur->fuzz_level;    
     return ret_val;
 }

@@ -20,6 +20,7 @@ typedef struct _N_gram_
 {
     BYTE Gram[MAX_PAT_LENGTH+4];
     DWORD N_num;
+    DWORD Count;
 }N_gram;
 
 List* GetSeedList ();

@@ -509,11 +509,12 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
             assert (NG != NULL);
             
             NG->N_num = N_num;
+            NG->Count = 1;
             memcpy (NG->Gram, SD+Pos, N_num);
             NG->Gram [N_num] = 0;
             ListInsert(NgramL, NG);
             
-            Pos++;
+            Pos += (N_num-1);
         }
         
         SPHdr = SPHdr->Nxt;
@@ -522,6 +523,50 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
     return TotalLen;
 }
 
+
+static inline BOOL N_gramCmp (N_gram *NG1, N_gram *NG2)
+{
+    if (NG1->N_num == NG2->N_num &&
+        memcmp (NG1->Gram, NG2->Gram, NG1->N_num) == 0)
+    {
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
+static inline VOID N_gramStat (List* NgramL, List *NgStat, DWORD N_num)
+{
+    DEBUG ("N_grams[%u]: ", N_num);
+    LNode *NGhdr = NgramL->Header;
+    while (NGhdr != NULL)
+    {
+        N_gram *NG = (N_gram *)NGhdr->Data;
+
+        N_gram *CatchNG = ListSearch(NgStat, (CompData)N_gramCmp, NG);
+        if (CatchNG == NULL)
+        {
+            ListInsert(NgStat, NG);
+        }
+        else
+        {
+            CatchNG->Count++;
+        }
+
+        #ifdef __DEBUG__
+        printf ("%s ", NG->Gram);
+        #endif
+                
+        NGhdr = NGhdr->Nxt;
+    }
+    #ifdef __DEBUG__
+    printf ("\r\n");
+    #endif
+
+    return;
+}
 
 
 static inline VOID CalStruPat (List *SP)
@@ -533,23 +578,36 @@ static inline VOID CalStruPat (List *SP)
         NgramL.NodeNum = 0;
         
         DWORD TotalLen = N_gramPat (&g_SeedPats, &NgramL, N_num);
-        if (NgramL.Header == NULL)
+        if (NgramL.NodeNum < SP->NodeNum)
         {
+            ListDel(&NgramL, (DelData)free);
             continue;
         }
-        
-        DEBUG ("TotalLen = %u, N_grams[%u]: ", TotalLen, N_num);
-        LNode *NGhdr = NgramL.Header;
+
+        List NgStat;
+        NgStat.Header  = NgStat.Tail = NULL;
+        NgStat.NodeNum = 0;
+        N_gramStat (&NgramL, &NgStat, N_num);
+
+        LNode *NGhdr = NgStat.Header;
         while (NGhdr != NULL)
         {
             N_gram *NG = (N_gram *)NGhdr->Data;
-            printf ("%s ", NG->Gram);
+            if (NG->Count < SP->NodeNum)
+            {
+                NGhdr = NGhdr->Nxt;
+                continue;
+            }
             
+            DEBUG ("[N-%u][Count-%u]%s\r\n", NG->N_num, NG->Count, NG->Gram);
+
             NGhdr = NGhdr->Nxt;
         }
-        printf ("\r\n");
+
+
+        ListDel(&NgramL, (DelData)free);
+        ListDel(&NgStat, NULL);
     }
-    
 
     return;
 }

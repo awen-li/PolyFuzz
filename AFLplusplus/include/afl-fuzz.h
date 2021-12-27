@@ -234,13 +234,19 @@ typedef struct seed_tmpt
     u32 seed_len;
     u32 char_num;
     u8  char_pattern[256];
+    u8  char_set[256];
 }seed_tmpt;
 
 enum {
 
     PF_PAT_REG=1,   /* fuzzing-based pattern recognization */
     PF_PAT_AWA=2    /* pattern aware fuzzing */
+};
 
+enum {
+    CHAR_INVALID = 0,
+    CHAR_NORMAL  = 1,
+    CHAR_CRUCIAL = 2,
 };
 
 /* Fuzzing stages */

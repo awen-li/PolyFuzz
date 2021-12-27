@@ -360,12 +360,113 @@ static inline DWORD MetaCharProc (BYTE* StruPat, DWORD Offset, BYTE Char)
 }
 
 
-static inline VOID SeedStat (List *SP)
+static inline VOID StandzSeeds (List *SP)
 {
-    LNode *SPHdr = g_SeedPats.Header;
+    LNode *SPHdr = SP->Header;
     while (SPHdr != NULL)
     {
+        SeedPat *SP = (SeedPat *)SPHdr->Data;
+        Seed *Ss = SP->Ss;
 
+        DWORD Pos = 0;
+        while (Pos < Ss->SeedLen)
+        {
+            Ss->SeedSD[Pos] = g_Ascii [Ss->SeedSD[Pos]];
+            Pos++;
+        }
+
+        DEBUG ("Standz: %s -> %s \r\n", Ss->SeedCtx, Ss->SeedSD);
+        SPHdr = SPHdr->Nxt;
+    }
+
+    return;
+}
+
+static inline VOID CalCharPat (List *SP)
+{
+    LNode *SPHdr = SP->Header;
+    while (SPHdr != NULL)
+    {
+        SeedPat *SP  = (SeedPat*)SPHdr->Data;
+    
+        DWORD SeedLen = SP->Ss->SeedLen;
+        BYTE* SeecCtx = SP->Ss->SeedCtx;
+    
+        DWORD Pos = 0;
+        DWORD StruPatLen = 0;
+        CharPat *CP = SP->CharList;
+        while (Pos < SeedLen)
+        {
+            //DEBUG ("\t[%u]CharNum: %u ---> %c (%x): \n", Pos, CP->CharNum, SeecCtx[Pos], SeecCtx[Pos]);
+            if (CP->CharNum == 0) 
+            {
+                 SP->CharPattern[SeecCtx[Pos]] = CHAR_CRUCIAL;
+            }
+            else 
+            {
+                DWORD CharIndex = 0;
+                while (CharIndex < CP->CharNum) 
+                {
+                    SP->CharPattern[CP->CharVal[CharIndex]] = CHAR_NORMAL;
+                    CharIndex++;
+                }
+            }
+    
+            CP++;
+            Pos++;
+        }       
+            
+        SPHdr = SPHdr->Nxt;
+    }
+
+    return;
+}
+
+
+/*
+    T = AB
+    A = k
+    B = d|w|x|i
+*/
+
+static inline VOID ReduceSeedCtx (List *SP)
+{
+    StandzSeeds (SP);
+
+    BYTE Repr[256];
+    DWORD RL = 0;
+    
+    LNode *SPHdr = SP->Header;
+    while (SPHdr != NULL)
+    {
+        SeedPat *SP = (SeedPat *)SPHdr->Data;
+        Seed *Ss = SP->Ss;
+
+        for (DWORD Pos = 0; Pos < Ss->SeedLen; Pos++)
+        {
+            BYTE Val = Ss->SeedSD[Pos];
+            if (RL == 0 || SP->CharPattern[Val] == CHAR_CRUCIAL)
+            {
+                Repr[RL++] = Val;
+                continue;
+            }
+
+            if (Repr[RL-1] == Val)
+            {
+                continue;
+            }
+            else
+            {
+                Repr[RL++] = Val;
+            }
+        }
+
+        Repr[RL++] = 0;
+        DEBUG ("Reduce: %s -> %s \r\n", Ss->SeedSD, Repr);
+        memcpy (Ss->SeedSD, Repr, RL);
+        Ss->SeedSDLen = RL-1;
+
+        RL = 0;
         SPHdr = SPHdr->Nxt;
     }
 
@@ -375,6 +476,7 @@ static inline VOID SeedStat (List *SP)
 
 SeedPat* MutatorLearning (BYTE* DriverDir)
 {
+    /* pilot fuzzing */
     RunPilotFuzzing (DriverDir);
 
     InitAscii ();
@@ -382,8 +484,13 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
     InitSeedPatList (DriverDir);
     assert (g_SeedPats.NodeNum != 0);
 
-    SeedStat (&g_SeedPats);
-    
+    /* calculate char pattern */
+    CalCharPat (&g_SeedPats);
+
+    /* reduce the standardlized seed ctx */
+    ReduceSeedCtx (&g_SeedPats);
+
+    /* calculate structure pattern */
     LNode *SPHdr = g_SeedPats.Header;
     while (SPHdr != NULL)
     {

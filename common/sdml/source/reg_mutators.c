@@ -66,6 +66,9 @@ static inline VOID InitSeedList (BYTE* SeedDir)
 
         snprintf (Ss->SName, sizeof(Ss->SName), "%s/%s", SeedDir, SD->d_name);
         Ss->SeedCtx = ReadFile (Ss->SName, &Ss->SeedLen);
+        
+        Ss->SeedSD    = strdup (Ss->SeedCtx);
+        Ss->SeedSDLen = Ss->SeedLen;
 
         ListInsert(&g_SeedList, Ss);  
     }
@@ -77,6 +80,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
 
 VOID DelSeed (Seed *Ss)
 {
+    free (Ss->SeedSD);
     free (Ss->SeedCtx);
     free (Ss);
 }

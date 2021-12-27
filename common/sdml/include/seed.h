@@ -9,6 +9,9 @@ typedef struct _Seed_ {
 
     BYTE* SeedCtx;
     DWORD SeedLen;
+
+    BYTE* SeedSD;
+    DWORD SeedSDLen;
 } Seed;
 
 List* GetSeedList ();

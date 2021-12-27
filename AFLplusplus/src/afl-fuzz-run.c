@@ -954,8 +954,11 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   }
 
-  /* This handles FAULT_ERROR for us: */
+  if (afl->pf_fuzzing_type == PF_PAT_REG) {
+    return 0;
+  }
 
+  /* This handles FAULT_ERROR for us: */
   afl->queued_discovered += save_if_interesting(afl, out_buf, len, fault);
 
   if (!(afl->stage_cur % afl->stats_update_freq) ||

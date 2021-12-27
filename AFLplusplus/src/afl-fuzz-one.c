@@ -5625,11 +5625,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
             }
 
             in_buf[pos] = (u8)byte_val;
-            u8 res = calibrate_case(afl, afl->queue_cur, in_buf, afl->queue_cycle - 1, 0);
-            if (unlikely(res == FSRV_RUN_ERROR)) {
-                FATAL("Unable to execute target application");
-            }
-
+            common_fuzz_stuff(afl, in_buf, len);
 
             u32 path_len = 0;
             for (u32 i = 0; i < bb_num; i++) {
@@ -5650,6 +5646,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
         
         in_buf[pos] = origin;
         pos++;
+        fprintf (stderr, ">>pilot-fuzzing:[%u/%u]      \r", pos, len);
     }
 
     return 0;

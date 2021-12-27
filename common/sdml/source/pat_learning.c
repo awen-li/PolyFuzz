@@ -5,6 +5,7 @@
 #include <ctype.h>
 
 static List g_SeedPats;
+static BYTE g_Ascii[256];
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +15,50 @@ List* GetSeedPatList ()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+static inline VOID InitAscii ()
+{
+    printf ("Init g_Ascii as: ");
+    for (DWORD i = 0; i < sizeof (g_Ascii); i++)
+    {
+        switch (i) 
+        {
+            case 33 ... 47:
+            case 58 ... 64:
+            case 91 ... 96:
+            case 123 ... 126:
+            {
+                /* non-digit and non-alpha: save as itself */
+                g_Ascii [i] = i;
+                break;
+            }
+            case 48 ... 57:
+            {
+                /* digit: save as 'd' */
+                g_Ascii [i] = 'd';
+                break;
+            }
+            case 65 ... 90:
+            case 97 ... 122:
+            {
+                /* alpha: save as 'w' */
+                g_Ascii [i] = 'w';
+                break;
+            }
+            default:
+            {
+                /* other non-printable: save as 'x' */
+                g_Ascii [i] = 'x';
+                break;
+            }
+        }
+
+        printf ("%c ", g_Ascii [i]);
+    }
+
+    printf ("\r\n");
+    return;
+}
 
 
 static inline BYTE* GetFuzzDir (BYTE* DriverDir)
@@ -315,12 +360,29 @@ static inline DWORD MetaCharProc (BYTE* StruPat, DWORD Offset, BYTE Char)
 }
 
 
+static inline VOID SeedStat (List *SP)
+{
+    LNode *SPHdr = g_SeedPats.Header;
+    while (SPHdr != NULL)
+    {
+
+        SPHdr = SPHdr->Nxt;
+    }
+
+    return;
+}
+
+
 SeedPat* MutatorLearning (BYTE* DriverDir)
 {
     RunPilotFuzzing (DriverDir);
 
+    InitAscii ();
+
     InitSeedPatList (DriverDir);
     assert (g_SeedPats.NodeNum != 0);
+
+    SeedStat (&g_SeedPats);
     
     LNode *SPHdr = g_SeedPats.Header;
     while (SPHdr != NULL)

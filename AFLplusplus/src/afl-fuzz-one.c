@@ -5668,6 +5668,13 @@ static inline void load_test_tmpt(struct queue_entry *q, seed_tmpt *stmpt) {
         assert (stmpt->char_num != 0);
         printf ("stmpt->char_num = %u \r\n", stmpt->char_num);
         ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), tmpt_name);
+
+        u32 j = 0;
+        for (u32 i = 0; i < 256; i++) {
+            if (stmpt->char_pattern[i] != CHAR_INVALID) {
+                stmpt->char_set[j++] = i;
+            }
+        }
         close (fd);
     }
 
@@ -5777,9 +5784,31 @@ u8 patawa_fuzzing(afl_state_t *afl) {
      *******************************************/  
     afl->stage_name  = "byte-pattern";
     afl->stage_short = "byte-pattern";
-    afl->stage_max   = len * stmpt->char_num;
+    afl->stage_max   = len;
+    printf ("[%s]stage_max: %u \r\n", afl->stage_name, afl->stage_max);
+    u32 pos, random_byte;
+    u8 valid_byte, orgi_byte;
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+        pos = afl->stage_cur;
+        if (stmpt->in_tmpt != NULL) {
+            if (stmpt->in_tmpt[pos] == CHAR_CRUCIAL) continue;
+        }
+        else {
+            if (stmpt->char_pattern[in_buf[pos]] == CHAR_CRUCIAL) continue;
+        }
 
+        for (u32 times = 0; times < stmpt->char_num; times++) {
+            random_byte = rand_below(afl, stmpt->char_num);
+            valid_byte  = stmpt->char_set [random_byte];
+            if (valid_byte == pos || stmpt->char_pattern[valid_byte] == CHAR_CRUCIAL) {
+                continue;
+            }
+
+            orgi_byte    = out_buf[pos];
+            out_buf[pos] = valid_byte;
+            if (common_fuzz_stuff(afl, out_buf, len)) { goto abandon_entry; }
+            out_buf[pos] = orgi_byte;            
+        }
     }
 
     /*******************************************
@@ -5788,7 +5817,9 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_name  = "increase-pattern";
     afl->stage_short = "increase-pattern";
     afl->stage_max   = len * stmpt->char_num;
+    printf ("[%s]stage_max: %u \r\n", afl->stage_name, afl->stage_max);
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+        
 
     }
 

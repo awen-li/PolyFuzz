@@ -50,12 +50,9 @@ def GenPySummary (PyDir, ExpList=None):
          
             PyFile = os.path.join(Path, py)
             if IsInExpList (py, PyFile, ExpList) == True:
-                continue  
-
-            Prefix = py[0:5]
-            if Prefix == "test_":
                 continue
-            
+
+
             with open(PyFile) as PyF:
                 print ("#visit " + PyFile)
                 Ast = parse(PyF.read(), PyFile, 'exec')
@@ -83,8 +80,11 @@ def GenPySummary (PyDir, ExpList=None):
                     BranchNum += len (Def.BBNo) + 1
 
     Root.setAttribute ("branchs", str(BranchNum+4))
+    
     # write to xml
-    f = open(PyDir+"py_summary.xml", "w")
+    PySum = PyDir+"/py_summary.xml"
+    print ("Write -> " + PySum)
+    f = open(PySum, "w")
     f.write(doc.toprettyxml(indent="  "))
     f.close()
 

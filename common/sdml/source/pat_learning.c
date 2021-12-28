@@ -631,7 +631,8 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
 
     /* calculate structure pattern */
     CalStruPat (&g_SeedPats);
-    
+
+    /* Gen a general regex */
     LNode *SPHdr = g_SeedPats.Header;
     while (SPHdr != NULL)
     {
@@ -660,18 +661,6 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
                 }
 
                 StruPatLen = MetaCharProc (SP->StruPattern, StruPatLen, SeecCtx[Pos]);
-                SP->CharPattern[SeecCtx[Pos]] = CHAR_CRUCIAL;
-            }
-            else 
-            {
-                DWORD CharIndex = 0;
-                while (CharIndex < CP->CharNum) 
-                {
-                    //printf ("%c ", CP->CharVal[CharIndex]);
-                    SP->CharPattern[CP->CharVal[CharIndex]] = CHAR_NORMAL;
-                    CharIndex++;
-                }
-                //printf ("\n");
             }
 
             CP++;

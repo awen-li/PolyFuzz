@@ -19,6 +19,8 @@ typedef struct SeedPat
     regex_t StRegex;
     DWORD MatchNum;
     List UnMatchList;
+
+    List PossPat;
     
     Seed *Ss;  
     CharPat *CharList;

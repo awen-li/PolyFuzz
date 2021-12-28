@@ -6,7 +6,7 @@ static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
     do
     {
         /* 1. search by pattern */
-        Mu = GetMutator(SeedDir);
+        Mu = GetMutator(SeedDir, TestName);
         if (Mu != NULL)
         {
             break;
@@ -16,7 +16,7 @@ static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
         SeedPat *SP = MutatorLearning(DriverDir);
 
         /* 3. update and gen the mutator */
-        Mu = RegMutator (TestName, SP->StruPattern, SP->CharPattern);
+        Mu = RegMutator (TestName, SP->StruPattern, SP->CharPattern, &SP->PossPat);
 
         /* 4. dump */
         DumpMutator ();
@@ -84,9 +84,10 @@ int main(int argc, char *argv[])
         } 
     }
 
-    if (SeedDir == NULL || DriverDir == NULL)
+    if (SeedDir == NULL || DriverDir == NULL || TestName == NULL)
     {
-        printf ("the Input SeedDir = %p, DriverDir = %p! \r\n", SeedDir, DriverDir);
+        printf ("!!!ERROR: the Input SeedDir = %p, DriverDir = %p, TestName = %p! \r\n", 
+                SeedDir, DriverDir, TestName);
         return 0;
     }
 

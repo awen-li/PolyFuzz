@@ -17,4 +17,4 @@ python -m parser -E ./script/$target/ExpList ./$target
 # 2. instrument C extersions
 cp script/$target/setup-afl.py $target/
 cd $target/
-python setup-afl.py build
+python setup-afl.py install

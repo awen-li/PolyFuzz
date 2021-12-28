@@ -12,6 +12,7 @@ typedef struct _mutator_
     BYTE *StruPattern;
     BYTE CharPattern[256];
 
+    List PossPat;
     regex_t StRegex;
 } Mutator;
 
@@ -20,12 +21,12 @@ VOID InitMutators ();
 VOID DeInitMutators ();
 
 
-Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern);
+Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern, List *PossPat);
 VOID DumpMutator ();
 VOID LoadMutator ();
 
 List* GetMuList ();
-Mutator* GetMutator (BYTE* SeedFile);
+Mutator* GetMutator (BYTE* SeedDir, BYTE* TestName);
 
 
 VOID BindMutatorToSeeds (Mutator *Mu, BYTE* SeedDir);

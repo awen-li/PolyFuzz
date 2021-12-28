@@ -107,16 +107,9 @@ static inline Mutator* CheckMutator (BYTE* MuName, BYTE* StruPattern, BYTE* Char
 }
 
 
-Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
-{ 
-    BYTE DefaultName[256];   
+Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern, List *PossPat)
+{    
     Mutator *Mu;
-
-    if (MuName == NULL)
-    {
-        MuName = DefaultName;
-        snprintf (DefaultName, sizeof (DefaultName), "Default%u", (DWORD)random());
-    }
     
     Mu = CheckMutator (MuName, StruPattern, CharPattern);
     if (Mu != NULL)
@@ -129,6 +122,7 @@ Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
     
     Mu = (Mutator*) malloc (sizeof (Mutator) + NameLen + StruPatLen);
     assert (Mu != NULL);
+    memset (Mu, 0, sizeof (Mu));
 
     Mu->MuName  = (BYTE*) (Mu + 1);
     memcpy (Mu->MuName, MuName, NameLen);
@@ -137,17 +131,24 @@ Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
     memcpy (Mu->StruPattern, StruPattern, StruPatLen);
     memcpy (Mu->CharPattern, CharPattern, sizeof (Mu->CharPattern));
 
+    if (PossPat != NULL)
+    {
+        memcpy (&Mu->PossPat, PossPat, sizeof (List));
+    }
+
     DWORD Pos = 0;
     DEBUG ("Crucial bytes: ");
     while (Pos < 256)
     {
         if (Mu->CharPattern[Pos] == CHAR_CRUCIAL)
         {
+            #ifdef __DEBUG__
             printf ("%c ", Pos);
+            #endif
         }
         Pos++;
     }
-    printf ("\n");
+    DEBUG ("\n");
 
     DEBUG ("[RegMutator]%s - %s \r\n", MuName, Mu->StruPattern);
     INT Ret = regcomp(&Mu->StRegex, Mu->StruPattern, 0);
@@ -178,7 +179,7 @@ static inline BOOL MutatorMatch (Mutator* Mu, Seed* Ss)
 }
 
 
-Mutator* GetMutator (BYTE* SeedDir)
+Mutator* GetMutator (BYTE* SeedDir, BYTE* TestName)
 {
     InitSeedList (SeedDir);
 
@@ -188,8 +189,11 @@ Mutator* GetMutator (BYTE* SeedDir)
         Mutator *Mu = ListSearch(&g_MuList, (CompData)MutatorMatch, Hdr->Data);
         if (Mu != NULL)
         {
-            DEBUG ("[GetMutator]%s -> %s \r\n", Mu->MuName, Mu->StruPattern);
-            return Mu;
+            if (strcmp (TestName, Mu->MuName) == 0)
+            {
+                DEBUG ("[GetMutator]%s -> %s \r\n", Mu->MuName, Mu->StruPattern);
+                return Mu;
+            }
         }
 
         Hdr = Hdr->Nxt;
@@ -252,6 +256,27 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
     fwrite (Mu->CharPattern, 1, sizeof (Mu->CharPattern), FT);
     fclose (FT);
     DEBUG("[%s]CharNum: %u\r\n", Mu->MuName, CharNum);
+
+    if (Mu->PossPat.NodeNum != 0)
+    {
+        snprintf (Path, sizeof (Path), "%s/stru.pat", DriverDir);
+        FILE *FT = fopen (Path, "wb");
+        assert (FT != NULL);
+
+        fwrite (&Mu->PossPat.NodeNum, 1, sizeof (DWORD), FT);
+        LNode *Pbhdr = Mu->PossPat.Header;
+        while (Pbhdr != NULL)
+        {
+            N_gram *NG = (N_gram *)Pbhdr->Data;
+            fwrite (&NG->N_num, 1, sizeof (DWORD), FT);
+            fwrite (&NG->Gram, 1, NG->N_num, FT);
+
+            DEBUG("[%s]STRU-PAT: [N-%u]%s\r\n", Path, NG->N_num, NG->Gram);
+            Pbhdr = Pbhdr->Nxt;
+        }    
+        fclose (FT);
+        
+    }
     
     return;
 }
@@ -278,7 +303,18 @@ VOID DumpOneMutator (Mutator *Mu)
 
     fwrite (Mu->MuName, 1,  MuLength, Fm);
     fwrite (Mu->StruPattern, 1, StruLength, Fm);   
-    fwrite (Mu->CharPattern, 1, CharLength, Fm); 
+    fwrite (Mu->CharPattern, 1, CharLength, Fm);
+
+    fwrite (&Mu->PossPat.NodeNum, 1, sizeof (DWORD), Fm);
+    LNode *PbHdr = Mu->PossPat.Header;
+    while (PbHdr != NULL)
+    {
+        N_gram *NG = (N_gram *)PbHdr->Data;
+        fwrite (NG, 1, sizeof (N_gram), Fm);
+        DEBUG ("Dump[%s]NG -> %s \r\n", Mu->MuName, NG->Gram);
+
+        PbHdr = PbHdr->Nxt;
+    }
 
     fclose (Fm);
 
@@ -292,7 +328,6 @@ VOID DumpMutator ()
     ListVisit(&g_MuList, (ProcData)DumpOneMutator);
     return;
 }
-
 
 
 VOID LoadMutator ()
@@ -333,7 +368,20 @@ VOID LoadMutator ()
         memset (CharPattern, 0, sizeof (CharPattern));
         fread (CharPattern, 1, CharLength, Fm);
 
-        RegMutator (MuName, StruPattern, CharPattern);
+        List PossPat;
+        memset (&PossPat, 0, sizeof (PossPat));
+        DWORD PbNum = 0;
+        fread (&PbNum, 1, sizeof (PbNum), Fm);
+        for (DWORD i = 0; i < PbNum; i++)
+        {
+            N_gram *NG = (N_gram *) malloc (sizeof (N_gram));
+            assert (NG != NULL);
+            fread (NG, 1, sizeof (N_gram), Fm);
+            ListInsert(&PossPat, NG);
+            DEBUG ("LoadMutator[%s]NG -> %s \r\n", MuName, NG->Gram);
+        }
+
+        RegMutator (MuName, StruPattern, CharPattern, &PossPat);
     }
 
     fclose (Fm);
@@ -349,16 +397,23 @@ VOID InitMutators ()
     memset (CharPat, 1, sizeof (CharPat));
     CharPat['{'] = CHAR_CRUCIAL;
     CharPat['}'] = CHAR_CRUCIAL;
-    RegMutator ("DictMu", "[{].*[}]", CharPat);
+    RegMutator ("DictMu", "[T].*[T]", CharPat, NULL);
 
     DEBUG ("[Init]g_MuList.NodeNum = %u \r\n", g_MuList.NodeNum);
+    return;
+}
+
+VOID DelMu (Mutator *Mu)
+{
+    ListDel(&Mu->PossPat, free);
+    free (Mu);
     return;
 }
 
 
 VOID DeInitMutators ()
 {
-    ListDel(&g_MuList, (DelData) free);
+    ListDel(&g_MuList, (DelData) DelMu);
     ListDel(&g_SeedList, (DelData) DelSeed);
     return;
 }

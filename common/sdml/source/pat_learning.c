@@ -18,7 +18,7 @@ List* GetSeedPatList ()
 
 static inline VOID InitAscii ()
 {
-    printf ("Init g_Ascii as: ");
+    DEBUG ("Init g_Ascii as: ");
     for (DWORD i = 0; i < sizeof (g_Ascii); i++)
     {
         switch (i) 
@@ -53,10 +53,12 @@ static inline VOID InitAscii ()
             }
         }
 
+        #ifdef __DEBUG__
         printf ("%c ", g_Ascii [i]);
+        #endif
     }
 
-    printf ("\r\n");
+    DEBUG ("\r\n");
     return;
 }
 
@@ -397,17 +399,22 @@ static inline VOID CalCharPat (List *SP)
         CharPat *CP = SP->CharList;
         while (Pos < SeedLen)
         {
-            //DEBUG ("\t[%u]CharNum: %u ---> %c (%x): \n", Pos, CP->CharNum, SeecCtx[Pos], SeecCtx[Pos]);
             if (CP->CharNum == 0) 
             {
                  SP->CharPattern[SeecCtx[Pos]] = CHAR_CRUCIAL;
+                 //DEBUG ("\t[%u]CHAR_CRUCIAL: %c (%x): \n", Pos, SeecCtx[Pos], SeecCtx[Pos]);
             }
             else 
             {
                 DWORD CharIndex = 0;
                 while (CharIndex < CP->CharNum) 
                 {
-                    SP->CharPattern[CP->CharVal[CharIndex]] = CHAR_NORMAL;
+                    BYTE Val = CP->CharVal[CharIndex];
+                    if (SP->CharPattern[Val] != CHAR_CRUCIAL)
+                    {
+                        SP->CharPattern[Val] = CHAR_NORMAL;
+                    }
+                    
                     CharIndex++;
                 }
             }
@@ -415,7 +422,8 @@ static inline VOID CalCharPat (List *SP)
             CP++;
             Pos++;
         }       
-            
+
+        DEBUG ("[%s]character set: %u \r\n", SP->Ss->SName, GetCharPatNum (SP));
         SPHdr = SPHdr->Nxt;
     }
 
@@ -425,7 +433,7 @@ static inline VOID CalCharPat (List *SP)
 
 /*
     T = AB
-    A = k
+    A = i
     B = d|w|x|i
 */
 
@@ -453,18 +461,41 @@ static inline VOID ReduceSeedCtx (List *SP)
 
             if (Repr[RL-1] == Val)
             {
+                Repr[RL-1] = 'B';
                 continue;
             }
             else
             {
-                Repr[RL++] = Val;
+                BYTE Rb = Repr[RL-1];
+                if (Rb == 'w' || Rb == 'd' || Rb == 'B')
+                {
+                    if (Val == 'w' || Val == 'd' || Val == 'B')
+                    {
+                        Repr[RL-1] = 'B';
+                    }
+                    else
+                    {
+                        Repr[RL++] = Val;
+                    }
+                }
+                else
+                {
+                    if (Val == 'w' || Val == 'd' || Val == 'B')
+                    {
+                        Repr[RL++] = 'B';
+                    }
+                    else
+                    {
+                        Repr[RL++] = Val;
+                    }
+                }
             }
         }
 
-        Repr[RL++] = 0;
-        DEBUG ("Reduce: %s [%u] -> %s [%u] \r\n", Ss->SeedSD, Ss->SeedSDLen, Repr, RL-1);
+        Repr[RL] = 0;
+        DEBUG ("Reduce: %s [%u] -> %s [%u] \r\n", Ss->SeedSD, Ss->SeedSDLen, Repr, RL);
         memcpy (Ss->SeedSD, Repr, RL);
-        Ss->SeedSDLen = RL-1;
+        Ss->SeedSDLen = RL;
 
         RL = 0;
         SPHdr = SPHdr->Nxt;
@@ -478,13 +509,17 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
 {
     DWORD TotalLen = 0;
     
+    BYTE Special[256] = {0};
+    Special['{'] = Special['['] = Special['('] = 1;
+    Special['}'] = Special[']'] = Special[')'] = 1;
+    
     LNode *SPHdr = SP->Header;
     while (SPHdr != NULL)
     {
         SeedPat *SP = (SeedPat *)SPHdr->Data;
         Seed *Ss = SP->Ss;
 
-        if (Ss->SeedSDLen < N_num+2)
+        if (Ss->SeedSDLen-2 <= N_num*2)
         {
             SPHdr = SPHdr->Nxt;
             continue;
@@ -495,7 +530,8 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
         for (DWORD Pos = 0; Pos < Ss->SeedSDLen; Pos++)
         {
             BYTE Val = SD [Pos];
-            if (SP->CharPattern[Val] == CHAR_CRUCIAL)
+            //DEBUG ("\t %c (%x) -> %u\n", Val, Val, SP->CharPattern[Val]);
+            if (Special[Val])
             {
                 continue;
             }
@@ -509,7 +545,6 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
             assert (NG != NULL);
             
             NG->N_num = N_num;
-            NG->Count = 1;
             memcpy (NG->Gram, SD+Pos, N_num);
             NG->Gram [N_num] = 0;
             ListInsert(NgramL, NG);
@@ -539,38 +574,45 @@ static inline BOOL N_gramCmp (N_gram *NG1, N_gram *NG2)
 
 static inline VOID N_gramStat (List* NgramL, List *NgStat, DWORD N_num)
 {
-    DEBUG ("N_grams[%u]: ", N_num);
+    DWORD RepeatNum = 0;
+    N_gram *PreNG = NULL; 
     LNode *NGhdr = NgramL->Header;
     while (NGhdr != NULL)
     {
         N_gram *NG = (N_gram *)NGhdr->Data;
-
-        N_gram *CatchNG = ListSearch(NgStat, (CompData)N_gramCmp, NG);
-        if (CatchNG == NULL)
+        if (PreNG == NULL)
         {
-            ListInsert(NgStat, NG);
+            PreNG = NG;
         }
         else
         {
-            CatchNG->Count++;
+            if (N_gramCmp (PreNG, NG) == TRUE)
+            {
+                RepeatNum++;
+            }
         }
-
-        #ifdef __DEBUG__
-        printf ("%s ", NG->Gram);
-        #endif
                 
         NGhdr = NGhdr->Nxt;
     }
-    #ifdef __DEBUG__
-    printf ("\r\n");
-    #endif
+
+    if (RepeatNum >= NgramL->NodeNum-1)
+    {
+        N_gram *NG = (N_gram*) malloc (sizeof (N_gram));
+        assert (NG != NULL);
+        memcpy (NG, NgramL->Header->Data, sizeof (N_gram));
+ 
+        ListInsert(NgStat, NG);
+    }
 
     return;
 }
 
 
-static inline VOID CalStruPat (List *SP)
-{  
+static inline VOID CalStruPat (List *SPList, List *PbPat)
+{ 
+    /* reduce the standardlized seed ctx */
+    ReduceSeedCtx (SPList);
+    
     for (DWORD N_num = 2; N_num < MAX_PAT_LENGTH; N_num++)
     {
         List NgramL;
@@ -578,69 +620,41 @@ static inline VOID CalStruPat (List *SP)
         NgramL.NodeNum = 0;
         
         DWORD TotalLen = N_gramPat (&g_SeedPats, &NgramL, N_num);
-        if (NgramL.NodeNum < SP->NodeNum)
+        if (NgramL.NodeNum < SPList->NodeNum)
         {
             ListDel(&NgramL, (DelData)free);
             continue;
         }
 
-        List NgStat;
-        NgStat.Header  = NgStat.Tail = NULL;
-        NgStat.NodeNum = 0;
-        N_gramStat (&NgramL, &NgStat, N_num);
-
-        LNode *NGhdr = NgStat.Header;
-        while (NGhdr != NULL)
-        {
-            N_gram *NG = (N_gram *)NGhdr->Data;
-            if (NG->Count < SP->NodeNum)
-            {
-                NGhdr = NGhdr->Nxt;
-                continue;
-            }
-            
-            DEBUG ("[N-%u][Count-%u]%s\r\n", NG->N_num, NG->Count, NG->Gram);
-
-            NGhdr = NGhdr->Nxt;
-        }
-
+        N_gramStat (&NgramL, PbPat, N_num);
 
         ListDel(&NgramL, (DelData)free);
-        ListDel(&NgStat, NULL);
+    }
+
+    LNode *NGhdr = PbPat->Header;
+    while (NGhdr != NULL)
+    {
+        N_gram *NG = (N_gram *)NGhdr->Data;
+        DEBUG ("@@ POSSIBLE pattern: [N-%u][%s] \r\n", NG->N_num, NG->Gram);
+
+        NGhdr = NGhdr->Nxt;
     }
 
     return;
 }
 
 
-SeedPat* MutatorLearning (BYTE* DriverDir)
+static inline SeedPat* CalRegex (List *SPList)
 {
-    /* pilot fuzzing */
-    RunPilotFuzzing (DriverDir);
-
-    InitAscii ();
-
-    InitSeedPatList (DriverDir);
-    assert (g_SeedPats.NodeNum != 0);
-
-    /* calculate char pattern */
-    CalCharPat (&g_SeedPats);
-
-    /* reduce the standardlized seed ctx */
-    ReduceSeedCtx (&g_SeedPats);
-
-    /* calculate structure pattern */
-    CalStruPat (&g_SeedPats);
-
     /* Gen a general regex */
-    LNode *SPHdr = g_SeedPats.Header;
+    LNode *SPHdr = SPList->Header;
     while (SPHdr != NULL)
     {
         SeedPat *SP  = (SeedPat*)SPHdr->Data;
-
+    
         DWORD SeedLen = SP->Ss->SeedLen;
         BYTE* SeecCtx = SP->Ss->SeedCtx;
-
+    
         DWORD Pos = 0;
         DWORD StruPatLen = 0;
         CharPat *CP = SP->CharList;
@@ -652,28 +666,34 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
                 if (StruPatLen != 0) 
                 {
                     /* for simple implemt, we use .* to match all chars */
-                    SP->StruPattern[StruPatLen++] = '.';
-                    SP->StruPattern[StruPatLen++] = '*';
+                    if (Pos == SeedLen-1)
+                    {
+                        SP->StruPattern[StruPatLen++] = '.';
+                        SP->StruPattern[StruPatLen++] = '*';
+                    }
                 }
                 else
                 {
                     SP->StruPattern[StruPatLen++] = '^';
                 }
 
-                StruPatLen = MetaCharProc (SP->StruPattern, StruPatLen, SeecCtx[Pos]);
+                if (Pos == 0 || Pos == SeedLen-1)
+                {
+                    StruPatLen = MetaCharProc (SP->StruPattern, StruPatLen, SeecCtx[Pos]);
+                }
             }
-
+    
             CP++;
             Pos++;
         }
-
+    
         if (SP->StruPattern[StruPatLen] != '*')
         {
             SP->StruPattern[StruPatLen++] = '$';
         }
-
+    
         DEBUG ("[%s]STP: %s , CHARP: %u \r\n", SP->Ss->SName, SP->StruPattern, GetCharPatNum (SP));
-        
+            
         INT Ret = regcomp(&SP->StRegex, SP->StruPattern, 0);
         if (Ret != 0)
         {
@@ -682,14 +702,40 @@ SeedPat* MutatorLearning (BYTE* DriverDir)
             printf ("Regex [%s] compiled fail -> reason[%d]: %s \r\n", SP->StruPattern, Ret, ErrBuf);
             return NULL;
         }
-        
-        SPHdr = SPHdr->Nxt;
+            
+            SPHdr = SPHdr->Nxt;
     }
-
+    
     SeedPat *SpSelect = PatSelection ();
     assert (SpSelect != NULL);
 
     return SpSelect;
+}
+
+
+SeedPat* MutatorLearning (BYTE* DriverDir)
+{
+    /* pilot fuzzing */
+    //RunPilotFuzzing (DriverDir);
+
+    InitAscii ();
+
+    InitSeedPatList (DriverDir);
+    assert (g_SeedPats.NodeNum != 0);
+
+    /* calculate char pattern */
+    CalCharPat (&g_SeedPats);
+
+    /* calculate regex */
+    SeedPat *SP = CalRegex (&g_SeedPats);
+
+    /* calculate structure pattern */
+    List *PossPat = &SP->PossPat;
+    PossPat->Header  = PossPat->Tail = NULL;
+    PossPat->NodeNum = 0;
+    CalStruPat (&g_SeedPats, PossPat);
+
+    return SP;
 }
 
 

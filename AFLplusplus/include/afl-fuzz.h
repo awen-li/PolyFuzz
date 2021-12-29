@@ -227,14 +227,25 @@ typedef struct patreg_seed {
   struct patreg_seed* next;
 } patreg_seed;
 
+typedef struct strupat
+{
+    u8  pat[20];
+    u32 len;
+}strupat;
+
+#define MAX_STPAT (8)
 typedef struct seed_tmpt
 {
     u8* in_tmpt;
     u8* out_tmpt;
     u32 seed_len;
+    
     u32 char_num;
     u8  char_pattern[256];
     u8  char_set[256];
+
+    strupat spat[MAX_STPAT];
+    u32 spat_num;
 }seed_tmpt;
 
 enum {

@@ -5653,27 +5653,50 @@ u8 patreg_fuzzing(afl_state_t *afl) {
 }
 
 
-static inline void load_test_tmpt(struct queue_entry *q, seed_tmpt *stmpt) {
-    u8 tmpt_name[1024];
-    u32 len = q->len;
+static inline void load_patterns (/*struct queue_entry *q, 
+*/ seed_tmpt *stmpt) {
 
+    /* load only once */
     if (stmpt->char_num == 0) {
         int fd = open("char.pat", O_RDONLY);
         assert (fd > 0);
 
-        ck_read(fd, &stmpt->char_num, sizeof (u32), tmpt_name);
+        ck_read(fd, &stmpt->char_num, sizeof (u32), "char.pat");
         assert (stmpt->char_num != 0);
-        printf ("stmpt->char_num = %u \r\n", stmpt->char_num);
-        ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), tmpt_name);
+        DEBUG_PRINT ("stmpt->char_num = %u \r\n", stmpt->char_num);
+        ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), "char.pat");
 
         u32 j = 0;
         for (u32 i = 0; i < 256; i++) {
-            if (stmpt->char_pattern[i] != CHAR_INVALID) {
+            if (stmpt->char_pattern[i] == CHAR_NORMAL) {
                 stmpt->char_set[j++] = i;
             }
         }
         close (fd);
+
+        fd = open("stru.pat", O_RDONLY);
+        if (fd > 0) {     
+            ck_read(fd, &stmpt->spat_num, sizeof (u32), "stru.pat");
+            assert (stmpt->spat_num != 0 && stmpt->spat_num <= MAX_STPAT);
+
+            DEBUG_PRINT ("stmpt->spat_num = %u \r\n", stmpt->spat_num);
+            u32 j = 0;
+            for (u32 i = 0; i < stmpt->spat_num; i++) {
+                strupat *spat = stmpt->spat + j;
+                ck_read(fd, &spat->len, sizeof (u32), "stru.pat");
+                ck_read(fd, spat->pat, spat->len, "stru.pat");
+                DEBUG_PRINT ("\t[N-%u][%s]\r\n", spat->len, spat->pat);
+            }
+            close (fd);
+        }
+        else {
+            stmpt->spat_num = 0;
+        }
     }
+
+#if 0
+    u8 tmpt_name[1024];
+    u32 len = q->len;
 
     stmpt->seed_len = 0;
     stmpt->in_tmpt = stmpt->out_tmpt = NULL;
@@ -5702,6 +5725,8 @@ static inline void load_test_tmpt(struct queue_entry *q, seed_tmpt *stmpt) {
  
     stmpt->out_tmpt = NULL;  
     close(fd);
+#endif
+
     return;
 }
 
@@ -5721,7 +5746,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     assert (out_buf != NULL);
 
     seed_tmpt *stmpt = &afl->stmpt;
-    load_test_tmpt(afl->queue_cur, stmpt);
+    load_patterns(/*afl->queue_cur, */stmpt);
     
     afl->subseq_tmouts = 0;
     afl->cur_depth = afl->queue_cur->depth;
@@ -5776,23 +5801,17 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     if (unlikely(perf_score <= 0)) { goto abandon_entry; }
 
 
-    /*******************************************
-     * Following patterns: byte mutation       *
-     *******************************************/  
-    afl->stage_name  = "byte-pattern";
-    afl->stage_short = "byte-pattern";
+    /*****************************************************
+     * Following character-patterns: byte mutation       *
+     *****************************************************/  
+    afl->stage_name  = "byte-op";
+    afl->stage_short = "byte-op";
     afl->stage_max   = len;
-    printf ("[%s]stage_max: %u \r\n", afl->stage_name, afl->stage_max);
-    u32 pos, random_byte;
-    u8 valid_byte, orgi_byte;
+    u32 pos=0, random_byte;
+    u8 valid_byte=0, orgi_byte;
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
         pos = afl->stage_cur;
-        if (stmpt->in_tmpt != NULL) {
-            if (stmpt->in_tmpt[pos] == CHAR_CRUCIAL) continue;
-        }
-        else {
-            if (stmpt->char_pattern[in_buf[pos]] == CHAR_CRUCIAL) continue;
-        }
+        if (stmpt->char_pattern[in_buf[pos]] == CHAR_CRUCIAL) continue;
 
         for (u32 times = 0; times < stmpt->char_num; times++) {
             random_byte = times;//rand_below(afl, stmpt->char_num);
@@ -5808,20 +5827,45 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         }
     }
 
-    /*******************************************
-     * Following patterns: increase bytes      *
-     *******************************************/  
-    afl->stage_name  = "increase-pattern";
-    afl->stage_short = "increase-pattern";
+    /*****************************************************
+     * Following character-patterns: increase bytes      *
+     *****************************************************/  
+    afl->stage_name  = "byte-inc";
+    afl->stage_short = "byte-inc";
     afl->stage_max   = len;
-    printf ("[%s]stage_max: %u \r\n", afl->stage_name, afl->stage_max);
+    u8 random_bytes[32];
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
-        if (stmpt->in_tmpt != NULL) {
-            if (stmpt->in_tmpt[pos] == CHAR_CRUCIAL) continue;
+
+        u32 r_offset = rand_below(afl, len);
+        while (stmpt->char_pattern[in_buf[r_offset]] == CHAR_CRUCIAL) {
+            r_offset = rand_below(afl, len);
         }
-        else {
-            if (stmpt->char_pattern[in_buf[pos]] == CHAR_CRUCIAL) continue;
+
+        u32 r_size = rand_below(afl, sizeof (random_bytes));
+        for (u32 i = 0; i < r_size; i++)
+        {
+            random_bytes [i] = in_buf[r_offset];
         }
+        random_bytes[r_size] = 0;
+
+        u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), len + r_size + 1);
+        if (unlikely(!new_buf)) { PFATAL("alloc"); }
+
+        /* insert the random bytes */
+        memmove(new_buf, out_buf, r_offset+1);
+        memmove(new_buf+r_offset+1, random_bytes, r_size);
+        memmove(new_buf+r_offset+1+r_size, out_buf+r_offset+1, len-r_offset-1);
+
+        u32 total_len = len + r_size;
+        new_buf[total_len] = 0;   
+        out_buf = new_buf;
+
+        if (common_fuzz_stuff(afl, out_buf, total_len)) { goto abandon_entry; }
+
+        /* restore out_buf. */
+        out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+        if (unlikely(!out_buf)) { PFATAL("alloc"); }
+        memcpy(out_buf, in_buf, len);
     }
 
 
@@ -6158,7 +6202,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     ret_val = 0;
 /* we are through with this queue entry - for this iteration */
 abandon_entry:
-    free (stmpt->in_tmpt);
+    //free (stmpt->in_tmpt);
     free (stmpt->out_tmpt);
     ++afl->queue_cur->fuzz_level;    
     return ret_val;

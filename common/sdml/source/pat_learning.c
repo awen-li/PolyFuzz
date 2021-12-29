@@ -716,7 +716,7 @@ static inline SeedPat* CalRegex (List *SPList)
 SeedPat* MutatorLearning (BYTE* DriverDir)
 {
     /* pilot fuzzing */
-    //RunPilotFuzzing (DriverDir);
+    RunPilotFuzzing (DriverDir);
 
     InitAscii ();
 

@@ -5754,7 +5754,7 @@ static inline u32 gen_random_item (afl_state_t *afl,
         }
 
         buf[len] = 0;
-        printf ("[%u]%s  -----  buf[%u] = %s \r\n", n, spat->pat, len, buf);
+        //printf ("[%u]%s  -----  buf[%u] = %s \r\n", n, spat->pat, len, buf);
     }
 
     return len;
@@ -5914,7 +5914,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             if (in_buf[pos] == Sb || 
                 stmpt->char_pattern[in_buf[pos]] != CHAR_CRUCIAL) {
                 pt_offset [sn] = pos;
-                printf ("[%u]%s ---> %s --- start at %u \r\n", sn, in_buf, stmpt->spat[sn].pat, pt_offset [sn]);
+                //printf ("[%u]%s ---> %s --- start at %u \r\n", sn, in_buf, stmpt->spat[sn].pat, pt_offset [sn]);
                 break;
             }
         }
@@ -5928,7 +5928,25 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             
             u32 st_off = pt_offset[sn];         
             u32 item_len = gen_random_item (afl, stmpt, spat, item_buf, sizeof (item_buf));
-            sleep (2);
+
+            u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), len + item_len + 1);
+            if (unlikely(!new_buf)) { PFATAL("alloc"); }
+
+            /* insert the random bytes */
+            out_buf [len] = 0;
+            memmove(new_buf, out_buf, st_off);
+            memmove(new_buf+st_off, item_buf, item_len);
+            memmove(new_buf+st_off+item_len, out_buf+st_off, len-st_off);
+
+            u32 total_len = len + item_len;
+            new_buf[total_len] = 0;   
+            out_buf = new_buf;
+
+            //printf ("[st_off:%u]out_buf = %s <---> new_buf = %s \r\n", st_off, out_buf, new_buf);
+            //sleep (2);
+
+            if (common_fuzz_stuff(afl, out_buf, total_len)) { goto abandon_entry; }
+                
             
             /* restore out_buf. */
             out_buf = afl_realloc(AFL_BUF_PARAM(out), len);

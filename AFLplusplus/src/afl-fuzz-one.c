@@ -5765,7 +5765,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     u8 ret_val = 1, doing_det = 0;
     u8 *in_buf, *out_buf;
     u32 len, temp_len;
-    u64 havoc_queued = 0, orig_hit_cnt, new_hit_cnt = 0;
+    u64 path_queued = 0, orig_hit_cnt, new_hit_cnt = 0;
   
     /* Map the test case into memory. */
     in_buf  = queue_testcase_get(afl, afl->queue_cur);
@@ -5837,6 +5837,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_max   = len;
     u32 pos=0, random_byte;
     u8 valid_byte=0, orgi_byte;
+    path_queued = afl->queued_paths;
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
         pos = afl->stage_cur;
         if (stmpt->char_pattern[in_buf[pos]] == CHAR_CRUCIAL) continue;
@@ -5853,6 +5854,11 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             if (common_fuzz_stuff(afl, out_buf, len)) { goto abandon_entry; }
             out_buf[pos] = orgi_byte;            
         }
+
+        if (afl->queued_paths != path_queued) {
+            afl->stage_cur = 0;
+            path_queued = afl->queued_paths;
+        }  
     }
 
     /*****************************************************
@@ -5861,7 +5867,8 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_name  = "byte-inc";
     afl->stage_short = "byte-inc";
     afl->stage_max   = len;
-    u8 random_bytes[32];
+    path_queued = afl->queued_paths;
+    u8 random_bytes[32];   
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
         u32 r_offset = rand_below(afl, len);
@@ -5894,6 +5901,11 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
         if (unlikely(!out_buf)) { PFATAL("alloc"); }
         memcpy(out_buf, in_buf, len);
+
+        if (afl->queued_paths != path_queued) {
+            afl->stage_max *= 2;
+            path_queued = afl->queued_paths;
+        }   
     }
 
     
@@ -5906,6 +5918,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_name  = "stru-inc";
     afl->stage_short = "stru-inc";
     afl->stage_max   = len;
+    path_queued = afl->queued_paths;
     
     u32 pt_offset[MAX_STPAT];
     for (u32 sn = 0; sn < stmpt->spat_num; sn++) {
@@ -5953,6 +5966,11 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             if (unlikely(!out_buf)) { PFATAL("alloc"); }
             memcpy(out_buf, in_buf, len);
         }
+
+        if (afl->queued_paths != path_queued) {
+            afl->stage_max *= 2;
+            path_queued = afl->queued_paths;
+        }  
     }
 
 havoc_stage:
@@ -5974,7 +5992,7 @@ havoc_stage:
 
     temp_len = len;
     orig_hit_cnt = afl->queued_paths + afl->unique_crashes;
-    havoc_queued = afl->queued_paths;
+    path_queued = afl->queued_paths;
 
     /* We essentially just do several thousand runs (depending on perf_score)
        where we take the input file and make random stacked tweaks. */
@@ -6272,13 +6290,13 @@ havoc_stage:
         memcpy(out_buf, in_buf, len);
 
         /* If we're finding new stuff, let's run for a bit longer, limits permitting. */
-        if (afl->queued_paths != havoc_queued) {
+        if (afl->queued_paths != path_queued) {
             if (perf_score <= afl->havoc_max_mult * 100) {
                 afl->stage_max *= 2;
                 perf_score *= 2;
             }
 
-            havoc_queued = afl->queued_paths;
+            path_queued = afl->queued_paths;
         }   
 
     }

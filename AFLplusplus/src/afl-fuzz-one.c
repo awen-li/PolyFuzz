@@ -5679,13 +5679,12 @@ static inline void load_patterns (/*struct queue_entry *q,
             ck_read(fd, &stmpt->spat_num, sizeof (u32), "stru.pat");
             assert (stmpt->spat_num != 0 && stmpt->spat_num <= MAX_STPAT);
 
-            DEBUG_PRINT ("stmpt->spat_num = %u \r\n", stmpt->spat_num);
-            u32 j = 0;
+            printf ("stmpt->spat_num = %u \r\n", stmpt->spat_num);
             for (u32 i = 0; i < stmpt->spat_num; i++) {
-                strupat *spat = stmpt->spat + j;
+                strupat *spat = stmpt->spat + i;
                 ck_read(fd, &spat->len, sizeof (u32), "stru.pat");
                 ck_read(fd, spat->pat, spat->len, "stru.pat");
-                DEBUG_PRINT ("\t[N-%u][%s]\r\n", spat->len, spat->pat);
+                printf ("\t[%u][N-%u][%s]\r\n", i, spat->len, spat->pat);
             }
             close (fd);
         }
@@ -5731,6 +5730,35 @@ static inline void load_patterns (/*struct queue_entry *q,
 }
 
 
+static inline u32 gen_random_item (afl_state_t *afl, 
+                                            seed_tmpt *stmpt, strupat *spat, 
+                                            u8* buf, u32 buf_size)
+{
+    u32 len = 0;
+    u32 r_num  = 1 + rand_below(afl, 4);
+    for (u32 n = 0; n < r_num; n++) {
+        for (u32 i = 0; i < spat->len; i++) {
+            if (spat->pat [i] != 'B') {
+                if (len < buf_size)
+                    buf[len++] = spat->pat [i];
+            }
+            else {
+                /* random generate */
+                u32 r_index = 1 + rand_below(afl, stmpt->char_num);
+                u32 r_len = 1 + rand_below(afl, spat->len*4);
+                for (u32 j = 0; j < r_len; j++) {
+                    if (len < buf_size)
+                        buf[len++] = stmpt->char_set [r_index];
+                }
+            }
+        }
+
+        buf[len] = 0;
+        printf ("[%u]%s  -----  buf[%u] = %s \r\n", n, spat->pat, len, buf);
+    }
+
+    return len;
+}
 
 /* pattern aware fuzzing  */
 u8 patawa_fuzzing(afl_state_t *afl) {
@@ -5829,7 +5857,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
     /*****************************************************
      * Following character-patterns: increase bytes      *
-     *****************************************************/  
+     *****************************************************/ 
     afl->stage_name  = "byte-inc";
     afl->stage_short = "byte-inc";
     afl->stage_max   = len;
@@ -5841,7 +5869,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             r_offset = rand_below(afl, len);
         }
 
-        u32 r_size = rand_below(afl, sizeof (random_bytes));
+        u32 r_size = 1 + rand_below(afl, sizeof (random_bytes));
         for (u32 i = 0; i < r_size; i++)
         {
             random_bytes [i] = in_buf[r_offset];
@@ -5868,6 +5896,48 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         memcpy(out_buf, in_buf, len);
     }
 
+    
+    /*****************************************************
+     * Following stru-patterns: increase item E.G.,"B":B,*
+     *****************************************************/
+    if (stmpt->spat_num == 0) 
+        goto havoc_stage;
+    
+    afl->stage_name  = "stru-inc";
+    afl->stage_short = "stru-inc";
+    afl->stage_max   = len;
+    
+    u32 pt_offset[MAX_STPAT];
+    for (u32 sn = 0; sn < stmpt->spat_num; sn++) {
+        u8 Sb = stmpt->spat[sn].pat[0];
+        for (u32 pos = 0; pos < len; pos++) {
+            if (in_buf[pos] == Sb || 
+                stmpt->char_pattern[in_buf[pos]] != CHAR_CRUCIAL) {
+                pt_offset [sn] = pos;
+                printf ("[%u]%s ---> %s --- start at %u \r\n", sn, in_buf, stmpt->spat[sn].pat, pt_offset [sn]);
+                break;
+            }
+        }
+    }
+
+    u8 item_buf [256];
+    for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+
+        for (u32 sn = 0; sn < stmpt->spat_num; sn++) {
+            strupat *spat = stmpt->spat + sn;
+            
+            u32 st_off = pt_offset[sn];         
+            u32 item_len = gen_random_item (afl, stmpt, spat, item_buf, sizeof (item_buf));
+            sleep (2);
+            
+            /* restore out_buf. */
+            out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+            if (unlikely(!out_buf)) { PFATAL("alloc"); }
+            memcpy(out_buf, in_buf, len);
+        }
+    }
+
+havoc_stage:
 
     /*******************************************
      * Random mutate: havoc                    *

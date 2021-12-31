@@ -177,6 +177,7 @@ public:
     }
 
     inline Instruction* GetBBFirstInst (BasicBlock *BB) {
+        return NULL;
         auto It = BB2FirstInst.find (BB);
         if (It == BB2FirstInst.end ()) {
             return NULL;
@@ -186,7 +187,7 @@ public:
     }
 
     inline void CollectDus () {
-    
+        return;
         for (auto &BB : *CurFunc) 
         {    
             for (auto &IN : BB) 
@@ -857,7 +858,7 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     const PostDominatorTree *PDT = PDTCallback(F);
     bool              IsLeafFunc = true;
 
-    errs ()<<"=========================== "<<F.getName ()<<"=========================== \r\n";
+    //errs ()<<"=========================== "<<F.getName ()<<"=========================== \r\n";
     for (auto &BB : F) {
 
         if (shouldInstrumentBlock(F, &BB, DT, PDT, Options)) {

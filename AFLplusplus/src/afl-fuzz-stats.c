@@ -1159,11 +1159,8 @@ void show_stats(afl_state_t *afl) {
   /* Last line */
   SAYF(SET_G1 "\n" bSTG bLB bH30 bH20 bH2 bRB bSTOP cRST RESET_G1);
 
-  u8 *Cl = "false";
-    if (afl->fsrv.trace_bits[0] == 99) {
-        Cl = "true";
-    }
-    SAYF(cGRA "   [Cross-Language:%s" cGRA "]\r" cRST, Cl);
+
+    SAYF(cGRA "   [Cross-Language:%u" cGRA "]\r" cRST, (u32)afl->fsrv.trace_bits[0]);
 
 #undef IB
 

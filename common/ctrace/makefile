@@ -2,7 +2,7 @@
 
 TARGET = libxFuzztrace.so
 
-CC = clang
+CC = gcc
 LD = $(CC)
 
 AFLPP = ../../AFLplusplus

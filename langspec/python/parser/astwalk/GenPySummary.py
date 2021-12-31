@@ -73,7 +73,9 @@ def GenPySummary (PyDir, ExpList=None):
                     
                     FuncNode = _AddChildNode (doc, FileNode, "function")
                     FuncNode.setAttribute ("class", Def.Cls)
-                    FuncNode.setAttribute ("name",  FuncName)
+                    FuncNode.setAttribute ("name",  Def.Name)
+                    FuncNode.setAttribute ("sline", str(Def.Sline))
+                    FuncNode.setAttribute ("eline", str(Def.Eline))
                     FuncNode.setAttribute ("brval", " ".join(BrVals))
                     FuncNode.setAttribute ("bbs", " ".join(Def.BBNo))
 

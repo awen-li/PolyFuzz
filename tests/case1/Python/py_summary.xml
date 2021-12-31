@@ -1,10 +1,11 @@
 <?xml version="1.0" ?>
 <py_summary branchs="20">
-  <file id="1" name="DemoAdd.py">
-    <function bbs="8 10 13" brval="addvar" class="DemoAdd" name="_add_"/>
-    <function bbs="15 16 19 20 22" brval="b" class="DemoAdd" name="Add"/>
+  <file name="DemoAdd.py" id="1">
+    <function class="DemoAdd" name="_add_" sline="8" eline="13" brval="addvar" bbs="8 10 13"/>
+    <function class="DemoAdd" name="Add" sline="15" eline="22" brval="b" bbs="15 16 19 20 22"/>
   </file>
-  <file id="2" name="Demo.py">
-    <function bbs="10 13" brval="" class="" name="DemoTr"/>
+  <file name="Demo.py" id="2">
+    <function class="" name="DemoTr" sline="10" eline="15" brval="" bbs="10 13"/>
+    
   </file>
 </py_summary>

@@ -4,7 +4,7 @@ import os
 from distutils.core import setup, Extension
 
 os.environ["CC"]  = "afl-cc"
-os.environ["CXX"] = "afl-cc++"
+os.environ["CXX"] = "afl-c++"
 
 module1 = Extension('PyDemo',
                     define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')],

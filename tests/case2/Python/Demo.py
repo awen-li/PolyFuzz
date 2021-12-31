@@ -3,7 +3,7 @@ import sys
 import pyprob
 from PyDemo import *
 
-pyprob.Setup('py_summary.xml')
+pyprob.Setup('py_summary.xml', 'Demo.py')
 
 class Demo ():
     def __init__ (self, value):

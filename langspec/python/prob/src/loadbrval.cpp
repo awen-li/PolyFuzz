@@ -61,6 +61,12 @@ void BV_set::LoadBrVals(string BrValXml)
         {
             const char *FuncName = mxmlElementGetAttr(Function, "name");
             assert (FuncName != NULL);
+
+            const char *SLine = mxmlElementGetAttr(Function, "sline");
+            assert (SLine != NULL);
+
+            const char *ELine = mxmlElementGetAttr(Function, "eline");
+            assert (ELine != NULL);
             
             const char *ValList  = mxmlElementGetAttr(Function, "brval");
             assert (ValList != NULL);
@@ -68,7 +74,7 @@ void BV_set::LoadBrVals(string BrValXml)
             const char *BBList   = mxmlElementGetAttr(Function, "bbs");
             assert (BBList != NULL);
 
-            BV_function *BVfunc = BVfile->Insert(FuncName, FuncNo+1);
+            BV_function *BVfunc = BVfile->Insert(FuncName, FuncNo+1, (unsigned)atoi (SLine), (unsigned)atoi (ELine));
             assert (BVfunc != NULL);
 
             /* branch variables */
@@ -107,8 +113,9 @@ void BV_set::LoadBrVals(string BrValXml)
 }
 
 
-int BV_set::GetFIdx (string File, string Func)
+int BV_set::GetFIdx (string File, string Func, unsigned LineNo)
 {
+    PY_PRINT ("GetFIdx -> %s -> %s -> %u \r\n", File.c_str(), Func.c_str(), LineNo);
     if (m_BVFileCatch != NULL && m_BVFileCatch->m_FileName == File)
     {
         BV_function *BVFuncCatch = m_BVFileCatch->m_BVFuncCatch;
@@ -118,7 +125,7 @@ int BV_set::GetFIdx (string File, string Func)
         }
         else
         {
-            BVFuncCatch = m_BVFileCatch->Get(Func);
+            BVFuncCatch = m_BVFileCatch->Get(Func, LineNo);
             m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
             if (BVFuncCatch != NULL)
             {
@@ -138,7 +145,7 @@ int BV_set::GetFIdx (string File, string Func)
             return 0;
         }
 
-        BV_function *BVFuncCatch = m_BVFileCatch->Get(Func);
+        BV_function *BVFuncCatch = m_BVFileCatch->Get(Func, LineNo);
         m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
         if (BVFuncCatch != NULL)
         {

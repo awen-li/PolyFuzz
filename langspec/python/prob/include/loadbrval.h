@@ -16,13 +16,21 @@ using namespace std;
 struct BV_function
 {
     unsigned m_Idx;
+
+    unsigned m_SLine;
+    unsigned m_ELine;
+    
     string m_FuncName;
     set<string> m_BrVals;
     vector<int> m_BBs;
 
-    BV_function (string FuncName, unsigned Idx)
+    BV_function (string FuncName, unsigned Idx, unsigned SLine, unsigned ELine)
     {
         m_Idx = Idx;
+
+        m_SLine = SLine;
+        m_ELine = ELine;
+        
         m_FuncName = FuncName;
         m_BrVals.clear ();
         m_BBs.clear ();
@@ -63,6 +71,7 @@ struct BV_file
     string m_FileName;
     BV_function *m_BVFuncCatch;
     unordered_map <string, BV_function*> m_Fname2BVfunc;
+    unordered_map <unsigned, unsigned> m_Line2FSLine;
 
     
     BV_file (string FileName)
@@ -82,18 +91,34 @@ struct BV_file
         }
     }
     
-    inline BV_function* Insert (string FuncName, unsigned Idx)
+    inline BV_function* Insert (string FuncName, unsigned Idx, unsigned SLine, unsigned ELine)
     {
-        BV_function *Bvf = new BV_function (FuncName, Idx);
+        BV_function *Bvf = new BV_function (FuncName, Idx, SLine, ELine);
         assert (Bvf != NULL);
 
-        m_Fname2BVfunc [FuncName] = Bvf;
+        string Key = FuncName + to_string (SLine);
+        m_Fname2BVfunc [Key] = Bvf;
+
+        unsigned S = SLine;
+        while (S <= ELine)
+        {
+            m_Line2FSLine [S] = SLine;
+            S++;
+        }
+        
         return Bvf;
     }
 
-    inline BV_function* Get (string FuncName)
+    inline BV_function* Get (string FuncName, unsigned CurLine)
     {
-        auto It = m_Fname2BVfunc.find (FuncName);
+        auto Lit = m_Line2FSLine.find (CurLine);
+        if (Lit == m_Line2FSLine.end())
+        {
+            return NULL;
+        }
+
+        string Key = FuncName + to_string (Lit->second);
+        auto It = m_Fname2BVfunc.find (Key);
         if (It == m_Fname2BVfunc.end ())
         {
             return NULL;
@@ -167,7 +192,7 @@ struct BV_set
     }
 
     void LoadBrVals(string BrValXml);
-    int GetFIdx (string File, string Func);
+    int GetFIdx (string File, string Func, unsigned LineNo);
 };
 
 

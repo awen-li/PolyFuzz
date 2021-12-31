@@ -9,6 +9,8 @@ class FuncDef ():
     def __init__(self, Cls, FName, Fid, SNo):
         self.Cls   = Cls
         self.Id    = Fid
+        self.Sline = 0
+        self.Eline = 0
         self.Name  = FName
         self.BrVal = []
 
@@ -36,6 +38,7 @@ class AstPySum(NodeVisitor):
         self.FId = 1
         self.IfTest  = False
         self.CurFunc = None
+        self.CurLine = 0
         self.BranchNum = 0
 
     def InsertBB (self, BB):
@@ -50,6 +53,8 @@ class AstPySum(NodeVisitor):
             return
         method = 'visit_' + node.__class__.__name__.lower()
         visitor = getattr(self, method, self.generic_visit)
+        if self.CurFunc != None and hasattr (node, 'lineno'):
+            self.CurLine = node.lineno
         return visitor(node)
 
     def _IsBuiltin (self, FuncName):
@@ -73,26 +78,33 @@ class AstPySum(NodeVisitor):
             return FuncDef (ClfName, Stmt.name, Fid, Stmt.lineno)
 
     def visit_name (self, node):
-        if self.IfTest == True and self.CurFunc != None:
-            FDef = self.FuncDef.get (self.CurFunc.Name)
-            FDef.AddBrVal (node.id)
+        if self.IfTest == True and self.CurFunc != None: 
+            self.CurFunc.AddBrVal (node.id)
             print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id)
         return node.id
 
+    
     def visit_functiondef(self, node, ClfName=None):
         if self._IsBuiltin (node.name) == True:
             return
 
-        print ("#visit %s : %d"  %(node.name, node.lineno))
+        print ("##### visit-start %s : %d"  %(node.name, node.lineno))
         Def = self._GetFuncDef (node, ClfName)
-        self.FuncDef [Def.Name] = Def
+        Def.Sline = node.lineno
+
+        Key = Def.Name + str (Def.Sline)
+        self.FuncDef [Key] = Def
 
         self.CurFunc = Def
         Body = node.body
         for Stmt in Body:
             self.visit (Stmt)
-        
+            LS = Stmt
+
+        print ("##### visit-end %s : %d \n"  %(node.name, self.CurLine))
+        Def.Eline = self.CurLine
         self.CurFunc = None
+        self.CurLine = 0
         return
 
     def visit_classdef(self, node):

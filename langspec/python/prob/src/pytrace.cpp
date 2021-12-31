@@ -393,7 +393,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
 
     //PY_PRINT ("@@@ %s : %s: %d\r\n", FileName.c_str(), FuncName, frame->f_lineno);
     
-    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName);
+    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName, frame->f_lineno);
     if (FIdx == 0)
     {
         return 0;

@@ -36,7 +36,7 @@ Add following code on the top of setup.py in targets
 ```
 import os
 os.environ["CC"]  = "afl-cc"
-os.environ["CXX"] = "afl-cc++"
+os.environ["CXX"] = "afl-c++"
 ```
 
 ### Parse python code summary

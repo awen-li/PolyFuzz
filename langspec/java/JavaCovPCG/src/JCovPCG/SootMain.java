@@ -11,6 +11,11 @@ import soot.Transform;
 import soot.Transformer;
 
 public class SootMain {
+	
+	SootMain (String strDeps, String targetPath)
+	{
+		initSoot (strDeps, targetPath);
+	}
 
 	private void initSoot (String strClassPath, String strCheckPath)
 	{
@@ -33,9 +38,9 @@ public class SootMain {
 		System.out.println ("soot class path: " + Scene.v().getSootClassPath());	
 	}
 	
-	private void runSoot (Object oTransObj, String strPhaseName)
+	public void runSoot ()
 	{
-		PackManager.v().getPack("jtp").add(new Transform(strPhaseName, (Transformer) oTransObj));
+		PackManager.v().getPack("jtp").add(new Transform("jtp.InstmPCG", (Transformer) new CovPCG ()));
 		
 		System.out.println ("start load class...");
 		

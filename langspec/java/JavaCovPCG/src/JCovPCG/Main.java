@@ -85,6 +85,11 @@ private
 
 		String strDeps = M.loadDependecs(Cmd.getOptionValue("dependences"));
 		String targetPath  = M.loadDependecs(Cmd.getOptionValue("target"));
+		if (targetPath.isEmpty())
+		{
+			System.out.println ("Please input the target to be instrumented...!");
+        	System.exit(1);			
+		}
 		
 		SootMain SM = new SootMain (strDeps, targetPath);
 		SM.runSoot ();

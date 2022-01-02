@@ -12,7 +12,8 @@ extern "C" {
  * Method:    JvTrace
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace (JNIEnv *env, jobject jobj, jint guard);
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     JCovPCG_DynTrace

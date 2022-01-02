@@ -16,6 +16,7 @@ public class Main {
 
 private
 	static Options Ops = new Options ();
+	static int BlockID = 1;
 
     Main ()
     {
@@ -25,7 +26,7 @@ private
 	private void initOptions ()
 	{
 	    Option op = new Option ("d", "dependences", true, "the target's dependence list");
-	    op.setRequired(true);
+	    op.setRequired(false);
 	    Ops.addOption(op);
 	    
 	    op = new Option ("t", "target", true, "the target's dir");
@@ -55,10 +56,17 @@ private
 	
 	public String loadDependecs (String fileName)
 	{
-		String DepStrs = "";
+		String DepStrs = DynTrace.class.getResource("/").getPath();
 		
 		try
 		{
+			if (fileName == null)
+			{
+				return DepStrs;
+			}
+			
+			System.out.println ("loadDependecs -> fileName = " + fileName);
+			
 			File FD = new File (fileName);
 			InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
 			BufferedReader BR    = new BufferedReader (RD);
@@ -84,14 +92,16 @@ private
 		CommandLine Cmd = M.getCmd (args);
 
 		String strDeps = M.loadDependecs(Cmd.getOptionValue("dependences"));
-		String targetPath  = M.loadDependecs(Cmd.getOptionValue("target"));
+		String targetPath  = Cmd.getOptionValue("target");
 		if (targetPath.isEmpty())
 		{
 			System.out.println ("Please input the target to be instrumented...!");
         	System.exit(1);			
 		}
+	
+		System.out.println ("targetPath = " + targetPath);
 		
-		SootMain SM = new SootMain (strDeps, targetPath);
+		SootMain SM = new SootMain (strDeps, targetPath, 1000);
 		SM.runSoot ();
 	}
 

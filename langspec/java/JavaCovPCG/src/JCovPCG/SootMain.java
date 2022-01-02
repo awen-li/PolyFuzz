@@ -12,24 +12,27 @@ import soot.Transformer;
 
 public class SootMain {
 	
-	SootMain (String strDeps, String targetPath)
+	private int StartBlockID = 0;
+	
+	SootMain (String strDeps, String targetPath, int StartBID)
 	{
 		initSoot (strDeps, targetPath);
+		StartBlockID = StartBID;
 	}
 
-	private void initSoot (String strClassPath, String strCheckPath)
+	private void initSoot (String strDeps, String targetPath)
 	{
 		List<String> lstCheckPath = new ArrayList<String>();
 		
-		lstCheckPath.add(strCheckPath);	
+		lstCheckPath.add(targetPath);	
 		Options.v().set_process_dir(lstCheckPath);	
 		//Options.v().set_whole_program(true);
 		//Options.v().set_prepend_classpath(true);
 		//Options.v().set_no_bodies_for_excluded(true);
 		
-		if (!strClassPath.isEmpty())
+		if (strDeps != null && !strDeps.isEmpty())
 		{	
-			Options.v().set_soot_classpath(Scene.v().defaultClassPath() + ";" + strClassPath);
+			Options.v().set_soot_classpath(Scene.v().defaultClassPath() + ";" + strDeps);
 		}
 		
 		Options.v().set_output_format(Options.output_format_class);
@@ -40,9 +43,9 @@ public class SootMain {
 	
 	public void runSoot ()
 	{
-		PackManager.v().getPack("jtp").add(new Transform("jtp.InstmPCG", (Transformer) new CovPCG ()));
+		PackManager.v().getPack("jtp").add(new Transform("jtp.InstmPCG", (Transformer) new CovPCG (StartBlockID)));
 		
-		System.out.println ("start load class...");
+		System.out.println ("runSoot start...");
 		
 		Scene.v().loadNecessaryClasses();
 		
@@ -54,6 +57,7 @@ public class SootMain {
 		/* write jimple */
 		PackManager.v().writeOutput();
 		
+		System.out.println ("runSoot done...");
 		return;
 	}
 }

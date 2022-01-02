@@ -1,8 +1,8 @@
 
 
-#include "BlockCFG.h"
-#include "DomTree.h"
-#include "PDomTree.h"
+#include "pcgHandle.h"
+
+static PCGHandle *pcgHdl = NULL;
 
 
 #ifdef __cplusplus
@@ -10,18 +10,44 @@ extern "C"{
 #endif 
 #include "MacroDef.h"
 
-
-
-unsigned pcgCFGAlloct (unsigned NodeNum)
+void pcgCFGDel ()
 {
-    return 0;
+    delete pcgHdl;
+    pcgHdl = NULL;
 }
 
 
-unsigned pcgCFGEdge (unsigned SNode, unsigned ENode)
+void pcgCFGAlloct (unsigned EntryId)
 {
-    return 0;
+    if (pcgHdl != NULL)
+    {
+        pcgCFGDel ();
+    }
+    
+    pcgHdl = new PCGHandle (EntryId);
+    
+    return;
 }
+
+
+void pcgCFGEdge (unsigned SNode, unsigned ENode)
+{
+    CFGGraph *Cfg = pcgHdl->m_BlockCFG;
+    Cfg->InsertEdge(SNode, ENode);
+    return;
+}
+
+void pcgBuild ()
+{
+    CFGViz GV ("BlockCFG", pcgHdl->m_BlockCFG);
+    GV.WiteGraph ();
+    
+    /* construct DOMT */
+
+    /* construct PDOMT */
+    return;
+}
+
 
 
 unsigned pcgIsDominated (unsigned SNode, unsigned ENode)

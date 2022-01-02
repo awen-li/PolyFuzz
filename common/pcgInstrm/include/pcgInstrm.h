@@ -5,8 +5,10 @@
 extern "C"{
 #endif
 
-unsigned pcgCFGAlloct (unsigned NodeNum);
-unsigned pcgCFGEdge (unsigned SNode, unsigned ENode);
+void pcgCFGAlloct (unsigned NodeNum);
+void pcgCFGEdge (unsigned SNode, unsigned ENode);
+void pcgBuild ();
+
 
 unsigned pcgIsDominated (unsigned SNode, unsigned ENode);
 unsigned pcgIsPostDominated (unsigned SNode, unsigned ENode);

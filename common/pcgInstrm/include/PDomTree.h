@@ -1,6 +1,6 @@
 
-#ifndef _GENERICGRAPH_H_
-#define _GENERICGRAPH_H_
+#ifndef _PDOMTREEH_
+#define _PDOMTREEH_
 #include "GenericGraph.h"
 
 class PDomNode;
@@ -12,7 +12,7 @@ public:
     {
     }
 
-    virtual PDomEdge() 
+    virtual ~PDomEdge() 
     {
     }
 

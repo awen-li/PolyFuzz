@@ -10,8 +10,8 @@ INCLUDE_PATH = include
 OBJ_PATH     = obj
 INSTALL_HEADER = /usr/include/pcgInstrm
 
-CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH) 
-LD_CFLAGS  = -fPIC -shared
+CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -D__DEBUG__ 
+LD_CFLAGS  = -fPIC -shared -lstdc++ 
 
 SOURCE_FILES  = $(wildcard $(SOURCE_PATH)/*.cpp)
 OBJ_FILES     = $(addprefix $(OBJ_PATH)/, $(addsuffix .o,$(notdir $(basename $(SOURCE_FILES)))))

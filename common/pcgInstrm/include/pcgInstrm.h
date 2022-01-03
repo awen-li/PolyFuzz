@@ -5,13 +5,14 @@
 extern "C"{
 #endif
 
-void pcgCFGAlloct (unsigned NodeNum);
+void pcgCFGAlloct (unsigned EntryId);
 void pcgCFGEdge (unsigned SNode, unsigned ENode);
 void pcgBuild ();
 
+bool pcgNeedInstrumented (unsigned Node);
 
-unsigned pcgIsDominated (unsigned SNode, unsigned ENode);
-unsigned pcgIsPostDominated (unsigned SNode, unsigned ENode);
+bool pcgIsDominated (unsigned SNode, unsigned ENode);
+bool pcgIsPostDominated (unsigned SNode, unsigned ENode);
 
 
 #ifdef __cplusplus

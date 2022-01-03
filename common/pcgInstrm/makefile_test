@@ -11,7 +11,7 @@ OBJ_PATH     = obj
 INSTALL_HEADER = /usr/include/pcgInstrm
 
 CFLAGS     = -g -I$(INCLUDE_PATH) 
-LD_CFLAGS  = -lstdc++ -lpcgInstrm
+LD_CFLAGS  = -lpcgInstrm
 
 SOURCE_FILES  = $(wildcard $(SOURCE_PATH)/*.c)
 OBJ_FILES     = $(addprefix $(OBJ_PATH)/, $(addsuffix .o,$(notdir $(basename $(SOURCE_FILES)))))

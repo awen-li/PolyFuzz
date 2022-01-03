@@ -42,6 +42,14 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
 }
 
 
+static inline void DumpInteralLoc (int IntLoc)
+{
+    FILE *F = fopen ("INTERAL_LOC", "w");
+    assert (F != NULL);
+    fprintf (F, "%u", IntLoc);
+    fclose (F);
+}
+
 int DynTraceInit (unsigned BBs)
 {
     /* set external language BBs */
@@ -52,7 +60,10 @@ int DynTraceInit (unsigned BBs)
 
     afl_area_ptr = __afl_get_area_ptr ();
 
-    return __afl_get_interal_loc ();
+    int IntLoc =  __afl_get_interal_loc ();
+    DumpInteralLoc (IntLoc);
+    
+    return IntLoc;
 }
 
 void DynTraceExit ()

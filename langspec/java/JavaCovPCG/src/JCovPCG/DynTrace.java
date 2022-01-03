@@ -8,7 +8,7 @@ public class DynTrace {
 //	
 //	static
 //	{
-//        System.loadLibrary("libJvTrace");
+//        System.loadLibrary("libJvTrace.so");
 //  }
 
 	public static void JvTrace(int TrcKey)

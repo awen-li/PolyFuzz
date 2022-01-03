@@ -15,7 +15,7 @@ CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH) -I$(CTRACER)/ -I$(JAVA)/include/linux -
 #CFLAGS    = -fPIC -g -I$(INCLUDE_PATH)
 LD_CFLAGS  = -fPIC -shared -lpthread -lxFuzztrace
 
-SOURCE_FILES  = $(wildcard $(SOURCE_PATH)/*.c) 
+SOURCE_FILES  = $(SOURCE_PATH)/JCovPCG_DynTrace.c
 OBJ_FILES     = $(addprefix $(OBJ_PATH)/, $(addsuffix .o,$(notdir $(basename $(SOURCE_FILES)))))
 
 .PHONY:all clean

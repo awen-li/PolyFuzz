@@ -33,6 +33,14 @@ private
 	    op.setRequired(true);
 	    Ops.addOption(op);
 	    
+	    op = new Option ("j", "jimple", false, "generate jimples");
+	    op.setRequired(false);
+	    Ops.addOption(op);
+	    
+	    op = new Option ("b", "blockid", true, "initial blockid");
+	    op.setRequired(false);
+	    Ops.addOption(op);
+	    
 	    return;
 	}
     
@@ -54,35 +62,66 @@ private
 		return Cmd;
 	}
 	
-	public String loadDependecs (String fileName)
+	public String readFile (String fileName, boolean isMultiple)
 	{
-		String DepStrs = DynTrace.class.getResource("/").getPath();
-		
+		String results = "";
 		try
 		{
 			if (fileName == null)
 			{
-				return DepStrs;
+				return results;
 			}
 			
 			System.out.println ("loadDependecs -> fileName = " + fileName);
-			
+		
 			File FD = new File (fileName);
 			InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
 			BufferedReader BR    = new BufferedReader (RD);
 			
-			String line = "";
-			while ((line = BR.readLine()) != null)
+			if (isMultiple == true)
+			{			
+				String line = "";
+				while ((line = BR.readLine()) != null)
+				{
+					results += line + ";";
+				}
+			}
+			else
 			{
-				DepStrs += line + ";";
+				results = BR.readLine();		
 			}
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			return null;
 		}
 		
+		return results;
+	}
+	
+	public String loadDependecs (String fileName)
+	{
+		String DepStrs = DynTrace.class.getResource("/").getPath();
+			
+		DepStrs += readFile (fileName, true); 		
 		return DepStrs;	
+	}
+	
+	public int initBlockId (String strBlockId)
+	{
+		int BlockId = 16383;
+		if (strBlockId != null && !strBlockId.isEmpty())
+		{
+			BlockId = Integer.parseInt(strBlockId);
+		}
+		
+		String extId = readFile ("INTERAL_LOC", false);
+		if (extId != null && !extId.isEmpty())
+		{
+			BlockId = Integer.parseInt(extId);
+		}
+		
+		return BlockId;
 	}
 	
 	
@@ -90,10 +129,13 @@ private
 	{	
 		Main M = new Main ();
 		CommandLine Cmd = M.getCmd (args);
-
-		String strDeps = M.loadDependecs(Cmd.getOptionValue("dependences"));
-		String targetPath  = Cmd.getOptionValue("target");
-		if (targetPath.isEmpty())
+		
+		String strPrintJimple = Cmd.getOptionValue("jimple");
+		String strBlockId     = Cmd.getOptionValue("blockid");
+		String strDeps        = M.loadDependecs(Cmd.getOptionValue("dependences"));
+		String targetPath     = Cmd.getOptionValue("target");
+		
+		if (targetPath == null || targetPath.isEmpty())
 		{
 			System.out.println ("Please input the target to be instrumented...!");
         	System.exit(1);			
@@ -101,7 +143,15 @@ private
 	
 		System.out.println ("targetPath = " + targetPath);
 		
-		SootMain SM = new SootMain (strDeps, targetPath, 1000);
+		int BlockId = M.initBlockId (strBlockId);
+		
+		int PrintJimple = 0;
+		if (Cmd.hasOption("j"))
+		{
+			PrintJimple = 1;
+		}
+			
+		SootMain SM = new SootMain (strDeps, targetPath, BlockId, PrintJimple);
 		SM.runSoot ();
 	}
 

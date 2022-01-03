@@ -13,11 +13,14 @@ import soot.Transformer;
 public class SootMain {
 	
 	private int StartBlockID = 0;
+	private int printJimple = 0;
 	
-	SootMain (String strDeps, String targetPath, int StartBID)
+	SootMain (String strDeps, String targetPath, int StartBID, int printJimple)
 	{
-		initSoot (strDeps, targetPath);
 		StartBlockID = StartBID;
+		this.printJimple  = printJimple;
+		
+		initSoot (strDeps, targetPath);	
 	}
 
 	private void initSoot (String strDeps, String targetPath)
@@ -36,7 +39,11 @@ public class SootMain {
 		}
 		
 		Options.v().set_output_format(Options.output_format_class);
-		//Options.v().set_output_format(Options.output_format_jimple);
+		
+		if (printJimple != 0)
+		{
+		    Options.v().set_output_format(Options.output_format_jimple);
+		}
 		
 		System.out.println ("soot class path: " + Scene.v().getSootClassPath());	
 	}

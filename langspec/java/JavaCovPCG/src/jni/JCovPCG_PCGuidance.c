@@ -40,6 +40,17 @@ JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgBuild (JNIEnv *env, jclass jc)
 
 /*
  * Class:     JCovPCG_PCGuidance
+ * Method:    pcgNeedInstrumented
+ * Signature: (I)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented (JNIEnv *env, jclass jc, jint Id)
+{
+    return pcgNeedInstrumented (Id);
+}
+
+
+/*
+ * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsDominated
  * Signature: (II)Z
  */

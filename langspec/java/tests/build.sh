@@ -22,12 +22,12 @@ function deplibs ()
   
 function compile()
 {
-	TARGET=$1
-	if [ ! -n "$TARGET" ]; then
-		echo "Target needs be specificed for compilation!"
-		exit 0
-	fi
-
+    TARGET=$1
+    if [ ! -n "$TARGET" ]; then
+        echo "Target needs be specificed for compilation!"
+        exit 0
+    fi
+	
     JAVA_SOURCE=$Root/$TARGET/src
     JAVA_LIB=$Root/$TARGET/lib
     JAVA_CLASS=$Root/$TARGET/bin
@@ -42,13 +42,20 @@ function compile()
 
 	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
     javac -d $JAVA_CLASS -encoding utf-8 -cp .:$DEPENDENT_LIBS -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list  
-    
-  
-    cd $JAVA_CLASS  
+}
+
+function pack ()
+{
+	TARGET=$1
+	
+	JAVA_CLASS=$Root/$TARGET/bin
+	
+	cd $JAVA_CLASS  
     jar -cvfm $Root/$TARGET/$TARGET.jar $Root/$TARGET/MANIFEST.MF *
     sudo chmod a+x $Root/$TARGET/$TARGET.jar  
-} 
+}
 
+ACTION=$1
 ALL_TESTS=`ls` 
 for JT in $ALL_TESTS
 do
@@ -56,8 +63,13 @@ do
 		continue
     fi
     
-    echo "start compile $JT"
-	compile $JT
+    echo "start compile $JT with action $ACTION"
+    if [ "$ACTION" == "pack" ]; then
+    	pack $JT
+    else 
+    	compile $JT
+    fi
+	
 done
   
 

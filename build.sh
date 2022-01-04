@@ -16,10 +16,16 @@ make clean && make
 cd $BASE_DIR/common/sdml
 make clean && make
 
+cd $BASE_DIR/common/pcgInstrm
+make clean && make
+make -f makefile_test clean && make -f makefile_test
+
 # 3. build language-specific component
 # 3.1 clang
 
 # 3.2 java
+cd $BASE_DIR/langspec/java
+./build.sh
 
 # 3.3 python
 cd $BASE_DIR/langspec/python

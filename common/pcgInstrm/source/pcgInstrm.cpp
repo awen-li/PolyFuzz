@@ -19,6 +19,7 @@ void pcgCFGDel ()
 
 void pcgCFGAlloct (unsigned EntryId)
 {
+    DEBUG ("%s:%u", __FILE__, __LINE__);
     if (pcgHdl != NULL)
     {
         pcgCFGDel ();
@@ -32,6 +33,7 @@ void pcgCFGAlloct (unsigned EntryId)
 
 void pcgCFGEdge (unsigned SNode, unsigned ENode)
 {
+    DEBUG ("%s:%u", __FILE__, __LINE__);
     CFGGraph *Cfg = pcgHdl->m_BlockCFG;
     Cfg->InsertEdge(SNode, ENode);
     return;
@@ -98,6 +100,7 @@ bool pcgIsPostDominated (unsigned SNode, unsigned ENode)
 
 bool pcgNeedInstrumented (unsigned Id)
 {
+    DEBUG ("%s:%u", __FILE__, __LINE__);
     CFGGraph *Cfg = pcgHdl->m_BlockCFG;
     CFGNode *Cn = Cfg->GetGNode(Id);
     if (Cn == NULL)

@@ -1,3 +1,3 @@
 Manifest-Version: 1.0  
 Main-Class: tests.Test1
-Class-Path: 
+Class-Path: JavaCovPCG.jar 

@@ -12,7 +12,6 @@ CTRACER = /usr/include/ctrace
 JAVA = /usr/lib/jvm/java-8-openjdk-amd64
 
 CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH) -I$(CTRACER)/ -I$(JAVA)/include/linux -I$(JAVA)/include
-#CFLAGS    = -fPIC -g -I$(INCLUDE_PATH)
 LD_CFLAGS  = -fPIC -shared -lpthread -lxFuzztrace
 
 SOURCE_FILES  = $(SOURCE_PATH)/JCovPCG_DynTrace.c
@@ -24,6 +23,7 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ_FILES)
 	$(LD) -o $@ $^ $(LD_CFLAGS)
+	@cp $(TARGET) -rf /usr/lib/
 	
 $(OBJ_PATH)/%.o: $(SOURCE_PATH)/%.c
 	@if [ ! -d $(OBJ_PATH) ];then mkdir $(OBJ_PATH); fi

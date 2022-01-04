@@ -3,6 +3,8 @@ package JCovPCG;
 import soot.Scene;
 import soot.options.Options;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,29 @@ public class SootMain {
 		
 		initSoot (strDeps, targetPath);	
 	}
+	
+	private String CurClassPath ()
+	{
+		String pkgNameString =  this.getClass().getPackage().getName();
+		String clPathString  = this.getClass().getResource("").getPath();
+		
+		clPathString = clPathString.substring(clPathString.indexOf("/"), clPathString.lastIndexOf(pkgNameString));
+		if (clPathString.indexOf("!") != -1)
+		{
+			clPathString = clPathString.substring(0, clPathString.lastIndexOf("!"));
+		}
+		System.out.println ("clPathString[1]: " + clPathString);
+		
+		File file = new File (clPathString);	
+		try 
+		{
+			return file.getCanonicalPath();
+		} 
+		catch (IOException e) 
+		{
+			return "";
+		}
+	}
 
 	private void initSoot (String strDeps, String targetPath)
 	{
@@ -33,11 +58,18 @@ public class SootMain {
 		//Options.v().set_prepend_classpath(true);
 		//Options.v().set_no_bodies_for_excluded(true);
 		
+		String sootClsPath = Scene.v().defaultClassPath();
+		
+		String CurPath = CurClassPath ();
+		sootClsPath += File.pathSeparator + CurPath;
+		System.out.println ("CurPath: " + CurPath);
+		
 		if (strDeps != null && !strDeps.isEmpty())
-		{	
-			Options.v().set_soot_classpath(Scene.v().defaultClassPath() + ";" + strDeps);
+		{
+			sootClsPath += File.pathSeparator + strDeps;		
 		}
 		
+		Options.v().set_soot_classpath(sootClsPath);
 		Options.v().set_output_format(Options.output_format_class);
 		
 		if (printJimple != 0)

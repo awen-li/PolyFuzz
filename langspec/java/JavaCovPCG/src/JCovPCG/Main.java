@@ -72,7 +72,7 @@ private
 				return results;
 			}
 			
-			System.out.println ("loadDependecs -> fileName = " + fileName);
+			System.out.println ("readFile -> fileName = " + fileName);
 		
 			File FD = new File (fileName);
 			InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
@@ -100,11 +100,8 @@ private
 	}
 	
 	public String loadDependecs (String fileName)
-	{
-		String DepStrs = DynTrace.class.getResource("/").getPath();
-			
-		DepStrs += readFile (fileName, true); 		
-		return DepStrs;	
+	{	
+		return readFile (fileName, true); 
 	}
 	
 	public int initBlockId (String strBlockId)
@@ -130,7 +127,6 @@ private
 		Main M = new Main ();
 		CommandLine Cmd = M.getCmd (args);
 		
-		String strPrintJimple = Cmd.getOptionValue("jimple");
 		String strBlockId     = Cmd.getOptionValue("blockid");
 		String strDeps        = M.loadDependecs(Cmd.getOptionValue("dependences"));
 		String targetPath     = Cmd.getOptionValue("target");

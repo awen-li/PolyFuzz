@@ -55,6 +55,18 @@ function pack ()
     sudo chmod a+x $Root/$TARGET/$TARGET.jar  
 }
 
+function instrument ()
+{
+	TARGET=$1
+	
+	cd $TARGET
+	if [ ! -f "JavaCovPCG.jar" ]; then
+	    cp /usr/lib/JavaCovPCG/* -rf ./
+	fi
+	
+	java -jar JavaCovPCG.jar -t bin/
+}
+
 ACTION=$1
 ALL_TESTS=`ls` 
 for JT in $ALL_TESTS
@@ -63,12 +75,12 @@ do
 		continue
     fi
     
-    echo "start compile $JT with action $ACTION"
-    if [ "$ACTION" == "pack" ]; then
-    	pack $JT
-    else 
-    	compile $JT
-    fi
+    echo "start compile $JT"
+    
+    compile $JT  
+    instrument $JT
+    pack $JT
+
 	
 done
   

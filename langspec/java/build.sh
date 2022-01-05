@@ -62,7 +62,21 @@ function compileJava()
     jar -cvfm $Root/$TARGET/$TARGET.jar $Root/$TARGET/MANIFEST.MF *
     sudo chmod a+x $Root/$TARGET/$TARGET.jar  
 }  
- 
-compileNative "JavaCovPCG"
-compileJava "JavaCovPCG"
+
+function InstallJavaCovPCG()
+{
+	TARGET=$1
+	INSTALL_DIR="/usr/lib/$TARGET"
+	if [ ! -d "$INSTALL_DIR" ]; then
+	    mkdir $INSTALL_DIR
+	fi
+	
+	cp $Root/$TARGET/$TARGET.jar $INSTALL_DIR/
+	cp $Root/$TARGET/lib -rf $INSTALL_DIR/
+}
+
+TARGET="JavaCovPCG"
+compileNative     $TARGET
+compileJava       $TARGET
+InstallJavaCovPCG $TARGET
 exit 0  

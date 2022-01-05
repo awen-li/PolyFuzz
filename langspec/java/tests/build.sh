@@ -41,7 +41,15 @@ function compile()
     mkdir -p $JAVA_CLASS 
 
 	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
-    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$DEPENDENT_LIBS -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list  
+    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$DEPENDENT_LIBS -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
+    
+    # compile JNI if exists
+    if [ ! -d "$JAVA_SOURCE/jni" ]; then
+        return
+    fi
+    cd $JAVA_SOURCE/jni
+    make clean && make
+    cd -
 }
 
 function pack ()
@@ -52,7 +60,8 @@ function pack ()
 	
 	cd $JAVA_CLASS  
     jar -cvfm $Root/$TARGET/$TARGET.jar $Root/$TARGET/MANIFEST.MF *
-    sudo chmod a+x $Root/$TARGET/$TARGET.jar  
+    sudo chmod a+x $Root/$TARGET/$TARGET.jar
+    cd -
 }
 
 function instrument ()
@@ -65,6 +74,7 @@ function instrument ()
 	fi
 	
 	java -jar JavaCovPCG.jar -t bin/
+	cd -
 }
 
 ACTION=$1

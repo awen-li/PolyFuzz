@@ -146,6 +146,50 @@ private:
         return (bool)(OrgDomN->size () != OrgSize);
     }
 
+
+    inline void ComputeDom ()
+    {        
+        /* entry node */
+        AddDom (&m_DomSet, m_Entry, m_Entry);
+
+        /* init other node (-entry) */
+        for (auto It = begin(); It != end (); It++)
+        {
+            CFGNode *N = It->second;
+            if (N == m_Entry)
+            {
+                continue;
+            }
+
+            for (auto It2 = begin(); It2 != end (); It2++)
+            {
+                CFGNode *Domn = It2->second;
+                AddDom (&m_DomSet, N, Domn);
+            }         
+        }
+
+        /* compute dominace */
+        unsigned IterNo = 0;
+        bool Changed = true;
+        while (Changed)
+        {
+            Changed = false;
+            for (auto It = begin(); It != end (); It++)
+            {
+                CFGNode *N = It->second;
+                if (N == m_Entry)
+                {
+                    continue;
+                }
+
+                Changed |= UpdateDomByPred (N);       
+            }
+
+            ViewDom (&m_DomSet, "Dominated", IterNo);
+            IterNo++;
+        }
+    }
+
     inline bool UpdatePostDomBySucc (CFGNode *N)
     {
         NodeSet *OrgPostDom = GetDom (&m_PostDomSet, N);
@@ -192,138 +236,9 @@ private:
         return (bool)(OrgPostDom->size () != OrgSize);
     }
 
-public:
-    CFGGraph(DWORD EntryId)
-    {
-        m_Entry = GetCfgNode (EntryId);
-        if (m_Entry == NULL)
-        {
-            m_Entry = new CFGNode (EntryId);
-            assert (m_Entry != NULL);
-
-            AddNode(EntryId, m_Entry);
-        }
-
-        m_Exit = NULL;
-    }
     
-    virtual ~CFGGraph() 
-    {
-        for (auto It = m_DomSet.begin (); It != m_DomSet.end (); It++)
-        {
-            delete It->second;
-        }
-
-        for (auto It = m_PostDomSet.begin (); It != m_PostDomSet.end (); It++)
-        {
-            delete It->second;
-        }
-    }
-
-    inline CFGNode* GetEntry()
-    {
-        return m_Entry;
-    }
-
-    inline CFGNode* GetExit()
-    {
-        if (m_Exit != NULL)
-        {
-            return m_Exit;
-        }
-
-        for (auto It = begin(); It != end (); It++)
-        {
-            CFGNode *N = It->second;
-            if (N->GetOutgoingEdgeNum() == 0)
-            {
-                m_Exit = N;
-                break;
-            }
-        }
-
-        return m_Exit;
-    }
-    
-    inline CFGNode* GetCfgNode(DWORD Id) const 
-    {
-        return GetGNode(Id);
-    }
-
-    inline bool InsertEdge (DWORD SId, DWORD EId)
-    {
-        CFGNode *S = GetCfgNode (SId);
-        if (S == NULL)
-        {
-            S = new CFGNode (SId);
-            assert (S != NULL);
-            AddNode(SId, S);
-        }
-
-        CFGNode *E = GetCfgNode (EId);
-        if (E == NULL)
-        {
-            E = new CFGNode (EId);
-            assert (S != NULL);
-            AddNode(EId, E);
-        }
-
-        CFGEdge *Edge = new CFGEdge (S, E);
-        assert (Edge != NULL);
-
-        DEBUG ("### new CFG edge: [%u] ---> [%u] \r\n", S->GetId(), E->GetId());
-        return AddEdge (Edge);    
-    }
-
-
-    inline void ComputeDom ()
-    { 
-        /* entry node */
-        AddDom (&m_DomSet, m_Entry, m_Entry);
-
-        /* init other node (-entry) */
-        for (auto It = begin(); It != end (); It++)
-        {
-            CFGNode *N = It->second;
-            if (N == m_Entry)
-            {
-                continue;
-            }
-
-            for (auto It2 = begin(); It2 != end (); It2++)
-            {
-                CFGNode *Domn = It2->second;
-                AddDom (&m_DomSet, N, Domn);
-            }         
-        }
-
-        /* compute dominace */
-        unsigned IterNo = 0;
-        bool Changed = true;
-        while (Changed)
-        {
-            Changed = false;
-            for (auto It = begin(); It != end (); It++)
-            {
-                CFGNode *N = It->second;
-                if (N == m_Entry)
-                {
-                    continue;
-                }
-
-                Changed |= UpdateDomByPred (N);       
-            }
-
-            ViewDom (&m_DomSet, "Dominated", IterNo);
-            IterNo++;
-        }
-    }
-
     inline void ComputePostDom ()
-    {
-        CFGNode *m_Exit = GetExit();
-        assert (m_Exit != NULL);
-        
+    {  
         /* entry node */
         AddDom (&m_PostDomSet, m_Exit, m_Exit);
 
@@ -363,6 +278,119 @@ public:
             ViewDom (&m_PostDomSet, "Post-Dominated", IterNo);
             IterNo++;
         }
+    }
+
+    inline VOID UpdateExit()
+    {
+        set <CFGNode*> ExitSet;
+        
+        for (auto It = begin(), End = end (); It != End; It++)
+        {
+            CFGNode *N = It->second;
+            if (N->GetOutgoingEdgeNum() == 0)
+            {
+                ExitSet.insert (N);
+            }
+        }
+
+        DWORD ExitNum = ExitSet.size ();
+        assert (ExitNum > 0 || "CFG input error, no exit node exists!!!\r\n");
+
+        if (ExitNum == 1)
+        {
+            m_Exit = *(ExitSet.begin ());
+            return;
+        }
+
+        DEBUG ("@@@ Total %u exits in CFG, construct dumy exit node....\r\n", ExitNum);
+        DWORD DumyExit = 16777215; /* large enough */
+        for (auto It = ExitSet.begin (), End = ExitSet.end (); It != End; It++)
+        {
+            CFGNode *S = *It;
+            InsertEdge (S->GetId(), DumyExit);
+        }
+        
+        m_Exit = GetCfgNode (DumyExit);
+        assert (m_Exit != NULL);
+        DEBUG ("@@@ Set exit node as %u ....\r\n", DumyExit);
+
+        return;
+    }
+
+    inline CFGNode* GetCfgNode(DWORD Id) const 
+    {
+        return GetGNode(Id);
+    }
+    
+public:
+    CFGGraph(DWORD EntryId)
+    {
+        m_Entry = GetCfgNode (EntryId);
+        if (m_Entry == NULL)
+        {
+            m_Entry = new CFGNode (EntryId);
+            assert (m_Entry != NULL);
+
+            AddNode(EntryId, m_Entry);
+        }
+
+        m_Exit = NULL;
+    }
+    
+    virtual ~CFGGraph() 
+    {
+        for (auto It = m_DomSet.begin (); It != m_DomSet.end (); It++)
+        {
+            delete It->second;
+        }
+
+        for (auto It = m_PostDomSet.begin (); It != m_PostDomSet.end (); It++)
+        {
+            delete It->second;
+        }
+    }
+
+    inline VOID BuildCFG ()
+    {
+        UpdateExit();
+
+        DEBUG ("@@@ Start ComputeDom...\r\n");
+        ComputeDom ();
+
+        DEBUG ("@@@ Start ComputePostDom...\r\n");
+        ComputePostDom ();
+
+        return;
+    }
+
+    inline CFGNode* GetEntry()
+    {
+        return m_Entry;
+    }
+
+    inline bool InsertEdge (DWORD SId, DWORD EId)
+    {
+        CFGNode *S = GetCfgNode (SId);
+        if (S == NULL)
+        {
+            S = new CFGNode (SId);
+            assert (S != NULL);
+            AddNode(SId, S);
+        }
+
+        CFGNode *E = GetCfgNode (EId);
+        if (E == NULL)
+        {
+            E = new CFGNode (EId);
+            assert (S != NULL);
+            AddNode(EId, E);
+        }
+
+        CFGEdge *Edge = new CFGEdge (S, E);
+        assert (Edge != NULL);
+
+        DEBUG ("### new CFG edge: [%u] ---> [%u] \r\n", S->GetId(), E->GetId());
+        return AddEdge (Edge);    
     }
 
     inline NodeSet* GetDomSet (DWORD NodeId)

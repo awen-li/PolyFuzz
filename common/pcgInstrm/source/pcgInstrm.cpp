@@ -19,7 +19,7 @@ void pcgCFGDel ()
 
 void pcgCFGAlloct (unsigned EntryId)
 {
-    DEBUG ("%s:%u", __FILE__, __LINE__);
+    DEBUG ("pcgCFGAlloct:%u\r\n", EntryId);
     if (pcgHdl != NULL)
     {
         pcgCFGDel ();
@@ -33,7 +33,7 @@ void pcgCFGAlloct (unsigned EntryId)
 
 void pcgCFGEdge (unsigned SNode, unsigned ENode)
 {
-    DEBUG ("%s:%u", __FILE__, __LINE__);
+    DEBUG ("pcgCFGEdge:%u -> %u\r\n", SNode, ENode);
     CFGGraph *Cfg = pcgHdl->m_BlockCFG;
     Cfg->InsertEdge(SNode, ENode);
     return;
@@ -47,14 +47,8 @@ void pcgBuild ()
 #endif
     
     /* compute DOM */
-    DEBUG ("Start ComputeDom....\r\n");
-    pcgHdl->m_BlockCFG->ComputeDom();
-    DEBUG ("Finish ComputeDom....\r\n\r\n");
-
-    /* compute PDOM */
-    DEBUG ("Start ComputePostDom....\r\n");
-    pcgHdl->m_BlockCFG->ComputePostDom();
-    DEBUG ("Finish ComputePostDom....\r\n");
+    DEBUG ("@@@ Start BuildCFG....\r\n");
+    pcgHdl->m_BlockCFG->BuildCFG();
     
     return;
 }
@@ -100,18 +94,19 @@ bool pcgIsPostDominated (unsigned SNode, unsigned ENode)
 
 bool pcgNeedInstrumented (unsigned Id)
 {
-    DEBUG ("%s:%u", __FILE__, __LINE__);
     CFGGraph *Cfg = pcgHdl->m_BlockCFG;
     CFGNode *Cn = Cfg->GetGNode(Id);
     if (Cn == NULL)
     {
         /* default true */
+        DEBUG ("Node-%u refered to a CFGNode failed, Need Instrumented by default\r\n", Id);
         return true;
     }
 
     /* must instrument the entry block*/
     if (Cn == Cfg->GetEntry())
     {
+        DEBUG ("Node-%u is a entry-block, Need Instrumented!\r\n", Id);
         return true;
     }
 
@@ -119,9 +114,11 @@ bool pcgNeedInstrumented (unsigned Id)
     if (Cfg->IsFullDominator(Id) ||
         (Cfg->IsFullPostDominator(Id) && Cn->GetIncomingEdgeNum() > 1))
     {
+        DEBUG ("Node-%u is a full-dominator, Need not Instrumented\r\n", Id);
         return false;
     }
 
+    DEBUG ("Node-%u is Need Instrumented!\r\n", Id);
     return true;
 }
 

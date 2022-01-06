@@ -5879,7 +5879,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
      *****************************************************/ 
     afl->stage_name  = "byte-inc";
     afl->stage_short = "byte-inc";
-    afl->stage_max   = len;
+    afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
     path_queued = afl->queued_paths;
     u8 random_bytes[32];   
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
@@ -5930,7 +5930,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     
     afl->stage_name  = "stru-inc";
     afl->stage_short = "stru-inc";
-    afl->stage_max   = len;
+    afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
     path_queued = afl->queued_paths;
     
     u32 pt_offset[MAX_STPAT];

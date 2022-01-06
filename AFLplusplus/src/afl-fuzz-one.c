@@ -5627,18 +5627,31 @@ u8 patreg_fuzzing(afl_state_t *afl) {
             in_buf[pos] = (u8)byte_val;
             common_fuzz_stuff(afl, in_buf, len);
 
+            #ifdef __DEBUG__
+            printf ("[%u]Trace bits: ", byte_val);
+            #endif
             u32 path_len = 0;
-            for (u32 i = 0; i < bb_num; i++) {
+            for (u32 i = 1; i < bb_num; i++) {
                 if (trace_bits[i]) {
-                    path_len++; 
+                    path_len++;
+                    #ifdef __DEBUG__
+                    printf ("%u ", i);
+                    #endif
                 }
             }
+            #ifdef __DEBUG__
+            printf ("\r\n");
+            #endif
 
             if (path_len >= afl->threshold_pathlen) {
                 char_val[char_num++] = byte_val;
                 //printf ("(%u)[%u -> %u]path_length: %u\n", pos, (u32)origin, (u32)byte_val, path_len);
             }
 
+            #ifdef __DEBUG__
+            sleep (1);
+            #endif
+            
             byte_val++;
         }
 

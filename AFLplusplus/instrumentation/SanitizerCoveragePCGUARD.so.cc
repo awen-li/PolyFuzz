@@ -834,6 +834,12 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     if (F.getName() == "__local_stdio_printf_options" ||
         F.getName() == "__local_stdio_scanf_options")
         return;
+
+    if (strstr (F.getName().data (), "PyInit_") != 0)
+    {
+        errs ()<<"No need to instrument "<<F.getName()<<"\r\n";
+        return;
+    }
     
     if (isa<UnreachableInst>(F.getEntryBlock().getTerminator())) return;
     

@@ -519,7 +519,7 @@ static inline DWORD N_gramPat (List *SP, List* NgramL, DWORD N_num)
         SeedPat *SP = (SeedPat *)SPHdr->Data;
         Seed *Ss = SP->Ss;
 
-        if (Ss->SeedSDLen-2 <= N_num*2)
+        if (Ss->SeedSDLen < N_num || Ss->SeedSDLen-2 <= N_num*2)
         {
             SPHdr = SPHdr->Nxt;
             continue;
@@ -632,14 +632,47 @@ static inline VOID CalStruPat (List *SPList, List *PbPat)
     }
 
     LNode *NGhdr = PbPat->Header;
-    while (NGhdr != NULL)
+    if (NGhdr != NULL)
     {
-        N_gram *NG = (N_gram *)NGhdr->Data;
-        DEBUG ("@@ POSSIBLE pattern: [N-%u][%s] \r\n", NG->N_num, NG->Gram);
+        while (NGhdr != NULL)
+        {
+            N_gram *NG = (N_gram *)NGhdr->Data;
+            DEBUG ("@@ POSSIBLE pattern: [N-%u][%s] \r\n", NG->N_num, NG->Gram);
 
-        NGhdr = NGhdr->Nxt;
+            NGhdr = NGhdr->Nxt;
+        }
     }
+    else
+    {
+        /* find no NG pattern, try a last time if reduction is B */
+        LNode *SPHdr = SPList->Header;
+        DWORD BNum = 0;
+        while (SPHdr != NULL)
+        {
+            SeedPat *SP = (SeedPat *)SPHdr->Data;
+            Seed *Ss = SP->Ss;
 
+            if (Ss->SeedSD[0] == 'B')
+            {
+                BNum++;
+            }
+
+            SPHdr = SPHdr->Nxt;
+        }
+
+        if (BNum == SPList->NodeNum)
+        {
+            DEBUG ("@@ POSSIBLE pattern: [N-1][B] \r\n");
+            N_gram *NG = (N_gram*) malloc (sizeof (N_gram));
+            assert (NG != NULL);
+            memset (NG, 0, sizeof (N_gram));
+            NG->N_num = 1;
+            NG->Gram[0] = 'B';
+ 
+            ListInsert(PbPat, NG);
+        }
+    }
+    
     return;
 }
 

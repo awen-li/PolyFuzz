@@ -5,8 +5,6 @@ cd Python
 if [ ! -d "fuzz" ]; then
     mkdir -p fuzz/in
     cp ../tests/* fuzz/in/
-    cp ../char.pat fuzz/
-    cp ../stru.pat fuzz/
 fi
 
 cd fuzz

@@ -48,6 +48,18 @@ typedef unsigned         BOOL;
 #define INLINE                    inline
 
 
+#define mutex_lock_t               pthread_mutex_t
+#define mutex_lock_init(x)         pthread_mutex_init(x, NULL)
+#define mutex_lock(x)              pthread_mutex_lock(x);
+#define mutex_unlock(x)            pthread_mutex_unlock(x);
+    
+#define process_lock_t             pthread_rwlock_t
+#define process_lock_init(x, attr) pthread_rwlock_init (x, attr) 
+#define process_lock(x)            pthread_rwlock_rdlock (x) 
+#define process_unlock(x)          pthread_rwlock_unlock (x)
+
+
+
 #ifdef __DEBUG__
 #define DEBUG(format, ...) printf("<PCG>" format, ##__VA_ARGS__)
 #else

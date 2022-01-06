@@ -2,7 +2,7 @@
 
 #include "pcgHandle.h"
 
-static PCGHandle *pcgHdl = NULL;
+static PCGHandle pcgHdl;
 
 
 #ifdef __cplusplus
@@ -10,54 +10,56 @@ extern "C"{
 #endif 
 #include "MacroDef.h"
 
-void pcgCFGDel ()
+void pcgCFGDel (unsigned Handle)
 {
-    delete pcgHdl;
-    pcgHdl = NULL;
-}
-
-
-void pcgCFGAlloct (unsigned EntryId)
-{
-    DEBUG ("pcgCFGAlloct:%u\r\n", EntryId);
-    if (pcgHdl != NULL)
-    {
-        pcgCFGDel ();
-    }
-    
-    pcgHdl = new PCGHandle (EntryId);
-    
+    pcgHdl.DelHandle(Handle);
     return;
 }
 
 
-void pcgCFGEdge (unsigned SNode, unsigned ENode)
+unsigned pcgCFGAlloct (unsigned EntryId)
+{
+    unsigned Handle = pcgHdl.AlotHandle (EntryId);
+    assert (Handle != 0);
+    DEBUG ("Entry pcgCFGAlloct: Allot Handle [%u] with EntryID: %u\r\n", Handle, EntryId);
+
+    return Handle;
+}
+
+
+void pcgCFGEdge (unsigned Handle, unsigned SNode, unsigned ENode)
 {
     DEBUG ("pcgCFGEdge:%u -> %u\r\n", SNode, ENode);
-    CFGGraph *Cfg = pcgHdl->m_BlockCFG;
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+    
     Cfg->InsertEdge(SNode, ENode);
     return;
 }
 
-void pcgBuild ()
+void pcgBuild (unsigned Handle)
 {
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    
 #if __DEBUG__
-    CFGViz GV ("BlockCFG", pcgHdl->m_BlockCFG);
+    CFGViz GV ("BlockCFG", Cfg);
     GV.WiteGraph ();
 #endif
     
     /* compute DOM */
     DEBUG ("@@@ Start BuildCFG....\r\n");
-    pcgHdl->m_BlockCFG->BuildCFG();
+    Cfg->BuildCFG();
     
     return;
 }
 
 
 
-bool pcgIsDominated (unsigned SNode, unsigned ENode)
+bool pcgIsDominated (unsigned Handle, unsigned SNode, unsigned ENode)
 {
-    CFGGraph *Cfg = pcgHdl->m_BlockCFG;
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+    
     NodeSet* Ns = Cfg->GetDomSet (ENode);
     assert (Ns != NULL);
 
@@ -74,9 +76,11 @@ bool pcgIsDominated (unsigned SNode, unsigned ENode)
 }
 
 
-bool pcgIsPostDominated (unsigned SNode, unsigned ENode)
+bool pcgIsPostDominated (unsigned Handle, unsigned SNode, unsigned ENode)
 {
-    CFGGraph *Cfg = pcgHdl->m_BlockCFG;
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+    
     NodeSet* Ns = Cfg->GetPostDomSet (ENode);
     assert (Ns != NULL);
 
@@ -92,9 +96,11 @@ bool pcgIsPostDominated (unsigned SNode, unsigned ENode)
     return false;
 }
 
-bool pcgNeedInstrumented (unsigned Id)
+bool pcgNeedInstrumented (unsigned Handle, unsigned Id)
 {
-    CFGGraph *Cfg = pcgHdl->m_BlockCFG;
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+    
     CFGNode *Cn = Cfg->GetGNode(Id);
     if (Cn == NULL)
     {

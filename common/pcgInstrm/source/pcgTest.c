@@ -8,58 +8,62 @@
 void Test1 ()
 {
     /* new CFG */
-    pcgCFGAlloct (1);
+    unsigned Hd = pcgCFGAlloct (1);
 
     /* Insert EDGEs */
-    pcgCFGEdge(1, 2);
-    pcgCFGEdge(2, 4);
-    pcgCFGEdge(4, 5);
-    pcgCFGEdge(5, 7);
-    pcgCFGEdge(1, 3);
-    pcgCFGEdge(3, 5);
-    pcgCFGEdge(3, 6);
-    pcgCFGEdge(6, 7);
+    pcgCFGEdge(Hd, 1, 2);
+    pcgCFGEdge(Hd, 2, 4);
+    pcgCFGEdge(Hd, 4, 5);
+    pcgCFGEdge(Hd, 5, 7);
+    pcgCFGEdge(Hd, 1, 3);
+    pcgCFGEdge(Hd, 3, 5);
+    pcgCFGEdge(Hd, 3, 6);
+    pcgCFGEdge(Hd, 6, 7);
 
     /* build */
-    pcgBuild();
+    pcgBuild(Hd);
 
-    assert (pcgIsDominated(2, 4) == true);
-    assert (pcgIsDominated(3, 6) == true);
-    assert (pcgIsDominated(1, 2) == true);
-    assert (pcgIsDominated(1, 3) == true);
+    assert (pcgIsDominated(Hd, 2, 4) == true);
+    assert (pcgIsDominated(Hd, 3, 6) == true);
+    assert (pcgIsDominated(Hd, 1, 2) == true);
+    assert (pcgIsDominated(Hd, 1, 3) == true);
 
-    assert (pcgIsPostDominated(5, 4) == true);
-    assert (pcgIsPostDominated(4, 2) == true);
-    assert (pcgIsPostDominated(5, 2) == true);
+    assert (pcgIsPostDominated(Hd, 5, 4) == true);
+    assert (pcgIsPostDominated(Hd, 4, 2) == true);
+    assert (pcgIsPostDominated(Hd, 5, 2) == true);
+
+    pcgCFGDel (Hd);
 }
 
 void Test2 ()
 {
     /* new CFG */
-    pcgCFGAlloct (1);
+    unsigned Hd = pcgCFGAlloct (1);
 
     /* Insert EDGEs */
-    pcgCFGEdge(1, 2);
-    pcgCFGEdge(1, 3);
-    pcgCFGEdge(1, 4);
-    pcgCFGEdge(1, 5);
+    pcgCFGEdge(Hd, 1, 2);
+    pcgCFGEdge(Hd, 1, 3);
+    pcgCFGEdge(Hd, 1, 4);
+    pcgCFGEdge(Hd, 1, 5);
     
-    pcgCFGEdge(5, 6);
-    pcgCFGEdge(2, 7);
-    pcgCFGEdge(3, 7);
-    pcgCFGEdge(4, 7);
+    pcgCFGEdge(Hd, 5, 6);
+    pcgCFGEdge(Hd, 2, 7);
+    pcgCFGEdge(Hd, 3, 7);
+    pcgCFGEdge(Hd, 4, 7);
 
-    pcgCFGEdge(6, 8);
-    pcgCFGEdge(7, 8);
+    pcgCFGEdge(Hd, 6, 8);
+    pcgCFGEdge(Hd, 7, 8);
 
     /* build */
-    pcgBuild();
+    pcgBuild(Hd);
 
-    assert (pcgIsDominated(5, 6) == true);
+    assert (pcgIsDominated(Hd, 5, 6) == true);
 
-    assert (pcgIsPostDominated(7, 2) == true);
-    assert (pcgIsPostDominated(7, 3) == true);
-    assert (pcgIsPostDominated(7, 4) == true);
+    assert (pcgIsPostDominated(Hd, 7, 2) == true);
+    assert (pcgIsPostDominated(Hd, 7, 3) == true);
+    assert (pcgIsPostDominated(Hd, 7, 4) == true);
+
+    pcgCFGDel (Hd);
 }
 
 

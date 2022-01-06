@@ -5,14 +5,16 @@
 extern "C"{
 #endif
 
-void pcgCFGAlloct (unsigned EntryId);
-void pcgCFGEdge (unsigned SNode, unsigned ENode);
-void pcgBuild ();
+unsigned pcgCFGAlloct (unsigned EntryId);
+void pcgCFGDel (unsigned Handle);
 
-bool pcgNeedInstrumented (unsigned Node);
+void pcgCFGEdge (unsigned Handle, unsigned SNode, unsigned ENode);
+void pcgBuild (unsigned Handle);
 
-bool pcgIsDominated (unsigned SNode, unsigned ENode);
-bool pcgIsPostDominated (unsigned SNode, unsigned ENode);
+bool pcgNeedInstrumented (unsigned Handle, unsigned Node);
+
+bool pcgIsDominated (unsigned Handle, unsigned SNode, unsigned ENode);
+bool pcgIsPostDominated (unsigned Handle, unsigned SNode, unsigned ENode);
 
 
 #ifdef __cplusplus

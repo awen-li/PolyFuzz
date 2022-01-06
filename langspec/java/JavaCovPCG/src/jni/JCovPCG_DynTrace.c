@@ -35,12 +35,12 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit (JNIEnv *env, jobject j
 /*
 * Class:     JCovPCG_DynTrace
 * Method:    JvTraceDeInit
-* Signature: ()V
+* Signature: (I)V
 */
-JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit (JNIEnv *env, jobject jobj)
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit (JNIEnv *env, jobject jobj, jint exitCode)
 {
     /* exit anyway */
-    exit (0);
+    exit (exitCode);
 }
 
 

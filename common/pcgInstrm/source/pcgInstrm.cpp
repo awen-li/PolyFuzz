@@ -21,7 +21,7 @@ unsigned pcgCFGAlloct (unsigned EntryId)
 {
     unsigned Handle = pcgHdl.AlotHandle (EntryId);
     assert (Handle != 0);
-    DEBUG ("Entry pcgCFGAlloct: Allot Handle [%u] with EntryID: %u\r\n", Handle, EntryId);
+    DEBUG ("pcgCFGAlloct: Allot Handle [%u] with EntryID: %u\r\n", Handle, EntryId);
 
     return Handle;
 }

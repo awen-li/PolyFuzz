@@ -5,7 +5,7 @@ if [ ! -d "fuzz" ]; then
     mkdir -p fuzz/in
     cp seeds/* fuzz/in/
     cp test2.jar fuzz/
-    cp /usr/lib/JavaCovPCG/ -rf fuzz/
+    cp /usr/lib/JavaCovPCG/* -rf fuzz/
 fi
 
 cd fuzz

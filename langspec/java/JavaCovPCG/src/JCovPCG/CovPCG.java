@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Iterator;
 
 import soot.Body;
 import soot.BodyTransformer;
@@ -17,7 +18,11 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IntConstant;
+import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
+import soot.jimple.ReturnStmt;
+import soot.jimple.ReturnVoidStmt;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 
@@ -29,6 +34,7 @@ public class CovPCG extends BodyTransformer
 	
 	static SootMethod JvTrace = DynTrace.getMethodByName("JvTrace");
 	static SootMethod JvTraceInit = DynTrace.getMethodByName("JvTraceInit");
+	static SootMethod JvTraceDeInit = DynTrace.getMethodByName("JvTraceDeInit");
 	
 	static int StartBID = 0;
 	static Map<String, Integer> BlackList;
@@ -75,17 +81,37 @@ public class CovPCG extends BodyTransformer
 		}
 	}
 	
-	private boolean isExitStmt (Stmt stmt)
+	private boolean isExitStmt (Stmt stmt, boolean isMainMethod)
 	{	
-		SootMethod target;
-
-		target = stmt.getInvokeExpr().getMethod();
-		if (target.getSignature().equals("<java.lang.System: void exit(int)>"))
-		{		
+		if (stmt.toString().indexOf("java.lang.System: void exit(int)") != -1)
+		{
 			return true;
 		}
 		
+		if (isMainMethod && (stmt instanceof ReturnStmt || stmt instanceof ReturnVoidStmt))
+		{
+		    return true;
+		}
+		
 		return false;
+	}
+	
+	private void InsertExitStmt (Body body, boolean isMainMethod)
+	{
+		Chain units = body.getUnits();
+		Iterator stmtIt = units.snapshotIterator();
+
+		while (stmtIt.hasNext()) 
+		{
+			Stmt stmt = (Stmt) stmtIt.next();
+            
+			if (isExitStmt (stmt, isMainMethod))
+		    {
+		    	Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(0)));
+		    	units.insertBefore(dynStmt, stmt);
+		    	System.out.println("\t### Instrument exit statement -> " + stmt.toString());
+		    }
+		}	
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -115,6 +141,9 @@ public class CovPCG extends BodyTransformer
 			units.insertBefore(dynStmt, Hb.getTail());
 		}
 		
+		/* insert exit function */
+		InsertExitStmt (body, isMainMethod);
+		
 		/* init block-id */
 		InitBlockMap (Block2ID, BG.getBlocks());
 		
@@ -143,8 +172,7 @@ public class CovPCG extends BodyTransformer
 		{
 			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
 			Unit TailStmt = CurB.getTail();
-			System.out.println("\ttail-statement -> " + TailStmt.toString());
-			
+
 			int BID = Block2ID.get(CurB);
 			if (PCGuidance.pcgNeedInstrumented(CFGHd, BID) == false)
 			{
@@ -154,6 +182,8 @@ public class CovPCG extends BodyTransformer
 			/* instrument before the tail statement */
 			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
 			units.insertBefore(dynStmt, TailStmt);
+			
+			System.out.println("\tInstrument before statement -> " + TailStmt.toString());
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);

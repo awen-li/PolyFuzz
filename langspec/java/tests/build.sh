@@ -69,11 +69,9 @@ function instrument ()
 	TARGET=$1
 	
 	cd $TARGET
-	if [ ! -f "JavaCovPCG.jar" ]; then
-	    cp /usr/lib/JavaCovPCG/* -rf ./
-	fi
-	
+	cp /usr/lib/JavaCovPCG/* -rf ./	
 	java -jar JavaCovPCG.jar -t bin/
+	cp sootOutput/tests -rf bin/
 	cd -
 }
 
@@ -85,7 +83,11 @@ do
 		continue
     fi
     
-    echo "start compile $JT"
+    echo
+    echo "==================================================="
+    echo "                  start compile $JT                "
+    echo "==================================================="
+    echo
     
     compile $JT  
     instrument $JT

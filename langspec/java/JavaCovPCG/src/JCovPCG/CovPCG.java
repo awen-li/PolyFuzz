@@ -39,15 +39,23 @@ public class CovPCG extends BodyTransformer
 		InitBlackList ();
 	}
 	
+	private synchronized int GetGuaranteeID ()
+	{
+		int GID = StartBID++;
+		return GID;
+	}
+	
 	private void InitBlackList ()
 	{
 		BlackList = new HashMap<>();
 		
 		BlackList.put("public void <init>()", 1);
+        BlackList.put("static void <clinit>()", 1);
 	}
 	
 	private boolean IsInBlackList (String FuncName)
 	{
+	    System.out.println("@@@ IsInBlackList: " + FuncName);
 		if (BlackList.get(FuncName) == null)
 		{
 			return false;
@@ -62,9 +70,22 @@ public class CovPCG extends BodyTransformer
 	{
 		for (Block b:LB) 
 		{
-			StartBID++;
-			Block2ID.put(b, StartBID);
+			int GID = GetGuaranteeID ();
+			Block2ID.put(b, GID);
 		}
+	}
+	
+	private boolean isExitStmt (Stmt stmt)
+	{	
+		SootMethod target;
+
+		target = stmt.getInvokeExpr().getMethod();
+		if (target.getSignature().equals("<java.lang.System: void exit(int)>"))
+		{		
+			return true;
+		}
+		
+		return false;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -74,7 +95,7 @@ public class CovPCG extends BodyTransformer
 		Map<Block, Integer> Block2ID = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
-		System.out.println("instrumenting method : " + CurMethod.getSignature());
+		System.out.println("@@@ instrumenting method : " + CurMethod.getSignature());
 		if (IsInBlackList (CurMethod.getDeclaration()))
 		{
 			return;
@@ -100,7 +121,8 @@ public class CovPCG extends BodyTransformer
 	    /* init CFG and compute dominance */	
 		List<Block> wfQueue = new ArrayList<Block>();	
 		wfQueue.add(Heads.get(0));
-		PCGuidance.pcgCFGAlloct(Block2ID.get(Heads.get(0)));		
+		
+		int CFGHd = PCGuidance.pcgCFGAlloct(Block2ID.get(Heads.get(0)));		
 		while (!wfQueue.isEmpty())
 		{
 			Block CurB= wfQueue.get(0);
@@ -110,21 +132,21 @@ public class CovPCG extends BodyTransformer
 			for (Block su: Succs)
 			{
 				wfQueue.add (su);
-				PCGuidance.pcgCFGEdge(Block2ID.get(CurB), Block2ID.get(su));
+				PCGuidance.pcgCFGEdge(CFGHd, Block2ID.get(CurB), Block2ID.get(su));
 			}		
 		}	
-		PCGuidance.pcgBuild();
+		PCGuidance.pcgBuild(CFGHd);
 		
 		/* start to instrument with PCG */
 		Chain units = body.getUnits();
 		for (Block CurB : Block2ID.keySet())
 		{
-			System.out.println("Block -> " + Block2ID.get(CurB).toString());
+			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
 			Unit TailStmt = CurB.getTail();
 			System.out.println("\ttail-statement -> " + TailStmt.toString());
 			
 			int BID = Block2ID.get(CurB);
-			if (PCGuidance.pcgNeedInstrumented(BID) == false)
+			if (PCGuidance.pcgNeedInstrumented(CFGHd, BID) == false)
 			{
 				continue;
 			}
@@ -133,5 +155,8 @@ public class CovPCG extends BodyTransformer
 			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
 			units.insertBefore(dynStmt, TailStmt);
 		}
+		
+		PCGuidance.pcgCFGDel(CFGHd);
+        System.out.println("@@@ instrumenting method : " + CurMethod.getSignature() + " done!!!");
 	}
 }

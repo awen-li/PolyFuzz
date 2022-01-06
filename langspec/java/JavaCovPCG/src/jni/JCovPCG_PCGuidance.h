@@ -10,50 +10,58 @@ extern "C" {
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgCFGAlloct
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgCFGAlloct
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     JCovPCG_PCGuidance
+ * Method:    pcgCFGDel
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGAlloct
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGDel
   (JNIEnv *, jclass, jint);
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgCFGEdge
- * Signature: (II)V
+ * Signature: (III)V
  */
 JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGEdge
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgBuild
- * Signature: ()V
+ * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgBuild
-  (JNIEnv *, jclass);
-
-/*
- * Class:     JCovPCG_PCGuidance
- * Method:    pcgNeedInstrumented
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented
   (JNIEnv *, jclass, jint);
 
 /*
  * Class:     JCovPCG_PCGuidance
- * Method:    pcgIsDominated
+ * Method:    pcgNeedInstrumented
  * Signature: (II)Z
  */
-JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsDominated
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented
   (JNIEnv *, jclass, jint, jint);
 
 /*
  * Class:     JCovPCG_PCGuidance
+ * Method:    pcgIsDominated
+ * Signature: (III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsDominated
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsPostDominated
- * Signature: (II)Z
+ * Signature: (III)Z
  */
 JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsPostDominated
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 #ifdef __cplusplus
 }

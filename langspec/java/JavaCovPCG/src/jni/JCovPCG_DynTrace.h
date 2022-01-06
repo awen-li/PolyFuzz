@@ -23,6 +23,14 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit
   (JNIEnv *, jobject, jint);
 
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceDeInit
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

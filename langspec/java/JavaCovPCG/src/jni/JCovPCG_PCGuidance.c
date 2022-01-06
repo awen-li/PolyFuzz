@@ -5,68 +5,79 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgCFGAlloct
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGAlloct (JNIEnv *env, jclass jc, jint entryId)
+JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgCFGAlloct (JNIEnv *env, jclass jc, jint entryId)
 {
-    pcgCFGAlloct(entryId);
-    return;
+    return pcgCFGAlloct(entryId);
 }
 
 /*
  * Class:     JCovPCG_PCGuidance
- * Method:    pcgCFGEdge
- * Signature: (II)V
+ * Method:    pcgCFGDel
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGEdge (JNIEnv *env, jclass jc, jint sId, jint eId)
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGDel (JNIEnv *env, jclass jc, jint Handle)
 {
-    pcgCFGEdge(sId, eId);
+    pcgCFGDel (Handle);
+}
+
+
+/*
+ * Class:     JCovPCG_PCGuidance
+ * Method:    pcgCFGEdge
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGEdge (JNIEnv *env, jclass jc, jint Handle, jint sId, jint eId)
+{
+    pcgCFGEdge(Handle, sId, eId);
     return;
 }
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgBuild
- * Signature: ()V
+ * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgBuild (JNIEnv *env, jclass jc)
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgBuild (JNIEnv *env, jclass jc, jint Handle)
 {
-    pcgBuild();
+    pcgBuild(Handle);
     return;
 }
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgNeedInstrumented
- * Signature: (I)Z
+ * Signature: (II)Z
  */
-JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented (JNIEnv *env, jclass jc, jint Id)
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented (JNIEnv *env, jclass jc, jint Handle, jint Id)
 {
-    return pcgNeedInstrumented (Id);
+    return pcgNeedInstrumented (Handle, Id);
 }
 
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsDominated
- * Signature: (II)Z
+ * Signature: (III)Z
  */
-JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsDominated (JNIEnv *env, jclass jc, jint dId, jint Id)
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsDominated (JNIEnv *env, jclass jc, jint Handle, jint dId, jint Id)
 {
-    return pcgIsDominated(dId, Id);
+    return pcgIsDominated(Handle, dId, Id);
 }
 
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsPostDominated
- * Signature: (II)Z
+ * Signature: (III)Z
  */
-JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsPostDominated (JNIEnv *env, jclass jc, jint pdId, jint Id)
+JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgIsPostDominated (JNIEnv *env, jclass jc, jint Handle, jint pdId, jint Id)
 {
-    return pcgIsPostDominated(pdId, Id);
+    return pcgIsPostDominated(Handle, pdId, Id);
 }
 
 #ifdef __cplusplus

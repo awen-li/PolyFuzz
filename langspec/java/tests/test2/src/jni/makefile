@@ -11,7 +11,7 @@ OBJ_PATH     = obj
 JAVA = /usr/lib/jvm/java-8-openjdk-amd64
 
 CFLAGS     = -fPIC -O3 -I$(INCLUDE_PATH) -I$(JAVA)/include/linux -I$(JAVA)/include
-LD_CFLAGS  = -fPIC -shared -lpthread
+LD_CFLAGS  = -fPIC -shared -lpthread -lxFuzztrace
 
 SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)
 OBJ_FILES     = $(addprefix $(OBJ_PATH)/, $(addsuffix .o,$(notdir $(basename $(SOURCE_FILES)))))

@@ -14,9 +14,10 @@ char* PwManage_NativePwd (int Key)
 {
     char Buf [128];
 
-    if (Key >= 102760444 &&  Key < 102760888 )
+    if (Key >= 10000 &&  Key < 10500 )
     {
-        memcpy (Buf, PWD[3], strlen (PWD[3]));
+        int Index = Key%4;
+        memcpy (Buf, PWD[Index], strlen (PWD[Index]));
     }
     else
     {

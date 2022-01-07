@@ -18,11 +18,9 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
 import soot.jimple.IntConstant;
-import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
-import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 
@@ -81,7 +79,7 @@ public class CovPCG extends BodyTransformer
 		}
 	}
 	
-	private boolean isExitStmt (Stmt stmt, boolean isMainMethod)
+	private boolean IsExitStmt (Stmt stmt, boolean isMainMethod)
 	{	
 		if (stmt.toString().indexOf("java.lang.System: void exit(int)") != -1)
 		{
@@ -89,6 +87,16 @@ public class CovPCG extends BodyTransformer
 		}
 		
 		if (isMainMethod && (stmt instanceof ReturnStmt || stmt instanceof ReturnVoidStmt))
+		{
+		    return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean IsExcepProc (Stmt stmt)
+	{
+		if (stmt.toString().indexOf("caughtexception") != -1)
 		{
 		    return true;
 		}
@@ -104,12 +112,18 @@ public class CovPCG extends BodyTransformer
 		while (stmtIt.hasNext()) 
 		{
 			Stmt stmt = (Stmt) stmtIt.next();
-            
-			if (isExitStmt (stmt, isMainMethod))
+			
+			if (IsExcepProc (stmt))
+			{
+				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(100)));
+		    	units.insertBefore(dynStmt, stmt);
+		    	System.out.println("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
+			}
+			else if (IsExitStmt (stmt, isMainMethod))
 		    {
 		    	Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(0)));
 		    	units.insertBefore(dynStmt, stmt);
-		    	System.out.println("\t### Instrument exit statement -> " + stmt.toString());
+		    	System.out.println("\t### Instrument exit statement with exit-code 0 -> " + stmt.toString());
 		    }
 		}	
 	}

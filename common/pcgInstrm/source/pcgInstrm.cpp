@@ -105,8 +105,8 @@ bool pcgNeedInstrumented (unsigned Handle, unsigned Id)
     if (Cn == NULL)
     {
         /* default true */
-        DEBUG ("Node-%u refered to a CFGNode failed, Need Instrumented by default\r\n", Id);
-        return true;
+        DEBUG ("Node-%u refered to a CFGNode, dead code or excepton block \r\n", Id);
+        return false;
     }
 
     /* must instrument the entry block*/

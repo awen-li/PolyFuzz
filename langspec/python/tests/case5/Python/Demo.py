@@ -13,7 +13,7 @@ class PwManage:
         return "RetrievePwd";
        
     def getPwd (self):
-        if self.Key > 102760644 and self.Key < 368435455:
+        if self.Key > 9999 and self.Key < 11000:
 	        return PwdInfo (self.Key)
         else:
 	        return self.Retrieve (self.Key)

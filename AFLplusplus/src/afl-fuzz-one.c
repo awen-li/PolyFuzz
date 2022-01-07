@@ -5776,12 +5776,13 @@ static inline u32 gen_random_item (afl_state_t *afl,
 /* pattern aware fuzzing  */
 u8 patawa_fuzzing(afl_state_t *afl) {
     u8 ret_val = 1, doing_det = 0;
-    u8 *in_buf, *out_buf;
+    u8 *in_buf, *orig_in, *out_buf;
     u32 len, temp_len;
     u64 path_queued = 0, orig_hit_cnt, new_hit_cnt = 0;
+    u32 splice_cycle = 0;
   
     /* Map the test case into memory. */
-    in_buf  = queue_testcase_get(afl, afl->queue_cur);
+    orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
     len     = afl->queue_cur->len;
     out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
     assert (out_buf != NULL);
@@ -5996,11 +5997,19 @@ havoc_stage:
     /* The havoc stage mutation code is also invoked when splicing files; if the
        splice_cycle variable is set, generate different descriptions and such. */
 
-    afl->stage_name  = "havoc";
-    afl->stage_short = "havoc";
-    afl->stage_max   = (doing_det ? HAVOC_CYCLES_INIT : HAVOC_CYCLES) *
-                        perf_score / afl->havoc_div / 100;
+    if (!splice_cycle) {
 
+        afl->stage_name = "havoc";
+        afl->stage_short = "havoc";
+        afl->stage_max = (doing_det ? HAVOC_CYCLES_INIT : HAVOC_CYCLES) *
+                         perf_score / afl->havoc_div / 100;
+    } else {
+        perf_score = orig_perf;
+        snprintf(afl->stage_name_buf, STAGE_BUF_SIZE, "splice %u", splice_cycle);
+        afl->stage_name = afl->stage_name_buf;
+        afl->stage_short = "splice";
+        afl->stage_max = SPLICE_HAVOC * perf_score / afl->havoc_div / 100;
+    }
     if (afl->stage_max < HAVOC_MIN) { afl->stage_max = HAVOC_MIN; }
 
     temp_len = len;
@@ -6315,8 +6324,75 @@ havoc_stage:
     }
 
     new_hit_cnt = afl->queued_paths + afl->unique_crashes;
-    afl->stage_finds[STAGE_HAVOC] += new_hit_cnt - orig_hit_cnt;
-    afl->stage_cycles[STAGE_HAVOC] += afl->stage_max;
+    if (!splice_cycle) {    
+        afl->stage_finds[STAGE_HAVOC] += new_hit_cnt - orig_hit_cnt;
+        afl->stage_cycles[STAGE_HAVOC] += afl->stage_max;
+    
+    } else {    
+        afl->stage_finds[STAGE_SPLICE] += new_hit_cnt - orig_hit_cnt;
+        afl->stage_cycles[STAGE_SPLICE] += afl->stage_max;    
+    }
+
+    
+    /**********************************
+     * SPLICING                       *
+     **********************************/
+    
+    /* This is a last-resort strategy triggered by a full round with no findings.
+       It takes the current input file, randomly selects another input, and
+       splices them together at some offset, then relies on the havoc
+       code to mutate that blob. */
+    
+retry_splicing:
+    
+    if (afl->use_splicing && splice_cycle++ < SPLICE_CYCLES &&
+        afl->ready_for_splicing_count > 1 && afl->queue_cur->len >= 4) {
+    
+        struct queue_entry *target;
+        u32                 tid, split_at;
+        u8 *                new_buf;
+        s32                 f_diff, l_diff;
+    
+        /* First of all, if we've modified in_buf for havoc, let's clean that
+           up... */   
+        if (in_buf != orig_in) {   
+            in_buf = orig_in;
+            len = afl->queue_cur->len; 
+        }
+    
+        /* Pick a random queue entry and seek to it. Don't splice with yourself. */  
+        do {
+            tid = rand_below(afl, afl->queued_paths); 
+        } while (tid == afl->current_entry || afl->queue_buf[tid]->len < 4);
+    
+        /* Get the testcase */
+        afl->splicing_with = tid;
+        target = afl->queue_buf[tid];
+        new_buf = queue_testcase_get(afl, target);
+    
+        /* Find a suitable splicing location, somewhere between the first and
+           the last differing byte. Bail out if the difference is just a single byte or so. */ 
+        locate_diffs(in_buf, new_buf, MIN(len, (s64)target->len), &f_diff, &l_diff);
+    
+        if (f_diff < 0 || l_diff < 2 || f_diff == l_diff) { goto retry_splicing; }
+    
+        /* Split somewhere between the first and last differing byte. */ 
+        split_at = f_diff + rand_below(afl, l_diff - f_diff);
+    
+        /* Do the thing. */   
+        len = target->len;
+        afl->in_scratch_buf = afl_realloc(AFL_BUF_PARAM(in_scratch), len);
+        memcpy(afl->in_scratch_buf, in_buf, split_at);
+        memcpy(afl->in_scratch_buf + split_at, new_buf, len - split_at);
+        in_buf = afl->in_scratch_buf;
+        afl_swap_bufs(AFL_BUF_PARAM(in), AFL_BUF_PARAM(in_scratch));
+    
+        out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+        if (unlikely(!out_buf)) { PFATAL("alloc"); }
+        memcpy(out_buf, in_buf, len);
+    
+        goto havoc_stage;  
+    }
 
     ret_val = 0;
 /* we are through with this queue entry - for this iteration */

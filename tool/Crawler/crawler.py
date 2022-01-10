@@ -80,13 +80,16 @@ class Crawler():
         Size = 0
         for lg in Langs:
             Size += LangsDict[lg]
-
+		
         Cp  = LangsDict['C']*100/Size
-        Pyp = LangsDict['Python']*100/Size
+        if 'C++' in Langs:
+            Cp  += LangsDict['C++']*100/Size
+        
+        Pyp =  LangsDict['Python']*100/Size
         print (LangsDict, end=", => ")
         print ("C percent = %u, Python percent = %u" %(Cp, Pyp))
 
-        if Cp < 30:
+        if Cp < 10:
             return False
 
         if Pyp < 30:
@@ -103,12 +106,15 @@ class Crawler():
         for lg in Langs:
             Size += LangsDict[lg]
 
-        Cp   = LangsDict['C']*100/Size
+        Cp  = LangsDict['C']*100/Size
+        if 'C++' in Langs:
+            Cp  += LangsDict['C++']*100/Size
+        
         Java = LangsDict['Java']*100/Size
         print (LangsDict, end=", => ")
         print ("C percent = %u, Java percent = %u" %(Cp, Java))
 
-        if Cp < 30:
+        if Cp < 10:
             return False
 
         if Java < 30:

@@ -95,8 +95,9 @@ public:
         fclose (m_File);
     }
 
-    VOID WiteGraph () 
+    VOID WiteGraph (DWORD EntryId) 
     {
+        m_GraphName += to_string (EntryId);
         WriteHeader(m_GraphName);
 
         for (auto It = m_Graph->begin (), End = m_Graph->end (); It != End; It++)

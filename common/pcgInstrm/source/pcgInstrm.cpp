@@ -43,7 +43,9 @@ void pcgBuild (unsigned Handle)
     
 #if __DEBUG__
     CFGViz GV ("BlockCFG", Cfg);
-    GV.WiteGraph ();
+
+    CFGNode* Entry = Cfg->GetEntry();
+    GV.WiteGraph (Entry->GetId());
 #endif
     
     /* compute DOM */

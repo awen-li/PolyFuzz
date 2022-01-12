@@ -11,8 +11,8 @@ function compile ()
 
 	pushd $target
 	
-	export CC="afl-cc"
-	export CXX="afl-c++"
+	export CC="afl-cc -lxFuzztrace"
+	export CXX="afl-c++ -lxFuzztrace"
 	
 	./autogen.sh
 	make clean && make && make install

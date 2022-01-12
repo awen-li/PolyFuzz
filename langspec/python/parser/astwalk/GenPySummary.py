@@ -10,6 +10,10 @@ from xml.dom.minidom import Document
 import pickle
 
 def IsInExpList (py, PyFile, ExpList):
+    #default
+    if PyFile.find ("test") != -1:
+        return True
+
     if ExpList == None:
         return False
     if py in ExpList:
@@ -51,7 +55,6 @@ def GenPySummary (PyDir, ExpList=None):
             PyFile = os.path.join(Path, py)
             if IsInExpList (py, PyFile, ExpList) == True:
                 continue
-
 
             with open(PyFile) as PyF:
                 print ("#visit " + PyFile)

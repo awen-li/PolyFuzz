@@ -8,6 +8,8 @@ import requests
 import sys, getopt
 import pandas as pd
 from time import sleep
+import datetime
+from datetime import datetime as DT
 
 class Repository ():
     def __init__(self, Id, Star, Langs, ApiUrl, CloneUrl, Descripe):
@@ -22,7 +24,7 @@ class Repository ():
 class Crawler():
     def __init__(self):
         self.list_of_repositories = []
-        self.FileName = "Benchmarks-CVE.csv"
+        self.FileName = "Benchmarks.csv"
         self.Username = "wangtong0908"
         self.Password = ""
         self.RepoList = {}
@@ -141,20 +143,41 @@ class Crawler():
             return False
 
         return True
-
-    def CrawlerProject (self):
+    
+    def IsActive (self, Repo):
+        # updated in a year
+        UpdateDate = DT.strptime(Repo ['updated_at'], '%Y-%m-%dT%H:%M:%SZ')
+        UpdateYear = UpdateDate.year        
+        CurDate = datetime.date.today ()
+        CurYear = CurDate.year
+        
+        if (CurYear - UpdateYear) > 1:
+            return False
+        	
+        # Check star
+        Star = Repo ['stargazers_count']
+        if Star < 100:
+            return False;
+            
+        return True
+        
+    def CrawlerProject (self, Namelist):
         PageNum = 10
-        CveIndex = 0
-        CveTotal = len (self.CWElist) 
-        for Cve in self.CWElist:
-            CveIndex += 1
+        NameIndex = 0
+        NameTotal = len (Namelist) 
+        for Name in Namelist:
+            NameIndex += 1
             for PageNo in range (1, PageNum+1):
-                print ("===>[%u/%u][Cve]:%s, [Page]: %u\r\n" %(CveIndex, CveTotal, Cve, PageNo))
-                Result = self.GetPageofRepos (Cve, PageNo)
+                print ("===>[%u/%u][Name]:%s, [Page]: %u\r\n" %(NameIndex, NameTotal, Name, PageNo))
+                Result = self.GetPageofRepos (Name, PageNo)
                 if 'items' not in Result:
                     break
+                
                 RepoList = Result['items']
                 for Repo in RepoList:
+                    if self.IsActive (Repo):
+                        continue
+                    
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])
                     if self.IsCPython (LangsDict) == False and self.IsCJava (LangsDict) == False:
                         continue
@@ -166,55 +189,15 @@ class Crawler():
                     self.Appendix (RepoData)
         self.Save()
 
-    def Clone (self):
-        BaseDir = os.getcwd () + "/Repository/"
-        if not os.path.exists (BaseDir):
-            os.mkdir (BaseDir)
-        
-        Df = pd.read_csv(self.FileName)
-        for Index, Row in Df.iterrows():            
-            RepoId = Row['id']        
-            RepoDir = BaseDir + str(RepoId)
-            if not os.path.exists (RepoDir):
-                os.mkdir (RepoDir)
-            else:
-                RmCmd = "rm -rf " + RepoDir + "/*"
-                os.system (RmCmd)         
-            os.chdir(RepoDir)
-
-            CloneUrl = Row['CloneUrl']
-            CloneCmd = "git clone " + CloneUrl
-            print ("[", Index, "] --> ", CloneCmd)
-            os.system (CloneCmd)
-
-            CleanCmd = "find . -name \".git\" | xargs rm -rf"
-            os.system (CleanCmd)
-
-    def Sniffer (self, Dir):
-        CRegex  = "#include <Python.h>|PyObject|Py_Initialize|PyMethodDef|cdll.LoadLibrary"
-        PyRegex = "from cffi import FFI|from ctypes import|from.*cimport|cdef extern from"
-        RuleSet = {".c":CRegex, ".py":PyRegex}
-        
-        RepoDirs = os.walk(Dir)
-        for Path, Dirs, Fs in RepoDirs:
-            for f in Fs:
-                File = os.path.join(Path, f)
-                if not os.path.exists (File):
-                    continue
-            
-                Ext = os.path.splitext(File)[-1].lower()
-                Rules = RuleSet.get (Ext)
-                if Rules == None:
-                    continue
-                with open (File, "r", encoding="utf8", errors="ignore") as sf:
-                    for line in sf:
-                        if len (line) < 4:
-                            continue
-
-                        if re.search(Rules, line) != None:
-                            print (Dir, " -> Python interacts with C.")
-                            return True
-        return False
+    
+    def CrawlerEntry (self, Type):
+        if Type == "cve":
+            self.FileName = "Benchmarks-CVE.csv"
+            self.CrawlerProject (self.CWElist)
+        else:
+            self.FileName = "Benchmarks-Name.csv"
+            NameList = ["Java Native", "Java C", "Java C++", "Python Native", "Python C", "Python C++", "Python extension", "Java", "JNI", "Python"]
+            self.CrawlerProject (NameList)
 
 def Daemonize(pid_file=None):
     pid = os.fork()
@@ -243,35 +226,26 @@ def Daemonize(pid_file=None):
         atexit.register(os.remove, pid_file)
    
 def main(argv):
-    Function = 'crawler'
+    Type = "cve"
     IsDaemon = False
-    RepoDir  = ""
 
     try:
-        opts, args = getopt.getopt(argv,"df:r:",["Function="])
+        opts, args = getopt.getopt(argv,"t:d",["Function="])
     except getopt.GetoptError:
-        print ("run.py -f <Function>")
+        print ("run.py -t <Type>")
         sys.exit(2)
+    
     for opt, arg in opts:
-        if opt in ("-f", "--Function"):
-            Function = arg;
-        if opt in ("-r", "--Repository"):
-            RepoDir = arg;
-        elif opt in ("-d", "--daemon"):
+        if opt in ("-t", "--Function"):
+            Type = arg;
+        if opt in ("-d", "--Daemon"):
             IsDaemon = True;
 
     if IsDaemon == True:
         Daemonize ()
     
-    if (Function == "crawler"):
-        Cl = Crawler()
-        Cl.CrawlerProject ()
-    elif (Function == "clone"):
-        Cl = Crawler()
-        Cl.Clone ()
-    elif (Function == "sniffer"):
-        Cl = Crawler()
-        Cl.Sniffer (RepoDir) 
+    Cl = Crawler()
+    Cl.CrawlerEntry (Type)
 
 if __name__ == "__main__":
     main(sys.argv[1:])

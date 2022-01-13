@@ -246,6 +246,9 @@ typedef struct seed_tmpt
 
     strupat spat[MAX_STPAT];
     u32 spat_num;
+
+    u32 cross_paths;
+    u32 cp_indicator;
 }seed_tmpt;
 
 enum {

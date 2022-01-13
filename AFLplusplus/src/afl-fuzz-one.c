@@ -5672,20 +5672,20 @@ static inline void load_patterns (/*struct queue_entry *q,
     /* load only once */
     if (stmpt->char_num == 0) {
         int fd = open("char.pat", O_RDONLY);
-        assert (fd > 0);
+        if (fd > 0) {
+            ck_read(fd, &stmpt->char_num, sizeof (u32), "char.pat");
+            assert (stmpt->char_num != 0);
+            DEBUG_PRINT ("stmpt->char_num = %u \r\n", stmpt->char_num);
+            ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), "char.pat");
 
-        ck_read(fd, &stmpt->char_num, sizeof (u32), "char.pat");
-        assert (stmpt->char_num != 0);
-        DEBUG_PRINT ("stmpt->char_num = %u \r\n", stmpt->char_num);
-        ck_read(fd, stmpt->char_pattern, sizeof (stmpt->char_pattern), "char.pat");
-
-        u32 j = 0;
-        for (u32 i = 0; i < 256; i++) {
-            if (stmpt->char_pattern[i] == CHAR_NORMAL) {
-                stmpt->char_set[j++] = i;
+            u32 j = 0;
+            for (u32 i = 0; i < 256; i++) {
+                if (stmpt->char_pattern[i] == CHAR_NORMAL) {
+                    stmpt->char_set[j++] = i;
+                }
             }
+            close (fd);
         }
-        close (fd);
 
         fd = open("stru.pat", O_RDONLY);
         if (fd > 0) {     
@@ -5780,6 +5780,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     u32 len, temp_len;
     u64 path_queued = 0, orig_hit_cnt, new_hit_cnt = 0;
     u32 splice_cycle = 0;
+    u32 cross_paths = 0;
   
     /* Map the test case into memory. */
     orig_in = in_buf = queue_testcase_get(afl, afl->queue_cur);
@@ -5845,7 +5846,9 @@ u8 patawa_fuzzing(afl_state_t *afl) {
 
     /*****************************************************
      * Following character-patterns: byte mutation       *
-     *****************************************************/  
+     *****************************************************/
+    if (stmpt->char_num == 0)   goto havoc_stage;
+    
     afl->stage_name  = "byte-op";
     afl->stage_short = "byte-op";
     afl->stage_max   = len;
@@ -5882,6 +5885,8 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_short = "byte-inc";
     afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
     path_queued = afl->queued_paths;
+    cross_paths = afl->stmpt.cross_paths;
+    
     u8 random_bytes[32];   
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
@@ -5917,8 +5922,9 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         memcpy(out_buf, in_buf, len);
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max *= 2;
+            afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
             path_queued = afl->queued_paths;
+            cross_paths = afl->stmpt.cross_paths;
         }   
     }
 
@@ -5933,6 +5939,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     afl->stage_short = "stru-inc";
     afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
     path_queued = afl->queued_paths;
+    cross_paths = afl->stmpt.cross_paths;
     
     u32 pt_offset[MAX_STPAT];
     for (u32 sn = 0; sn < stmpt->spat_num; sn++) {
@@ -5982,8 +5989,9 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         }
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max *= 2;
+            afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
             path_queued = afl->queued_paths;
+            cross_paths = afl->stmpt.cross_paths;
         }  
     }
 
@@ -6015,6 +6023,7 @@ havoc_stage:
     temp_len = len;
     orig_hit_cnt = afl->queued_paths + afl->unique_crashes;
     path_queued = afl->queued_paths;
+    cross_paths = afl->stmpt.cross_paths;
 
     /* We essentially just do several thousand runs (depending on perf_score)
        where we take the input file and make random stacked tweaks. */
@@ -6314,11 +6323,12 @@ havoc_stage:
         /* If we're finding new stuff, let's run for a bit longer, limits permitting. */
         if (afl->queued_paths != path_queued) {
             if (perf_score <= afl->havoc_max_mult * 100) {
-                afl->stage_max *= 2;
+                afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
                 perf_score *= 2;
             }
 
             path_queued = afl->queued_paths;
+            cross_paths = afl->stmpt.cross_paths;
         }   
 
     }

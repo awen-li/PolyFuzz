@@ -943,6 +943,14 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   }
 
+  if (afl->fsrv.trace_bits[0] != 0) {
+    afl->stmpt.cross_paths++;
+    afl->stmpt.cp_indicator = 1;
+  }
+  else {
+    afl->stmpt.cp_indicator = 0;
+  }
+
   /* Users can hit us with SIGUSR1 to request the current input
      to be abandoned. */
 

@@ -175,7 +175,7 @@ class Crawler():
                 
                 RepoList = Result['items']
                 for Repo in RepoList:
-                    if self.IsActive (Repo):
+                    if self.IsActive (Repo) == False:
                         continue
                     
                     LangsDict = self.GetRepoLangs (Repo['languages_url'])

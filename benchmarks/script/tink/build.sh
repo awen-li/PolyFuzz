@@ -28,6 +28,16 @@ function compile ()
 	popd
 }
 
+Action=$1
+if [ "$Action" == "test" ]; then
+    pushd $ROOT/$target/python
+    export TINK_SRC_PATH=$ROOT/$target
+    python setup.py test
+    popd
+    exit 0
+fi
+
+
 # 1. compile the C unit
 cd $ROOT
 compile

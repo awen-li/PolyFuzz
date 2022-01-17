@@ -3,6 +3,7 @@ import io
 from tink import core
 from tink import streaming_aead
 from tink.streaming_aead import _raw_streaming_aead
+from tink.testing import bytes_io
 import pyprob
 
 pyprob.Setup('py_summary.xml', 'es_write.py')
@@ -28,11 +29,19 @@ if __name__ == '__main__':
         Data = eval (LoadInput (sys.argv[1]))
         print (Data)
         streaming_aead.register()
-        f = io.BytesIO()
-        es = get_raw_primitive().new_raw_encrypting_stream(f, B_ASSOC_)
-        es.write(Data + B_X80)
-        es.flush()
-        es.close()      
+        
+        #write
+        raw_primitive = get_raw_primitive()
+        ct_destination = bytes_io.BytesIOWithValueAfterClose()
+        with raw_primitive.new_raw_encrypting_stream(ct_destination, B_AAD_) as es:
+            es.write(Data)
+        
+        #read
+        data_len = len (Data)
+        ct_source = io.BytesIO(ct_destination.value_after_close())
+        with raw_primitive.new_raw_decrypting_stream(ct_source, B_AAD_, close_ciphertext_source=True) as ds:
+            ds.read(data_len)
+            ds.read(data_len*2)   
     except Exception as e:
         print (e)
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)

@@ -385,7 +385,12 @@ static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf)
 
 
 int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
-{   
+{
+    if (!__Prt.m_InitOkay)
+    {
+        return 0;
+    }
+    
     PyCodeObject *f_code  = frame->f_code;
 
     string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));

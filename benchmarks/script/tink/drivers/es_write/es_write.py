@@ -36,7 +36,6 @@ def write_read (raw_primitive, type, data):
 if __name__ == '__main__':
     try:
         raw_data = eval (LoadInput (sys.argv[1]))
-        print (raw_data)
         streaming_aead.register()
         
         raw_primitive = get_raw_primitive()
@@ -45,6 +44,5 @@ if __name__ == '__main__':
             write_read (raw_primitive, type, raw_data)
         
     except Exception as e:
-        print (e)
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
 

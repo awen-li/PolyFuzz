@@ -26,8 +26,8 @@ void BV_set::LoadPySummary(string PySummary)
     FILE *fp = fopen(PySummary.c_str(), "r");
     if (fp == NULL)
     {
-        PY_PRINT("LoadPySummary: open %s fail\r\n", PySummary.c_str());
-        return;
+        fprintf(stderr, "LoadPySummary: open %s fail\r\n", PySummary.c_str());
+        exit (0);
     }    
     mxml_node_t* tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
     fclose(fp);

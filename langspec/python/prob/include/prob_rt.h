@@ -123,13 +123,16 @@ struct PRT
     
     unordered_map <unsigned, PRT_function*> m_Idx2Rtf;
     PRT_function *m_CatchRtf;
+    unsigned m_InitOkay;
 
     PRT () 
     {
-        m_CatchRtf   = NULL;
+        m_CatchRtf = NULL;
+        m_InitOkay = 0;
         
         RegModule.clear ();
         m_Idx2Rtf.clear ();
+        
     }
 
     ~PRT () 
@@ -162,6 +165,7 @@ struct PRT
             }
         }
 
+        m_InitOkay = 1;
         return;        
     }
 

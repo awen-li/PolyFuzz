@@ -8,10 +8,6 @@ import pyprob
 
 pyprob.Setup('py_summary.xml', 'es_write.py')
 
-B_X80 = b'\x80'
-B_AAD_ = b'aa' + B_X80
-B_ASSOC_ = b'asso' + B_X80
-
 def get_raw_primitive():
   key_data = core.Registry.new_key_data(streaming_aead.streaming_aead_key_templates.AES128_CTR_HMAC_SHA256_4KB)
   return core.Registry.primitive(key_data, _raw_streaming_aead.RawStreamingAead)

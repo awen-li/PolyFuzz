@@ -21,12 +21,12 @@ using namespace std;
 </branch_variables>
 
 */
-void BV_set::LoadBrVals(string BrValXml)
+void BV_set::LoadPySummary(string PySummary)
 {
-    FILE *fp = fopen(BrValXml.c_str(), "r");
+    FILE *fp = fopen(PySummary.c_str(), "r");
     if (fp == NULL)
     {
-        PY_PRINT("LoadBrVals: open %s fail\r\n", BrValXml.c_str());
+        PY_PRINT("LoadPySummary: open %s fail\r\n", PySummary.c_str());
         return;
     }    
     mxml_node_t* tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
@@ -106,8 +106,8 @@ void BV_set::LoadBrVals(string BrValXml)
     }
 
     mxmlDelete(tree);
-    PY_PRINT("LoadBrVals: load %s done, file number:%d , function number:%d, branchs:%u\r\n", 
-             BrValXml.c_str(), FileNo, FuncNo, m_Branchs);
+    PY_PRINT("LoadPySummary: load %s done, file number:%d , function number:%d, branchs:%u\r\n", 
+             PySummary.c_str(), FileNo, FuncNo, m_Branchs);
 
     return;
 }

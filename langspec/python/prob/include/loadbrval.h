@@ -191,7 +191,7 @@ struct BV_set
         return m_Fname2BVfile.end ();
     }
 
-    void LoadBrVals(string BrValXml);
+    void LoadPySummary(string BrValXml);
     int GetFIdx (string File, string Func, unsigned LineNo);
 };
 

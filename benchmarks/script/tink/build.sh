@@ -2,6 +2,7 @@
 
 export ROOT=`cd ../../ && pwd`
 export target=tink
+export drivers=$ROOT/script/$target/drivers
 
 function compile ()
 {
@@ -45,7 +46,10 @@ compile
 # 2. summarize the Python unit
 PyDir=$target/python/tink
 python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+if [ ! -d "$drivers" ]; then
+	mkdir $drivers
+fi
+cp $PyDir/py_summary.xml $drivers/
 
 cd $ROOT/script/$target/
 python tink-test.py

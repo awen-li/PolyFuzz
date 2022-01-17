@@ -12,11 +12,11 @@ using namespace std;
 
 static PRT __Prt;
 
-void PyInit(string BrValXml) 
+void PyInit(string PySummary) 
 {
     /* load all branch variables for each function */
     BV_set *BvSet = &__Prt.BvSet;
-    BvSet->LoadBrVals(BrValXml);
+    BvSet->LoadPySummary(PySummary);
 
     /* Init tracing: shared memory ALF++, etc. */
     int FinalLoc = DynTraceInit (BvSet->m_Branchs);

@@ -18,14 +18,14 @@
     <function class="" name="read_keyset_handle_with_associated_data" sline="205" eline="208" brval="" bbs="205"/>
     <function class="" name="read_no_secret_keyset_handle" sline="212" eline="214" brval="" bbs="212"/>
     <function class="" name="_keyset_info" sline="217" eline="225" brval="" bbs="217 219"/>
-    <function class="" name="_encrypt" sline="228" eline="242" brval="keyset keyset2" bbs="228 237"/>
+    <function class="" name="_encrypt" sline="228" eline="242" brval="keyset2 keyset" bbs="228 237"/>
     <function class="" name="_decrypt" sline="246" eline="256" brval="" bbs="246"/>
-    <function class="" name="_validate_keyset" sline="261" eline="279" brval="num_primary_keys key num_non_public_key_material tink_pb2 num_non_destroyed_keys" bbs="261 263 264 274 276 278"/>
+    <function class="" name="_validate_keyset" sline="261" eline="279" brval="num_non_public_key_material num_non_destroyed_keys key tink_pb2 num_primary_keys" bbs="261 263 264 274 276 278"/>
     <function class="" name="_validate_key" sline="282" eline="289" brval="key tink_pb2" bbs="282 284 286 288"/>
     <function class="" name="_assert_no_secret_key_material" sline="292" eline="297" brval="key tink_pb2" bbs="292 293 294"/>
     <function class="" name="_assert_enough_key_material" sline="300" eline="302" brval="keyset" bbs="300 301"/>
     <function class="" name="_assert_enough_encrypted_key_material" sline="305" eline="308" brval="encrypted_keyset" bbs="305 307"/>
-    <function class="" name="_generate_unused_key_id" sline="311" eline="315" brval="key key_id keyset" bbs="311 312 314"/>
+    <function class="" name="_generate_unused_key_id" sline="311" eline="315" brval="key keyset key_id" bbs="311 312 314"/>
   </file>
   <file name="secret_key_access.py" id="2"/>
   <file name="_keyset_reader.py" id="3">
@@ -227,16 +227,16 @@
     <function class="Registry" name="reset" sline="47" eline="50" brval="" bbs="47"/>
     <function class="Registry" name="_key_manager_internal" sline="53" eline="59" brval="type_url cls" bbs="53 56"/>
     <function class="Registry" name="key_manager" sline="62" eline="72" brval="" bbs="62"/>
-    <function class="Registry" name="register_key_manager" sline="75" eline="107" brval="primitive_class existing_new_key new_key_allowed key_managers type_url" bbs="75 89 93 95 101 105 107"/>
+    <function class="Registry" name="register_key_manager" sline="75" eline="107" brval="key_managers type_url existing_new_key primitive_class new_key_allowed" bbs="75 89 93 95 101 105 107"/>
     <function class="Registry" name="primitive" sline="110" eline="131" brval="primitive_class" bbs="110 126"/>
     <function class="Registry" name="new_key_data" sline="134" eline="144" brval="new_key_allowed" bbs="134 139"/>
-    <function class="Registry" name="public_key_data" sline="147" eline="158" brval="private_key_data tink_pb2" bbs="147 150 154"/>
+    <function class="Registry" name="public_key_data" sline="147" eline="158" brval="tink_pb2 private_key_data" bbs="147 150 154"/>
     <function class="Registry" name="register_primitive_wrapper" sline="161" eline="183" brval="cls" bbs="161 171 178"/>
     <function class="Registry" name="input_primitive_class" sline="186" eline="202" brval="cls primitive_class" bbs="186 197"/>
     <function class="Registry" name="wrap" sline="205" eline="233" brval="cls primitive_class" bbs="205 221 226"/>
   </file>
   <file name="_tink_error.py" id="69">
-    <function class="" name="register_status_not_ok_type" sline="22" eline="26" brval="KNOWN_STATUS_NOT_OK_TYPES status_not_ok_type" bbs="22 24"/>
+    <function class="" name="register_status_not_ok_type" sline="22" eline="26" brval="status_not_ok_type KNOWN_STATUS_NOT_OK_TYPES" bbs="22 24"/>
     <function class="" name="use_tink_errors" sline="29" eline="0" brval="" bbs="29"/>
     <function class="" name="wrapper" sline="32" eline="34" brval="" bbs="32"/>
   </file>
@@ -292,7 +292,7 @@
   </file>
   <file name="_mac_wrapper.py" id="82">
     <function class="_WrappedMac" name="compute_mac" sline="32" eline="38" brval="primary tink_pb2" bbs="32 34 38"/>
-    <function class="_WrappedMac" name="verify_mac" sline="40" eline="66" brval="entry tink_pb2 core" bbs="40 41 47 49 52 59"/>
+    <function class="_WrappedMac" name="verify_mac" sline="40" eline="66" brval="core entry tink_pb2" bbs="40 41 47 49 52 59"/>
     <function class="MacWrapper" name="wrap" sline="80" eline="81" brval="" bbs="80"/>
     <function class="MacWrapper" name="primitive_class" sline="83" eline="84" brval="" bbs="83"/>
     <function class="MacWrapper" name="input_primitive_class" sline="86" eline="87" brval="" bbs="86"/>
@@ -352,7 +352,7 @@
     <function class="PublicKeySignWrapper" name="wrap" sline="63" eline="65" brval="" bbs="63"/>
     <function class="PublicKeySignWrapper" name="primitive_class" sline="67" eline="68" brval="" bbs="67"/>
     <function class="PublicKeySignWrapper" name="input_primitive_class" sline="70" eline="71" brval="" bbs="70"/>
-    <function class="_WrappedPublicKeyVerify" name="verify" sline="80" eline="119" brval="entry tink_pb2 core" bbs="80 90 98 100 103 111"/>
+    <function class="_WrappedPublicKeyVerify" name="verify" sline="80" eline="119" brval="core entry tink_pb2" bbs="80 90 98 100 103 111"/>
     <function class="PublicKeyVerifyWrapper" name="wrap" sline="138" eline="140" brval="" bbs="138"/>
     <function class="PublicKeyVerifyWrapper" name="primitive_class" sline="142" eline="143" brval="" bbs="142"/>
     <function class="PublicKeyVerifyWrapper" name="input_primitive_class" sline="145" eline="146" brval="" bbs="145"/>
@@ -377,7 +377,7 @@
     <function class="_JwtHmac" name="compute_mac_and_encode_with_kid" sline="56" eline="77" brval="kid" bbs="56 70 71"/>
     <function class="_JwtHmac" name="verify_mac_and_decode_with_kid" sline="80" eline="96" brval="" bbs="80"/>
     <function class="MacCcToPyJwtMacKeyManager" name="primitive_class" sline="106" eline="107" brval="" bbs="106"/>
-    <function class="MacCcToPyJwtMacKeyManager" name="primitive" sline="110" eline="120" brval="key_data _JWT_HMAC_KEY_TYPE" bbs="110 111 116 119"/>
+    <function class="MacCcToPyJwtMacKeyManager" name="primitive" sline="110" eline="120" brval="_JWT_HMAC_KEY_TYPE key_data" bbs="110 111 116 119"/>
     <function class="MacCcToPyJwtMacKeyManager" name="key_type" sline="122" eline="123" brval="" bbs="122"/>
     <function class="MacCcToPyJwtMacKeyManager" name="new_key_data" sline="126" eline="129" brval="" bbs="126"/>
     <function class="" name="register" sline="132" eline="134" brval="" bbs="132"/>
@@ -401,9 +401,9 @@
   <file name="_raw_jwt.py" id="104">
     <function class="" name="_from_datetime" sline="32" eline="35" brval="t" bbs="32 33"/>
     <function class="" name="_to_datetime" sline="38" eline="39" brval="" bbs="38"/>
-    <function class="" name="_validate_custom_claim_name" sline="42" eline="44" brval="_REGISTERED_NAMES name" bbs="42 43"/>
+    <function class="" name="_validate_custom_claim_name" sline="42" eline="44" brval="name _REGISTERED_NAMES" bbs="42 43"/>
     <function class="RawJwt" name="_validate_string_claim" sline="77" eline="80" brval="name" bbs="77 78 79"/>
-    <function class="RawJwt" name="_validate_timestamp_claim" sline="82" eline="88" brval="timestamp name _MAX_TIMESTAMP_VALUE" bbs="82 83 85 87"/>
+    <function class="RawJwt" name="_validate_timestamp_claim" sline="82" eline="88" brval="timestamp _MAX_TIMESTAMP_VALUE name" bbs="82 83 85 87"/>
     <function class="RawJwt" name="_validate_audience_claim" sline="91" eline="100" brval="audiences" bbs="91 92 94 97 99"/>
     <function class="RawJwt" name="has_type_header" sline="103" eline="104" brval="" bbs="103"/>
     <function class="RawJwt" name="type_header" sline="106" eline="109" brval="" bbs="106 107"/>
@@ -424,7 +424,7 @@
     <function class="RawJwt" name="custom_claim_names" sline="153" eline="154" brval="" bbs="153"/>
     <function class="RawJwt" name="custom_claim" sline="156" eline="162" brval="" bbs="156 159 162"/>
     <function class="RawJwt" name="json_payload" sline="164" eline="166" brval="" bbs="164"/>
-    <function class="RawJwt" name="create" sline="169" eline="217" brval="value expiration subject issuer jwt_id custom_claims without_expiration not_before issued_at audiences" bbs="169 182 184 188 190 192 194 196 198 200 202 203 205 207 209 211 214"/>
+    <function class="RawJwt" name="create" sline="169" eline="217" brval="jwt_id subject issuer custom_claims without_expiration expiration audiences value issued_at not_before" bbs="169 182 184 188 190 192 194 196 198 200 202 203 205 207 209 211 214"/>
     <function class="RawJwt" name="_from_json" sline="220" eline="224" brval="" bbs="220"/>
     <function class="" name="new_raw_jwt" sline="227" eline="239" brval="" bbs="227"/>
     <function class="" name="raw_jwt_from_json" sline="252" eline="254" brval="" bbs="252"/>
@@ -455,14 +455,14 @@
     <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="new_key_data" sline="193" eline="195" brval="" bbs="193"/>
     <function class="" name="_ecdsa_algorithm_text" sline="199" eline="202" brval="_ECDSA_ALGORITHM_TEXTS algorithm" bbs="199 200"/>
     <function class="" name="_get_custom_kid" sline="205" eline="209" brval="" bbs="205 206 209"/>
-    <function class="" name="_ecdsa_alg_kid_from_private_key_data" sline="212" eline="218" brval="key_data _JWT_ECDSA_PRIVATE_KEY_TYPE" bbs="212 214"/>
+    <function class="" name="_ecdsa_alg_kid_from_private_key_data" sline="212" eline="218" brval="_JWT_ECDSA_PRIVATE_KEY_TYPE key_data" bbs="212 214"/>
     <function class="" name="_ecdsa_alg_kid_from_public_key_data" sline="221" eline="226" brval="_JWT_ECDSA_PUBLIC_KEY_TYPE key_data" bbs="221 223"/>
     <function class="" name="_rsa_ssa_pkcs1_algorithm_text" sline="229" eline="233" brval="_RSA_SSA_PKCS1_ALGORITHM_TEXTS algorithm" bbs="229 231"/>
-    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_private_key_data" sline="236" eline="243" brval="key_data _JWT_RSA_SSA_PKCS1_PRIVATE_KEY_TYPE" bbs="236 238"/>
-    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_public_key_data" sline="246" eline="251" brval="key_data _JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE" bbs="246 248"/>
-    <function class="" name="_rsa_ssa_pss_algorithm_text" sline="254" eline="258" brval="_RSA_SSA_PSS_ALGORITHM_TEXTS algorithm" bbs="254 256"/>
-    <function class="" name="_rsa_ssa_pss_alg_kid_from_private_key_data" sline="261" eline="267" brval="key_data _JWT_RSA_SSA_PSS_PRIVATE_KEY_TYPE" bbs="261 263"/>
-    <function class="" name="_rsa_ssa_pss_alg_kid_from_public_key_data" sline="270" eline="275" brval="key_data _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE" bbs="270 272"/>
+    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_private_key_data" sline="236" eline="243" brval="_JWT_RSA_SSA_PKCS1_PRIVATE_KEY_TYPE key_data" bbs="236 238"/>
+    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_public_key_data" sline="246" eline="251" brval="_JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE key_data" bbs="246 248"/>
+    <function class="" name="_rsa_ssa_pss_algorithm_text" sline="254" eline="258" brval="algorithm _RSA_SSA_PSS_ALGORITHM_TEXTS" bbs="254 256"/>
+    <function class="" name="_rsa_ssa_pss_alg_kid_from_private_key_data" sline="261" eline="267" brval="_JWT_RSA_SSA_PSS_PRIVATE_KEY_TYPE key_data" bbs="261 263"/>
+    <function class="" name="_rsa_ssa_pss_alg_kid_from_public_key_data" sline="270" eline="275" brval="_JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE key_data" bbs="270 272"/>
     <function class="" name="register" sline="278" eline="314" brval="" bbs="278"/>
   </file>
   <file name="_jwt_key_templates.py" id="108">
@@ -527,18 +527,18 @@
     <function class="" name="base64_encode" sline="32" eline="34" brval="" bbs="32"/>
     <function class="" name="_is_valid_urlsafe_base64_char" sline="37" eline="46" brval="c" bbs="37 38 40 42 44"/>
     <function class="" name="base64_decode" sline="49" eline="59" brval="" bbs="49 52 53"/>
-    <function class="" name="_validate_algorithm" sline="65" eline="67" brval="_VALID_ALGORITHMS algorithm" bbs="65 66"/>
+    <function class="" name="_validate_algorithm" sline="65" eline="67" brval="algorithm _VALID_ALGORITHMS" bbs="65 66"/>
     <function class="" name="encode_header" sline="70" eline="72" brval="" bbs="70"/>
     <function class="" name="decode_header" sline="77" eline="79" brval="" bbs="77"/>
     <function class="" name="encode_payload" sline="84" eline="87" brval="" bbs="84"/>
     <function class="" name="decode_payload" sline="92" eline="95" brval="" bbs="92"/>
     <function class="" name="encode_signature" sline="100" eline="102" brval="" bbs="100"/>
     <function class="" name="decode_signature" sline="105" eline="107" brval="" bbs="105"/>
-    <function class="" name="create_header" sline="110" eline="119" brval="type_header kid" bbs="110 114 117"/>
-    <function class="" name="get_kid" sline="122" eline="130" brval="prefix key_id tink_pb2" bbs="122 124 126 127"/>
+    <function class="" name="create_header" sline="110" eline="119" brval="kid type_header" bbs="110 114 117"/>
+    <function class="" name="get_kid" sline="122" eline="130" brval="key_id prefix tink_pb2" bbs="122 124 126 127"/>
     <function class="" name="split_signed_compact" sline="133" eline="162" brval="" bbs="133 144"/>
-    <function class="" name="_validate_kid_header" sline="165" eline="167" brval="header kid" bbs="165 166"/>
-    <function class="" name="validate_header" sline="170" eline="191" brval="custom_kid header algorithm tink_kid" bbs="170 177 180 183 185 186 190"/>
+    <function class="" name="_validate_kid_header" sline="165" eline="167" brval="kid header" bbs="165 166"/>
+    <function class="" name="validate_header" sline="170" eline="191" brval="custom_kid algorithm header tink_kid" bbs="170 177 180 183 185 186 190"/>
     <function class="" name="get_type_header" sline="194" eline="195" brval="" bbs="194"/>
     <function class="" name="create_unsigned_compact" sline="198" eline="204" brval="" bbs="198 200 203"/>
     <function class="" name="create_signed_compact" sline="207" eline="208" brval="" bbs="207"/>
@@ -571,16 +571,16 @@
   <file name="_jwk_set_converter.py" id="114">
     <function class="" name="_base64_encode" sline="70" eline="71" brval="" bbs="70"/>
     <function class="" name="_base64_decode" sline="74" eline="75" brval="" bbs="74"/>
-    <function class="" name="from_public_keyset_handle" sline="78" eline="122" brval="key _JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE tink_pb2 _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE _JWT_ECDSA_PUBLIC_KEY_TYPE" bbs="78 107 108 110 112 114 116 118 121"/>
+    <function class="" name="from_public_keyset_handle" sline="78" eline="122" brval="_JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE key _JWT_ECDSA_PUBLIC_KEY_TYPE _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE tink_pb2" bbs="78 107 108 110 112 114 116 118 121"/>
     <function class="" name="from_keyset_handle" sline="126" eline="129" brval="" bbs="126"/>
-    <function class="" name="_convert_jwt_ecdsa_key" sline="132" eline="154" brval="kid ecdsa_public_key _ECDSA_PARAMS" bbs="132 137 150 152"/>
-    <function class="" name="_convert_jwt_rsa_ssa_pkcs1_key" sline="157" eline="178" brval="public_key kid _RSA_SSA_PKCS1_PARAMS" bbs="157 162 174 176"/>
-    <function class="" name="_convert_jwt_rsa_ssa_pss_key" sline="181" eline="202" brval="_RSA_SSA_PSS_PARAMS public_key kid" bbs="181 186 198 200"/>
-    <function class="" name="_generate_unused_key_id" sline="205" eline="209" brval="key key_id keyset" bbs="205 206 208"/>
+    <function class="" name="_convert_jwt_ecdsa_key" sline="132" eline="154" brval="ecdsa_public_key kid _ECDSA_PARAMS" bbs="132 137 150 152"/>
+    <function class="" name="_convert_jwt_rsa_ssa_pkcs1_key" sline="157" eline="178" brval="kid public_key _RSA_SSA_PKCS1_PARAMS" bbs="157 162 174 176"/>
+    <function class="" name="_convert_jwt_rsa_ssa_pss_key" sline="181" eline="202" brval="kid _RSA_SSA_PSS_PARAMS public_key" bbs="181 186 198 200"/>
+    <function class="" name="_generate_unused_key_id" sline="205" eline="209" brval="key keyset key_id" bbs="205 206 208"/>
     <function class="" name="to_public_keyset_handle" sline="212" eline="257" brval="key keys_dict" bbs="212 235 238 239 242 244 246 249"/>
     <function class="" name="to_keyset_handle" sline="261" eline="265" brval="" bbs="261"/>
-    <function class="" name="_validate_use_and_key_ops" sline="268" eline="275" brval="key key_ops" bbs="268 270 272 274"/>
-    <function class="" name="_convert_to_ecdsa_key" sline="278" eline="304" brval="key algorithm crv" bbs="278 283 285 288 291 296"/>
+    <function class="" name="_validate_use_and_key_ops" sline="268" eline="275" brval="key_ops key" bbs="268 270 272 274"/>
+    <function class="" name="_convert_to_ecdsa_key" sline="278" eline="304" brval="crv key algorithm" bbs="278 283 285 288 291 296"/>
     <function class="" name="_convert_to_rsa_ssa_pkcs1_key" sline="307" eline="331" brval="key algorithm" bbs="307 312 314 317 323"/>
     <function class="" name="_convert_to_rsa_ssa_pss_key" sline="334" eline="358" brval="key algorithm" bbs="334 339 341 344 350"/>
   </file>

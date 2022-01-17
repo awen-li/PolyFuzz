@@ -2,6 +2,7 @@
 
 export ROOT=`cd ../../ && pwd`
 export target=libsmbios
+export drivers=$ROOT/script/$target/drivers
 
 function compile ()
 {
@@ -33,4 +34,4 @@ compile
 # 2. summarize the Python unit
 PyDir=$target/src/python
 python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+cp $PyDir/py_summary.xml $drivers/

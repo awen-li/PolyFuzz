@@ -15,5 +15,9 @@ afl-system-config
 export AFL_CRASH_EXITCODE=100
 
 cp ../../py_summary.xml ./
+if [ "$?" != "0" ]; then
+	echo "copy py_summary.xml fail, please check the configuration!!!!"
+	exit 0
+fi
 afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../leak_mem.py  @@
 

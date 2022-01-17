@@ -23,25 +23,31 @@ def LoadInput (TxtFile):
             Content = line.replace("\n", "")
             break
     return Content
+    
+def write_read (raw_primitive, type, data):
+    #write   
+    ct_destination = bytes_io.BytesIOWithValueAfterClose()
+    with raw_primitive.new_raw_encrypting_stream(ct_destination, type) as es:
+        es.write(data)
+        
+    #read
+    data_len = len (data)
+    ct_source = io.BytesIO(ct_destination.value_after_close())
+    with raw_primitive.new_raw_decrypting_stream(ct_source, type, close_ciphertext_source=True) as ds:
+        ds.read(data_len)
+        ds.read(data_len*2)   
 
 if __name__ == '__main__':
     try:
-        Data = eval (LoadInput (sys.argv[1]))
-        print (Data)
+        raw_data = eval (LoadInput (sys.argv[1]))
+        print (raw_data)
         streaming_aead.register()
         
-        #write
         raw_primitive = get_raw_primitive()
-        ct_destination = bytes_io.BytesIOWithValueAfterClose()
-        with raw_primitive.new_raw_encrypting_stream(ct_destination, B_AAD_) as es:
-            es.write(Data)
+        types_all = [b'', b'aad', b'add\x80', b'associated_data', b'associated_data\x80\x99', b'add????????']
+        for type in types_all:
+            write_read (raw_primitive, type, raw_data)
         
-        #read
-        data_len = len (Data)
-        ct_source = io.BytesIO(ct_destination.value_after_close())
-        with raw_primitive.new_raw_decrypting_stream(ct_source, B_AAD_, close_ciphertext_source=True) as ds:
-            ds.read(data_len)
-            ds.read(data_len*2)   
     except Exception as e:
         print (e)
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)

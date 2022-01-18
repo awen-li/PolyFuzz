@@ -976,6 +976,25 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   }
 
+#if 0
+  u32 map_size = afl->fsrv.map_size;
+  u8 * trace_bits = afl->fsrv.trace_bits;
+  
+  FILE *pf = fopen ("block_cover.log", "a+");
+  if (pf != NULL) {
+    fprintf (pf,  "[total blocks: %u]", afl->fsrv.map_size);
+    for (u32 i = 1; i < map_size; i++) {
+        if (trace_bits [i] != 0) {
+            fprintf (pf,  "%u ", i);
+        }
+    }
+    fprintf (pf,  "\n");
+    fclose (pf);
+  }
+
+
+#endif
+
   return 0;
 
 }

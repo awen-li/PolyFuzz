@@ -446,6 +446,7 @@ int main(int argc, char **argv_orig, char **envp) {
   if (afl->shm.map_size) { afl->fsrv.map_size = afl->shm.map_size; }
   exit_1 = !!afl->afl_env.afl_bench_just_one;
 
+  OKF ("Init map_size as: %u \r\n", afl->fsrv.map_size);
   SAYF(cCYA "afl-fuzz" VERSION cRST
             " based on afl by Michal Zalewski and a large online community\n");
 

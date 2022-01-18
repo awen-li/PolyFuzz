@@ -49,7 +49,7 @@ struct PRT_function
 
     ~PRT_function () 
     {
-        PY_PRINT("~PRT_function -> [%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
+        //PY_PRINT("~PRT_function -> [%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
         if (m_ScancovGen)
         {
             delete m_ScancovGen;

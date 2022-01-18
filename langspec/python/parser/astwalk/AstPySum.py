@@ -58,7 +58,7 @@ class AstPySum(NodeVisitor):
         return visitor(node)
 
     def _IsBuiltin (self, FuncName):
-        if FuncName[0:2] == "__":
+        if FuncName[0:2] == "__" and FuncName != "__init__":
             return True
         else:
             return False

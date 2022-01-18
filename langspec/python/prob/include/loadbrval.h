@@ -84,7 +84,7 @@ struct BV_file
 
     ~BV_file ()
     {
-        PY_PRINT("~BV_file\r\n");
+        //PY_PRINT("~BV_file\r\n");
         for (auto It = m_Fname2BVfunc.begin (), End = m_Fname2BVfunc.end (); It != End; It++)
         {
             delete It->second;
@@ -155,7 +155,7 @@ struct BV_set
 
     ~BV_set ()
     {
-        PY_PRINT("~BV_set\r\n");
+        //PY_PRINT("~BV_set\r\n");
         for (auto It = m_Fname2BVfile.begin (), End = m_Fname2BVfile.end (); It != End; It++)
         {
             delete It->second;

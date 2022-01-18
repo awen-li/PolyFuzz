@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
-<py_summary branchs="1080">
+<py_summary branchs="1190">
   <file name="_keyset_handle.py" id="1">
     <function class="" name="has_secret_key_access" sline="41" eline="43" brval="" bbs="41"/>
+    <function class="KeysetHandle" name="__init__" sline="57" eline="59" brval="" bbs="57"/>
     <function class="KeysetHandle" name="generate_new" sline="62" eline="82" brval="" bbs="62"/>
     <function class="KeysetHandle" name="read" sline="85" eline="88" brval="" bbs="85"/>
     <function class="KeysetHandle" name="read_with_associated_data" sline="91" eline="97" brval="" bbs="91"/>
@@ -20,7 +21,7 @@
     <function class="" name="_keyset_info" sline="217" eline="225" brval="" bbs="217 219"/>
     <function class="" name="_encrypt" sline="228" eline="242" brval="keyset2 keyset" bbs="228 237"/>
     <function class="" name="_decrypt" sline="246" eline="256" brval="" bbs="246"/>
-    <function class="" name="_validate_keyset" sline="261" eline="279" brval="num_non_public_key_material num_non_destroyed_keys key tink_pb2 num_primary_keys" bbs="261 263 264 274 276 278"/>
+    <function class="" name="_validate_keyset" sline="261" eline="279" brval="key num_non_destroyed_keys tink_pb2 num_primary_keys num_non_public_key_material" bbs="261 263 264 274 276 278"/>
     <function class="" name="_validate_key" sline="282" eline="289" brval="key tink_pb2" bbs="282 284 286 288"/>
     <function class="" name="_assert_no_secret_key_material" sline="292" eline="297" brval="key tink_pb2" bbs="292 293 294"/>
     <function class="" name="_assert_enough_key_material" sline="300" eline="302" brval="keyset" bbs="300 301"/>
@@ -31,8 +32,10 @@
   <file name="_keyset_reader.py" id="3">
     <function class="KeysetReader" name="read" sline="29" eline="31" brval="" bbs="29"/>
     <function class="KeysetReader" name="read_encrypted" sline="34" eline="36" brval="" bbs="34"/>
+    <function class="JsonKeysetReader" name="__init__" sline="42" eline="43" brval="" bbs="42"/>
     <function class="JsonKeysetReader" name="read" sline="45" eline="47" brval="" bbs="45"/>
     <function class="JsonKeysetReader" name="read_encrypted" sline="51" eline="53" brval="" bbs="51"/>
+    <function class="BinaryKeysetReader" name="__init__" sline="62" eline="63" brval="" bbs="62"/>
     <function class="BinaryKeysetReader" name="read" sline="65" eline="69" brval="" bbs="65 66"/>
     <function class="BinaryKeysetReader" name="read_encrypted" sline="73" eline="77" brval="" bbs="73 74"/>
   </file>
@@ -42,8 +45,10 @@
   <file name="_keyset_writer.py" id="5">
     <function class="KeysetWriter" name="write" sline="29" eline="31" brval="" bbs="29"/>
     <function class="KeysetWriter" name="write_encrypted" sline="34" eline="36" brval="" bbs="34"/>
+    <function class="JsonKeysetWriter" name="__init__" sline="45" eline="46" brval="" bbs="45"/>
     <function class="JsonKeysetWriter" name="write" sline="48" eline="53" brval="" bbs="48 49"/>
     <function class="JsonKeysetWriter" name="write_encrypted" sline="55" eline="60" brval="" bbs="55 56"/>
+    <function class="BinaryKeysetWriter" name="__init__" sline="69" eline="70" brval="" bbs="69"/>
     <function class="BinaryKeysetWriter" name="write" sline="72" eline="76" brval="" bbs="72 73"/>
     <function class="BinaryKeysetWriter" name="write_encrypted" sline="78" eline="82" brval="" bbs="78 79"/>
   </file>
@@ -62,6 +67,7 @@
     <function class="" name="create_aes_ctr_hmac_streaming_key_template" sline="56" eline="75" brval="" bbs="56"/>
   </file>
   <file name="_file_object_adapter.py" id="10">
+    <function class="FileObjectAdapter" name="__init__" sline="29" eline="32" brval="" bbs="29"/>
     <function class="FileObjectAdapter" name="write" sline="34" eline="38" brval="" bbs="34"/>
     <function class="FileObjectAdapter" name="close" sline="42" eline="43" brval="" bbs="42"/>
     <function class="FileObjectAdapter" name="read" sline="45" eline="67" brval="data size" bbs="45 58 63 65"/>
@@ -71,6 +77,7 @@
     <function class="RawStreamingAead" name="new_raw_decrypting_stream" sline="73" eline="106" brval="" bbs="73"/>
   </file>
   <file name="_rewindable_input_stream.py" id="12">
+    <function class="RewindableInputStream" name="__init__" sline="26" eline="33" brval="" bbs="26 28"/>
     <function class="RewindableInputStream" name="read" sline="35" eline="73" brval="data size" bbs="35 49 51 58 67 70"/>
     <function class="RewindableInputStream" name="rewind" sline="75" eline="78" brval="" bbs="75 76"/>
     <function class="RewindableInputStream" name="disable_rewind" sline="80" eline="81" brval="" bbs="80"/>
@@ -78,6 +85,7 @@
     <function class="RewindableInputStream" name="close" sline="86" eline="91" brval="" bbs="86 88"/>
   </file>
   <file name="_decrypting_stream.py" id="13">
+    <function class="RawDecryptingStream" name="__init__" sline="33" eline="54" brval="" bbs="33 50"/>
     <function class="RawDecryptingStream" name="_get_input_stream_adapter" sline="59" eline="61" brval="" bbs="59"/>
     <function class="RawDecryptingStream" name="_read_from_input_stream_adapter" sline="65" eline="67" brval="" bbs="65"/>
     <function class="RawDecryptingStream" name="read" sline="69" eline="100" brval="data size" bbs="69 84 86 88 97 99"/>
@@ -88,6 +96,7 @@
   </file>
   <file name="_encrypting_stream.py" id="14">
     <function class="" name="_new_cc_encrypting_stream" sline="29" eline="31" brval="" bbs="29"/>
+    <function class="RawEncryptingStream" name="__init__" sline="45" eline="62" brval="" bbs="45 58"/>
     <function class="RawEncryptingStream" name="_write_to_cc_encrypting_stream" sline="66" eline="67" brval="" bbs="66"/>
     <function class="RawEncryptingStream" name="_close_cc_encrypting_stream" sline="70" eline="71" brval="" bbs="70"/>
     <function class="RawEncryptingStream" name="readinto" sline="73" eline="74" brval="" bbs="73"/>
@@ -96,6 +105,7 @@
     <function class="RawEncryptingStream" name="writable" sline="107" eline="109" brval="" bbs="107"/>
   </file>
   <file name="_streaming_aead_key_manager.py" id="15">
+    <function class="_StreamingAeadCcToPyWrapper" name="__init__" sline="30" eline="31" brval="" bbs="30"/>
     <function class="_StreamingAeadCcToPyWrapper" name="new_raw_encrypting_stream" sline="33" eline="35" brval="" bbs="33"/>
     <function class="_StreamingAeadCcToPyWrapper" name="new_raw_decrypting_stream" sline="39" eline="44" brval="" bbs="39"/>
     <function class="" name="from_cc_registry" sline="51" eline="53" brval="" bbs="51"/>
@@ -103,11 +113,13 @@
   </file>
   <file name="__init__.py" id="16"/>
   <file name="_streaming_aead_wrapper.py" id="17">
+    <function class="_DecryptingStreamWrapper" name="__init__" sline="33" eline="52" brval="" bbs="33 44"/>
     <function class="_DecryptingStreamWrapper" name="_next_decrypting_stream" sline="54" eline="62" brval="" bbs="54 56"/>
     <function class="_DecryptingStreamWrapper" name="read" sline="67" eline="102" brval="data size" bbs="67 82 84 86 90 93"/>
     <function class="_DecryptingStreamWrapper" name="readinto" sline="111" eline="118" brval="data" bbs="111 114"/>
     <function class="_DecryptingStreamWrapper" name="close" sline="120" eline="128" brval="" bbs="120 121 123 125"/>
     <function class="_DecryptingStreamWrapper" name="readable" sline="130" eline="131" brval="" bbs="130"/>
+    <function class="_WrappedStreamingAead" name="__init__" sline="137" eline="138" brval="" bbs="137"/>
     <function class="_WrappedStreamingAead" name="new_encrypting_stream" sline="140" eline="144" brval="" bbs="140"/>
     <function class="_WrappedStreamingAead" name="new_decrypting_stream" sline="146" eline="150" brval="" bbs="146"/>
     <function class="StreamingAeadWrapper" name="wrap" sline="158" eline="160" brval="" bbs="158"/>
@@ -116,12 +128,14 @@
   </file>
   <file name="__init__.py" id="18"/>
   <file name="_aws_kms_client.py" id="19">
+    <function class="AwsKmsClient" name="__init__" sline="27" eline="55" brval="match key_uri" bbs="27 48 50 53"/>
     <function class="AwsKmsClient" name="does_support" sline="57" eline="66" brval="" bbs="57"/>
     <function class="AwsKmsClient" name="get_aead" sline="69" eline="82" brval="" bbs="69"/>
     <function class="AwsKmsClient" name="register_client" sline="85" eline="87" brval="" bbs="85"/>
   </file>
   <file name="__init__.py" id="20"/>
   <file name="_gcp_kms_client.py" id="21">
+    <function class="GcpKmsClient" name="__init__" sline="26" eline="52" brval="key_uri" bbs="26 44 46 49"/>
     <function class="GcpKmsClient" name="does_support" sline="54" eline="63" brval="" bbs="54"/>
     <function class="GcpKmsClient" name="get_aead" sline="66" eline="76" brval="" bbs="66"/>
     <function class="GcpKmsClient" name="register_client" sline="79" eline="81" brval="" bbs="79"/>
@@ -131,7 +145,9 @@
     <function class="HybridEncrypt" name="encrypt" sline="53" eline="55" brval="" bbs="53"/>
   </file>
   <file name="_hybrid_key_manager.py" id="24">
+    <function class="_HybridDecryptCcToPyWrapper" name="__init__" sline="27" eline="28" brval="" bbs="27"/>
     <function class="_HybridDecryptCcToPyWrapper" name="decrypt" sline="31" eline="32" brval="" bbs="31"/>
+    <function class="_HybridEncryptCcToPyWrapper" name="__init__" sline="38" eline="39" brval="" bbs="38"/>
     <function class="_HybridEncryptCcToPyWrapper" name="encrypt" sline="42" eline="43" brval="" bbs="42"/>
     <function class="" name="register" sline="46" eline="65" brval="" bbs="46"/>
   </file>
@@ -142,10 +158,12 @@
     <function class="HybridDecrypt" name="decrypt" sline="53" eline="55" brval="" bbs="53"/>
   </file>
   <file name="_hybrid_wrapper.py" id="27">
+    <function class="_WrappedHybridDecrypt" name="__init__" sline="28" eline="29" brval="" bbs="28"/>
     <function class="_WrappedHybridDecrypt" name="decrypt" sline="31" eline="49" brval="core" bbs="31 32 35 43"/>
     <function class="HybridDecryptWrapper" name="wrap" sline="63" eline="65" brval="" bbs="63"/>
     <function class="HybridDecryptWrapper" name="primitive_class" sline="67" eline="68" brval="" bbs="67"/>
     <function class="HybridDecryptWrapper" name="input_primitive_class" sline="70" eline="71" brval="" bbs="70"/>
+    <function class="_WrappedHybridEncrypt" name="__init__" sline="77" eline="78" brval="" bbs="77"/>
     <function class="_WrappedHybridEncrypt" name="encrypt" sline="80" eline="82" brval="" bbs="80"/>
     <function class="HybridEncryptWrapper" name="wrap" sline="96" eline="98" brval="" bbs="96"/>
     <function class="HybridEncryptWrapper" name="primitive_class" sline="100" eline="101" brval="" bbs="100"/>
@@ -189,6 +207,7 @@
   <file name="jwt_hmac_pb2.py" id="63"/>
   <file name="_primitive_set.py" id="64">
     <function class="" name="new_primitive_set" sline="29" eline="30" brval="" bbs="29"/>
+    <function class="PrimitiveSet" name="__init__" sline="46" eline="49" brval="" bbs="46"/>
     <function class="PrimitiveSet" name="primitive_class" sline="51" eline="52" brval="" bbs="51"/>
     <function class="PrimitiveSet" name="primitive_from_identifier" sline="54" eline="58" brval="" bbs="54"/>
     <function class="PrimitiveSet" name="all" sline="60" eline="62" brval="" bbs="60"/>
@@ -213,10 +232,12 @@
     <function class="KeyManager" name="new_key_data" sline="61" eline="72" brval="" bbs="61"/>
     <function class="KeyManager" name="does_support" sline="74" eline="75" brval="" bbs="74"/>
     <function class="PrivateKeyManager" name="public_key_data" sline="82" eline="93" brval="" bbs="82"/>
+    <function class="KeyManagerCcToPyWrapper" name="__init__" sline="99" eline="105" brval="" bbs="99"/>
     <function class="KeyManagerCcToPyWrapper" name="primitive_class" sline="107" eline="108" brval="" bbs="107"/>
     <function class="KeyManagerCcToPyWrapper" name="primitive" sline="111" eline="112" brval="" bbs="111"/>
     <function class="KeyManagerCcToPyWrapper" name="key_type" sline="115" eline="116" brval="" bbs="115"/>
     <function class="KeyManagerCcToPyWrapper" name="new_key_data" sline="119" eline="121" brval="" bbs="119"/>
+    <function class="PrivateKeyManagerCcToPyWrapper" name="__init__" sline="128" eline="134" brval="" bbs="128"/>
     <function class="PrivateKeyManagerCcToPyWrapper" name="primitive_class" sline="136" eline="137" brval="" bbs="136"/>
     <function class="PrivateKeyManagerCcToPyWrapper" name="primitive" sline="140" eline="141" brval="" bbs="140"/>
     <function class="PrivateKeyManagerCcToPyWrapper" name="key_type" sline="144" eline="145" brval="" bbs="144"/>
@@ -227,7 +248,7 @@
     <function class="Registry" name="reset" sline="47" eline="50" brval="" bbs="47"/>
     <function class="Registry" name="_key_manager_internal" sline="53" eline="59" brval="type_url cls" bbs="53 56"/>
     <function class="Registry" name="key_manager" sline="62" eline="72" brval="" bbs="62"/>
-    <function class="Registry" name="register_key_manager" sline="75" eline="107" brval="key_managers type_url existing_new_key primitive_class new_key_allowed" bbs="75 89 93 95 101 105 107"/>
+    <function class="Registry" name="register_key_manager" sline="75" eline="107" brval="key_managers type_url new_key_allowed existing_new_key primitive_class" bbs="75 89 93 95 101 105 107"/>
     <function class="Registry" name="primitive" sline="110" eline="131" brval="primitive_class" bbs="110 126"/>
     <function class="Registry" name="new_key_data" sline="134" eline="144" brval="new_key_allowed" bbs="134 139"/>
     <function class="Registry" name="public_key_data" sline="147" eline="158" brval="tink_pb2 private_key_data" bbs="147 150 154"/>
@@ -245,6 +266,7 @@
     <function class="" name="create_aes_siv_key_template" sline="30" eline="38" brval="" bbs="30"/>
   </file>
   <file name="_deterministic_aead_key_manager.py" id="72">
+    <function class="_DeterministicAeadCcToPyWrapper" name="__init__" sline="26" eline="27" brval="" bbs="26"/>
     <function class="_DeterministicAeadCcToPyWrapper" name="encrypt_deterministically" sline="30" eline="32" brval="" bbs="30"/>
     <function class="_DeterministicAeadCcToPyWrapper" name="decrypt_deterministically" sline="36" eline="38" brval="" bbs="36"/>
     <function class="" name="register" sline="42" eline="51" brval="" bbs="42"/>
@@ -254,6 +276,7 @@
     <function class="DeterministicAead" name="decrypt_deterministically" sline="50" eline="52" brval="" bbs="50"/>
   </file>
   <file name="_deterministic_aead_wrapper.py" id="74">
+    <function class="_WrappedDeterministicAead" name="__init__" sline="27" eline="28" brval="" bbs="27"/>
     <function class="_WrappedDeterministicAead" name="encrypt_deterministically" sline="30" eline="33" brval="" bbs="30"/>
     <function class="_WrappedDeterministicAead" name="decrypt_deterministically" sline="36" eline="56" brval="core" bbs="36 38 41 49"/>
     <function class="DeterministicAeadWrapper" name="wrap" sline="72" eline="74" brval="" bbs="72"/>
@@ -267,10 +290,12 @@
     <function class="" name="_create_hkdf_key_template" sline="61" eline="72" brval="" bbs="61"/>
   </file>
   <file name="_prf_key_manager.py" id="77">
+    <function class="PrfCcToPyWrapper" name="__init__" sline="26" eline="27" brval="" bbs="26"/>
     <function class="PrfCcToPyWrapper" name="compute" sline="30" eline="31" brval="" bbs="30"/>
     <function class="" name="register" sline="34" eline="47" brval="" bbs="34 37"/>
   </file>
   <file name="_prf_set_wrapper.py" id="78">
+    <function class="_WrappedPrfSet" name="__init__" sline="24" eline="25" brval="" bbs="24"/>
     <function class="_WrappedPrfSet" name="primary_id" sline="27" eline="28" brval="" bbs="27"/>
     <function class="_WrappedPrfSet" name="all" sline="30" eline="33" brval="" bbs="30"/>
     <function class="_WrappedPrfSet" name="primary" sline="36" eline="37" brval="" bbs="36"/>
@@ -286,13 +311,15 @@
   </file>
   <file name="__init__.py" id="80"/>
   <file name="_mac_key_manager.py" id="81">
+    <function class="_MacCcToPyWrapper" name="__init__" sline="25" eline="26" brval="" bbs="25"/>
     <function class="_MacCcToPyWrapper" name="compute_mac" sline="29" eline="30" brval="" bbs="29"/>
     <function class="_MacCcToPyWrapper" name="verify_mac" sline="33" eline="34" brval="" bbs="33"/>
     <function class="" name="register" sline="37" eline="46" brval="" bbs="37 40"/>
   </file>
   <file name="_mac_wrapper.py" id="82">
+    <function class="_WrappedMac" name="__init__" sline="29" eline="30" brval="" bbs="29"/>
     <function class="_WrappedMac" name="compute_mac" sline="32" eline="38" brval="primary tink_pb2" bbs="32 34 38"/>
-    <function class="_WrappedMac" name="verify_mac" sline="40" eline="66" brval="core entry tink_pb2" bbs="40 41 47 49 52 59"/>
+    <function class="_WrappedMac" name="verify_mac" sline="40" eline="66" brval="core tink_pb2 entry" bbs="40 41 47 49 52 59"/>
     <function class="MacWrapper" name="wrap" sline="80" eline="81" brval="" bbs="80"/>
     <function class="MacWrapper" name="primitive_class" sline="83" eline="84" brval="" bbs="83"/>
     <function class="MacWrapper" name="input_primitive_class" sline="86" eline="87" brval="" bbs="86"/>
@@ -311,8 +338,9 @@
     <function class="Aead" name="decrypt" sline="47" eline="61" brval="" bbs="47"/>
   </file>
   <file name="_kms_envelope_aead.py" id="87">
+    <function class="KmsEnvelopeAead" name="__init__" sline="42" eline="44" brval="" bbs="42"/>
     <function class="KmsEnvelopeAead" name="encrypt" sline="46" eline="59" brval="" bbs="46"/>
-    <function class="KmsEnvelopeAead" name="decrypt" sline="61" eline="89" brval="ct_len dek_len" bbs="61 65 71"/>
+    <function class="KmsEnvelopeAead" name="decrypt" sline="61" eline="89" brval="dek_len ct_len" bbs="61 65 71"/>
   </file>
   <file name="_aead_key_templates.py" id="88">
     <function class="" name="create_aes_eax_key_template" sline="46" eline="59" brval="" bbs="46"/>
@@ -323,11 +351,13 @@
     <function class="" name="create_kms_envelope_aead_key_template" sline="134" eline="156" brval="" bbs="134"/>
   </file>
   <file name="_aead_key_manager.py" id="89">
+    <function class="AeadCcToPyWrapper" name="__init__" sline="26" eline="27" brval="" bbs="26"/>
     <function class="AeadCcToPyWrapper" name="encrypt" sline="30" eline="31" brval="" bbs="30"/>
     <function class="AeadCcToPyWrapper" name="decrypt" sline="34" eline="35" brval="" bbs="34"/>
     <function class="" name="register" sline="38" eline="55" brval="" bbs="38 41"/>
   </file>
   <file name="_aead_wrapper.py" id="90">
+    <function class="_WrappedAead" name="__init__" sline="27" eline="28" brval="" bbs="27"/>
     <function class="_WrappedAead" name="encrypt" sline="30" eline="32" brval="" bbs="30"/>
     <function class="_WrappedAead" name="decrypt" sline="35" eline="53" brval="core" bbs="35 36 39 47"/>
     <function class="AeadWrapper" name="wrap" sline="66" eline="67" brval="" bbs="66"/>
@@ -343,16 +373,20 @@
     <function class="PublicKeyVerify" name="verify" sline="32" eline="42" brval="" bbs="32"/>
   </file>
   <file name="_signature_key_manager.py" id="95">
+    <function class="_PublicKeySignCcToPyWrapper" name="__init__" sline="27" eline="28" brval="" bbs="27"/>
     <function class="_PublicKeySignCcToPyWrapper" name="sign" sline="31" eline="32" brval="" bbs="31"/>
+    <function class="_PublicKeyVerifyCcToPyWrapper" name="__init__" sline="38" eline="39" brval="" bbs="38"/>
     <function class="_PublicKeyVerifyCcToPyWrapper" name="verify" sline="42" eline="43" brval="" bbs="42"/>
     <function class="" name="register" sline="46" eline="68" brval="" bbs="46 50 58"/>
   </file>
   <file name="_signature_wrapper.py" id="96">
+    <function class="_WrappedPublicKeySign" name="__init__" sline="29" eline="30" brval="" bbs="29"/>
     <function class="_WrappedPublicKeySign" name="sign" sline="32" eline="50" brval="primary tink_pb2" bbs="32 43 47"/>
     <function class="PublicKeySignWrapper" name="wrap" sline="63" eline="65" brval="" bbs="63"/>
     <function class="PublicKeySignWrapper" name="primitive_class" sline="67" eline="68" brval="" bbs="67"/>
     <function class="PublicKeySignWrapper" name="input_primitive_class" sline="70" eline="71" brval="" bbs="70"/>
-    <function class="_WrappedPublicKeyVerify" name="verify" sline="80" eline="119" brval="core entry tink_pb2" bbs="80 90 98 100 103 111"/>
+    <function class="_WrappedPublicKeyVerify" name="__init__" sline="77" eline="78" brval="" bbs="77"/>
+    <function class="_WrappedPublicKeyVerify" name="verify" sline="80" eline="119" brval="core tink_pb2 entry" bbs="80 90 98 100 103 111"/>
     <function class="PublicKeyVerifyWrapper" name="wrap" sline="138" eline="140" brval="" bbs="138"/>
     <function class="PublicKeyVerifyWrapper" name="primitive_class" sline="142" eline="143" brval="" bbs="142"/>
     <function class="PublicKeyVerifyWrapper" name="input_primitive_class" sline="145" eline="146" brval="" bbs="145"/>
@@ -372,12 +406,14 @@
     <function class="" name="json_loads" sline="40" eline="45" brval="" bbs="40"/>
   </file>
   <file name="_jwt_hmac_key_manager.py" id="101">
+    <function class="_JwtHmac" name="__init__" sline="42" eline="46" brval="" bbs="42"/>
     <function class="_JwtHmac" name="_compute_mac" sline="49" eline="50" brval="" bbs="49"/>
     <function class="_JwtHmac" name="_verify_mac" sline="53" eline="54" brval="" bbs="53"/>
     <function class="_JwtHmac" name="compute_mac_and_encode_with_kid" sline="56" eline="77" brval="kid" bbs="56 70 71"/>
     <function class="_JwtHmac" name="verify_mac_and_decode_with_kid" sline="80" eline="96" brval="" bbs="80"/>
+    <function class="MacCcToPyJwtMacKeyManager" name="__init__" sline="102" eline="103" brval="" bbs="102"/>
     <function class="MacCcToPyJwtMacKeyManager" name="primitive_class" sline="106" eline="107" brval="" bbs="106"/>
-    <function class="MacCcToPyJwtMacKeyManager" name="primitive" sline="110" eline="120" brval="_JWT_HMAC_KEY_TYPE key_data" bbs="110 111 116 119"/>
+    <function class="MacCcToPyJwtMacKeyManager" name="primitive" sline="110" eline="120" brval="key_data _JWT_HMAC_KEY_TYPE" bbs="110 111 116 119"/>
     <function class="MacCcToPyJwtMacKeyManager" name="key_type" sline="122" eline="123" brval="" bbs="122"/>
     <function class="MacCcToPyJwtMacKeyManager" name="new_key_data" sline="126" eline="129" brval="" bbs="126"/>
     <function class="" name="register" sline="132" eline="134" brval="" bbs="132"/>
@@ -387,9 +423,11 @@
     <function class="JwtPublicKeySignInternal" name="sign_and_encode_with_kid" sline="51" eline="53" brval="" bbs="51"/>
   </file>
   <file name="_jwt_signature_wrappers.py" id="103">
+    <function class="_WrappedJwtPublicKeySign" name="__init__" sline="32" eline="33" brval="" bbs="32"/>
     <function class="_WrappedJwtPublicKeySign" name="sign_and_encode" sline="35" eline="38" brval="" bbs="35"/>
+    <function class="_WrappedJwtPublicKeyVerify" name="__init__" sline="44" eline="45" brval="" bbs="44"/>
     <function class="_WrappedJwtPublicKeyVerify" name="verify_and_decode" sline="47" eline="63" brval="interesting_error" bbs="47 51 52 61"/>
-    <function class="" name="_validate_primitive_set" sline="66" eline="71" brval="entry tink_pb2" bbs="66 67 68 69"/>
+    <function class="" name="_validate_primitive_set" sline="66" eline="71" brval="tink_pb2 entry" bbs="66 67 68 69"/>
     <function class="_JwtPublicKeySignWrapper" name="wrap" sline="79" eline="83" brval="" bbs="79"/>
     <function class="_JwtPublicKeySignWrapper" name="primitive_class" sline="85" eline="86" brval="" bbs="85"/>
     <function class="_JwtPublicKeySignWrapper" name="input_primitive_class" sline="88" eline="90" brval="" bbs="88"/>
@@ -402,8 +440,9 @@
     <function class="" name="_from_datetime" sline="32" eline="35" brval="t" bbs="32 33"/>
     <function class="" name="_to_datetime" sline="38" eline="39" brval="" bbs="38"/>
     <function class="" name="_validate_custom_claim_name" sline="42" eline="44" brval="name _REGISTERED_NAMES" bbs="42 43"/>
+    <function class="RawJwt" name="__init__" sline="61" eline="75" brval="" bbs="61 65"/>
     <function class="RawJwt" name="_validate_string_claim" sline="77" eline="80" brval="name" bbs="77 78 79"/>
-    <function class="RawJwt" name="_validate_timestamp_claim" sline="82" eline="88" brval="timestamp _MAX_TIMESTAMP_VALUE name" bbs="82 83 85 87"/>
+    <function class="RawJwt" name="_validate_timestamp_claim" sline="82" eline="88" brval="timestamp name _MAX_TIMESTAMP_VALUE" bbs="82 83 85 87"/>
     <function class="RawJwt" name="_validate_audience_claim" sline="91" eline="100" brval="audiences" bbs="91 92 94 97 99"/>
     <function class="RawJwt" name="has_type_header" sline="103" eline="104" brval="" bbs="103"/>
     <function class="RawJwt" name="type_header" sline="106" eline="109" brval="" bbs="106 107"/>
@@ -424,45 +463,50 @@
     <function class="RawJwt" name="custom_claim_names" sline="153" eline="154" brval="" bbs="153"/>
     <function class="RawJwt" name="custom_claim" sline="156" eline="162" brval="" bbs="156 159 162"/>
     <function class="RawJwt" name="json_payload" sline="164" eline="166" brval="" bbs="164"/>
-    <function class="RawJwt" name="create" sline="169" eline="217" brval="jwt_id subject issuer custom_claims without_expiration expiration audiences value issued_at not_before" bbs="169 182 184 188 190 192 194 196 198 200 202 203 205 207 209 211 214"/>
+    <function class="RawJwt" name="create" sline="169" eline="217" brval="audiences custom_claims not_before expiration subject jwt_id without_expiration issued_at issuer value" bbs="169 182 184 188 190 192 194 196 198 200 202 203 205 207 209 211 214"/>
     <function class="RawJwt" name="_from_json" sline="220" eline="224" brval="" bbs="220"/>
     <function class="" name="new_raw_jwt" sline="227" eline="239" brval="" bbs="227"/>
     <function class="" name="raw_jwt_from_json" sline="252" eline="254" brval="" bbs="252"/>
   </file>
   <file name="_jwt_error.py" id="105"/>
   <file name="_jwt_mac_wrapper.py" id="106">
+    <function class="_WrappedJwtMac" name="__init__" sline="31" eline="32" brval="" bbs="31"/>
     <function class="_WrappedJwtMac" name="compute_mac_and_encode" sline="34" eline="47" brval="" bbs="34"/>
     <function class="_WrappedJwtMac" name="verify_mac_and_decode" sline="49" eline="76" brval="interesting_error" bbs="49 64 65 74"/>
-    <function class="" name="_validate_primitive_set" sline="79" eline="84" brval="entry tink_pb2" bbs="79 80 81 82"/>
+    <function class="" name="_validate_primitive_set" sline="79" eline="84" brval="tink_pb2 entry" bbs="79 80 81 82"/>
     <function class="_Wrapper" name="wrap" sline="90" eline="92" brval="" bbs="90"/>
     <function class="_Wrapper" name="primitive_class" sline="94" eline="95" brval="" bbs="94"/>
     <function class="_Wrapper" name="input_primitive_class" sline="97" eline="98" brval="" bbs="97"/>
     <function class="" name="register" sline="101" eline="102" brval="" bbs="101"/>
   </file>
   <file name="_jwt_signature_key_manager.py" id="107">
+    <function class="_JwtPublicKeySign" name="__init__" sline="64" eline="68" brval="" bbs="64"/>
     <function class="_JwtPublicKeySign" name="_sign" sline="71" eline="72" brval="" bbs="71"/>
     <function class="_JwtPublicKeySign" name="sign_and_encode_with_kid" sline="74" eline="95" brval="kid" bbs="74 88 89"/>
+    <function class="_JwtPublicKeyVerify" name="__init__" sline="101" eline="105" brval="" bbs="101"/>
     <function class="_JwtPublicKeyVerify" name="_verify" sline="108" eline="109" brval="" bbs="108"/>
     <function class="_JwtPublicKeyVerify" name="verify_and_decode_with_kid" sline="111" eline="127" brval="" bbs="111"/>
+    <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="__init__" sline="134" eline="138" brval="" bbs="134"/>
     <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="primitive_class" sline="140" eline="142" brval="" bbs="140"/>
     <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="primitive" sline="145" eline="150" brval="" bbs="145"/>
     <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="key_type" sline="152" eline="153" brval="" bbs="152"/>
     <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="new_key_data" sline="156" eline="158" brval="" bbs="156"/>
     <function class="_JwtPublicKeySignKeyManagerCcToPyWrapper" name="public_key_data" sline="162" eline="163" brval="" bbs="162"/>
+    <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="__init__" sline="171" eline="175" brval="" bbs="171"/>
     <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="primitive_class" sline="177" eline="179" brval="" bbs="177"/>
     <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="primitive" sline="182" eline="187" brval="" bbs="182"/>
     <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="key_type" sline="189" eline="190" brval="" bbs="189"/>
     <function class="_JwtPublicKeyVerifyKeyManagerCcToPyWrapper" name="new_key_data" sline="193" eline="195" brval="" bbs="193"/>
-    <function class="" name="_ecdsa_algorithm_text" sline="199" eline="202" brval="_ECDSA_ALGORITHM_TEXTS algorithm" bbs="199 200"/>
+    <function class="" name="_ecdsa_algorithm_text" sline="199" eline="202" brval="algorithm _ECDSA_ALGORITHM_TEXTS" bbs="199 200"/>
     <function class="" name="_get_custom_kid" sline="205" eline="209" brval="" bbs="205 206 209"/>
-    <function class="" name="_ecdsa_alg_kid_from_private_key_data" sline="212" eline="218" brval="_JWT_ECDSA_PRIVATE_KEY_TYPE key_data" bbs="212 214"/>
-    <function class="" name="_ecdsa_alg_kid_from_public_key_data" sline="221" eline="226" brval="_JWT_ECDSA_PUBLIC_KEY_TYPE key_data" bbs="221 223"/>
-    <function class="" name="_rsa_ssa_pkcs1_algorithm_text" sline="229" eline="233" brval="_RSA_SSA_PKCS1_ALGORITHM_TEXTS algorithm" bbs="229 231"/>
-    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_private_key_data" sline="236" eline="243" brval="_JWT_RSA_SSA_PKCS1_PRIVATE_KEY_TYPE key_data" bbs="236 238"/>
+    <function class="" name="_ecdsa_alg_kid_from_private_key_data" sline="212" eline="218" brval="key_data _JWT_ECDSA_PRIVATE_KEY_TYPE" bbs="212 214"/>
+    <function class="" name="_ecdsa_alg_kid_from_public_key_data" sline="221" eline="226" brval="key_data _JWT_ECDSA_PUBLIC_KEY_TYPE" bbs="221 223"/>
+    <function class="" name="_rsa_ssa_pkcs1_algorithm_text" sline="229" eline="233" brval="algorithm _RSA_SSA_PKCS1_ALGORITHM_TEXTS" bbs="229 231"/>
+    <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_private_key_data" sline="236" eline="243" brval="key_data _JWT_RSA_SSA_PKCS1_PRIVATE_KEY_TYPE" bbs="236 238"/>
     <function class="" name="_rsa_ssa_pkcs1_alg_kid_from_public_key_data" sline="246" eline="251" brval="_JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE key_data" bbs="246 248"/>
     <function class="" name="_rsa_ssa_pss_algorithm_text" sline="254" eline="258" brval="algorithm _RSA_SSA_PSS_ALGORITHM_TEXTS" bbs="254 256"/>
-    <function class="" name="_rsa_ssa_pss_alg_kid_from_private_key_data" sline="261" eline="267" brval="_JWT_RSA_SSA_PSS_PRIVATE_KEY_TYPE key_data" bbs="261 263"/>
-    <function class="" name="_rsa_ssa_pss_alg_kid_from_public_key_data" sline="270" eline="275" brval="_JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE key_data" bbs="270 272"/>
+    <function class="" name="_rsa_ssa_pss_alg_kid_from_private_key_data" sline="261" eline="267" brval="key_data _JWT_RSA_SSA_PSS_PRIVATE_KEY_TYPE" bbs="261 263"/>
+    <function class="" name="_rsa_ssa_pss_alg_kid_from_public_key_data" sline="270" eline="275" brval="key_data _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE" bbs="270 272"/>
     <function class="" name="register" sline="278" eline="314" brval="" bbs="278"/>
   </file>
   <file name="_jwt_key_templates.py" id="108">
@@ -506,6 +550,7 @@
     <function class="JwtMacInternal" name="verify_mac_and_decode_with_kid" sline="88" eline="91" brval="" bbs="88"/>
   </file>
   <file name="_jwt_validator.py" id="110">
+    <function class="JwtValidator" name="__init__" sline="37" eline="74" brval="ignore_type_header clock_skew ignore_audiences fixed_now _MAX_CLOCK_SKEW expected_issuer ignore_issuer expected_type_header expected_audience" bbs="37 49 52 55 66 67 71 72"/>
     <function class="JwtValidator" name="has_expected_type_header" sline="76" eline="77" brval="" bbs="76"/>
     <function class="JwtValidator" name="expected_type_header" sline="79" eline="80" brval="" bbs="79"/>
     <function class="JwtValidator" name="has_expected_issuer" sline="82" eline="83" brval="" bbs="82"/>
@@ -534,17 +579,18 @@
     <function class="" name="decode_payload" sline="92" eline="95" brval="" bbs="92"/>
     <function class="" name="encode_signature" sline="100" eline="102" brval="" bbs="100"/>
     <function class="" name="decode_signature" sline="105" eline="107" brval="" bbs="105"/>
-    <function class="" name="create_header" sline="110" eline="119" brval="kid type_header" bbs="110 114 117"/>
-    <function class="" name="get_kid" sline="122" eline="130" brval="key_id prefix tink_pb2" bbs="122 124 126 127"/>
+    <function class="" name="create_header" sline="110" eline="119" brval="type_header kid" bbs="110 114 117"/>
+    <function class="" name="get_kid" sline="122" eline="130" brval="tink_pb2 prefix key_id" bbs="122 124 126 127"/>
     <function class="" name="split_signed_compact" sline="133" eline="162" brval="" bbs="133 144"/>
-    <function class="" name="_validate_kid_header" sline="165" eline="167" brval="kid header" bbs="165 166"/>
-    <function class="" name="validate_header" sline="170" eline="191" brval="custom_kid algorithm header tink_kid" bbs="170 177 180 183 185 186 190"/>
+    <function class="" name="_validate_kid_header" sline="165" eline="167" brval="header kid" bbs="165 166"/>
+    <function class="" name="validate_header" sline="170" eline="191" brval="algorithm custom_kid tink_kid header" bbs="170 177 180 183 185 186 190"/>
     <function class="" name="get_type_header" sline="194" eline="195" brval="" bbs="194"/>
     <function class="" name="create_unsigned_compact" sline="198" eline="204" brval="" bbs="198 200 203"/>
     <function class="" name="create_signed_compact" sline="207" eline="208" brval="" bbs="207"/>
   </file>
   <file name="_verified_jwt.py" id="112">
     <function class="VerifiedJwt" name="_create" sline="40" eline="43" brval="" bbs="40"/>
+    <function class="VerifiedJwt" name="__init__" sline="45" eline="46" brval="" bbs="45"/>
     <function class="VerifiedJwt" name="has_type_header" sline="48" eline="49" brval="" bbs="48"/>
     <function class="VerifiedJwt" name="type_header" sline="51" eline="52" brval="" bbs="51"/>
     <function class="VerifiedJwt" name="has_issuer" sline="54" eline="55" brval="" bbs="54"/>
@@ -571,18 +617,18 @@
   <file name="_jwk_set_converter.py" id="114">
     <function class="" name="_base64_encode" sline="70" eline="71" brval="" bbs="70"/>
     <function class="" name="_base64_decode" sline="74" eline="75" brval="" bbs="74"/>
-    <function class="" name="from_public_keyset_handle" sline="78" eline="122" brval="_JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE key _JWT_ECDSA_PUBLIC_KEY_TYPE _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE tink_pb2" bbs="78 107 108 110 112 114 116 118 121"/>
+    <function class="" name="from_public_keyset_handle" sline="78" eline="122" brval="key tink_pb2 _JWT_RSA_SSA_PSS_PUBLIC_KEY_TYPE _JWT_ECDSA_PUBLIC_KEY_TYPE _JWT_RSA_SSA_PKCS1_PUBLIC_KEY_TYPE" bbs="78 107 108 110 112 114 116 118 121"/>
     <function class="" name="from_keyset_handle" sline="126" eline="129" brval="" bbs="126"/>
-    <function class="" name="_convert_jwt_ecdsa_key" sline="132" eline="154" brval="ecdsa_public_key kid _ECDSA_PARAMS" bbs="132 137 150 152"/>
-    <function class="" name="_convert_jwt_rsa_ssa_pkcs1_key" sline="157" eline="178" brval="kid public_key _RSA_SSA_PKCS1_PARAMS" bbs="157 162 174 176"/>
-    <function class="" name="_convert_jwt_rsa_ssa_pss_key" sline="181" eline="202" brval="kid _RSA_SSA_PSS_PARAMS public_key" bbs="181 186 198 200"/>
+    <function class="" name="_convert_jwt_ecdsa_key" sline="132" eline="154" brval="_ECDSA_PARAMS kid ecdsa_public_key" bbs="132 137 150 152"/>
+    <function class="" name="_convert_jwt_rsa_ssa_pkcs1_key" sline="157" eline="178" brval="_RSA_SSA_PKCS1_PARAMS public_key kid" bbs="157 162 174 176"/>
+    <function class="" name="_convert_jwt_rsa_ssa_pss_key" sline="181" eline="202" brval="_RSA_SSA_PSS_PARAMS public_key kid" bbs="181 186 198 200"/>
     <function class="" name="_generate_unused_key_id" sline="205" eline="209" brval="key keyset key_id" bbs="205 206 208"/>
-    <function class="" name="to_public_keyset_handle" sline="212" eline="257" brval="key keys_dict" bbs="212 235 238 239 242 244 246 249"/>
+    <function class="" name="to_public_keyset_handle" sline="212" eline="257" brval="keys_dict key" bbs="212 235 238 239 242 244 246 249"/>
     <function class="" name="to_keyset_handle" sline="261" eline="265" brval="" bbs="261"/>
-    <function class="" name="_validate_use_and_key_ops" sline="268" eline="275" brval="key_ops key" bbs="268 270 272 274"/>
-    <function class="" name="_convert_to_ecdsa_key" sline="278" eline="304" brval="crv key algorithm" bbs="278 283 285 288 291 296"/>
-    <function class="" name="_convert_to_rsa_ssa_pkcs1_key" sline="307" eline="331" brval="key algorithm" bbs="307 312 314 317 323"/>
-    <function class="" name="_convert_to_rsa_ssa_pss_key" sline="334" eline="358" brval="key algorithm" bbs="334 339 341 344 350"/>
+    <function class="" name="_validate_use_and_key_ops" sline="268" eline="275" brval="key key_ops" bbs="268 270 272 274"/>
+    <function class="" name="_convert_to_ecdsa_key" sline="278" eline="304" brval="algorithm crv key" bbs="278 283 285 288 291 296"/>
+    <function class="" name="_convert_to_rsa_ssa_pkcs1_key" sline="307" eline="331" brval="algorithm key" bbs="307 312 314 317 323"/>
+    <function class="" name="_convert_to_rsa_ssa_pss_key" sline="334" eline="358" brval="algorithm key" bbs="334 339 341 344 350"/>
   </file>
   <file name="__init__.py" id="115">
     <function class="" name="register_jwt_mac" sline="78" eline="80" brval="" bbs="78"/>

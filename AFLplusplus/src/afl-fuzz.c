@@ -2283,6 +2283,13 @@ stop_fuzzing:
   afl->force_ui_update = 1;  // ensure the screen is reprinted
   show_stats(afl);           // print the screen one last time
 
+  u8 * trace_bits = afl->bitmap_overall;
+  unsigned covered = 0;
+  for (u32 i = 1; i < map_size; i++)
+    if (trace_bits [i] != 0) covered++;
+  OKF("\n\r\n@@ Overall bitmap coverage rate: %.2f on map_size of %u!\n", covered*1.0/map_size, map_size);
+
+
   SAYF(CURSOR_SHOW cLRD "\n\n+++ Testing aborted %s +++\n" cRST,
        afl->stop_soon == 2 ? "programmatically" : "by user");
 

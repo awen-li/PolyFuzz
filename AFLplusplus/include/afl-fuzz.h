@@ -476,7 +476,6 @@ typedef struct afl_state {
   patreg_seed *patreg_seed_head;
   u32 patreg_seed_num;
   seed_tmpt  stmpt;
-  u8* bitmap_overall;
   
   /* MOpt:
     Lots of globals, but mostly for the status UI and other things where it

@@ -870,7 +870,7 @@ void update_mapsize (afl_state_t *afl)
         }
 
         afl->fsrv.map_size = tmp_map_size;
-        ACTF("@@@ Update fsrv->map_size: %u", afl->fsrv.map_size);
+        ACTF("@@@ Update fsrv->map_size: %u, real_map_size:%u", afl->fsrv.map_size, afl->fsrv.real_map_size);
     }
 }
 

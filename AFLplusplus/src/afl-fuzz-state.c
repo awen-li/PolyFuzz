@@ -136,7 +136,6 @@ void afl_state_init(afl_state_t *afl, uint32_t map_size) {
 
   afl->patreg_seed_head = NULL;
   afl->patreg_seed_num  = 0;
-  afl->bitmap_overall   = ck_alloc (map_size);
 
   init_mopt_globals(afl);
 

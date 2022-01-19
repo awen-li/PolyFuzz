@@ -895,6 +895,23 @@ static void __afl_start_snapshots(void) {
 
 /* Fork server logic. */
 
+static void __afl_inform_mapsize(void) {
+    AFL_DEBUG_SHOW("@@@ __afl_inform_mapsize: __afl_map_size:%u, __afl_final_loc:%u\n", __afl_map_size, __afl_final_loc);
+    
+    __afl_map_size = __afl_final_loc;
+
+    FILE *PF = fopen ("MAP_SIZE", "w");
+    if (PF != NULL) {
+        fprintf (PF, "%u", __afl_map_size);
+        fclose (PF);
+    }
+
+    return;
+}
+
+
+/* Fork server logic. */
+
 static void __afl_start_forkserver(void) {
 
   if (__afl_already_initialized_forkserver) return;
@@ -1267,6 +1284,8 @@ void __afl_manual_init(void) {
     else {
         /* try to reinit shm if necessary */
         __afl_shm_init ();
+
+        __afl_inform_mapsize ();
     }
 
 }

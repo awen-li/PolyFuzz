@@ -2287,7 +2287,7 @@ stop_fuzzing:
   unsigned covered = 0;
   for (u32 i = 1; i < map_size; i++)
     if (trace_bits [i] != 0) covered++;
-  OKF("\n\r\n@@ Overall bitmap coverage rate: %.2f on map_size of %u!\n", covered*1.0/map_size, map_size);
+  OKF("\n\r\n@@ Overall bitmap coverage rate[%u]: %.2f on map_size of %u!\n", covered, covered*1.0/map_size, map_size);
 
 
   SAYF(CURSOR_SHOW cLRD "\n\n+++ Testing aborted %s +++\n" cRST,

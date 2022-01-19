@@ -847,6 +847,33 @@ void read_testcases(afl_state_t *afl, u8 *directory) {
 
 }
 
+
+void update_mapsize (afl_state_t *afl)
+{
+    u32 tmp_map_size = 0;
+    FILE *PF = fopen ("MAP_SIZE", "r");
+    if (PF != NULL) {
+        fscanf (PF, "%u", &tmp_map_size);
+        fclose (PF);
+
+        afl->fsrv.real_map_size = tmp_map_size;
+
+        if (tmp_map_size % 64) 
+            tmp_map_size = (((tmp_map_size + 63) >> 6) << 6);
+
+        if (!be_quiet) { ACTF("Target map size: %u", afl->fsrv.real_map_size); }
+        if (tmp_map_size > afl->fsrv.map_size) {
+            FATAL("Target's coverage map size of %u is larger than the one this "
+                  "afl++ is set with (%u). Either set AFL_MAP_SIZE=%u and restart "
+                  " afl-fuzz, or change MAP_SIZE_POW2 in config.h and recompile "
+                  "afl-fuzz", tmp_map_size, afl->fsrv.map_size, tmp_map_size);
+        }
+
+        afl->fsrv.map_size = tmp_map_size;
+        ACTF("@@@ Update fsrv->map_size: %u", afl->fsrv.map_size);
+    }
+}
+
 /* Perform dry run of all test cases to confirm that the app is working as
    expected. This is done only for the initial inputs, and only once. */
 
@@ -891,6 +918,7 @@ void perform_dry_run(afl_state_t *afl) {
     close(fd);
 
     res = calibrate_case(afl, q, use_mem, 0, 1);
+    update_mapsize (afl);
 
     if (afl->stop_soon) { return; }
 

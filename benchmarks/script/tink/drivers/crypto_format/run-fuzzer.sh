@@ -19,5 +19,7 @@ if [ "$?" != "0" ]; then
 	echo "copy py_summary.xml fail, please check the configuration!!!!"
 	exit 0
 fi
+
+export AFL_MAP_SIZE=315000
 afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../crypto_format.py  @@
 

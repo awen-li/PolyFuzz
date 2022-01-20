@@ -48,6 +48,24 @@ if __name__ == '__main__':
             mac2.verify_mac(mac_value1, raw_data)
             mac3.verify_mac(mac_value1, raw_data)
             mac4.verify_mac(mac_value1, raw_data)
+            
+            mac_value2 = mac2.compute_mac(raw_data)
+            mac1.verify_mac(mac_value2, raw_data)
+            mac2.verify_mac(mac_value2, raw_data)
+            mac3.verify_mac(mac_value2, raw_data)
+            mac4.verify_mac(mac_value2, raw_data)
+
+            mac_value3 = mac3.compute_mac(raw_data)
+            mac1.verify_mac(mac_value3, raw_data)
+            mac2.verify_mac(mac_value3, raw_data)
+            mac3.verify_mac(mac_value3, raw_data)
+            mac4.verify_mac(mac_value3, raw_data)
+
+            mac_value4 = mac4.compute_mac(raw_data)
+            mac1.verify_mac(mac_value4, raw_data)
+            mac2.verify_mac(mac_value4, raw_data)
+            mac3.verify_mac(mac_value4, raw_data)
+            mac4.verify_mac(mac_value4, raw_data)
         
     except Exception as e:
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)

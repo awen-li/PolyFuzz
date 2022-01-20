@@ -5595,17 +5595,17 @@ u8 patreg_fuzzing(afl_state_t *afl) {
     u8 *in_buf = queue_testcase_get(afl, afl->queue_cur);
     u32 len = afl->queue_cur->len;
     
-    u32 map_size = afl->fsrv.map_size;
+    u32 map_size = afl->fsrv.real_map_size;
     u8 * trace_bits = afl->fsrv.trace_bits;
 
-    u32 bb_num = map_size;
-    u8 *str_bb = getenv ("AFL_BB_NUM");
+    u32 start_bb = 1;
+    u8 *str_bb = getenv ("AFL_START_BB");
     if (str_bb != NULL) {
-        bb_num = (u32)atoi(str_bb);
+        start_bb = (u32)atoi(str_bb);
     }
 
-    printf ("patreg_fuzzing: %s[%u], bb_num:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, bb_num);
-    
+    fprintf (stderr, "patreg_fuzzing: %s[%u], start_bb:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, start_bb);
+
     patreg_seed *ps = add_patreg (afl, in_buf, len);
     char_pat *char_pat_list = ps->char_pat_list;
     
@@ -5631,7 +5631,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
             printf ("[%u]Trace bits: ", byte_val);
             #endif
             u32 path_len = 0;
-            for (u32 i = 1; i < bb_num; i++) {
+            for (u32 i = start_bb; i < map_size; i++) {
                 if (trace_bits[i]) {
                     path_len++;
                     #ifdef __DEBUG__
@@ -5883,7 +5883,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
      *****************************************************/ 
     afl->stage_name  = "byte-inc";
     afl->stage_short = "byte-inc";
-    afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
+    afl->stage_max   = HAVOC_CYCLES_INIT + stmpt->char_num;
     path_queued = afl->queued_paths;
     cross_paths = afl->stmpt.cross_paths;
     
@@ -5922,8 +5922,11 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         memcpy(out_buf, in_buf, len);
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
+            afl->stage_max = afl->stage_max* 2 ;
             path_queued = afl->queued_paths;
+
+            if (cross_paths != afl->stmpt.cross_paths)
+                afl->stage_max += HAVOC_CYCLES;
             cross_paths = afl->stmpt.cross_paths;
         }   
     }
@@ -5937,7 +5940,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     
     afl->stage_name  = "stru-inc";
     afl->stage_short = "stru-inc";
-    afl->stage_max   = HAVOC_CYCLES_INIT + len*stmpt->char_num;
+    afl->stage_max   = HAVOC_CYCLES_INIT + stmpt->char_num;
     path_queued = afl->queued_paths;
     cross_paths = afl->stmpt.cross_paths;
     
@@ -5989,8 +5992,11 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         }
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
+            afl->stage_max = afl->stage_max* 2;
             path_queued = afl->queued_paths;
+
+            if (cross_paths != afl->stmpt.cross_paths)
+                afl->stage_max += HAVOC_CYCLES;
             cross_paths = afl->stmpt.cross_paths;
         }  
     }
@@ -6323,8 +6329,11 @@ havoc_stage:
         /* If we're finding new stuff, let's run for a bit longer, limits permitting. */
         if (afl->queued_paths != path_queued) {
             if (perf_score <= afl->havoc_max_mult * 100) {
-                afl->stage_max = (afl->stage_max + (afl->stmpt.cross_paths - cross_paths)) * 2;
+                afl->stage_max = afl->stage_max*2;
                 perf_score *= 2;
+
+                if (cross_paths != afl->stmpt.cross_paths)
+                    afl->stage_max += HAVOC_CYCLES;
             }
 
             path_queued = afl->queued_paths;

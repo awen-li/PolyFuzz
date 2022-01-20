@@ -110,8 +110,24 @@ static inline BYTE* GetFuzzDir (BYTE* DriverDir)
 static inline VOID RunPilotFuzzing (BYTE* DriverDir)
 {
     BYTE Cmd[1024];
+    DWORD StartBB = 0;
 
-    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 1", DriverDir);
+    FILE *pf = fopen ("INTERAL_LOC", "r");
+    if (pf != NULL)
+    {
+        fscanf (pf, "%u", &StartBB);
+        fclose (pf);
+    }
+
+    if (StartBB != 0)
+    {
+        StartBB++;
+        snprintf (Cmd, sizeof (Cmd), "cd %s; export AFL_START_BB=%u && ./run-fuzzer.sh -P 1", DriverDir, StartBB);
+    }
+    else
+    {
+        snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 1", DriverDir);
+    }
 
     printf ("CMD: %s \r\n", Cmd);
     system (Cmd);

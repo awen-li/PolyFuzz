@@ -84,7 +84,7 @@ def GenPySummary (PyDir, ExpList=None):
 
                     BranchNum += len (Def.BBNo) + 1
 
-    Root.setAttribute ("branchs", str(BranchNum+4))
+    Root.setAttribute ("branchs", str(BranchNum))
     
     # write to xml
     PySum = PyDir+"/py_summary.xml"

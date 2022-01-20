@@ -85,7 +85,7 @@ def GenTestArgs (PyFile, ApiName, Exp=False):
                     "cd fuzz\n"
                     "afl-system-config\n\n"
                     "#pilot fuzzing: max path length\n"
-                    "export AFL_BB_NUM=65535\n\n"
+                    "export AFL_START_BB=65535\n\n"
                     "#timeout threshold\n"
                     "export AFL_FORKSRV_INIT_TMOUT=2\n\n"
                     "#disable trim by default\n"

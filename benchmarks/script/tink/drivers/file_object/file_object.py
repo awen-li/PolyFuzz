@@ -5,7 +5,7 @@ from absl.testing.absltest import mock
 from tink.streaming_aead import _file_object_adapter
 import pyprob
 
-pyprob.Setup('py_summary.xml', 'es_write.py')
+pyprob.Setup('py_summary.xml', 'file_object.py')
 
 def partial_write (raw_data):
     file_object = mock.Mock()

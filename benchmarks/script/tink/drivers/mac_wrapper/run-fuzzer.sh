@@ -3,6 +3,8 @@ export AFL_SKIP_BIN_CHECK=1
 if [ ! -d "fuzz" ]; then
    mkdir -p fuzz/in
    cp ./tests/* fuzz/in/
+   cp ./char.pat fuzz/
+   cp ./stru.pat fuzz/
 fi
 
 cd fuzz
@@ -21,5 +23,7 @@ if [ "$?" != "0" ]; then
 	echo "copy py_summary.xml fail, please check the configuration!!!!"
 	exit 0
 fi
+
+export AFL_MAP_SIZE=315000
 afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../mac_wrapper.py  @@
 

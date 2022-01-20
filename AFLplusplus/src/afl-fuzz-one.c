@@ -5847,7 +5847,8 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     /*****************************************************
      * Following character-patterns: byte mutation       *
      *****************************************************/
-    if (stmpt->char_num == 0)   goto havoc_stage;
+    if (stmpt->char_num == 0) goto havoc_stage;
+    if (afl->queue_cur->was_fuzzed) goto byteinc_stage;
     
     afl->stage_name  = "byte-op";
     afl->stage_short = "byte-op";
@@ -5871,23 +5872,20 @@ u8 patawa_fuzzing(afl_state_t *afl) {
             if (common_fuzz_stuff(afl, out_buf, len)) { goto abandon_entry; }
             out_buf[pos] = orgi_byte;            
         }
-
-        if (afl->queued_paths != path_queued) {
-            afl->stage_cur = 0;
-            path_queued = afl->queued_paths;
-        }  
     }
+    afl->queue_cur->was_fuzzed = true;
 
     /*****************************************************
      * Following character-patterns: increase bytes      *
      *****************************************************/ 
+byteinc_stage:
     afl->stage_name  = "byte-inc";
     afl->stage_short = "byte-inc";
-    afl->stage_max   = HAVOC_CYCLES_INIT + stmpt->char_num;
+    afl->stage_max   = HAVOC_CYCLES + stmpt->char_num;
     path_queued = afl->queued_paths;
     cross_paths = afl->stmpt.cross_paths;
     
-    u8 random_bytes[32];   
+    u8 random_bytes[64];   
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
         u32 r_offset = rand_below(afl, len);
@@ -5922,7 +5920,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         memcpy(out_buf, in_buf, len);
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max = afl->stage_max* 2 ;
+            afl->stage_max = afl->stage_max + HAVOC_CYCLES;
             path_queued = afl->queued_paths;
 
             if (cross_paths != afl->stmpt.cross_paths)
@@ -5940,7 +5938,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
     
     afl->stage_name  = "stru-inc";
     afl->stage_short = "stru-inc";
-    afl->stage_max   = HAVOC_CYCLES_INIT + stmpt->char_num;
+    afl->stage_max   = HAVOC_CYCLES + stmpt->char_num;
     path_queued = afl->queued_paths;
     cross_paths = afl->stmpt.cross_paths;
     
@@ -5992,7 +5990,7 @@ u8 patawa_fuzzing(afl_state_t *afl) {
         }
 
         if (afl->queued_paths != path_queued) {
-            afl->stage_max = afl->stage_max* 2;
+            afl->stage_max = afl->stage_max + HAVOC_CYCLES;
             path_queued = afl->queued_paths;
 
             if (cross_paths != afl->stmpt.cross_paths)

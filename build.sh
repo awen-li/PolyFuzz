@@ -31,3 +31,6 @@ cd $BASE_DIR/langspec/java
 cd $BASE_DIR/langspec/python
 ./pybuild.sh
 
+# 4 tools
+cd $BASE_DIR/tool/BBstat
+make clean && make

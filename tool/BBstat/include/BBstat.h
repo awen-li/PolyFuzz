@@ -38,7 +38,25 @@ private:
             Num++;
         }
 
-        cout<<"["<<Num<<"]Collect basic block number: "<<m_BBset.size ()<<"\r\n";
+        fclose(bf);
+
+        DWORD TotalBBnum = 0;
+        FILE *mf = fopen ("MAP_SIZE", "r");
+        if (mf != NULL)
+        {
+            fscanf (bf, "%u", &TotalBBnum);
+            fclose (mf);
+        }
+
+        if (TotalBBnum == 0)
+        {
+            cout<<"["<<Num<<"]Collect basic block number: "<<m_BBset.size ()<<"\r\n";
+        }
+        else
+        {
+            printf ("[%u]Collect basic block number: %u[%u] -> block-coverage: %.2f\r\n",
+                    Num, (DWORD)m_BBset.size (), TotalBBnum, m_BBset.size ()/TotalBBnum*1.0);
+        }
         return;
     }
 

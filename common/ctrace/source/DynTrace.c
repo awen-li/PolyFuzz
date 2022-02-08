@@ -1,13 +1,14 @@
 
-#include <sys/syscall.h>
-#include <sys/shm.h>
-#include "DynTrace.h"
-#include "config.h"
-
-
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+#include <sys/syscall.h>
+#include <sys/shm.h>
+#include "Queue.h"
+#include "DynTrace.h"
+#include "config.h"
+
 
 /* defined in AFL++ */
 static char* afl_area_ptr = NULL;
@@ -24,9 +25,8 @@ void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
     {
         QNode *Node = QBUF2QNODE (Eh);
 
-        Node->ThreadId = pthread_self ();
         Node->TrcKey   = TrcKey;
-        Node->Flag     = TRUE;
+        Node->IsReady  = TRUE;
     }
 
     #if 0
@@ -68,7 +68,7 @@ int DynTraceInit (unsigned BBs)
 
 void DynTraceExit ()
 {
-    QueueSetExit ();
+    SetQueueExit ();
 }
 
 #ifdef __cplusplus

@@ -1,12 +1,14 @@
 
-#include <sys/shm.h>
-#include "Queue.h"
-#include "Event.h"
-
 
 #ifdef __cplusplus
 extern "C"{
 #endif 
+
+
+#include <sys/shm.h>
+#include "Queue.h"
+#include "Event.h"
+
 
 EVENT_HANDLE AllocEvent ()
 {
@@ -17,8 +19,8 @@ EVENT_HANDLE AllocEvent ()
         exit (0);
     }
 
-    Node->Flag     = FALSE;
-    return (EVENT_HANDLE)Node->QBuf;
+    Node->IsReady = FALSE;
+    return (EVENT_HANDLE)Node->Buf;
 }
 
 

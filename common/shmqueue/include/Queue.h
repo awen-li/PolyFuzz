@@ -32,16 +32,23 @@ typedef enum
 typedef struct _QNode_
 {
     unsigned TrcKey;
-    unsigned Flag;          /* NODE_READY for use */
+    unsigned IsReady;          
     char  Buf [BUF_SIZE];
 }QNode;
 
+static inline QNode* QBUF2QNODE (char *Qbuf)
+{
+    return (QNode*)(Qbuf - (sizeof (QNode)-BUF_SIZE));
+}
 
 void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode);
 QNode* InQueue (void);
 QNode* FrontQueue (void);
 void OutQueue (void);
 unsigned QueueSize (void);
+
+void SetQueueExit ();
+unsigned GetQueueExit ();
 void DelQueue (void);
 
 

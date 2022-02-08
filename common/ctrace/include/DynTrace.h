@@ -9,7 +9,6 @@
 #ifndef _DYNTRACE_H_
 #define _DYNTRACE_H_
 #include "Event.h"
-#include "Queue.h"
 
 
 #ifdef __cplusplus

@@ -27,7 +27,7 @@ typedef struct _Queue_
     unsigned NodeNum;
     unsigned Hindex;
     unsigned Tindex;
-    unsigned Rev;
+    unsigned ExitFlag;
 
     unsigned MemMode;
     unsigned MaxNodeNum;
@@ -124,6 +124,7 @@ void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode)
         DEBUG ("@@@@@ start InitQueue[%u]\r\n", QueueNum);
         Q->NodeNum    = QueueNum;
         Q->MaxNodeNum = 0;
+        Q->ExitFlag   = 0;
         Q->MemMode    = MemMode;
 
         pthread_rwlockattr_t LockAttr;
@@ -153,7 +154,7 @@ QNode* InQueue ()
     if ((Q->Tindex+1) != Q->Hindex)
     {
         Node = Q_2_NODELIST(Q) + Q->Tindex++;
-        Node->Flag = 0;
+        Node->IsReady = 0;
 
         if (Q->Tindex >= Q->NodeNum)
         {
@@ -229,6 +230,38 @@ unsigned QueueSize ()
     return Size;
 }
 
+
+void SetQueueExit ()
+{
+    Queue* Q = g_Queue;
+    if (Q == NULL)
+    {
+        return;
+    }
+
+    process_lock(&Q->QLock);
+    Q->ExitFlag = 1;
+    process_unlock(&Q->QLock);
+    DEBUG ("QueueSetExit: %u \r\n", Q->ExitFlag);
+
+    return;
+}
+
+unsigned GetQueueExit ()
+{
+    Queue* Q = g_Queue;
+    if (Q == NULL)
+    {
+        return 0;
+    }
+
+    unsigned Exit = 0;
+    process_lock(&Q->QLock);
+    Exit = Q->ExitFlag;
+    process_unlock(&Q->QLock);
+
+    return Exit;
+}
 
 void DelQueue ()
 {

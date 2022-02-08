@@ -20,7 +20,8 @@
 
 
 #define  BUF_SIZE               (64)
-#define  NODE_READY             (1)
+#define  SHM_QUEUE_CAP          ("SHM_QUEUE_CAP")
+#define  SHM_QUEUE_KEY          ("SHM_QUEUE_KEY")
 
 
 typedef enum

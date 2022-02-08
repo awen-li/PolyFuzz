@@ -134,7 +134,7 @@ void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode)
 
     g_Queue = Q;
 
-    DEBUG ("InitQueue:[%p] [%u] %u\r\n", Q, Q->Hindex, Q->Tindex);
+    DEBUG ("InitQueue:[%p]-[%u] ShareMemKey = %s\r\n", Q, QueueNum, ShareMemKey);
     return;
 }
 

@@ -1,6 +1,6 @@
 
 
-TARGET = sdml
+TARGET = ple
 
 export SDML_PATH = $(PWD)
 

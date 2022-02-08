@@ -42,6 +42,13 @@ typedef unsigned         BOOL;
 #define MAX_PAT_LENGTH            (16)
 
 
+#define mutex_lock_t              pthread_mutex_t
+#define mutex_lock_init(x)        pthread_mutex_init(x, NULL)
+#define mutex_lock(x)             pthread_mutex_lock(x);
+#define mutex_unlock(x)           pthread_mutex_unlock(x);
+
+
+
 #ifdef __DEBUG__
 #define DEBUG(format, ...) printf("<debug>" format, ##__VA_ARGS__)
 #else

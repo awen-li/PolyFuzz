@@ -313,11 +313,6 @@ static inline SeedPat* PatSelection ()
     return BestSP;
 }
 
-static inline VOID GenTemplate (SeedPat* SP)
-{
-    return;
-}
-
 static inline DWORD GetCharPatNum (SeedPat *SP)
 {
     DWORD Pos = 0;

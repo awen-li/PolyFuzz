@@ -1,4 +1,10 @@
-
+/***********************************************************
+ * Author: Wen Li
+ * Date  : 11/16/2021
+ * Describe: seedpat.h - pattern of seeds
+ * History:
+   <1> 11/16/2021, create
+************************************************************/
 #ifndef __SEEDPAT_H__
 #define __SEEDPAT_H__
 #include "macro.h"

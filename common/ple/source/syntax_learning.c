@@ -1,11 +1,10 @@
-#include "mutator.h"
+#include "list.h"
 #include "seedpat.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <ctype.h>
 
 static List g_SeedPats;
-static List g_MuList;
 static List g_SeedList;
 
 static BYTE g_Ascii[256];
@@ -21,12 +20,6 @@ List* GetSeedList ()
 {
     return &g_SeedList;
 }
-
-List* GetMuList ()
-{
-    return &g_MuList;
-}
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -247,21 +240,6 @@ static inline VOID InitSeedPatList (BYTE* DriverDir)
     free (FuzzDir);
     return;
 }
-
-static VOID DelSeedPat (SeedPat *SP)
-{
-    ListDel(&SP->UnMatchList, NULL);
-    regfree (&SP->StRegex);
-    free (SP);
-
-    return;
-}
-
-VOID DeInitSeedPatList ()
-{
-    ListDel(&g_SeedPats, (DelData)DelSeedPat);
-}
-
 
 static inline SeedPat* PatSelection ()
 {
@@ -771,31 +749,21 @@ static inline SeedPat* CalRegex (List *SPList)
 }
 
 
-SeedPat* MutatorLearning (BYTE* DriverDir)
+VOID DelSeed (Seed *Ss)
 {
-    /* pilot fuzzing */
-    RunPilotFuzzing (DriverDir);
-
-    InitAscii ();
-
-    InitSeedPatList (DriverDir);
-    assert (g_SeedPats.NodeNum != 0);
-
-    /* calculate char pattern */
-    CalCharPat (&g_SeedPats);
-
-    /* calculate regex */
-    SeedPat *SP = CalRegex (&g_SeedPats);
-
-    /* calculate structure pattern */
-    List *PossPat = &SP->PossPat;
-    PossPat->Header  = PossPat->Tail = NULL;
-    PossPat->NodeNum = 0;
-    CalStruPat (&g_SeedPats, PossPat);
-
-    return SP;
+    free (Ss->SeedSD);
+    free (Ss->SeedCtx);
+    free (Ss);
 }
 
+static VOID DelSeedPat (SeedPat *SP)
+{
+    ListDel(&SP->UnMatchList, NULL);
+    regfree (&SP->StRegex);
+    free (SP);
+
+    return;
+}
 
 static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
 {
@@ -855,108 +823,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
 }
 
 
-VOID DelSeed (Seed *Ss)
-{
-    free (Ss->SeedSD);
-    free (Ss->SeedCtx);
-    free (Ss);
-}
-
-static inline BOOL MutatorCmp (Mutator* Mu1, Mutator* Mu2)
-{
-    if (strcmp (Mu1->StruPattern, Mu2->StruPattern) == 0 &&
-        memcmp (Mu1->CharPattern, Mu2->CharPattern, sizeof (Mu2->CharPattern)) == 0)
-    {
-        return TRUE;
-    }
-    else
-    {
-        return FALSE;
-    }
-}
-
-static inline Mutator* CheckMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern)
-{
-    Mutator Mu = {MuName, StruPattern, {0}};
-    memcpy (Mu.CharPattern, CharPattern, sizeof (Mu.CharPattern));
-
-    return (Mutator*)ListSearch (&g_MuList, (CompData)MutatorCmp, &Mu);
-}
-
-
-Mutator* RegMutator (BYTE* MuName, BYTE* StruPattern, BYTE* CharPattern, List *PossPat)
-{    
-    Mutator *Mu;
-    
-    Mu = CheckMutator (MuName, StruPattern, CharPattern);
-    if (Mu != NULL)
-    {
-        return Mu;
-    }
-
-    DWORD NameLen = strlen ((char*)MuName) + 1;
-    DWORD StruPatLen  = strlen ((char*)StruPattern) + 1;
-    
-    Mu = (Mutator*) malloc (sizeof (Mutator) + NameLen + StruPatLen);
-    assert (Mu != NULL);
-    memset (Mu, 0, sizeof (Mu));
-
-    Mu->MuName  = (BYTE*) (Mu + 1);
-    memcpy (Mu->MuName, MuName, NameLen);
-    
-    Mu->StruPattern = Mu->MuName + NameLen;
-    memcpy (Mu->StruPattern, StruPattern, StruPatLen);
-    memcpy (Mu->CharPattern, CharPattern, sizeof (Mu->CharPattern));
-
-    if (PossPat != NULL)
-    {
-        memcpy (&Mu->PossPat, PossPat, sizeof (List));
-    }
-
-    DWORD Pos = 0;
-    DEBUG ("Crucial bytes: ");
-    while (Pos < 256)
-    {
-        if (Mu->CharPattern[Pos] == CHAR_CRUCIAL)
-        {
-            #ifdef __DEBUG__
-            printf ("%c ", Pos);
-            #endif
-        }
-        Pos++;
-    }
-    DEBUG ("\n");
-
-    DEBUG ("[RegMutator]%s - %s \r\n", MuName, Mu->StruPattern);
-    INT Ret = regcomp(&Mu->StRegex, Mu->StruPattern, 0);
-    if (Ret != 0)
-    {
-        BYTE ErrBuf[256];
-        printf ("[%s]Regex [%s] compiled fail -> reason[%d]: %s \r\n", 
-                MuName, Mu->StruPattern, Ret, ErrBuf);
-        free (Mu);
-        return NULL;
-    }
-
-    ListInsert(&g_MuList, Mu);
-    
-    return Mu;
-}
-
-
-static inline BOOL MutatorMatch (Mutator* Mu, Seed* Ss)
-{
-    INT Ret = regexec(&Mu->StRegex, Ss->SeedCtx, 0, NULL, 0);
-    if (Ret == 0)
-    {
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-
-VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
+VOID BindMutatorToSeeds (SeedPat *SP, BYTE* DriverDir)
 {
     DWORD Pos;
     BYTE Path[520];
@@ -973,7 +840,7 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
         Pos = 0;
         while (Pos < Ss->SeedLen)
         {
-            Temt[Pos] = Mu->CharPattern [Ss->SeedCtx[Pos]];
+            Temt[Pos] = SP->CharPattern [Ss->SeedCtx[Pos]];
             Pos++;
         }
 
@@ -988,16 +855,16 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
         Temt = NULL;
         fclose (FT);
 
-        DEBUG("[%s]->[%s]Seedlen: %u\r\n", Mu->MuName, Ss->SName, Ss->SeedLen);
+        DEBUG("[%s]Seedlen: %u\r\n", Ss->SName, Ss->SeedLen);
         
         SsHdr = SsHdr->Nxt;
     }
 
     DWORD CharNum = 0;
     Pos = 0;
-    while (Pos < sizeof (Mu->CharPattern))
+    while (Pos < sizeof (SP->CharPattern))
     {
-        CharNum += (DWORD) (Mu->CharPattern[Pos] != 0);
+        CharNum += (DWORD) (SP->CharPattern[Pos] != 0);
         Pos++;
     }
 
@@ -1006,18 +873,18 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
     assert (FT != NULL);
 
     fwrite (&CharNum, 1, sizeof (CharNum), FT);
-    fwrite (Mu->CharPattern, 1, sizeof (Mu->CharPattern), FT);
+    fwrite (SP->CharPattern, 1, sizeof (SP->CharPattern), FT);
     fclose (FT);
-    DEBUG("[%s]CharNum: %u\r\n", Mu->MuName, CharNum);
+    DEBUG("CharNum: %u\r\n", CharNum);
 
-    if (Mu->PossPat.NodeNum != 0)
+    if (SP->PossPat.NodeNum != 0)
     {
         snprintf (Path, sizeof (Path), "%s/stru.pat", DriverDir);
         FILE *FT = fopen (Path, "wb");
         assert (FT != NULL);
 
-        fwrite (&Mu->PossPat.NodeNum, 1, sizeof (DWORD), FT);
-        LNode *Pbhdr = Mu->PossPat.Header;
+        fwrite (&SP->PossPat.NodeNum, 1, sizeof (DWORD), FT);
+        LNode *Pbhdr = SP->PossPat.Header;
         while (Pbhdr != NULL)
         {
             N_gram *NG = (N_gram *)Pbhdr->Data;
@@ -1035,19 +902,40 @@ VOID BindMutatorToSeeds (Mutator *Mu, BYTE* DriverDir)
 }
 
 
-VOID DelMu (Mutator *Mu)
+void SyntaxLearning (BYTE* DriverDir)
 {
-    ListDel(&Mu->PossPat, free);
-    free (Mu);
-    return;
-}
+    /* pilot fuzzing */
+    RunPilotFuzzing (DriverDir);
+
+    InitAscii ();
+
+    InitSeedPatList (DriverDir);
+    assert (g_SeedPats.NodeNum != 0);
+
+    /* calculate char pattern */
+    CalCharPat (&g_SeedPats);
+
+    /* calculate regex */
+    SeedPat *SP = CalRegex (&g_SeedPats);
+
+    /* calculate structure pattern */
+    List *PossPat = &SP->PossPat;
+    PossPat->Header  = PossPat->Tail = NULL;
+    PossPat->NodeNum = 0;
+    CalStruPat (&g_SeedPats, PossPat);
 
 
-VOID DeInitMutators ()
-{
-    ListDel(&g_MuList, (DelData) DelMu);
+    BindMutatorToSeeds (SP, DriverDir);
+
     ListDel(&g_SeedList, (DelData) DelSeed);
+    ListDel(&g_SeedPats, (DelData)DelSeedPat);
     return;
 }
+
+
+
+
+
+
 
 

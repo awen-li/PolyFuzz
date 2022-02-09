@@ -1,20 +1,11 @@
-#include "mutator.h"
+#include "syntax_learning.h"
 
-static inline VOID  SDML_main (BYTE *SeedDir, BYTE * DriverDir, BYTE * TestName)
+static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir)
 {
-    Mutator *Mu = NULL;
+    /* 1. learning the syntax  pattern */
+    SyntaxLearning(DriverDir);
 
-    /* 2. learning the pattern */
-    SeedPat *SP = MutatorLearning(DriverDir);
 
-    /* 3. update and gen the mutator */
-    Mu = RegMutator (TestName, SP->StruPattern, SP->CharPattern, &SP->PossPat);
-
-    assert (Mu != NULL);
-    BindMutatorToSeeds (Mu, DriverDir);
-    
-    DeInitMutators ();
-    DeInitSeedPatList ();
     return;
 }
 
@@ -35,10 +26,9 @@ int main(int argc, char *argv[])
 {
     BYTE *SeedDir   = NULL;
     BYTE *DriverDir = NULL;
-    BYTE *TestName  = NULL;
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:n:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:")) > 0) 
     {
         switch (Opt) 
         {
@@ -56,12 +46,6 @@ int main(int argc, char *argv[])
                 FormatPath (DriverDir);
                 break;
             }
-            case 'n':
-            {
-                TestName = (BYTE *)strdup (optarg);
-                assert (TestName != NULL);
-                break;
-            }
             default:
             {
                 break;
@@ -70,16 +54,14 @@ int main(int argc, char *argv[])
         } 
     }
 
-    if (SeedDir == NULL || DriverDir == NULL || TestName == NULL)
+    if (SeedDir == NULL || DriverDir == NULL)
     {
-        printf ("!!!ERROR: the Input SeedDir = %p, DriverDir = %p, TestName = %p! \r\n", 
-                SeedDir, DriverDir, TestName);
+        printf ("!!!ERROR: the Input SeedDir = %p, DriverDir = %p! \r\n", SeedDir, DriverDir);
         return 0;
     }
 
-    SDML_main (SeedDir, DriverDir, TestName);
+    PLEmain (SeedDir, DriverDir);
 
-    free (TestName);
     free (SeedDir);
     free (DriverDir);
     return 0;

@@ -1422,9 +1422,11 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 }
 
-void __sanitizer_cov_trace_pc_guard_du (uint32_t *guard, void *Value) {
+void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Value) {
 
-    __sanitizer_cov_trace_pc_guard__ (guard);
+    fprintf(stderr, "__sanitizer_cov_trace_pc_guard_du32 ---> Value = %u \r\n", Value);
+    if (guard != NULL)
+        __sanitizer_cov_trace_pc_guard__ (guard);
 
 }
 

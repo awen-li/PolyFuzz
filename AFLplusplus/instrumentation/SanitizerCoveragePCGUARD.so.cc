@@ -80,6 +80,8 @@ const char SanCovModuleCtorBoolFlagName[] = "sancov.module_ctor_bool_flag";
 static const uint64_t SanCtorAndDtorPriority = 2;
 
 const char SanCovTracePCGuardName[] = "__sanitizer_cov_trace_pc_guard";
+const char SanCovTracePCGuardNameDU32[] = "__sanitizer_cov_trace_pc_guard_du32";
+
 const char SanCovTracePCGuardInitName[] = "__sanitizer_cov_trace_pc_guard_init";
 const char SanCov8bitCountersInitName[] = "__sanitizer_cov_8bit_counters_init";
 const char SanCovBoolFlagInitName[] = "__sanitizer_cov_bool_flag_init";
@@ -137,8 +139,25 @@ public:
     typedef set<Instruction*> T_InstSet;
     typedef set<Value*> T_ValueSet;
 
-    ModuleDuCov (Function *F) {
+    ModuleDuCov (Module &M, Function *F) {
         CurFunc = F;
+
+        C = &(M.getContext());
+        DL = &M.getDataLayout();
+        
+        Type *      VoidTy = Type::getVoidTy(*C);
+        IRBuilder<> IRB(*C);
+        Int64PtrTy = PointerType::getUnqual(IRB.getInt64Ty());
+        Int32PtrTy = PointerType::getUnqual(IRB.getInt32Ty());
+        Int8PtrTy = PointerType::getUnqual(IRB.getInt8Ty());
+        Int1PtrTy = PointerType::getUnqual(IRB.getInt1Ty());
+        Int64Ty = IRB.getInt64Ty();
+        Int32Ty = IRB.getInt32Ty();
+        Int16Ty = IRB.getInt16Ty();
+        Int8Ty = IRB.getInt8Ty();
+        Int1Ty = IRB.getInt1Ty();
+
+        SanCovTracePCGuardDuMap[32] = M.getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int32Ty);
     }
 
     ~ModuleDuCov () {
@@ -160,7 +179,6 @@ public:
     }
 
     inline Instruction* GetBBFirstInst (BasicBlock *BB) {
-        return NULL;
         auto It = BB2FirstInst.find (BB);
         if (It == BB2FirstInst.end ()) {
             return NULL;
@@ -172,6 +190,15 @@ public:
     inline unsigned Size ()
     {
         return (unsigned)BB2FirstInst.size ();
+    }
+
+    inline Instruction* GetInstrmInst (Instruction *BrDefInst)
+    {
+        auto It = BrDefInst2PosInst.find (BrDefInst);
+        if (It == BrDefInst2PosInst.end ())
+            return NULL;
+
+        return It->second;
     }
 
     inline void CollectDus () {
@@ -214,25 +241,28 @@ public:
 
         /* 3. get DEF of branch variables */
         for (auto &BB : *CurFunc) 
-        {    
+        {
+            Instruction *BrDefInst = NULL;
             for (auto &IN: BB) 
             {
                 Instruction *Inst = &IN;
-                if (isa<DbgInfoIntrinsic>(Inst) || 
-                    isa<UnreachableInst>(Inst) || 
-                    isa<IntrinsicInst>(Inst)) {
-                    continue;
+
+                /* LLVM instrument: before the next instruction */
+                if (BrDefInst != NULL) {
+                    BrDefInst2PosInst [BrDefInst] = Inst;
+                    BrDefInst = NULL;
                 }
 
                 Value *Def = Inst;
                 auto It = BrValueSet.find (Def);
                 if (It == BrValueSet.end ()) continue;
-
-                errs ()<<"Brvariable DEF ----> "<<*Inst<<"\r\n";
+                
+                BrDefInst = Inst;
+                errs ()<<"Brvariable DEF ----> "<<*BrDefInst<<"\r\n";
                 
                 BasicBlock *CurBB = &BB;
                 if (BB2FirstInst.find (CurBB) == BB2FirstInst.end ()) {
-                    BB2FirstInst [CurBB] = Inst;
+                    BB2FirstInst [CurBB] = BrDefInst;
                 }
             }               
         }
@@ -243,14 +273,55 @@ public:
         return;
     }
 
+    inline CallInst* InjectOne (IRBuilder<> &IRB, Instruction *InjectDu, Value* GuardPtr=NULL) {
+
+        Value *Def = InjectDu;
+
+        uint64_t TypeSize = DL->getTypeStoreSizeInBits(Def->getType());
+        auto It = SanCovTracePCGuardDuMap.find (TypeSize);
+        if (It == SanCovTracePCGuardDuMap.end ())
+            return NULL;
+
+        if (GuardPtr == NULL) {   
+            GuardPtr = ConstantPointerNull::get(cast<PointerType>(Int32PtrTy));
+        }
+
+        FunctionCallee TraceFunc = It->second;       
+        auto Ty = Type::getIntNTy(*C, TypeSize);
+        CallInst *Ci = IRB.CreateCall(TraceFunc, {GuardPtr, IRB.CreateIntCast(Def, Ty, true)});
+        return Ci;
+    }
+
     inline void RunInject () {
+        for (auto It = BrDefInst2PosInst.begin (); It != BrDefInst2PosInst.end (); It++) {
+            Instruction *BrDefInst = It->first;
+            Instruction *PosInst = It->second;
+            
+            if (IsInjected (PosInst)) continue;
+
+            IRBuilder<> IRB(PosInst);
+            CallInst *CI = InjectOne (IRB, BrDefInst);
+            if (CI != NULL)
+            {
+                CI->setCannotMerge();
+                DB_SHOWINST (__LINE__, *CI);
+            }
+        }
         return;
     }
 
 private:
     Function *CurFunc;
-    DenseMap<BasicBlock*, Instruction*> BB2FirstInst;    
+    DenseMap<BasicBlock*, Instruction*> BB2FirstInst;
+    DenseMap<Instruction*, Instruction*> BrDefInst2PosInst;
     set<Instruction*> InjectedInsts;
+
+    LLVMContext* C;
+    const DataLayout *DL;
+    Type *IntptrTy, *IntptrPtrTy, *Int64Ty, *Int64PtrTy, *Int32Ty, *Int32PtrTy,
+         *Int16Ty, *Int8Ty, *Int8PtrTy, *Int1Ty, *Int1PtrTy;
+
+    DenseMap<int, FunctionCallee> SanCovTracePCGuardDuMap;
     
 };
 
@@ -368,13 +439,21 @@ private:
         return;
     }
 
-    inline void InjectCovByCallee (IRBuilder<> &IRB, size_t Idx)
+    inline void InjectCovByCallee (ModuleDuCov &MDu, IRBuilder<> &IRB, size_t Idx, Instruction *InjectDu=NULL)
     {
         Value *AddPtr   = IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
                                         ConstantInt::get(IntptrTy, Idx * 4));
         Value *GuardPtr = IRB.CreateIntToPtr(AddPtr, Int32PtrTy);
 
-        CallInst* Ci = IRB.CreateCall(SanCovTracePCGuard, GuardPtr);
+        CallInst* Ci;
+        if (InjectDu == NULL) {
+            Ci = IRB.CreateCall(SanCovTracePCGuard, GuardPtr);
+        }
+        else {
+            Ci = MDu.InjectOne(IRB, InjectDu, GuardPtr);
+            if (Ci == NULL)
+                Ci = IRB.CreateCall(SanCovTracePCGuard, GuardPtr);
+        }
         Ci->setCannotMerge();
         
         DB_SHOWINST (__LINE__, *Ci);
@@ -868,7 +947,7 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     SmallVector<Instruction *, 8>       SwitchTraceTargets;
     SmallVector<BinaryOperator *, 8>    DivTraceTargets;
     SmallVector<GetElementPtrInst *, 8> GepTraceTargets;
-    ModuleDuCov MDu (&F);
+    ModuleDuCov MDu (*CurModule, &F);
 
     const DominatorTree *    DT  = DTCallback(F);
     const PostDominatorTree *PDT = PDTCallback(F);
@@ -1231,7 +1310,10 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
     if (InjectDu != NULL) {
         errs ()<<"REPLACE: "<<*InjectInst<<" ==== WITH ==== "<<*InjectDu<<"\r\n";
         assert (InjectInst->getParent() == InjectDu->getParent());
-        InjectInst = InjectDu;
+
+        InjectInst = MDu.GetInstrmInst (InjectDu);
+        assert (InjectInst != NULL);
+        
         MDu.SetInjected(InjectInst);
     }
 
@@ -1248,7 +1330,7 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
             InjectCovByInstruction(IRB, Idx);
         }
         else {
-            InjectCovByCallee(IRB, Idx);
+            InjectCovByCallee(MDu, IRB, Idx, InjectDu);
         }
 
         ++instr;

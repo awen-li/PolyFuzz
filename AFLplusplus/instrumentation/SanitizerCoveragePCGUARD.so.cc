@@ -158,7 +158,7 @@ public:
         Int8Ty = IRB.getInt8Ty();
         Int1Ty = IRB.getInt1Ty();
 
-        SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int64Ty, Int32Ty);
+        SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int32Ty, Int32Ty);
     }
 
     ~ModuleDuCov () {
@@ -288,7 +288,7 @@ public:
         }
 
         FunctionCallee TraceFunc = It->second;
-        Value *KeyVal = ConstantInt::get(Int64Ty, (unsigned long)Def, false);       
+        Value *KeyVal = ConstantInt::get(Int32Ty, (unsigned)(unsigned long)Def, false);       
         auto ValTy = Type::getIntNTy(*C, TypeSize);
         
         CallInst *Ci = IRB.CreateCall(TraceFunc, {GuardPtr, KeyVal, IRB.CreateIntCast(Def, ValTy, true)});

@@ -68,6 +68,9 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
+#include <Queue.h>
+
+
 /* Globals needed by the injected instrumentation. The __afl_area_initial region
    is used for instrumentation output before __afl_map_shm() has a chance to
    run. It will end up as .comm, so it shouldn't be too wasteful. */
@@ -1422,12 +1425,14 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 }
 
-void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint64_t Key, uint32_t Value) {
+void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Key, uint32_t Value) {
 
-    fprintf(stderr, "__sanitizer_cov_trace_pc_guard_du32 ---> Key = %lx, Value = %u \r\n", Key, Value);
+    fprintf(stderr, "__sanitizer_cov_trace_pc_guard_du32 ---> Key = %x, Value = %u \r\n", Key, Value);
     if (guard != NULL)
         __sanitizer_cov_trace_pc_guard__ (guard);
-
+        
+    QNode* QN = InQueue ();
+    printf ("QN ----> %p \r\n", QN);
 }
 
 

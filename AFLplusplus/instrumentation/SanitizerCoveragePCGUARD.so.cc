@@ -54,6 +54,7 @@
 
 
 using namespace llvm;
+using namespace std;
 
 #define DEBUG_TYPE "sancov"
 
@@ -133,18 +134,15 @@ SanitizerCoverageOptions OverrideFromCL(SanitizerCoverageOptions Options) {
 class ModuleDuCov {
 
 public:
-    typedef std::set<llvm::Instruction*> T_InstSet;
+    typedef set<Instruction*> T_InstSet;
+    typedef set<Value*> T_ValueSet;
 
     ModuleDuCov (Function *F) {
         CurFunc = F;
     }
 
     ~ModuleDuCov () {
-        for (auto It = BrDef2Use.begin (), End = BrDef2Use.end (); It != End; It++)
-        {
-            T_InstSet *Is = It->second;
-            delete Is;            
-        }
+
     }
 
     inline void SetInjected (Instruction *Inst) {
@@ -161,21 +159,6 @@ public:
         }
     }
 
-    inline void InsertBrInst (Instruction *Br) {
-        T_InstSet* Ist = new T_InstSet ();
-        assert (Ist != NULL);
-        
-        BrDef2Use[Br] = Ist;
-        if (BB2FirstInst.find (Br->getParent ()) == BB2FirstInst.end ()) {
-            BB2FirstInst [Br->getParent ()] = Br;
-        }
-        return;
-    }
-
-    inline size_t Size () {
-        return BrDef2Use.size ();
-    }
-
     inline Instruction* GetBBFirstInst (BasicBlock *BB) {
         return NULL;
         auto It = BB2FirstInst.find (BB);
@@ -186,11 +169,53 @@ public:
         return It->second;
     }
 
+    inline unsigned Size ()
+    {
+        return (unsigned)BB2FirstInst.size ();
+    }
+
     inline void CollectDus () {
-        return;
+
+        T_InstSet BrInstSet;
+        T_ValueSet BrValueSet;
+
+        /* 1. get ALL branch/switch instructions*/
         for (auto &BB : *CurFunc) 
         {    
             for (auto &IN : BB) 
+            {
+                Instruction *Inst = &IN;
+                if (ICmpInst *CMP = dyn_cast<ICmpInst>(Inst)) {
+                    BrInstSet.insert(Inst);
+                }
+
+                if (isa<SwitchInst>(Inst)) {
+                    BrInstSet.insert(Inst);
+                }
+            }     
+        }
+
+        /* 2. extract variable from branch insts */
+        for (auto It = BrInstSet.begin (); It != BrInstSet.end (); It++)
+        {
+            Instruction *Inst = *It;
+
+            unsigned OpNum = Inst->getNumOperands ();  
+            while (OpNum > 0) 
+            {
+                OpNum--;
+                Value *Use = Inst->getOperand(OpNum);
+                if (!Use->getType()->isIntegerTy()) continue;
+                if (isa<ConstantInt>(Use)) continue;
+
+                BrValueSet.insert (Use);
+            }
+        }
+
+        /* 3. get DEF of branch variables */
+        for (auto &BB : *CurFunc) 
+        {    
+            for (auto &IN: BB) 
             {
                 Instruction *Inst = &IN;
                 if (isa<DbgInfoIntrinsic>(Inst) || 
@@ -199,34 +224,21 @@ public:
                     continue;
                 }
 
-                if (isa<StoreInst>(Inst)) {
-                    AllDefs.insert (Inst);
-                }
+                Value *Def = Inst;
+                auto It = BrValueSet.find (Def);
+                if (It == BrValueSet.end ()) continue;
+
+                errs ()<<"Brvariable DEF ----> "<<*Inst<<"\r\n";
                 
-                unsigned OpNum = Inst->getNumOperands ();  
-                while (OpNum > 0) 
-                {
-                    OpNum--;
-                    Value *Use = Inst->getOperand(OpNum);
-
-                    auto It = BrDef2Use.find ((Instruction*)Use);
-                    if (It == BrDef2Use.end ()) {
-                        continue;
-                    }
-
-                    It->second->insert (Inst);
-
-                    BasicBlock *CurBB = &BB;
-                    if (BB2FirstInst.find (CurBB) == BB2FirstInst.end ()) {
-                        BB2FirstInst [CurBB] = Inst;
-                    }
-                    break;
+                BasicBlock *CurBB = &BB;
+                if (BB2FirstInst.find (CurBB) == BB2FirstInst.end ()) {
+                    BB2FirstInst [CurBB] = Inst;
                 }
             }               
         }
 
-        printf("AllDefs: %u, BrVariables: %u, BB Num: %u\r\n", 
-               (unsigned)AllDefs.size(), (unsigned)BrDef2Use.size(), (unsigned)BB2FirstInst.size());
+        printf("BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", 
+               (unsigned)BrInstSet.size(), (unsigned)BrValueSet.size(), (unsigned)BB2FirstInst.size());
 
         return;
     }
@@ -238,9 +250,7 @@ public:
 private:
     Function *CurFunc;
     DenseMap<BasicBlock*, Instruction*> BB2FirstInst;    
-    DenseMap<Instruction*, T_InstSet*> BrDef2Use;
-    std::set<Instruction*> InjectedInsts;
-    std::set<Instruction*> AllDefs;
+    set<Instruction*> InjectedInsts;
     
 };
 
@@ -884,16 +894,12 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
                 if (IsInterestingCmp(CMP, DT, Options)) {
                     if (Options.TraceCmp)
                         CmpTraceTargets.push_back(&Inst);
-                    if (IsBrDefUse == true)
-                        MDu.InsertBrInst(&Inst);
                 }
             }
 
             if (isa<SwitchInst>(&Inst)) {
                 if (Options.TraceCmp)
                     SwitchTraceTargets.push_back(&Inst);
-                if (IsBrDefUse == true)
-                    MDu.InsertBrInst(&Inst);
             }
 
             if (Options.TraceDiv) {
@@ -917,7 +923,7 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
     }
 
     DB_PRINT("Instrument %s -> "
-             "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu Du:%lu\r\n",
+             "BlocksToInstrument: %lu IndirCalls:%lu Cmps:%lu Switch:%lu Divs:%lu Gep:%lu Du:%u\r\n",
              F.getName().data(), 
              BlocksToInstrument.size(), IndirCalls.size(), CmpTraceTargets.size(), 
              SwitchTraceTargets.size(), DivTraceTargets.size(), GepTraceTargets.size(), MDu.Size ());

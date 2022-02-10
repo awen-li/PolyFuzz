@@ -142,8 +142,9 @@ public:
     ModuleDuCov (Module &M, Function *F) {
         CurFunc = F;
 
-        C = &(M.getContext());
-        DL = &M.getDataLayout();
+        CurM = &M;
+        C = &(CurM->getContext());
+        DL = &CurM->getDataLayout();
         
         Type *      VoidTy = Type::getVoidTy(*C);
         IRBuilder<> IRB(*C);
@@ -157,7 +158,7 @@ public:
         Int8Ty = IRB.getInt8Ty();
         Int1Ty = IRB.getInt1Ty();
 
-        SanCovTracePCGuardDuMap[32] = M.getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int32Ty);
+        SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int64Ty, Int32Ty);
     }
 
     ~ModuleDuCov () {
@@ -286,9 +287,11 @@ public:
             GuardPtr = ConstantPointerNull::get(cast<PointerType>(Int32PtrTy));
         }
 
-        FunctionCallee TraceFunc = It->second;       
-        auto Ty = Type::getIntNTy(*C, TypeSize);
-        CallInst *Ci = IRB.CreateCall(TraceFunc, {GuardPtr, IRB.CreateIntCast(Def, Ty, true)});
+        FunctionCallee TraceFunc = It->second;
+        Value *KeyVal = ConstantInt::get(Int64Ty, (unsigned long)Def, false);       
+        auto ValTy = Type::getIntNTy(*C, TypeSize);
+        
+        CallInst *Ci = IRB.CreateCall(TraceFunc, {GuardPtr, KeyVal, IRB.CreateIntCast(Def, ValTy, true)});
         return Ci;
     }
 
@@ -318,6 +321,7 @@ private:
 
     LLVMContext* C;
     const DataLayout *DL;
+    Module *CurM;
     Type *IntptrTy, *IntptrPtrTy, *Int64Ty, *Int64PtrTy, *Int32Ty, *Int32PtrTy,
          *Int16Ty, *Int8Ty, *Int8PtrTy, *Int1Ty, *Int1PtrTy;
 

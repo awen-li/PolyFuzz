@@ -237,6 +237,16 @@ public:
                 if (isa<ConstantInt>(Use)) continue;
 
                 BrValueSet.insert (Use);
+
+                /* check use of formal arguments */
+                for (auto It = CurFunc->arg_begin(); It != CurFunc->arg_end(); It++) {
+                    Value *Arg = &(*It);
+                    if (Arg == Use) {
+                       BrDefInst2PosInst [Inst] = Inst;
+                       BrInst2FormalUse[Inst] = Use;
+                       errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
+                    }
+                }
             }
         }
 
@@ -274,9 +284,7 @@ public:
         return;
     }
 
-    inline CallInst* InjectOne (IRBuilder<> &IRB, Instruction *InjectDu, Value* GuardPtr=NULL) {
-
-        Value *Def = InjectDu;
+    inline CallInst* InjectOne (IRBuilder<> &IRB, Value *Def, Value* GuardPtr=NULL) {
 
         uint64_t TypeSize = DL->getTypeStoreSizeInBits(Def->getType());
         auto It = SanCovTracePCGuardDuMap.find (TypeSize);
@@ -302,8 +310,15 @@ public:
             
             if (IsInjected (PosInst)) continue;
 
+            Value *Def = BrDefInst;
+            if (BrDefInst == PosInst) {
+                auto Itv = BrInst2FormalUse.find (BrDefInst);
+                assert (Itv != BrInst2FormalUse.end ());
+                Def = Itv->second;
+            }
+
             IRBuilder<> IRB(PosInst);
-            CallInst *CI = InjectOne (IRB, BrDefInst);
+            CallInst *CI = InjectOne (IRB, Def);
             if (CI != NULL)
             {
                 CI->setCannotMerge();
@@ -317,6 +332,7 @@ private:
     Function *CurFunc;
     DenseMap<BasicBlock*, Instruction*> BB2FirstInst;
     DenseMap<Instruction*, Instruction*> BrDefInst2PosInst;
+    DenseMap<Instruction*, Value*> BrInst2FormalUse;
     set<Instruction*> InjectedInsts;
 
     LLVMContext* C;

@@ -68,6 +68,8 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 
+/* for trace dynamic event value */
+#include <ctrace/Event.h>
 #include <Queue.h>
 
 
@@ -1427,12 +1429,21 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Key, uint32_t Value) {
 
-    fprintf(stderr, "__sanitizer_cov_trace_pc_guard_du32 ---> Key = %x, Value = %u \r\n", Key, Value);
     if (guard != NULL)
         __sanitizer_cov_trace_pc_guard__ (guard);
         
-    QNode* QN = InQueue ();
-    printf ("QN ----> %p \r\n", QN);
+    QNode* QN  = InQueue ();
+    QN->TrcKey = Key;
+
+    ObjValue *OV = (ObjValue *)QN->Buf;
+    OV->Type   = VT_INT;
+    OV->Attr   = 0;
+    OV->Length = sizeof (uint32_t);
+    OV->Value  = Value;
+
+    QN->IsReady = 1;
+    fprintf(stderr, "QN ----> %p:[key-%x] type-%u, length-%u, Value-%lu\r\n", 
+            QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
 }
 
 

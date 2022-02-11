@@ -1,5 +1,10 @@
-
-
+/***********************************************************
+ * Author: Wen Li
+ * Date  : 9/01/2020
+ * Describe: List.h - A FIFO list for data management 
+ * History:
+   <1> 9/01/2020 , create
+************************************************************/
 #ifndef __LIST_H__
 #define __LIST_H__
 #include "macro.h"

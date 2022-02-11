@@ -1,10 +1,12 @@
-#include "syntax_learning.h"
+#include "pl_learning.h"
 
 static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir)
 {
-    /* 1. learning the syntax  pattern */
-    SyntaxLearning(DriverDir);
+    /* 1. learning the syntax pattern */
+    //SyntaxLearning(SeedDir, DriverDir);
 
+    /* 2. learning the semantic pattern */
+    SemanticLearning(SeedDir, DriverDir);
 
     return;
 }

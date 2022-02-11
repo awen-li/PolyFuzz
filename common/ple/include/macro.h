@@ -1,4 +1,10 @@
-
+/***********************************************************
+ * Author: Wen Li
+ * Date  : 9/01/2020
+ * Describe: macro.h - common macro definition
+ * History:
+   <1> 9/01/2020 , create
+************************************************************/
 #ifndef __MACRO_H__
 #define __MACRO_H__ 
 

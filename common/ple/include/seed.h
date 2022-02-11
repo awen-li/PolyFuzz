@@ -1,4 +1,10 @@
-
+/***********************************************************
+ * Author: Wen Li
+ * Date  : 11/05/2020
+ * Describe: seed.h - seed definition for seed inputs
+ * History:
+   <1> 11/05/2020 , create
+************************************************************/
 #ifndef __SEED_H__
 #define __SEED_H__
 #include "macro.h"

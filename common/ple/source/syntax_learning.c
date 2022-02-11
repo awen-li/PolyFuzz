@@ -823,7 +823,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
 }
 
 
-VOID BindMutatorToSeeds (SeedPat *SP, BYTE* DriverDir)
+VOID BindPatternToSeeds (SeedPat *SP, BYTE* DriverDir)
 {
     DWORD Pos;
     BYTE Path[520];
@@ -902,8 +902,10 @@ VOID BindMutatorToSeeds (SeedPat *SP, BYTE* DriverDir)
 }
 
 
-void SyntaxLearning (BYTE* DriverDir)
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir)
 {
+    InitSeedList (SeedDir);
+    
     /* pilot fuzzing */
     RunPilotFuzzing (DriverDir);
 
@@ -925,7 +927,7 @@ void SyntaxLearning (BYTE* DriverDir)
     CalStruPat (&g_SeedPats, PossPat);
 
 
-    BindMutatorToSeeds (SP, DriverDir);
+    BindPatternToSeeds (SP, DriverDir);
 
     ListDel(&g_SeedList, (DelData) DelSeed);
     ListDel(&g_SeedPats, (DelData)DelSeedPat);

@@ -1,15 +1,16 @@
 /***********************************************************
  * Author: Wen Li
  * Date  : 11/18/2021
- * Describe: syntax_learning.h - syntax learning API
+ * Describe: pl_learning.h - pattern learning API
  * History:
    <1> 11/18/2021, create
 ************************************************************/
-#ifndef __SYNTAX_LEARNING_H__
-#define __SYNTAX_LEARNING_H__
+#ifndef __PL_LEARNING_H__
+#define __PL_LEARNING_H__
 #include "macro.h"
 
-void SyntaxLearning (BYTE* SeedDir);
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir);
+void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir);
 
 
 #endif

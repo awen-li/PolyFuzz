@@ -50,10 +50,10 @@ typedef struct ObjValue
 } ObjValue;
 
 
-typedef BYTE* EVENT_HANDLE;
+typedef BYTE* EHANDLE;
 
-EVENT_HANDLE AllocEvent ();
-unsigned EncodeEvent (EVENT_HANDLE eh, unsigned Esize, unsigned Etype, unsigned Length, BYTE* Value);
+EHANDLE AllocEvent ();
+unsigned EncodeEvent (EHANDLE eh, unsigned Esize, unsigned Etype, unsigned Length, BYTE* Value);
 
 
 #ifdef __cplusplus

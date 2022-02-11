@@ -10,7 +10,7 @@ extern "C"{
 #include "Event.h"
 
 
-EVENT_HANDLE AllocEvent ()
+EHANDLE AllocEvent ()
 {
     QNode *Node = InQueue ();
     if (Node == NULL)
@@ -20,11 +20,11 @@ EVENT_HANDLE AllocEvent ()
     }
 
     Node->IsReady = FALSE;
-    return (EVENT_HANDLE)Node->Buf;
+    return (EHANDLE)Node->Buf;
 }
 
 
-unsigned EncodeEvent (EVENT_HANDLE eh, unsigned Esize, unsigned Etype, unsigned Length, BYTE* Value)
+unsigned EncodeEvent (EHANDLE eh, unsigned Esize, unsigned Etype, unsigned Length, BYTE* Value)
 {
     assert (Esize + Length + 4 < BUF_SIZE);
     BYTE* Ehead = eh + Esize;

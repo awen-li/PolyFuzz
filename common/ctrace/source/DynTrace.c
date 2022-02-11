@@ -19,7 +19,7 @@ extern void  __afl_manual_init(void);
 extern void __sanitizer_cov_trace_pc_guard(unsigned *guard);
 
 
-void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned TrcKey)
+void DynTrace (EHANDLE Eh, unsigned Length, unsigned TrcKey)
 {
     if (Eh != NULL)
     {

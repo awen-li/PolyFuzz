@@ -46,6 +46,7 @@ typedef unsigned         BOOL;
 
 
 #define MAX_PAT_LENGTH            (16)
+#define SRV_BUF_LEN               (1024)
 
 
 #define mutex_lock_t              pthread_mutex_t

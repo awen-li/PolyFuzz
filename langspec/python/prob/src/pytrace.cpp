@@ -140,7 +140,7 @@ static inline void ShowVariables (PyObject *co_varnames)
 
 static inline void TracingDefUse (const char* VarName, PyObject *VarAddr, ObjValue *VarValue, unsigned TrcKey)
 {
-    EVENT_HANDLE Eh = AllocEvent();
+    EHANDLE Eh = AllocEvent();
     assert (Eh != NULL);
 
     unsigned Esize = 0;

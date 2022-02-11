@@ -1,8 +1,7 @@
-#include "list.h"
-#include "seedpat.h"
 #include <dirent.h>
 #include <sys/stat.h>
 #include <ctype.h>
+#include "pl_struct.h"
 
 static List g_SeedPats;
 static List g_SeedList;

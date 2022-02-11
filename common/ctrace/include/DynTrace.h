@@ -18,7 +18,7 @@ extern "C"{
 
 int  DynTraceInit (unsigned BBs);
 void DynTraceExit ();
-void DynTrace (EVENT_HANDLE Eh, unsigned Length, unsigned Tk);
+void DynTrace (EHANDLE Eh, unsigned Length, unsigned Tk);
 
 
 #ifdef __cplusplus

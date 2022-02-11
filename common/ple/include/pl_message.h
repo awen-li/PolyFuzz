@@ -24,9 +24,19 @@ typedef struct MsgHdr
 }MsgHdr;
 
 
-typedef struct Msg
+typedef struct MsgSeed
 {
-}MsgHdr;
+    unsigned SeedKey;
+    unsigned SeedLength;
+    // BYTE* seed
+}MsgSeed;
+
+
+typedef struct MsgIB
+{
+    unsigned SIndex;
+    unsigned Length;
+}MsgIB;
 
 
 #endif

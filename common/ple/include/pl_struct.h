@@ -59,11 +59,39 @@ typedef struct PLServer
 {
     INT SockFd;
     struct sockaddr_in ClientAddr;
-
     BYTE SrvBuf[SRV_BUF_LEN];
+
+    DWORD DBSeedHandle;
+    DWORD DBSeedBlockHandle;
+    DWORD DBBrVariableHandle;
 }PLServer;
 
 
+typedef struct _SeedBLock_ 
+{
+    DWORD SIndex;
+    DWORD Length;
+
+    List  ValList;
+} SeedBLock;
+
+
+typedef struct BrVariable
+{
+    DWORD Key;
+    DWORD Type;
+    ULONG Value;
+}BrVariable;
+
+
+typedef enum
+{
+    SRV_S_INIT = 0,
+    SRV_S_STARTUP,
+    SRV_S_SEEDRCV,
+    SRV_S_ITB,
+    SRV_S_ITE
+}SRV_STATE;
 
 #endif
 

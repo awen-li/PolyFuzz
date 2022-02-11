@@ -13,35 +13,25 @@
 enum DB_TYPE
 {
     DB_TYPE_BEGIN=1,
-    DB_TYPE_DIF_NODE=DB_TYPE_BEGIN,
-    DB_TYPE_DIF_EDGE,
-    DB_TYPE_DIF_FUNC,
-    DB_TYPE_DIF_THR,
-    DB_TYPE_DIF_GRAPH,
-    DB_TYPE_DIF_GLV,
-    DB_TYPE_DIF_SHARE,
-    DB_TYPE_DIF_ADDRMAPING,
-    DB_TYPE_DIF_SOURCES,
-
-    DB_TYPE_DIF_PLUGIN_BEGIN=64,
-    DB_TYPE_DIF_PATH_GEN,
-    DB_TYPE_DIF_PLUGIN_END=128,
+    DB_TYPE_SEED=DB_TYPE_BEGIN,
+    DB_TYPE_SEED_BLOCK,
+    DB_TYPE_BR_VARIABLE,
     DB_TYPE_END
 };
 
 typedef struct tag_DbReq
 {
     BYTE* pKeyCtx;
-	DWORD dwKeyLen;
-	DWORD dwDataType;
-	DWORD dwDataId;
+    DWORD dwKeyLen;
+    DWORD dwDataType;
+    DWORD dwDataId;
 }DbReq;
 
 typedef struct tag_DbAck
 {
     BYTE* pDataAddr;
-	DWORD dwDataId;
-	DWORD dwRev;
+    DWORD dwDataId;
+    DWORD dwRev;
 }DbAck;
 
 

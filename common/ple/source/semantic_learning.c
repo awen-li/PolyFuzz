@@ -1,5 +1,7 @@
 #include <pthread.h>
+#include "db.h"
 #include "pl_struct.h"
+#include "pl_message.h"
 
 static PLServer g_plSrv;
 
@@ -7,7 +9,7 @@ static PLServer g_plSrv;
 /// Control procedure
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define AFL_PL_SOCKET   (9999)
-static inline DWORD CtrlInit ()
+static inline DWORD SrvInit ()
 {  
     PLServer *plSrv = &g_plSrv;
     
@@ -40,12 +42,12 @@ static inline DWORD CtrlInit ()
 static inline BYTE* Recv ()
 {
     PLServer *plSrv = &g_plSrv;
+    memset (plSrv->SrvBuf, 0, sizeof(plSrv->SrvBuf));
 
     INT SkLen   = sizeof (struct sockaddr_in);
     INT RecvNum = recvfrom(plSrv->SockFd, plSrv->SrvBuf, sizeof(plSrv->SrvBuf), 
                            0, (struct sockaddr *)&plSrv->ClientAddr, (socklen_t *)&SkLen);
     assert (RecvNum != 0);
-    plSrv->SrvBuf [RecvNum] = 0;
     
     return plSrv->SrvBuf;
 }
@@ -73,6 +75,29 @@ static inline VOID Send (BYTE* Data, DWORD DataLen)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+VOID InitDif (List* PluginList)
+{
+    DWORD Ret;
+    PLServer *plSrv = &g_plSrv;
+
+    plSrv->DBSeedHandle       = DB_TYPE_SEED;
+    plSrv->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
+    plSrv->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
+
+    InitDb(NULL);
+    
+    Ret = DbCreateTable(plSrv->DBSeedHandle, sizeof (Seed), 0);
+    assert (Ret != R_FAIL);
+
+    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, sizeof (SeedBLock), 0);
+    assert (Ret != R_FAIL);
+
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), 0);
+    assert (Ret != R_FAIL);
+
+    return;
+}
+
 
 static inline VOID RunPilotFuzzing (BYTE* DriverDir)
 {
@@ -114,7 +139,7 @@ void* PilotFuzzingProc (void *Para)
 
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
 {
-    DWORD Ret = CtrlInit ();
+    DWORD Ret = SrvInit ();
     assert (Ret == R_SUCCESS);
     
     pthread_t Tid = 0;
@@ -124,13 +149,60 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
         fprintf (stderr, "pthread_create fail, Ret = %d\r\n", Ret);
         return;
     }
+
+    /* handshake, wait for Fuzzing startup*/
     
-    /* main thread for pattern learning */
+    DWORD SrvState = SRV_S_INIT;
+    MsgHdr *MsgH;
     while (1)
     {
-    }
+        switch (SrvState)
+        {
+            case SRV_S_INIT:
+            {
+                MsgH = (MsgHdr *) Recv();
+                assert (MsgH->MsgType == PL_MSG_STARTUP);
 
-    
+                /* change to SRV_S_STARTUP */
+                SrvState = SRV_S_STARTUP;
+                break;
+            }
+            case SRV_S_STARTUP:
+            {
+                MsgHdr STMsg;
+                STMsg.MsgType = PL_MSG_STARTUP;
+                STMsg.MsgLen  = 0;
+                Send ((BYTE*)&STMsg, sizeof (STMsg));
+
+                /* change to SRV_S_SEEDRCV */
+                SrvState = SRV_S_SEEDRCV;
+                break;
+            }
+            case SRV_S_SEEDRCV:
+            {
+                MsgH = (MsgHdr *) Recv();
+                assert (MsgH->MsgType == PL_MSG_SEED);
+
+                SrvState = SRV_S_ITB;
+                break;
+            }
+            case SRV_S_ITB:
+            {
+                break;
+            }
+            case SRV_S_ITE:
+            {
+                /* change to SRV_S_SEEDRCV, wait for next seed */
+                SrvState = SRV_S_SEEDRCV;
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+    }
+ 
     return;
 }
 

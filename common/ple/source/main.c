@@ -1,12 +1,13 @@
 #include "pl_learning.h"
 
-static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir)
+
+static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir, DWORD SeedAttr)
 {
     /* 1. learning the syntax pattern */
-    //SyntaxLearning(SeedDir, DriverDir);
+    //SyntaxLearning(SeedDir, DriverDir, SeedAttr);
 
     /* 2. learning the semantic pattern */
-    SemanticLearning(SeedDir, DriverDir);
+    SemanticLearning(SeedDir, DriverDir, SeedAttr);
 
     return;
 }
@@ -28,9 +29,10 @@ int main(int argc, char *argv[])
 {
     BYTE *SeedDir   = NULL;
     BYTE *DriverDir = NULL;
+    DWORD SeedAttr  = SEED_TEXT;
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:b")) > 0) 
     {
         switch (Opt) 
         {
@@ -48,6 +50,11 @@ int main(int argc, char *argv[])
                 FormatPath (DriverDir);
                 break;
             }
+            case 'b':
+            {
+                SeedAttr = SEED_BINARY;
+                break;
+            }
             default:
             {
                 break;
@@ -62,7 +69,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    PLEmain (SeedDir, DriverDir);
+    PLEmain (SeedDir, DriverDir, SeedAttr);
 
     free (SeedDir);
     free (DriverDir);

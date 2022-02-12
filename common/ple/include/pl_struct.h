@@ -72,7 +72,7 @@ typedef struct _SeedBLock_
     DWORD SIndex;
     DWORD Length;
 
-    List  ValList;
+    List  ValBlock;
 } SeedBLock;
 
 

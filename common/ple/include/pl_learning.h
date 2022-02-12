@@ -9,8 +9,8 @@
 #define __PL_LEARNING_H__
 #include "macro.h"
 
-void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir);
-void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir);
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr);
+void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr);
 
 
 #endif

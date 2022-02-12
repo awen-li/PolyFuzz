@@ -5,6 +5,7 @@
 
 static PLServer g_plSrv;
 
+BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Control procedure
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -62,9 +63,6 @@ static inline VOID Send (BYTE* Data, DWORD DataLen)
 
     return;
 }
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -136,8 +134,27 @@ void* PilotFuzzingProc (void *Para)
     return NULL;
 }
 
+static inline Seed* AddSeed (BYTE* SeedName)
+{
+    PLServer *plSrv = &g_plSrv;
+    
+    DbReq Req;
+    DbAck Ack;
 
-void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
+    Req.dwDataType = plSrv->DBSeedHandle;
+    Req.dwKeyLen   = 0;
+    
+    DWORD Ret = CreateDataNonKey (&Req, &Ack);
+    assert (Ret == R_SUCCESS);
+
+    Seed* Sn = (Seed*)(Ack.pDataAddr);
+    strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
+
+    return Sn;
+}
+
+
+void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
 {
     DWORD Ret = SrvInit ();
     assert (Ret == R_SUCCESS);
@@ -151,9 +168,10 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
     }
 
     /* handshake, wait for Fuzzing startup*/
-    
+    BYTE MsgBuf[32];
     DWORD SrvState = SRV_S_INIT;
-    MsgHdr *MsgH;
+    MsgHdr *MsgH   = NULL;
+    Seed *CurSeed  = NULL;
     while (1)
     {
         switch (SrvState)
@@ -162,6 +180,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
             {
                 MsgH = (MsgHdr *) Recv();
                 assert (MsgH->MsgType == PL_MSG_STARTUP);
+                DEBUG ("[INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
 
                 /* change to SRV_S_STARTUP */
                 SrvState = SRV_S_STARTUP;
@@ -169,10 +188,11 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
             }
             case SRV_S_STARTUP:
             {
-                MsgHdr STMsg;
-                STMsg.MsgType = PL_MSG_STARTUP;
-                STMsg.MsgLen  = 0;
-                Send ((BYTE*)&STMsg, sizeof (STMsg));
+                MsgH = (MsgHdr *)MsgBuf;
+                MsgH->MsgType = PL_MSG_STARTUP;
+                MsgH->MsgLen  = sizeof (MsgHdr);
+                Send ((BYTE*)MsgH, MsgH->MsgLen);
+                DEBUG ("[STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
 
                 /* change to SRV_S_SEEDRCV */
                 SrvState = SRV_S_SEEDRCV;
@@ -183,15 +203,48 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir)
                 MsgH = (MsgHdr *) Recv();
                 assert (MsgH->MsgType == PL_MSG_SEED);
 
+                BYTE* SeedPath = (BYTE *) (MsgH + 1);
+                DEBUG ("[SEEDRCV] recv PL_MSG_SEED: %s\r\n", SeedPath);
+
+                CurSeed = AddSeed (SeedPath);
+                CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, SeedAttr);
+                
                 SrvState = SRV_S_ITB;
                 break;
             }
             case SRV_S_ITB:
             {
+                assert (CurSeed != NULL);
+                
+                DWORD OFF = 0;
+                MsgH = (MsgHdr *)MsgBuf;
+                MsgH->MsgType = PL_MSG_ITR_BEGIN;
+                MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
+                
+                MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
+                while (OFF < CurSeed->SeedLen)
+                {
+                    MsgItr->SIndex = OFF;
+                    MsgItr->Length = sizeof (DWORD);
+                    Send ((BYTE*)MsgH, MsgH->MsgLen);
+                    DEBUG ("[ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
+
+                    MsgHdr *MsgRecv = (MsgHdr *) Recv();
+                    assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
+                    DEBUG ("[ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", OFF);
+
+                    OFF += sizeof (DWORD);
+                }
+                
+                SrvState = SRV_S_ITE;
                 break;
             }
             case SRV_S_ITE:
             {
+                MsgH = (MsgHdr *) Recv();
+                assert (MsgH->MsgType == PL_MSG_ITR_END);
+                DEBUG ("[ITE-SEND] recv PL_MSG_ITR_END...\r\n");
+                
                 /* change to SRV_S_SEEDRCV, wait for next seed */
                 SrvState = SRV_S_SEEDRCV;
                 break;

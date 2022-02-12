@@ -764,18 +764,29 @@ static VOID DelSeedPat (SeedPat *SP)
     return;
 }
 
-static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
+BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr)
 {
     struct stat ST;
 
     SDWORD S = stat(SeedFile, &ST);
     assert (S != -1);
 
-    FILE *FS = fopen (SeedFile, "rb");
+    FILE *FS = NULL;
+    if (SeedAttr & SEED_BINARY)
+    {
+        FS = fopen (SeedFile, "rb");
+    }
+    else
+    {
+        FS = fopen (SeedFile, "r");
+    }
     assert (FS != NULL);
 
     *SeedLen  = (DWORD)ST.st_size;
-    BYTE* Buf = (BYTE*) malloc (ST.st_size+1);
+
+    DWORD BufLen = ST.st_size;
+    BufLen = ((BufLen>>2)<<2) + 4;
+    BYTE* Buf = (BYTE*) malloc (BufLen);
     assert (Buf != NULL);
 
     fread (Buf, 1, ST.st_size, FS);
@@ -787,7 +798,7 @@ static inline BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen)
 }
 
 
-static inline VOID InitSeedList (BYTE* SeedDir)
+static inline VOID InitSeedList (BYTE* SeedDir, DWORD SeedAttr)
 {
     DIR *Dir;
     struct dirent *SD;
@@ -809,7 +820,7 @@ static inline VOID InitSeedList (BYTE* SeedDir)
         assert (Ss != NULL);
 
         snprintf (Ss->SName, sizeof(Ss->SName), "%s/%s", SeedDir, SD->d_name);
-        Ss->SeedCtx = ReadFile (Ss->SName, &Ss->SeedLen);
+        Ss->SeedCtx = ReadFile (Ss->SName, &Ss->SeedLen, SeedAttr);
         
         Ss->SeedSD    = strdup (Ss->SeedCtx);
         Ss->SeedSDLen = Ss->SeedLen;
@@ -901,9 +912,9 @@ VOID BindPatternToSeeds (SeedPat *SP, BYTE* DriverDir)
 }
 
 
-void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir)
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
 {
-    InitSeedList (SeedDir);
+    InitSeedList (SeedDir, SeedAttr);
     
     /* pilot fuzzing */
     RunPilotFuzzing (DriverDir);

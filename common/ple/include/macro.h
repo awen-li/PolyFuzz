@@ -62,6 +62,12 @@ typedef unsigned         BOOL;
 #define DEBUG(format, ...) 
 #endif
 
+typedef enum
+{
+    SEED_BINARY = 1<<0,
+    SEED_TEXT   = 1<<1
+}SEED_ATTR;
+
 
 #endif
 

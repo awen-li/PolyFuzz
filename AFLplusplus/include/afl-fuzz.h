@@ -46,6 +46,8 @@
 #include "forkserver.h"
 #include "common.h"
 #include "hash.h"
+#include "pl_message.h"
+
 
 #include <stdio.h>
 #include <unistd.h>
@@ -76,6 +78,10 @@
 #include <sys/ioctl.h>
 #include <sys/file.h>
 #include <sys/types.h>
+#include <sys/socket.h>   
+#include <netinet/in.h>   
+#include <arpa/inet.h> 
+
 
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || \
     defined(__NetBSD__) || defined(__DragonFly__)
@@ -821,6 +827,28 @@ typedef struct afl_state {
   u32 threshold_pathlen;
 
 } afl_state_t;
+
+
+#define SRV_BUF_LEN               (1024)
+typedef struct pl_srv
+{
+    int socket_fd;
+    struct sockaddr_in addr_serv;
+
+    char msg_buf[SRV_BUF_LEN];
+}pl_srv_t;
+
+typedef enum
+{
+    FZ_S_INIT = 0,
+    FZ_S_STARTUP,
+    FZ_S_SEEDRCV,
+    FZ_S_SEEDSEND,
+    FZ_S_ITB,
+    FZ_S_ITE,
+    FZ_S_FIN
+}FZ_STATE;
+
 
 struct custom_mutator {
 

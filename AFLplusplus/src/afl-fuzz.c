@@ -402,26 +402,143 @@ static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
     return;
 }
 
+static pl_srv_t g_pl_srv;  
+static void pl_init (pl_srv_t *pl_srv)
+{
+    pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
+    if(pl_srv->socket_fd < 0)  
+    {  
+        FATAL("create socket for communication with ple fail...\r\n"); 
+    }
+
+    char *str_pl_port = getenv ("AFL_PL_SOCKET_PORT");
+    assert (str_pl_port != NULL);
+
+    memset(&pl_srv->addr_serv, 0, sizeof(pl_srv->addr_serv));  
+    pl_srv->addr_serv.sin_family = AF_INET;  
+    pl_srv->addr_serv.sin_addr.s_addr = inet_addr("127.0.0.1");  
+    pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));  
+
+    return;
+}
+
+static inline char* pl_recv (pl_srv_t *pl_srv)
+{
+    memset (pl_srv->msg_buf, 0, sizeof(pl_srv->msg_buf));
+
+    int sk_len   = sizeof (struct sockaddr_in);
+    int recv_num = recvfrom(pl_srv->socket_fd, pl_srv->msg_buf, sizeof(pl_srv->msg_buf), 
+                            0, (struct sockaddr *)&pl_srv->addr_serv, (socklen_t *)&sk_len);
+    assert (recv_num != 0);
+    
+    return pl_srv->msg_buf;
+}
+
+static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
+{
+    int sk_len   = sizeof (struct sockaddr_in);
+    int send_num = sendto(pl_srv->socket_fd, msg, msg_len, 0, (struct sockaddr *)&pl_srv->addr_serv, sk_len);
+    assert (send_num != 0);
+
+    return;
+}
 
 static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
+    pl_srv_t *pl_srv = &g_pl_srv;
+    pl_init (pl_srv);
 
-    cull_queue(afl);
 
-    afl->current_entry = 0;
-    afl->queue_cycle++;
-    while (afl->current_entry < afl->queued_paths) {
+    int srv_state = FZ_S_INIT;
+    MsgHdr *msg_header = NULL;
+    while (1)
+    {
+        switch (srv_state)
+        {
+            case FZ_S_INIT:
+            {
+                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header->MsgType = PL_MSG_STARTUP;
+                msg_header->MsgLen  = sizeof (MsgHdr);
 
-        printf ("queue_cycle[%llu] current_entry[%u] paths[%u] - ", afl->queue_cycle, afl->current_entry, afl->queued_paths);
+                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
+                DEBUG_PRINT ("[INIT] send PL_MSG_STARTUP pl-server...\r\n");
 
-        long start_s = time((time_t*)NULL);
-        
-        afl->queue_cur = afl->queue_buf[afl->current_entry];
-        fuzz_one(afl);
+                /* change to FZ_S_STARTUP */
+                srv_state = FZ_S_STARTUP;
+                break;
+            }
+            case FZ_S_STARTUP:
+            {
+                msg_header = (MsgHdr *) pl_recv(pl_srv);
+                assert (msg_header->MsgType == PL_MSG_STARTUP);
 
-        printf ("@@@ time cost: %ld (s)           \r\n", time((time_t*)NULL)-start_s);
+                /* change to SRV_S_SEEDRCV */
+                srv_state = FZ_S_SEEDSEND;
+                break;
+            }
+            case FZ_S_SEEDSEND:
+            {
+                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header->MsgType = PL_MSG_SEED;
+                msg_header->MsgLen  = sizeof (MsgHdr);
 
-        ++afl->current_entry;
+                MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
+                msg_seed->SeedKey = 1111;
+                
+                char* seed_path   = (char*) (msg_seed + 1);
+                ///// for test
+                strcpy (seed_path, "/home/wen/xFuzz/benchmarks/script/tink/drivers/awskms_aead/tests/test-0");
+                msg_seed->SeedLength = strlen (seed_path);
+                
+                msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
+
+                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
+                DEBUG_PRINT ("[SEEDSEND] send PL_MSG_SEED: %s\r\n", seed_path);
+                
+                srv_state = FZ_S_ITB;
+                break;
+            }
+            case FZ_S_ITB:
+            { 
+                while (true)
+                {
+                    msg_header = (MsgHdr *) pl_recv(pl_srv);
+                    if (msg_header->MsgType == PL_MSG_ITR_END)
+                    {
+                        break;
+                    }
+                    assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
+
+                    MsgIB *msg_itb = (MsgIB*)(msg_header + 1);
+                    DEBUG_PRINT ("[ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", msg_itb->SIndex);
+
+                    /////////////////////
+                    //  conduct fuzzing
+                    /////////////////////
+
+
+                    msg_header = (MsgHdr *)pl_srv->msg_buf;
+                    msg_header->MsgType = PL_MSG_ITR_BEGIN;
+                    msg_header->MsgLen  = sizeof (MsgHdr);
+                    pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
+                    DEBUG_PRINT ("[ITB-SEND] send PL_MSG_ITR_BEGIN: %u (done)\r\n", msg_itb->SIndex);
+                }
+                
+                srv_state = FZ_S_ITE;
+                break;
+            }
+            case FZ_S_ITE:
+            {
+                srv_state = FZ_S_SEEDSEND;
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
     }
+
 
     return;
 }

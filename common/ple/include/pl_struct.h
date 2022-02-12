@@ -90,7 +90,8 @@ typedef enum
     SRV_S_STARTUP,
     SRV_S_SEEDRCV,
     SRV_S_ITB,
-    SRV_S_ITE
+    SRV_S_ITE,
+    SRV_S_FIN
 }SRV_STATE;
 
 #endif

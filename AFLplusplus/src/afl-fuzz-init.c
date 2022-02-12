@@ -853,7 +853,8 @@ void update_mapsize (afl_state_t *afl)
     u32 tmp_map_size = 0;
     FILE *PF = fopen ("MAP_SIZE", "r");
     if (PF != NULL) {
-        fscanf (PF, "%u", &tmp_map_size);
+        int ret = fscanf (PF, "%u", &tmp_map_size);
+        assert (ret >= 0);
         fclose (PF);
 
         afl->fsrv.real_map_size = tmp_map_size;

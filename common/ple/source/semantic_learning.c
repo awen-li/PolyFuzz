@@ -9,11 +9,9 @@ BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Control procedure
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define AFL_PL_SOCKET   (9999)
-static inline DWORD SrvInit ()
-{  
-    PLServer *plSrv = &g_plSrv;
-    
+#define AFL_PL_SOCKET_PORT   ("9999")
+static inline DWORD SrvInit (PLServer *plSrv)
+{
     plSrv->SockFd = socket(AF_INET, SOCK_DGRAM, 0);
     if(plSrv->SockFd < 0)
     {
@@ -26,7 +24,7 @@ static inline DWORD SrvInit ()
     
     memset(&addr_serv, 0, sizeof(struct sockaddr_in));
     addr_serv.sin_family = AF_INET;
-    addr_serv.sin_port   = htons(AFL_PL_SOCKET);
+    addr_serv.sin_port   = htons((WORD)atoi(AFL_PL_SOCKET_PORT));
     addr_serv.sin_addr.s_addr = htonl(INADDR_ANY);
     len = sizeof(addr_serv);
     
@@ -36,13 +34,13 @@ static inline DWORD SrvInit ()
         return R_FAIL;
     }
 
+    setenv ("AFL_PL_SOCKET_PORT", AFL_PL_SOCKET_PORT, 1);
     return R_SUCCESS;
 }
 
 
-static inline BYTE* Recv ()
+static inline BYTE* Recv (PLServer *plSrv)
 {
-    PLServer *plSrv = &g_plSrv;
     memset (plSrv->SrvBuf, 0, sizeof(plSrv->SrvBuf));
 
     INT SkLen   = sizeof (struct sockaddr_in);
@@ -53,10 +51,8 @@ static inline BYTE* Recv ()
     return plSrv->SrvBuf;
 }
 
-static inline VOID Send (BYTE* Data, DWORD DataLen)
+static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
 {
-    PLServer *plSrv = &g_plSrv;
-
     INT SkLen   = sizeof (struct sockaddr_in);
     INT SendNum = sendto(plSrv->SockFd, Data, DataLen, 0, (struct sockaddr *)&plSrv->ClientAddr, SkLen);
     assert (SendNum != 0);
@@ -156,7 +152,9 @@ static inline Seed* AddSeed (BYTE* SeedName)
 
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
 {
-    DWORD Ret = SrvInit ();
+    PLServer *plSrv = &g_plSrv;
+    
+    DWORD Ret = SrvInit (plSrv);
     assert (Ret == R_SUCCESS);
     
     pthread_t Tid = 0;
@@ -167,8 +165,6 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
         return;
     }
 
-    /* handshake, wait for Fuzzing startup*/
-    BYTE MsgBuf[32];
     DWORD SrvState = SRV_S_INIT;
     MsgHdr *MsgH   = NULL;
     Seed *CurSeed  = NULL;
@@ -178,7 +174,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
         {
             case SRV_S_INIT:
             {
-                MsgH = (MsgHdr *) Recv();
+                MsgH = (MsgHdr *) Recv(plSrv);
                 assert (MsgH->MsgType == PL_MSG_STARTUP);
                 DEBUG ("[INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
 
@@ -188,10 +184,10 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_STARTUP:
             {
-                MsgH = (MsgHdr *)MsgBuf;
+                MsgH = (MsgHdr *)plSrv->SrvBuf;
                 MsgH->MsgType = PL_MSG_STARTUP;
                 MsgH->MsgLen  = sizeof (MsgHdr);
-                Send ((BYTE*)MsgH, MsgH->MsgLen);
+                Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                 DEBUG ("[STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
 
                 /* change to SRV_S_SEEDRCV */
@@ -200,7 +196,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_SEEDRCV:
             {
-                MsgH = (MsgHdr *) Recv();
+                MsgH = (MsgHdr *) Recv(plSrv);
                 assert (MsgH->MsgType == PL_MSG_SEED);
 
                 BYTE* SeedPath = (BYTE *) (MsgH + 1);
@@ -217,7 +213,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 assert (CurSeed != NULL);
                 
                 DWORD OFF = 0;
-                MsgH = (MsgHdr *)MsgBuf;
+                MsgH = (MsgHdr *)plSrv->SrvBuf;
                 MsgH->MsgType = PL_MSG_ITR_BEGIN;
                 MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
                 
@@ -226,10 +222,10 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 {
                     MsgItr->SIndex = OFF;
                     MsgItr->Length = sizeof (DWORD);
-                    Send ((BYTE*)MsgH, MsgH->MsgLen);
+                    Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                     DEBUG ("[ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
 
-                    MsgHdr *MsgRecv = (MsgHdr *) Recv();
+                    MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                     assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
                     DEBUG ("[ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", OFF);
 
@@ -241,7 +237,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_ITE:
             {
-                MsgH = (MsgHdr *) Recv();
+                MsgH = (MsgHdr *) Recv(plSrv);
                 assert (MsgH->MsgType == PL_MSG_ITR_END);
                 DEBUG ("[ITE-SEND] recv PL_MSG_ITR_END...\r\n");
                 

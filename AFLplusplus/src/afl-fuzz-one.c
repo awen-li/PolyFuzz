@@ -5590,7 +5590,7 @@ void gen_pattern (afl_state_t *afl) {
 }
 
 /* fuzzing-based pattern recognization of input seeds */
-u8 patreg_fuzzing(afl_state_t *afl) {
+u8 syntax_pl_fuzzing(afl_state_t *afl) {
     
     u8 *in_buf = queue_testcase_get(afl, afl->queue_cur);
     u32 len = afl->queue_cur->len;
@@ -5604,7 +5604,7 @@ u8 patreg_fuzzing(afl_state_t *afl) {
         start_bb = (u32)atoi(str_bb);
     }
 
-    fprintf (stderr, "patreg_fuzzing: %s[%u], start_bb:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, start_bb);
+    fprintf (stderr, "syntax_pl_fuzzing: %s[%u], start_bb:%u\r\n", afl->queue_cur->fname, afl->queue_cur->len, start_bb);
 
     patreg_seed *ps = add_patreg (afl, in_buf, len);
     char_pat *char_pat_list = ps->char_pat_list;
@@ -5773,8 +5773,8 @@ static inline u32 gen_random_item (afl_state_t *afl,
     return len;
 }
 
-/* pattern aware fuzzing  */
-u8 patawa_fuzzing(afl_state_t *afl) {
+/* PL-based fuzzing  */
+u8 pl_offical_fuzzing(afl_state_t *afl) {
     u8 ret_val = 1, doing_det = 0;
     u8 *in_buf, *orig_in, *out_buf;
     u32 len, temp_len;
@@ -6448,11 +6448,13 @@ u8 fuzz_one(afl_state_t *afl) {
 
 #endif
 
-  switch (afl->pf_fuzzing_type) {
-    case PF_PAT_REG:
-        return patreg_fuzzing(afl);
-    case PF_PAT_AWA:
-        return patawa_fuzzing(afl);
+  switch (afl->pl_fuzzing_type) {
+    case PL_SYNTAX_FZ:
+        return syntax_pl_fuzzing(afl);
+    case PL_SEMANTIC_FZ:
+        break;
+    case PL_OFFICIAL_FZ:
+        return pl_offical_fuzzing(afl);
     default:
         break;
   }

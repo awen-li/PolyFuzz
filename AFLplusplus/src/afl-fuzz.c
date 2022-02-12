@@ -378,7 +378,7 @@ static void fasan_check_afl_preload(char *afl_preload) {
 }
 
 void gen_pattern (afl_state_t *afl);
-static void patreg_fuzzing_loop (afl_state_t *afl) {
+static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
 
     cull_queue(afl);
 
@@ -402,8 +402,54 @@ static void patreg_fuzzing_loop (afl_state_t *afl) {
     return;
 }
 
-/* Main entry point */
 
+static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
+
+    cull_queue(afl);
+
+    afl->current_entry = 0;
+    afl->queue_cycle++;
+    while (afl->current_entry < afl->queued_paths) {
+
+        printf ("queue_cycle[%llu] current_entry[%u] paths[%u] - ", afl->queue_cycle, afl->current_entry, afl->queued_paths);
+
+        long start_s = time((time_t*)NULL);
+        
+        afl->queue_cur = afl->queue_buf[afl->current_entry];
+        fuzz_one(afl);
+
+        printf ("@@@ time cost: %ld (s)           \r\n", time((time_t*)NULL)-start_s);
+
+        ++afl->current_entry;
+    }
+
+    return;
+}
+
+
+
+static void pl_fuzzing_loop (afl_state_t *afl) {
+    switch (afl->pl_fuzzing_type)
+    {
+        case PL_SYNTAX_FZ:
+        {
+            pl_syntax_fuzzing_loop (afl);
+            break;
+        }
+        case PL_SEMANTIC_FZ:
+        {
+            pl_semantic_fuzzing_loop (afl);
+            break;
+        }
+        default:
+        {
+            return;
+        }
+    }
+}
+
+
+/* Main entry point */
 int main(int argc, char **argv_orig, char **envp) {
 
   s32 opt, auto_sync = 0 /*, user_set_cache = 0*/;
@@ -1129,10 +1175,11 @@ int main(int argc, char **argv_orig, char **envp) {
       case 'P':
       {
         /* enable pattern recognization fuzzing */
-        afl->pf_fuzzing_type  = (u32)atoi (optarg);
-        if (afl->pf_fuzzing_type != PF_PAT_REG && 
-            afl->pf_fuzzing_type != PF_PAT_AWA) {
-            FATAL("[-P]pf_fuzzing_type: PF_PAT_REG=1 and PF_PAT_AWA=2, "
+        afl->pl_fuzzing_type  = (u32)atoi (optarg);
+        if (afl->pl_fuzzing_type != PL_SYNTAX_FZ && 
+            afl->pl_fuzzing_type != PL_SEMANTIC_FZ &&
+            afl->pl_fuzzing_type != PL_OFFICIAL_FZ) {
+            FATAL("[-P]pf_fuzzing_type: PL_SYNTAX_FZ=1, PL_SEMANTIC_FZ=2 PL_OFFICIAL_FZ=3, "
                   "please select a correct value!");
         }
         
@@ -1997,8 +2044,9 @@ int main(int argc, char **argv_orig, char **envp) {
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
 
-  if (afl->pf_fuzzing_type == PF_PAT_REG) {
-    patreg_fuzzing_loop (afl);
+  if (afl->pl_fuzzing_type == PL_SYNTAX_FZ ||
+      afl->pl_fuzzing_type == PL_SEMANTIC_FZ) {
+    pl_fuzzing_loop (afl);
     goto stop_fuzzing;
   }
 

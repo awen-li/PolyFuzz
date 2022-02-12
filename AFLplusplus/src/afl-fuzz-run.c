@@ -962,7 +962,7 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   }
 
-  if (afl->pf_fuzzing_type == PF_PAT_REG) {
+  if (afl->pl_fuzzing_type == PL_SYNTAX_FZ) {
     return 0;
   }
 

@@ -253,8 +253,9 @@ typedef struct seed_tmpt
 
 enum {
 
-    PF_PAT_REG=1,   /* fuzzing-based pattern recognization */
-    PF_PAT_AWA=2    /* pattern aware fuzzing */
+    PL_SYNTAX_FZ=1,    /* PL -> syntax learning fuzzing */
+    PL_OFFICIAL_FZ=2,  /* PL -> PL-based offical fuzzing */
+    PL_SEMANTIC_FZ=3   /* PL -> semantic learning fuzzing */
 };
 
 enum {
@@ -814,8 +815,8 @@ typedef struct afl_state {
   u32   bitsmap_size;
 #endif
 
-  /* pattern fuzzing type: PF_PAT_REG=1 | PF_PAT_AWA=2 */
-  u8  pf_fuzzing_type;
+  /* pattern fuzzing type: PL_SYNTAX_FZ=1 | PL_SEMANTIC_FZ=2 | PL_OFFICIAL_FZ=3 */
+  u8  pl_fuzzing_type;
   /* threshold for path length in pattern recognization fuzzing, default:1 */
   u32 threshold_pathlen;
 

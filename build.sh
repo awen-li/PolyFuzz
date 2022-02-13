@@ -10,15 +10,8 @@ else
 fi
 
 # 2. build common component
-cd $BASE_DIR/common/ctrace
+cd $BASE_DIR/common/
 make clean && make
-
-cd $BASE_DIR/common/sdml
-make clean && make
-
-cd $BASE_DIR/common/pcgInstrm
-make clean && make
-make -f makefile_test clean && make -f makefile_test
 
 # 3. build language-specific component
 # 3.1 clang

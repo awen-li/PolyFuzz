@@ -1442,7 +1442,7 @@ void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Key, uint32_
     OV->Value  = Value;
 
     QN->IsReady = 1;
-    fprintf(stderr, "QN ----> %p:[key-%x] type-%u, length-%u, Value-%lu\r\n", 
+    fprintf(stderr, "QN ----> %p:[key-%u] type-%u, length-%u, Value-%lu\r\n", 
             QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
 }
 

@@ -47,7 +47,7 @@ static inline BYTE* Recv (PLServer *plSrv)
     INT RecvNum = recvfrom(plSrv->SockFd, plSrv->SrvBuf, sizeof(plSrv->SrvBuf), 
                            0, (struct sockaddr *)&plSrv->ClientAddr, (socklen_t *)&SkLen);
     assert (RecvNum != 0);
-    
+
     return plSrv->SrvBuf;
 }
 
@@ -69,10 +69,9 @@ static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-VOID InitDif (List* PluginList)
+VOID InitDbTable (PLServer *plSrv)
 {
     DWORD Ret;
-    PLServer *plSrv = &g_plSrv;
 
     plSrv->DBSeedHandle       = DB_TYPE_SEED;
     plSrv->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
@@ -93,47 +92,20 @@ VOID InitDif (List* PluginList)
 }
 
 
-static inline VOID RunPilotFuzzing (BYTE* DriverDir)
-{
-    BYTE Cmd[1024];
-    DWORD StartBB = 0;
-
-    FILE *pf = fopen ("INTERAL_LOC", "r");
-    if (pf != NULL)
-    {
-        fscanf (pf, "%u", &StartBB);
-        fclose (pf);
-    }
-
-    if (StartBB != 0)
-    {
-        StartBB++;
-        snprintf (Cmd, sizeof (Cmd), "cd %s; export AFL_START_BB=%u && ./run-fuzzer.sh -P 1", DriverDir, StartBB);
-    }
-    else
-    {
-        snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 1", DriverDir);
-    }
-
-    printf ("CMD: %s \r\n", Cmd);
-    system (Cmd);
-    return;
-}
-
-
 void* PilotFuzzingProc (void *Para)
 {
-    BYTE* DriverDir = (BYTE *)Para;
-    
-    while (1);
+    BYTE* DriverDir = (BYTE *)Para;    
+    BYTE Cmd[1024];
+
+    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 3", DriverDir);
+    printf ("CMD: %s \r\n", Cmd);
+    system (Cmd);
     
     return NULL;
 }
 
-static inline Seed* AddSeed (BYTE* SeedName)
-{
-    PLServer *plSrv = &g_plSrv;
-    
+static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
+{    
     DbReq Req;
     DbAck Ack;
 
@@ -156,6 +128,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     
     DWORD Ret = SrvInit (plSrv);
     assert (Ret == R_SUCCESS);
+
+    InitDbTable (plSrv);
     
     pthread_t Tid = 0;
     Ret = pthread_create(&Tid, NULL, PilotFuzzingProc, DriverDir);
@@ -168,7 +142,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     DWORD SrvState = SRV_S_INIT;
     MsgHdr *MsgH   = NULL;
     Seed *CurSeed  = NULL;
-    while (1)
+    DWORD IsExit   = FALSE;
+    while (!IsExit)
     {
         switch (SrvState)
         {
@@ -176,7 +151,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             {
                 MsgH = (MsgHdr *) Recv(plSrv);
                 assert (MsgH->MsgType == PL_MSG_STARTUP);
-                DEBUG ("[INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
+                DEBUG ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
 
                 /* change to SRV_S_STARTUP */
                 SrvState = SRV_S_STARTUP;
@@ -188,7 +163,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 MsgH->MsgType = PL_MSG_STARTUP;
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                DEBUG ("[STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+                DEBUG ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
 
                 /* change to SRV_S_SEEDRCV */
                 SrvState = SRV_S_SEEDRCV;
@@ -197,13 +172,20 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             case SRV_S_SEEDRCV:
             {
                 MsgH = (MsgHdr *) Recv(plSrv);
+                if (MsgH->MsgType == PL_MSG_FZ_FIN)
+                {
+                    SrvState = SRV_S_FIN;
+                    break;
+                }
                 assert (MsgH->MsgType == PL_MSG_SEED);
 
-                BYTE* SeedPath = (BYTE *) (MsgH + 1);
-                DEBUG ("[SEEDRCV] recv PL_MSG_SEED: %s\r\n", SeedPath);
+                MsgSeed *MsgSd = (MsgSeed*) (MsgH + 1);
+                BYTE* SeedPath = (BYTE*)(MsgSd + 1);
 
-                CurSeed = AddSeed (SeedPath);
+                CurSeed = AddSeed (plSrv, SeedPath);
                 CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, SeedAttr);
+
+                DEBUG ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
                 
                 SrvState = SRV_S_ITB;
                 break;
@@ -223,11 +205,11 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                     MsgItr->SIndex = OFF;
                     MsgItr->Length = sizeof (DWORD);
                     Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                    DEBUG ("[ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
+                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
 
                     MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                     assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", OFF);
+                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", OFF);
 
                     OFF += sizeof (DWORD);
                 }
@@ -237,12 +219,20 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_ITE:
             {
-                MsgH = (MsgHdr *) Recv(plSrv);
-                assert (MsgH->MsgType == PL_MSG_ITR_END);
-                DEBUG ("[ITE-SEND] recv PL_MSG_ITR_END...\r\n");
+                MsgH = (MsgHdr *)plSrv->SrvBuf;
+                MsgH->MsgType = PL_MSG_ITR_END;
+                MsgH->MsgLen  = sizeof (MsgHdr);
+                Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
+                DEBUG ("[ple-ITE] send PL_MSG_ITR_END...\r\n");
                 
                 /* change to SRV_S_SEEDRCV, wait for next seed */
                 SrvState = SRV_S_SEEDRCV;
+                break;
+            }
+            case SRV_S_FIN:
+            {
+                DEBUG ("[ple-FIN] recv PL_MSG_FZ_FIN...\r\n");
+                IsExit = TRUE;
                 break;
             }
             default:
@@ -251,7 +241,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
         }
     }
- 
+
+    DEBUG ("[ple]SemanticLearning exit....\r\n");
     return;
 }
 

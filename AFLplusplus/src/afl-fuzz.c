@@ -444,13 +444,15 @@ static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
 }
 
 static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
+
     pl_srv_t *pl_srv = &g_pl_srv;
     pl_init (pl_srv);
 
-
+    u32 seed_num = 0;
     int srv_state = FZ_S_INIT;
     MsgHdr *msg_header = NULL;
-    while (1)
+    u32 IsExit = false;
+    while (!IsExit)
     {
         switch (srv_state)
         {
@@ -461,7 +463,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                 msg_header->MsgLen  = sizeof (MsgHdr);
 
                 pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                DEBUG_PRINT ("[INIT] send PL_MSG_STARTUP pl-server...\r\n");
+                fprintf (stderr, "[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
 
                 /* change to FZ_S_STARTUP */
                 srv_state = FZ_S_STARTUP;
@@ -471,6 +473,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
             {
                 msg_header = (MsgHdr *) pl_recv(pl_srv);
                 assert (msg_header->MsgType == PL_MSG_STARTUP);
+                fprintf (stderr, "[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
 
                 /* change to SRV_S_SEEDRCV */
                 srv_state = FZ_S_SEEDSEND;
@@ -478,6 +481,12 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
             }
             case FZ_S_SEEDSEND:
             {
+                if (seed_num >= 4)
+                {
+                    srv_state = FZ_S_FIN;
+                    break;
+                }
+                
                 msg_header = (MsgHdr *)pl_srv->msg_buf;
                 msg_header->MsgType = PL_MSG_SEED;
                 msg_header->MsgLen  = sizeof (MsgHdr);
@@ -487,15 +496,16 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                 
                 char* seed_path   = (char*) (msg_seed + 1);
                 ///// for test
-                strcpy (seed_path, "/home/wen/xFuzz/benchmarks/script/tink/drivers/awskms_aead/tests/test-0");
+                strcpy (seed_path, "/home/wen/xFuzz/langspec/clang/tests/test1/seeds/test-0");
                 msg_seed->SeedLength = strlen (seed_path);
                 
                 msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
 
                 pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                DEBUG_PRINT ("[SEEDSEND] send PL_MSG_SEED: %s\r\n", seed_path);
+                fprintf (stderr, "[FZ-SEEDSEND] send PL_MSG_SEED: %s\r\n", seed_path);
                 
                 srv_state = FZ_S_ITB;
+                seed_num++;
                 break;
             }
             case FZ_S_ITB:
@@ -510,7 +520,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
 
                     MsgIB *msg_itb = (MsgIB*)(msg_header + 1);
-                    DEBUG_PRINT ("[ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", msg_itb->SIndex);
+                    fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u\r\n", msg_itb->SIndex);
 
                     /////////////////////
                     //  conduct fuzzing
@@ -521,7 +531,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     msg_header->MsgType = PL_MSG_ITR_BEGIN;
                     msg_header->MsgLen  = sizeof (MsgHdr);
                     pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                    DEBUG_PRINT ("[ITB-SEND] send PL_MSG_ITR_BEGIN: %u (done)\r\n", msg_itb->SIndex);
+                    fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u (done)\r\n", msg_itb->SIndex);
                 }
                 
                 srv_state = FZ_S_ITE;
@@ -530,6 +540,18 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
             case FZ_S_ITE:
             {
                 srv_state = FZ_S_SEEDSEND;
+                break;
+            }
+            case FZ_S_FIN:
+            {
+                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header->MsgType = PL_MSG_FZ_FIN;
+                msg_header->MsgLen  = sizeof (MsgHdr);
+                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
+
+                fprintf (stderr, "[FZ-FIN] send PL_MSG_FZ_FIN...\r\n");
+                    
+                IsExit = true;
                 break;
             }
             default:

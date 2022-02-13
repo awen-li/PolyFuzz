@@ -448,7 +448,9 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
     pl_srv_t *pl_srv = &g_pl_srv;
     pl_init (pl_srv);
 
-    u32 seed_num = 0;
+    cull_queue(afl);
+    afl->current_entry = 0;
+
     int srv_state = FZ_S_INIT;
     MsgHdr *msg_header = NULL;
     u32 IsExit = false;
@@ -481,7 +483,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
             }
             case FZ_S_SEEDSEND:
             {
-                if (seed_num >= 4)
+                if (afl->current_entry >= afl->queued_paths)
                 {
                     srv_state = FZ_S_FIN;
                     break;
@@ -492,12 +494,14 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                 msg_header->MsgLen  = sizeof (MsgHdr);
 
                 MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
-                msg_seed->SeedKey = 1111;
-                
+                msg_seed->SeedKey = 1111;       
                 char* seed_path   = (char*) (msg_seed + 1);
-                ///// for test
-                strcpy (seed_path, "/home/wen/xFuzz/langspec/clang/tests/test1/seeds/test-0");
-                msg_seed->SeedLength = strlen (seed_path);
+
+                afl->queue_cur = afl->queue_buf[afl->current_entry];
+                
+                char *cur_dir = get_current_dir_name ();
+                sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
+                msg_seed->SeedLength = strlen (seed_path)+1;
                 
                 msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
 
@@ -505,7 +509,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                 fprintf (stderr, "[FZ-SEEDSEND] send PL_MSG_SEED: %s\r\n", seed_path);
                 
                 srv_state = FZ_S_ITB;
-                seed_num++;
+                ++afl->current_entry;
                 break;
             }
             case FZ_S_ITB:
@@ -524,8 +528,8 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
 
                     /////////////////////
                     //  conduct fuzzing
-                    /////////////////////
-
+                    /////////////////////                   
+                    fuzz_one(afl);
 
                     msg_header = (MsgHdr *)pl_srv->msg_buf;
                     msg_header->MsgType = PL_MSG_ITR_BEGIN;

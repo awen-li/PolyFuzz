@@ -6,6 +6,27 @@ unsigned Getpasswd (unsigned Key);
 
 int main(int argc, char ** argv) 
 {
+    if (argc == 1)
+    {
+        int Index = 0;
+        char SEED [32];
+
+        while (Index < 8)
+        {
+            sprintf (SEED, "seeds/test-%u", Index);
+            
+            FILE *F = fopen (SEED, "wb");
+            unsigned value = (unsigned)random ()%18;
+            printf ("value = %u \r\n", value);
+            fwrite (&value, 1, sizeof (unsigned), F);
+            fclose(F);
+            
+            Index++;
+        }
+
+        return 0;
+    }
+    
     int Value = atoi (argv[1]);
     unsigned Pwd = 0;
 

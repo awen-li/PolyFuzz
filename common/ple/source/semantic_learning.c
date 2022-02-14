@@ -204,6 +204,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 {
                     MsgItr->SIndex = OFF;
                     MsgItr->Length = sizeof (DWORD);
+                    MsgItr->SampleNum = 32;
                     Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                     DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
 

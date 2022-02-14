@@ -36,6 +36,8 @@ typedef struct MsgIB
 {
     unsigned SIndex;
     unsigned Length;
+    unsigned SampleNum;
+    unsigned Rev;
 }MsgIB;
 
 

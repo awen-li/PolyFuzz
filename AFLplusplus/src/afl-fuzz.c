@@ -523,8 +523,8 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     }
                     assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
 
-                    MsgIB *msg_itb = (MsgIB*)(msg_header + 1);
-                    fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u\r\n", msg_itb->SIndex);
+                    afl->msg_itb = (MsgIB*)(msg_header + 1);
+                    fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u [%u]\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
 
                     /////////////////////
                     //  conduct fuzzing
@@ -535,7 +535,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     msg_header->MsgType = PL_MSG_ITR_BEGIN;
                     msg_header->MsgLen  = sizeof (MsgHdr);
                     pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                    fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u (done)\r\n", msg_itb->SIndex);
+                    fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u [%u] (done)\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
                 }
                 
                 srv_state = FZ_S_ITE;

@@ -5666,6 +5666,73 @@ u8 syntax_pl_fuzzing(afl_state_t *afl) {
 }
 
 
+/* fuzzing-based pattern recognization of input seeds */
+u8 semantic_pl_fuzzing(afl_state_t *afl) {
+    
+    u8 *in_buf = queue_testcase_get(afl, afl->queue_cur);
+    u32 len = afl->queue_cur->len;
+    
+    MsgIB *msg_itb = afl->msg_itb;
+
+    fprintf (stderr, "syntax_pl_fuzzing: %s[%u] --> var: [off-%u][length-%u] samples: %u\r\n", 
+             afl->queue_cur->fname, afl->queue_cur->len, msg_itb->SIndex, msg_itb->Length, msg_itb->SampleNum);
+    
+    u32 sample_num = msg_itb->SampleNum;
+    u8 *var = in_buf + msg_itb->SIndex;
+    while (sample_num > 0) {
+
+        switch (msg_itb->Length)
+        {
+            case 1:
+            {
+                u8 origin = *var;              
+                *var = (u8) random ();
+                common_fuzz_stuff(afl, in_buf, len);
+                *var = origin;
+                 
+                break;
+            }
+            case 2:
+            {
+                u16 origin = *((u16 *)var);               
+                *((u16 *)var) = (u16) random ();
+                common_fuzz_stuff(afl, in_buf, len);
+                *((u16 *)var) = origin;
+                
+                break;
+            }
+            case 4:
+            {
+                u32 origin = *((u32 *)var);
+                *((u32 *)var) = (u32) random ();
+                fprintf (stderr, "\t [%u:%u] var = %u\r\n", msg_itb->SIndex, msg_itb->Length, *((u32 *)var));
+                common_fuzz_stuff(afl, in_buf, len);
+                *((u32 *)var) = origin;
+                
+                break;
+            }
+            case 8:
+            {
+                u64 origin = *((u64 *)var);
+                *((u64 *)var) = (u64) random ();
+                common_fuzz_stuff(afl, in_buf, len);
+                *((u64 *)var) = origin;
+                
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+
+        sample_num--;
+    }
+
+    return 0;
+}
+
+
 static inline void load_patterns (/*struct queue_entry *q, 
 */ seed_tmpt *stmpt) {
 
@@ -6452,6 +6519,7 @@ u8 fuzz_one(afl_state_t *afl) {
     case PL_SYNTAX_FZ:
         return syntax_pl_fuzzing(afl);
     case PL_SEMANTIC_FZ:
+        return semantic_pl_fuzzing(afl);
         break;
     case PL_OFFICIAL_FZ:
         return pl_offical_fuzzing(afl);

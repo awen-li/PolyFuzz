@@ -825,7 +825,7 @@ typedef struct afl_state {
   u8  pl_fuzzing_type;
   /* threshold for path length in pattern recognization fuzzing, default:1 */
   u32 threshold_pathlen;
-
+  MsgIB *msg_itb;
 } afl_state_t;
 
 

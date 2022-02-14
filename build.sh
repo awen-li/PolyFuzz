@@ -1,9 +1,14 @@
 
 BASE_DIR=`pwd`
 
-# 1. build common/ple
-cd $BASE_DIR/common/ple
-make clean && make
+# 1. dependences in common
+if [ ! -d "/usr/include/ctrace" ]; then 
+    mkdir /usr/include/ctrace 
+fi
+cp $BASE_DIR/common/ctrace/include/* /usr/include/ctrace/ -rf
+cd $BASE_DIR/common/shmqueue && make clean && make
+cd $BASE_DIR/common/ple && make && make
+
 
 # 2. build AFL++
 cd $BASE_DIR/AFLplusplus

@@ -11,7 +11,7 @@ OBJ_PATH     = obj
 
 #CFLAGS    = -fPIC -O3 -I$(INCLUDE_PATH) 
 CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -D__DEBUG__ 
-LD_CFLAGS  = -lpthread -ldl
+LD_CFLAGS  = -lpthread -ldl -lshmQueue
 
 SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)
 OBJ_FILES     = $(addprefix $(OBJ_PATH)/, $(addsuffix .o,$(notdir $(basename $(SOURCE_FILES)))))

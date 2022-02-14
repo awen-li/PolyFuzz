@@ -1,13 +1,60 @@
+#include "ctrace/Event.h"
 #include <pthread.h>
 #include "db.h"
+#include "Queue.h"
 #include "pl_struct.h"
 #include "pl_message.h"
+
 
 static PLServer g_plSrv;
 
 BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Control procedure
+/// Thread for ALF++ fuzzing process
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* PilotFuzzingProc (void *Para)
+{
+    BYTE* DriverDir = (BYTE *)Para;    
+    BYTE Cmd[1024];
+
+    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 3", DriverDir);
+    printf ("CMD: %s \r\n", Cmd);
+    system (Cmd);
+    
+    return NULL;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Thread for dynamic event collection
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* DECollect (void *Para)
+{
+    PLServer *plSrv = (PLServer*)Para;
+
+    DWORD QSize = QueueSize ();
+    while (plSrv->FzExit == FALSE || QSize == 0)
+    {
+        QNode *QN = FrontQueue ();
+        if (QN == NULL || QN->IsReady == FALSE)
+        {
+            QSize = QueueSize ();
+            continue;
+        }
+
+        ObjValue *OV = (ObjValue *)QN->Buf;
+        printf ("[QSize-%u]QUEUE: kEY:%u - Value:%u[type:%u, length:%u] \r\n", QSize, QN->TrcKey, (DWORD)OV->Value, OV->Type, OV->Length);
+
+        OutQueue ();
+        QSize = QueueSize ();
+    }
+
+    pthread_exit ((void*)0);
+    return NULL;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ple SERVER setup
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define AFL_PL_SOCKET_PORT   ("9999")
 static inline DWORD SrvInit (PLServer *plSrv)
@@ -59,15 +106,10 @@ static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
 
     return;
 }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Data exchange procedure
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+/// Database management
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 VOID InitDbTable (PLServer *plSrv)
 {
@@ -91,18 +133,6 @@ VOID InitDbTable (PLServer *plSrv)
     return;
 }
 
-
-void* PilotFuzzingProc (void *Para)
-{
-    BYTE* DriverDir = (BYTE *)Para;    
-    BYTE Cmd[1024];
-
-    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 3", DriverDir);
-    printf ("CMD: %s \r\n", Cmd);
-    system (Cmd);
-    
-    return NULL;
-}
 
 static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
 {    
@@ -143,6 +173,69 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Main logic of PLE server
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+static inline pthread_t CollectBrVariables (PLServer *plSrv)
+{
+    pthread_t Tid = 0;
+    int Ret = pthread_create(&Tid, NULL, DECollect, plSrv);
+    if (Ret != 0)
+    {
+        fprintf (stderr, "pthread_create for DECollect fail, Ret = %d\r\n", Ret);
+        exit (0);
+    }
+
+    return Tid;
+}
+
+static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
+{
+    DWORD OFF = 0;
+    for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
+    {
+        ULONG SbVal = random ();
+        DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
+                        
+        switch (MsgItr->Length)
+        {
+            case 1:
+            {
+                BYTE *ValHdr = (BYTE*) (MsgItr + 1);
+                ValHdr [Index] = (BYTE)SbVal;
+                OFF += sizeof (BYTE);
+                break;
+            }
+            case 2:
+            {
+                WORD *ValHdr = (WORD*) (MsgItr + 1);
+                ValHdr [Index] = (WORD)SbVal;
+                OFF += sizeof (WORD);
+                break;
+            }
+            case 4:
+            {
+                DWORD *ValHdr = (DWORD*) (MsgItr + 1);
+                ValHdr [Index] = (DWORD)SbVal;
+                OFF += sizeof (DWORD);
+                break;
+            }
+            case 8:
+            {
+                ULONG *ValHdr = (ULONG*) (MsgItr + 1);
+                ValHdr [Index] = (ULONG)SbVal;
+                OFF += sizeof (ULONG);
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+    }
+
+    return OFF;
+}
 
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
 {
@@ -151,7 +244,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     DWORD Ret = SrvInit (plSrv);
     assert (Ret == R_SUCCESS);
 
-    InitDbTable (plSrv);
+    InitDbTable (plSrv);   
+    InitQueue(MEMMOD_SHARE);
     
     pthread_t Tid = 0;
     Ret = pthread_create(&Tid, NULL, PilotFuzzingProc, DriverDir);
@@ -229,55 +323,25 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                     MsgItr->SampleNum = FZ_SAMPLE_NUM;
 
                     /* generate samples by random */
-                    for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
-                    {
-                        ULONG SbVal = random ();
-                        DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
-                        
-                        switch (MsgItr->Length)
-                        {
-                            case 1:
-                            {
-                                BYTE *ValHdr = (BYTE*) (MsgItr + 1);
-                                ValHdr [Index] = (BYTE)SbVal;
-                                OFF += sizeof (BYTE);
-                                break;
-                            }
-                            case 2:
-                            {
-                                WORD *ValHdr = (WORD*) (MsgItr + 1);
-                                ValHdr [Index] = (WORD)SbVal;
-                                OFF += sizeof (WORD);
-                                break;
-                            }
-                            case 4:
-                            {
-                                DWORD *ValHdr = (DWORD*) (MsgItr + 1);
-                                ValHdr [Index] = (DWORD)SbVal;
-                                OFF += sizeof (DWORD);
-                                break;
-                            }
-                            case 8:
-                            {
-                                ULONG *ValHdr = (ULONG*) (MsgItr + 1);
-                                ValHdr [Index] = (ULONG)SbVal;
-                                OFF += sizeof (ULONG);
-                                break;
-                            }
-                            default:
-                            {
-                                assert (0);
-                            }
-                        }
-                    }
-                    
+                    OFF += GenSamplings (plSrv, CurSeed, MsgItr);                 
                     MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
+
+                    /* before the fuzzing iteration, start the thread for collecting the branch variables */
+                    plSrv->FzExit = FALSE;
+                    pthread_t CbvThrId = CollectBrVariables (plSrv);
+
+                    /* inform the fuzzer */
                     Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                     DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
 
                     MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                     assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
                     DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
+                    plSrv->FzExit = TRUE;
+
+                    VOID *TRet = NULL;
+                    pthread_join (CbvThrId, &TRet);
+                    
                 }
                 
                 SrvState = SRV_S_ITE;

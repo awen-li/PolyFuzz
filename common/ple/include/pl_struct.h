@@ -65,6 +65,8 @@ typedef struct PLServer
     struct sockaddr_in ClientAddr;
     BYTE SrvBuf[SRV_BUF_LEN];
 
+    DWORD FzExit;
+
     DWORD DBSeedHandle;
     DWORD DBSeedBlockHandle;
     DWORD DBBrVariableHandle;

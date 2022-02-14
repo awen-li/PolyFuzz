@@ -55,7 +55,7 @@ typedef unsigned         BOOL;
 #define mutex_unlock(x)           pthread_mutex_unlock(x);
 
 
-
+#undef DEBUG
 #ifdef __DEBUG__
 #define DEBUG(format, ...) printf(format, ##__VA_ARGS__)
 #else

@@ -63,16 +63,8 @@ int DynTraceInit (unsigned BBs)
     int IntLoc =  __afl_get_interal_loc ();
     DumpInteralLoc (IntLoc);
 
-    /* init event queue */
-    char *shmQCap = getenv(SHM_QUEUE_CAP);
-    if (shmQCap != NULL)
-    {
-        InitQueue((unsigned)atoi (shmQCap), getenv (SHM_QUEUE_KEY), MEMMOD_SHARE);
-    }
-    else
-    {
-        InitQueue(1024, getenv (SHM_QUEUE_KEY), MEMMOD_SHARE);
-    }
+    /* init event queue */ 
+    InitQueue(MEMMOD_SHARE);
     
     return IntLoc;
 }

@@ -26,8 +26,13 @@ int main(int argc, char ** argv)
 
         return 0;
     }
+
+    unsigned Input = 0;
+    FILE *f = fopen (argv[1], "rb");
+    fread (&Input, 1, sizeof (Input), f);
+    fclose (f);
     
-    int Value = atoi (argv[1]);
+    int Value = Input;
     unsigned Pwd = 0;
 
     if (Value >= 4 && Value <= 16)

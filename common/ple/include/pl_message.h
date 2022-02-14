@@ -28,7 +28,7 @@ typedef struct MsgSeed
 {
     unsigned SeedKey;
     unsigned SeedLength;
-    // BYTE* seed
+    // byte* seed
 }MsgSeed;
 
 
@@ -38,6 +38,7 @@ typedef struct MsgIB
     unsigned Length;
     unsigned SampleNum;
     unsigned Rev;
+    // byte *samples
 }MsgIB;
 
 

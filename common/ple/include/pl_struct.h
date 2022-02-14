@@ -14,9 +14,13 @@
 #include <netinet/in.h>   
 #include <unistd.h>
 
+#define FZ_SAMPLE_NUM        (32)
+#define FZ_SEED_NAME_LEN     (512)
+
+
 typedef struct _Seed_ 
 {
-    BYTE SName[512];
+    BYTE SName[FZ_SEED_NAME_LEN];
 
     BYTE* SeedCtx;
     DWORD SeedLen;
@@ -67,20 +71,20 @@ typedef struct PLServer
 }PLServer;
 
 
-typedef struct _SeedBLock_ 
+typedef struct SeedBlock
 {
     DWORD SIndex;
     DWORD Length;
 
-    List  ValBlock;
-} SeedBLock;
+    ULONG Value[FZ_SAMPLE_NUM];
+} SeedBlock;
 
 
 typedef struct BrVariable
 {
     DWORD Key;
     DWORD Type;
-    ULONG Value;
+    ULONG Value[FZ_SAMPLE_NUM];
 }BrVariable;
 
 

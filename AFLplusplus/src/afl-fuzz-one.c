@@ -5677,16 +5677,18 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
     fprintf (stderr, "syntax_pl_fuzzing: %s[%u] --> var: [off-%u][length-%u] samples: %u\r\n", 
              afl->queue_cur->fname, afl->queue_cur->len, msg_itb->SIndex, msg_itb->Length, msg_itb->SampleNum);
     
-    u32 sample_num = msg_itb->SampleNum;
+    u32 sample_num  = msg_itb->SampleNum;
     u8 *var = in_buf + msg_itb->SIndex;
-    while (sample_num > 0) {
+    for (u32 index = 0; index < sample_num; index++) {
 
         switch (msg_itb->Length)
         {
             case 1:
             {
-                u8 origin = *var;              
-                *var = (u8) random ();
+                u8 origin = *var;
+                u8 *sample_addr = (u8*)(msg_itb + 1);
+                
+                *var = sample_addr[index];
                 common_fuzz_stuff(afl, in_buf, len);
                 *var = origin;
                  
@@ -5694,8 +5696,10 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
             }
             case 2:
             {
-                u16 origin = *((u16 *)var);               
-                *((u16 *)var) = (u16) random ();
+                u16 origin = *((u16 *)var);
+                u16 *sample_addr = (u16*)(msg_itb + 1);
+                
+                *((u16 *)var) = sample_addr[index];
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u16 *)var) = origin;
                 
@@ -5704,7 +5708,9 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
             case 4:
             {
                 u32 origin = *((u32 *)var);
-                *((u32 *)var) = (u32) random ();
+                u32 *sample_addr = (u32*)(msg_itb + 1);
+                
+                *((u32 *)var) = sample_addr[index];
                 fprintf (stderr, "\t [%u:%u] var = %u\r\n", msg_itb->SIndex, msg_itb->Length, *((u32 *)var));
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u32 *)var) = origin;
@@ -5714,7 +5720,9 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
             case 8:
             {
                 u64 origin = *((u64 *)var);
-                *((u64 *)var) = (u64) random ();
+                u64 *sample_addr = (u64*)(msg_itb + 1);
+                
+                *((u64 *)var) = sample_addr[index];
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u64 *)var) = origin;
                 
@@ -5725,8 +5733,6 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 assert (0);
             }
         }
-
-        sample_num--;
     }
 
     return 0;

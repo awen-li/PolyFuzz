@@ -82,10 +82,10 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(plSrv->DBSeedHandle, sizeof (Seed), 0);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, sizeof (SeedBLock), 0);
+    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, sizeof (SeedBlock), FZ_SEED_NAME_LEN);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), 0);
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
     return;
@@ -120,6 +120,28 @@ static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
 
     return Sn;
 }
+
+
+static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
+{    
+    DbReq Req;
+    DbAck Ack;
+    BYTE SKey [FZ_SEED_NAME_LEN] = {0};
+
+    Req.dwDataType = plSrv->DBSeedBlockHandle;
+    Req.dwKeyLen   = FZ_SEED_NAME_LEN;
+
+    snprintf (SKey, sizeof (SKey), "%s%u%u", CurSeed->SName, MsgItr->SIndex, MsgItr->Length);
+    Req.pKeyCtx = SKey;
+    
+    DWORD Ret = CreateDataNonKey (&Req, &Ack);
+    assert (Ret == R_SUCCESS);
+
+    SeedBlock* SBlk = (SeedBlock*)(Ack.pDataAddr);
+
+    return SBlk;
+}
+
 
 
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
@@ -204,15 +226,58 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 {
                     MsgItr->SIndex = OFF;
                     MsgItr->Length = sizeof (DWORD);
-                    MsgItr->SampleNum = 32;
+                    MsgItr->SampleNum = FZ_SAMPLE_NUM;
+
+                    /* generate samples by random */
+                    for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
+                    {
+                        ULONG SbVal = random ();
+                        DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
+                        
+                        switch (MsgItr->Length)
+                        {
+                            case 1:
+                            {
+                                BYTE *ValHdr = (BYTE*) (MsgItr + 1);
+                                ValHdr [Index] = (BYTE)SbVal;
+                                OFF += sizeof (BYTE);
+                                break;
+                            }
+                            case 2:
+                            {
+                                WORD *ValHdr = (WORD*) (MsgItr + 1);
+                                ValHdr [Index] = (WORD)SbVal;
+                                OFF += sizeof (WORD);
+                                break;
+                            }
+                            case 4:
+                            {
+                                DWORD *ValHdr = (DWORD*) (MsgItr + 1);
+                                ValHdr [Index] = (DWORD)SbVal;
+                                OFF += sizeof (DWORD);
+                                break;
+                            }
+                            case 8:
+                            {
+                                ULONG *ValHdr = (ULONG*) (MsgItr + 1);
+                                ValHdr [Index] = (ULONG)SbVal;
+                                OFF += sizeof (ULONG);
+                                break;
+                            }
+                            default:
+                            {
+                                assert (0);
+                            }
+                        }
+                    }
+                    
+                    MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
                     Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN: %u\r\n", OFF);
+                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
 
                     MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                     assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN: %u\r\n", OFF);
-
-                    OFF += sizeof (DWORD);
+                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
                 }
                 
                 SrvState = SRV_S_ITE;

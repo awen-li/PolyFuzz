@@ -32,7 +32,7 @@ void* DECollect (void *Para)
     PLServer *plSrv = (PLServer*)Para;
 
     DWORD QSize = QueueSize ();
-    while (plSrv->FzExit == FALSE || QSize == 0)
+    while (plSrv->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
@@ -42,14 +42,14 @@ void* DECollect (void *Para)
         }
 
         ObjValue *OV = (ObjValue *)QN->Buf;
-        printf ("[QSize-%u]QUEUE: kEY:%u - Value:%u[type:%u, length:%u] \r\n", QSize, QN->TrcKey, (DWORD)OV->Value, OV->Type, OV->Length);
+        printf ("[QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
 
-        OutQueue ();
+        OutQueue (QN);
         QSize = QueueSize ();
     }
-
+    
+    printf ("DECollect loop over.....\r\n");
     pthread_exit ((void*)0);
-    return NULL;
 }
 
 
@@ -336,7 +336,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
 
                     MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                     assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
+                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
                     plSrv->FzExit = TRUE;
 
                     VOID *TRet = NULL;
@@ -373,6 +373,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     }
 
     DEBUG ("[ple]SemanticLearning exit....\r\n");
+    DelQueue ();
     return;
 }
 

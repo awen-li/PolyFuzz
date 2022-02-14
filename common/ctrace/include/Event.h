@@ -43,9 +43,10 @@ typedef enum
 
 typedef struct ObjValue
 {
-    unsigned char  Type;
-    unsigned char  Attr;
+    unsigned short Type;
+    unsigned short Attr;
     unsigned short Length;
+    unsigned short Rev;
     unsigned long  Value;
 } ObjValue;
 

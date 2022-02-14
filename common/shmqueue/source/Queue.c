@@ -100,9 +100,10 @@ static inline void* GetQueueMemory (MEMMOD MemMode, unsigned Size, char *ShareMe
 }
 
 
-void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode)
+void InitQueue (MEMMOD MemMode)
 {
     Queue* Q;
+    unsigned QueueNum;
 
     if (g_Queue != NULL)
     {
@@ -110,14 +111,24 @@ void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode)
         exit (0);
     }
 
+    char *ShareMemKey = getenv(SHM_QUEUE_KEY);
     if (ShareMemKey == NULL)
     {
         ShareMemKey = DEFAULT_SHARE_KEY;
     }
 
-    QueueNum = (QueueNum < DEFAULT_QUEUE_SIZE) ? DEFAULT_QUEUE_SIZE : QueueNum;
+    char *ShmQCap = getenv(SHM_QUEUE_CAP);
+    if (ShmQCap == NULL)
+    {
+        QueueNum = DEFAULT_QUEUE_SIZE;
+    }
+    else
+    {
+        QueueNum = (unsigned)atoi (ShmQCap);
+        QueueNum = (QueueNum < DEFAULT_QUEUE_SIZE) ? DEFAULT_QUEUE_SIZE : QueueNum;
+    }
+
     unsigned Size = sizeof (Queue) + QueueNum * sizeof (QNode);
-    
     Q = (Queue *)GetQueueMemory (MemMode, Size, ShareMemKey);
     if (Q->NodeNum == 0)
     {
@@ -143,7 +154,7 @@ QNode* InQueue ()
 {
     if (g_Queue == NULL)
     {
-        InitQueue (DEFAULT_QUEUE_SIZE, DEFAULT_SHARE_KEY, MEMMOD_SHARE);
+        InitQueue (MEMMOD_SHARE);
         assert (g_Queue != NULL);
     }
     
@@ -189,7 +200,7 @@ QNode* FrontQueue ()
 
 
 
-void OutQueue ()
+void OutQueue (QNode* QN)
 {
     Queue* Q = g_Queue;
     if (Q == NULL)
@@ -205,6 +216,7 @@ void OutQueue ()
     {
         Q->Hindex = 0;
     }
+    QN->IsReady = 0;
     process_unlock(&Q->QLock);
 
     return;

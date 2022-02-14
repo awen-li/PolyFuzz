@@ -42,10 +42,10 @@ static inline QNode* QBUF2QNODE (char *Qbuf)
     return (QNode*)(Qbuf - (sizeof (QNode)-BUF_SIZE));
 }
 
-void InitQueue (unsigned QueueNum, char *ShareMemKey, MEMMOD MemMode);
+void InitQueue (MEMMOD MemMode);
 QNode* InQueue (void);
 QNode* FrontQueue (void);
-void OutQueue (void);
+void OutQueue (QNode* QN);
 unsigned QueueSize (void);
 
 void SetQueueExit ();

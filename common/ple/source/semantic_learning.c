@@ -1,5 +1,6 @@
 #include "ctrace/Event.h"
 #include <pthread.h>
+#include <sys/stat.h>
 #include "db.h"
 #include "Queue.h"
 #include "pl_struct.h"
@@ -135,12 +136,20 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
     Req.dwDataType = plSrv->DBSeedBlockHandle;
     Req.dwKeyLen = snprintf (SKey, sizeof (SKey), "%s-%u-%u", CurSeed->SName, MsgItr->SIndex, MsgItr->Length);
     Req.pKeyCtx  = SKey;
+
+    DWORD Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret == R_SUCCESS)
+    {
+        return (SeedBlock*)(Ack.pDataAddr);
+    }
     
-    DWORD Ret = CreateDataByKey (&Req, &Ack);
+    Ret = CreateDataByKey (&Req, &Ack);
     assert (Ret == R_SUCCESS);
 
     SeedBlock* SBlk = (SeedBlock*)(Ack.pDataAddr);
     SBlk->Sd = CurSeed;
+
+    ListInsert(&CurSeed->SdBlkList, SBlk);
 
     DEBUG ("@@@ AddSeedBlock: %s \r\n", SKey);
 
@@ -279,19 +288,118 @@ static inline pthread_t CollectBrVariables (PLServer *plSrv)
 }
 
 
+static inline VOID MakeDir (BYTE *DirPath)
+{
+    struct stat st = {0};
+    
+    if (stat(DirPath, &st) == -1) 
+    {
+        mkdir(DirPath, 0777);
+    }
+
+    return;
+}
+
+static inline BYTE* GetSeedName (BYTE *SeedPath)
+{
+    /* id:000005 (,src:000001), time:0,orig:test-2 */
+    static BYTE SdName[FZ_SEED_NAME_LEN];
+    memset (SdName, 0, sizeof (SdName));
+
+    BYTE* ID = strstr (SeedPath, "id:");
+    assert (ID != NULL);
+    strncpy (SdName, ID, 9);
+    SdName[9] = '-';
+
+    BYTE* ORG = strstr (SeedPath, "orig:");
+    if (ORG == NULL)
+    {
+        ORG = strstr (SeedPath, "src:");
+        assert (ORG != NULL);
+        strncpy (SdName+10, ORG, 10);
+    }
+    else
+    {
+        strcat (SdName, ORG);
+    }
+
+    return SdName;
+}
+
+
+static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
+{
+    static BYTE VarFile[128];
+    DbReq Req;
+    DbAck Ack;
+    DWORD Ret;
+    BYTE SKey [FZ_SEED_NAME_LEN] = {0};
+
+    Req.dwDataType = plSrv->DBBrVariableHandle;
+    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdBlk->Sd->SName, SdBlk->SIndex, SdBlk->Length, VarKey);
+    Req.pKeyCtx    = SKey;
+    Ret = QueryDataByKey(&Req, &Ack);
+    assert (Ret != R_FAIL);
+    BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
+
+    /* FILE NAME */
+    snprintf (VarFile, sizeof (VarFile), "%s/Var-%u.csv", BlkDir, VarKey);
+    FILE *F = fopen (VarFile, "w");
+    assert (F != NULL);
+
+    fprintf (F, "SDBLK-%u-%u,BrVar-%u\n", SdBlk->SIndex, SdBlk->Length, VarKey);
+    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    {
+        fprintf (F, "%u,%u\n", (DWORD)SdBlk->Value[Index], (DWORD)BrVal->Value[Index]);    
+    }
+    fclose (F);
+    
+    return VarFile;    
+}
+
+
 static inline VOID LearningMain (PLServer *plSrv)
 {
+    BYTE BlkDir[128];
+    DWORD SeedNum = QueryDataNum (plSrv->DBSeedHandle);
     DWORD SeedBlkNum = QueryDataNum (plSrv->DBSeedBlockHandle);
     DWORD VarKeyNum  = QueryDataNum (plSrv->DBBrVarKeyHandle);
     
-    DEBUG ("SeedBlkNum = %u, VarKeyNum = %u \r\n", SeedBlkNum, VarKeyNum);
-    for (DWORD DataId = 1; DataId <= SeedBlkNum; DataId++)
+    DEBUG ("SeedNum = %u, SeedBlkNum = %u, VarKeyNum = %u \r\n", SeedNum, SeedBlkNum, VarKeyNum);
+    for (DWORD SdId = 1; SdId <= SeedNum; SdId++)
     {
-        SeedBlock *SdBlk = (SeedBlock*) GetDataByID (plSrv->DBSeedBlockHandle, DataId);
-        DEBUG ("[%u]%s-%u-%u \r\n", DataId, SdBlk->Sd->SName, SdBlk->SIndex, SdBlk->Length);
-       
+        Seed *Sd = (Seed*) GetDataByID (plSrv->DBSeedHandle, SdId);
+        DEBUG ("SEED[%u]%s-[%u] \r\n", SdId, Sd->SName, Sd->SeedLen);
+
+        BYTE* SdName = GetSeedName(Sd->SName);
+        MakeDir (SdName);
+        DEBUG ("\tSEED-name:%s \r\n", SdName);
+
+        DWORD SdBlkNo = 0;
+        LNode *SbHdr  = Sd->SdBlkList.Header;
+        while (SbHdr != NULL)
+        {
+            SeedBlock *SdBlk = (SeedBlock*)SbHdr->Data;
+            snprintf (BlkDir, sizeof (BlkDir), "%s/BLK:%u-%u", SdName, SdBlk->SIndex, SdBlk->Length);
+            MakeDir (BlkDir);
+            DEBUG ("\t[%u]%s\r\n", SdBlkNo, BlkDir);
+
+            for (DWORD KeyId = 1; KeyId <= VarKeyNum; KeyId++)
+            {
+                DWORD VarKey = *(DWORD*) GetDataByID (plSrv->DBBrVarKeyHandle, KeyId);
+                BYTE *DataFile = GenAnalysicData (plSrv, BlkDir, SdBlk, VarKey);
+                DEBUG ("\t\tVarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
+
+                ///// training proc here
+            }
+
+            SdBlkNo++;
+            SbHdr = SbHdr->Nxt;
+        }
+
+        ListDel(&Sd->SdBlkList, NULL);
     }
-    
+
     return;
 }
 
@@ -487,9 +595,11 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     }
 
     LearningMain (plSrv);
-    
+
     DEBUG ("[ple]SemanticLearning exit....\r\n");
+    DelDb();
     DelQueue ();
+    close (plSrv->SockFd);
     return;
 }
 

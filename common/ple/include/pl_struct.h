@@ -28,6 +28,8 @@ typedef struct _Seed_
 
     BYTE* SeedSD;
     DWORD SeedSDLen;
+
+    List SdBlkList;
 } Seed;
 
 

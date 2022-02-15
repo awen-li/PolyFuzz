@@ -13,6 +13,7 @@
 #include <sys/socket.h>   
 #include <netinet/in.h>   
 #include <unistd.h>
+#include "pl_message.h"
 
 #define FZ_SAMPLE_NUM        (32)
 #define FZ_SEED_NAME_LEN     (512)
@@ -59,22 +60,10 @@ typedef struct SeedPat
 } SeedPat;
 
 
-typedef struct PLServer
-{
-    INT SockFd;
-    struct sockaddr_in ClientAddr;
-    BYTE SrvBuf[SRV_BUF_LEN];
-
-    DWORD FzExit;
-
-    DWORD DBSeedHandle;
-    DWORD DBSeedBlockHandle;
-    DWORD DBBrVariableHandle;
-}PLServer;
-
-
 typedef struct SeedBlock
 {
+    Seed *Sd;
+    
     DWORD SIndex;
     DWORD Length;
 
@@ -85,7 +74,9 @@ typedef struct SeedBlock
 typedef struct BrVariable
 {
     DWORD Key;
-    DWORD Type;
+    WORD Type;
+    WORD ValNum;
+    
     ULONG Value[FZ_SAMPLE_NUM];
 }BrVariable;
 
@@ -99,6 +90,24 @@ typedef enum
     SRV_S_ITE,
     SRV_S_FIN
 }SRV_STATE;
+
+
+typedef struct PLServer
+{
+    INT SockFd;
+    struct sockaddr_in ClientAddr;
+    BYTE SrvSendBuf[SRV_BUF_LEN];
+    BYTE SrvRecvBuf[SRV_BUF_LEN];
+
+    DWORD FzExit;
+    SeedBlock* CurSdBlk;
+
+    DWORD DBSeedHandle;
+    DWORD DBSeedBlockHandle;
+    DWORD DBBrVariableHandle;
+    DWORD DBBrVarKeyHandle;
+}PLServer;
+
 
 #endif
 

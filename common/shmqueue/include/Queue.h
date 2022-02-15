@@ -43,6 +43,8 @@ static inline QNode* QBUF2QNODE (char *Qbuf)
 }
 
 void InitQueue (MEMMOD MemMode);
+void ClearQueue ();
+
 QNode* InQueue (void);
 QNode* FrontQueue (void);
 void OutQueue (QNode* QN);

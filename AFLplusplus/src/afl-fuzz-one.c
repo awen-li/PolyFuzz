@@ -5711,7 +5711,7 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 u32 *sample_addr = (u32*)(msg_itb + 1);
                 
                 *((u32 *)var) = sample_addr[index];
-                fprintf (stderr, "\t [%u:%u] var = %u\r\n", msg_itb->SIndex, msg_itb->Length, *((u32 *)var));
+                //fprintf (stderr, "\t [%u:%u] var = %u, len = %u\r\n", msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u32 *)var) = origin;
                 

@@ -150,6 +150,24 @@ void InitQueue (MEMMOD MemMode)
 }
 
 
+void ClearQueue ()
+{
+    if (g_Queue == NULL)
+    {
+        return;
+    }
+    
+    Queue* Q = g_Queue;
+    process_lock(&Q->QLock);
+    Q->MaxNodeNum = 0;
+    Q->ExitFlag   = 0;
+    Q->Hindex = Q->Tindex = 0;
+    memset (Q_2_NODELIST(Q), 0, Q->NodeNum * sizeof (QNode));
+    process_unlock(&Q->QLock);
+    
+    return;
+}
+
 QNode* InQueue ()
 {
     if (g_Queue == NULL)

@@ -524,7 +524,7 @@ DWORD CreateDataByKey(DbReq* ptCreateReq, DbAck* pCreateAck)
 		return R_FAIL;
 	}
 
-	if(ptDataTable->dwKeyLen != ptCreateReq->dwKeyLen)
+	if(ptDataTable->dwKeyLen < ptCreateReq->dwKeyLen)
 	{
 		return R_FAIL;
 	}
@@ -534,7 +534,7 @@ DWORD CreateDataByKey(DbReq* ptCreateReq, DbAck* pCreateAck)
 	{
 		return R_FAIL;
 	}
-	memcpy(KeyArea(ptHashNode), ptCreateReq->pKeyCtx, ptDataTable->dwKeyLen);
+	memcpy(KeyArea(ptHashNode), ptCreateReq->pKeyCtx, ptCreateReq->dwKeyLen);
 
 	ptHashNode->dwPailIndex = db_HashKey(ptCreateReq->pKeyCtx, ptCreateReq->dwKeyLen)%ptDataTable->dwPailNum;
 
@@ -632,7 +632,7 @@ DWORD QueryDataByKey(DbReq* ptQueryReq, DbAck* pQueryAck)
 		return R_FAIL;
 	}
 
-	if(ptDataTable->dwKeyLen != ptQueryReq->dwKeyLen)
+	if(ptDataTable->dwKeyLen < ptQueryReq->dwKeyLen)
 	{
 		return R_FAIL;
 	}
@@ -640,7 +640,7 @@ DWORD QueryDataByKey(DbReq* ptQueryReq, DbAck* pQueryAck)
 	dwHashIndex = db_HashKey(ptQueryReq->pKeyCtx, ptQueryReq->dwKeyLen)%ptDataTable->dwPailNum;
 	ptHashNode = db_QueryInsidePail(ptDataTable->ptHashPail+dwHashIndex, 
 		                            ptQueryReq->pKeyCtx, 
-									ptDataTable->dwKeyLen);
+									ptQueryReq->dwKeyLen);
 	if(NULL == ptHashNode)
 	{
 		return R_FAIL;

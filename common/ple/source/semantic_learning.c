@@ -3,8 +3,6 @@
 #include "db.h"
 #include "Queue.h"
 #include "pl_struct.h"
-#include "pl_message.h"
-
 
 static PLServer g_plSrv;
 
@@ -22,34 +20,6 @@ void* PilotFuzzingProc (void *Para)
     system (Cmd);
     
     return NULL;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Thread for dynamic event collection
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-void* DECollect (void *Para)
-{
-    PLServer *plSrv = (PLServer*)Para;
-
-    DWORD QSize = QueueSize ();
-    while (plSrv->FzExit == FALSE || QSize != 0)
-    {
-        QNode *QN = FrontQueue ();
-        if (QN == NULL || QN->IsReady == FALSE)
-        {
-            QSize = QueueSize ();
-            continue;
-        }
-
-        ObjValue *OV = (ObjValue *)QN->Buf;
-        printf ("[QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
-
-        OutQueue (QN);
-        QSize = QueueSize ();
-    }
-    
-    printf ("DECollect loop over.....\r\n");
-    pthread_exit ((void*)0);
 }
 
 
@@ -88,14 +58,14 @@ static inline DWORD SrvInit (PLServer *plSrv)
 
 static inline BYTE* Recv (PLServer *plSrv)
 {
-    memset (plSrv->SrvBuf, 0, sizeof(plSrv->SrvBuf));
+    memset (plSrv->SrvRecvBuf, 0, sizeof(plSrv->SrvRecvBuf));
 
     INT SkLen   = sizeof (struct sockaddr_in);
-    INT RecvNum = recvfrom(plSrv->SockFd, plSrv->SrvBuf, sizeof(plSrv->SrvBuf), 
+    INT RecvNum = recvfrom(plSrv->SockFd, plSrv->SrvRecvBuf, sizeof(plSrv->SrvRecvBuf), 
                            0, (struct sockaddr *)&plSrv->ClientAddr, (socklen_t *)&SkLen);
     assert (RecvNum != 0);
 
-    return plSrv->SrvBuf;
+    return plSrv->SrvRecvBuf;
 }
 
 static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
@@ -118,6 +88,7 @@ VOID InitDbTable (PLServer *plSrv)
     plSrv->DBSeedHandle       = DB_TYPE_SEED;
     plSrv->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
     plSrv->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
+    plSrv->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
 
     InitDb(NULL);
     
@@ -127,7 +98,10 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(plSrv->DBSeedBlockHandle, sizeof (SeedBlock), FZ_SEED_NAME_LEN);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), sizeof (DWORD));
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), FZ_SEED_NAME_LEN);
+    assert (Ret != R_FAIL);
+
+    Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
     return;
@@ -156,21 +130,133 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 {    
     DbReq Req;
     DbAck Ack;
-    BYTE SKey [FZ_SEED_NAME_LEN] = {0};
+    BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
     Req.dwDataType = plSrv->DBSeedBlockHandle;
-    Req.dwKeyLen   = FZ_SEED_NAME_LEN;
-
-    snprintf (SKey, sizeof (SKey), "%s%u%u", CurSeed->SName, MsgItr->SIndex, MsgItr->Length);
-    Req.pKeyCtx = SKey;
+    Req.dwKeyLen = snprintf (SKey, sizeof (SKey), "%s-%u-%u", CurSeed->SName, MsgItr->SIndex, MsgItr->Length);
+    Req.pKeyCtx  = SKey;
     
-    DWORD Ret = CreateDataNonKey (&Req, &Ack);
+    DWORD Ret = CreateDataByKey (&Req, &Ack);
     assert (Ret == R_SUCCESS);
 
     SeedBlock* SBlk = (SeedBlock*)(Ack.pDataAddr);
+    SBlk->Sd = CurSeed;
+
+    DEBUG ("@@@ AddSeedBlock: %s \r\n", SKey);
 
     return SBlk;
 }
+
+
+static inline VOID AddBrVarKey (PLServer *plSrv, DWORD Key)
+{    
+    DbReq Req;
+    DbAck Ack;
+    DWORD Ret;
+
+    Req.dwDataType = plSrv->DBBrVarKeyHandle;
+    Req.dwKeyLen   = sizeof (DWORD);
+    Req.pKeyCtx    = (BYTE*)&Key;
+
+    Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret != R_SUCCESS)
+    {
+        Ret = CreateDataByKey (&Req, &Ack);
+        assert (Ret == R_SUCCESS);
+
+        DWORD *BrValKey = (DWORD*)(Ack.pDataAddr);
+        *BrValKey = Key;
+    }
+
+    return;
+}
+
+
+
+static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov)
+{    
+    DbReq Req;
+    DbAck Ack;
+    DWORD Ret;
+    BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
+
+    SeedBlock* SBlk = plSrv->CurSdBlk;
+
+    Req.dwDataType = plSrv->DBBrVariableHandle;
+    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SBlk->Sd->SName, SBlk->SIndex, SBlk->Length, Key);
+    Req.pKeyCtx    = SKey;
+
+    Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret != R_SUCCESS)
+    {
+        Ret = CreateDataByKey (&Req, &Ack);
+        assert (Ret == R_SUCCESS);
+    }
+
+    BrVariable *BrVal = (BrVariable*)(Ack.pDataAddr);
+    if (BrVal->ValNum < FZ_SAMPLE_NUM)
+    {
+        BrVal->Key  = Key;
+        BrVal->Type = Ov->Type;
+        BrVal->Value [BrVal->ValNum] = Ov->Value;
+        BrVal->ValNum++;
+    }
+
+    //DEBUG ("AddBrVariable ->[BrVal:%p] Key:%s, ValNum:%u\r\n", BrVal, SKey, BrVal->ValNum);
+    
+    AddBrVarKey (plSrv, Key);
+    
+    return;
+}
+
+
+static inline BYTE* GetDataByID (DWORD DataType, DWORD DataID)
+{
+    DbReq QueryReq;
+    DbAck QueryAck;
+
+    QueryReq.dwDataType = DataType;
+    QueryReq.dwDataId   = DataID;
+    DWORD Ret = QueryDataByID(&QueryReq, &QueryAck);
+    assert (Ret != R_FAIL);
+
+    return QueryAck.pDataAddr;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Thread for dynamic event collection
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* DECollect (void *Para)
+{
+    PLServer *plSrv = (PLServer*)Para;
+
+    DWORD QSize = QueueSize ();
+    DWORD Num = 0;
+    while (plSrv->FzExit == FALSE || QSize != 0)
+    {
+        QNode *QN = FrontQueue ();
+        if (QN == NULL || QN->IsReady == FALSE)
+        {
+            QSize = QueueSize ();
+            continue;
+        }
+
+        ObjValue *OV = (ObjValue *)QN->Buf;
+
+        AddBrVariable (plSrv, QN->TrcKey, OV);
+
+        //DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
+        //        Num , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
+
+        OutQueue (QN);
+        QSize = QueueSize ();
+        Num ++;
+    }
+    
+    printf ("DECollect loop over.....\r\n");
+    pthread_exit ((void*)0);
+}
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +264,9 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 static inline pthread_t CollectBrVariables (PLServer *plSrv)
 {
+    /* !!!! clear the queue: AFL++'s validation will cause redundant events */
+    ClearQueue();
+    
     pthread_t Tid = 0;
     int Ret = pthread_create(&Tid, NULL, DECollect, plSrv);
     if (Ret != 0)
@@ -189,13 +278,36 @@ static inline pthread_t CollectBrVariables (PLServer *plSrv)
     return Tid;
 }
 
+
+static inline VOID LearningMain (PLServer *plSrv)
+{
+    DWORD SeedBlkNum = QueryDataNum (plSrv->DBSeedBlockHandle);
+    DWORD VarKeyNum  = QueryDataNum (plSrv->DBBrVarKeyHandle);
+    
+    DEBUG ("SeedBlkNum = %u, VarKeyNum = %u \r\n", SeedBlkNum, VarKeyNum);
+    for (DWORD DataId = 1; DataId <= SeedBlkNum; DataId++)
+    {
+        SeedBlock *SdBlk = (SeedBlock*) GetDataByID (plSrv->DBSeedBlockHandle, DataId);
+        DEBUG ("[%u]%s-%u-%u \r\n", DataId, SdBlk->Sd->SName, SdBlk->SIndex, SdBlk->Length);
+       
+    }
+    
+    return;
+}
+
 static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
 {
+    SeedBlock* SBlk = AddSeedBlock (plSrv, CurSeed, MsgItr);
+    assert (SBlk != NULL);
+    SBlk->SIndex = MsgItr->SIndex;
+    SBlk->Length = MsgItr->Length;
+    plSrv->CurSdBlk = SBlk;
+    
     DWORD OFF = 0;
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
         ULONG SbVal = random ();
-        DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
+        //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)
         {
@@ -232,6 +344,8 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
                 assert (0);
             }
         }
+
+        SBlk->Value [Index] = SbVal;
     }
 
     return OFF;
@@ -275,7 +389,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_STARTUP:
             {
-                MsgH = (MsgHdr *)plSrv->SrvBuf;
+                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
                 MsgH->MsgType = PL_MSG_STARTUP;
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
@@ -311,7 +425,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 assert (CurSeed != NULL);
                 
                 DWORD OFF = 0;
-                MsgH = (MsgHdr *)plSrv->SrvBuf;
+                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
                 MsgH->MsgType = PL_MSG_ITR_BEGIN;
                 MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
                 
@@ -349,7 +463,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
             }
             case SRV_S_ITE:
             {
-                MsgH = (MsgHdr *)plSrv->SrvBuf;
+                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
                 MsgH->MsgType = PL_MSG_ITR_END;
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
@@ -372,6 +486,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
         }
     }
 
+    LearningMain (plSrv);
+    
     DEBUG ("[ple]SemanticLearning exit....\r\n");
     DelQueue ();
     return;

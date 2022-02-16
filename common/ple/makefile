@@ -23,6 +23,7 @@ $(TARGET): $(OBJ_FILES)
 	$(LD) -o $@ $^ $(LD_CFLAGS)
 	@cp $(TARGET) -rf /usr/bin/
 	@cp include/pl_message.h -rf /usr/include/
+	@cd py; ./install.sh; cd -
 	
 $(OBJ_PATH)/%.o: $(SOURCE_PATH)/%.c
 	@if [ ! -d $(OBJ_PATH) ];then mkdir $(OBJ_PATH); fi

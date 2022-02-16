@@ -127,14 +127,46 @@ static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
 }
 
 
+static inline BYTE* GetSeedName (BYTE *SeedPath)
+{
+    /* id:000005 (,src:000001), time:0,orig:test-2 */
+    static BYTE SdName[FZ_SEED_NAME_LEN];
+    memset (SdName, 0, sizeof (SdName));
+
+    BYTE* ID = strstr (SeedPath, "id:");
+    assert (ID != NULL);
+    strncpy (SdName, ID, 9);
+    SdName[2] = '-';
+    SdName[9] = '-';
+
+    BYTE* ORG = strstr (SeedPath, "orig:");
+    if (ORG == NULL)
+    {
+        ORG = strstr (SeedPath, "src:");
+        assert (ORG != NULL);
+        strncpy (SdName+10, ORG, 10);
+        SdName[13] = '-';
+    }
+    else
+    {
+        strcat (SdName, ORG);
+        SdName[14] = '-';
+    }
+
+    return SdName;
+}
+
+
 static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
 {    
     DbReq Req;
     DbAck Ack;
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
+    BYTE* SdName = GetSeedName (CurSeed->SName);
+
     Req.dwDataType = plSrv->DBSeedBlockHandle;
-    Req.dwKeyLen = snprintf (SKey, sizeof (SKey), "%s-%u-%u", CurSeed->SName, MsgItr->SIndex, MsgItr->Length);
+    Req.dwKeyLen = snprintf (SKey, sizeof (SKey), "%s-%u-%u", SdName, MsgItr->SIndex, MsgItr->Length);
     Req.pKeyCtx  = SKey;
 
     DWORD Ret = QueryDataByKey(&Req, &Ack);
@@ -190,9 +222,10 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov)
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
     SeedBlock* SBlk = plSrv->CurSdBlk;
+    BYTE* SdName = GetSeedName (SBlk->Sd->SName);
 
     Req.dwDataType = plSrv->DBBrVariableHandle;
-    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SBlk->Sd->SName, SBlk->SIndex, SBlk->Length, Key);
+    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SBlk->SIndex, SBlk->Length, Key);
     Req.pKeyCtx    = SKey;
 
     Ret = QueryDataByKey(&Req, &Ack);
@@ -203,15 +236,14 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov)
     }
 
     BrVariable *BrVal = (BrVariable*)(Ack.pDataAddr);
-    if (BrVal->ValNum < FZ_SAMPLE_NUM)
-    {
-        BrVal->Key  = Key;
-        BrVal->Type = Ov->Type;
-        BrVal->Value [BrVal->ValNum] = Ov->Value;
-        BrVal->ValNum++;
-    }
+    DWORD Index = BrVal->ValNum % FZ_SAMPLE_NUM;
+    
+    BrVal->Key  = Key;
+    BrVal->Type = Ov->Type;
+    BrVal->Value [Index] = Ov->Value;
+    BrVal->ValNum++;
 
-    //DEBUG ("AddBrVariable ->[BrVal:%p] Key:%s, ValNum:%u\r\n", BrVal, SKey, BrVal->ValNum);
+    DEBUG ("AddBrVariable ->[%u/%u][%u]Key:%s, Value:%u\r\n", Index, (DWORD)BrVal->ValNum, Key, SKey, (DWORD)Ov->Value);
     
     AddBrVarKey (plSrv, Key);
     
@@ -273,9 +305,6 @@ void* DECollect (void *Para)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 static inline pthread_t CollectBrVariables (PLServer *plSrv)
 {
-    /* !!!! clear the queue: AFL++'s validation will cause redundant events */
-    ClearQueue();
-    
     pthread_t Tid = 0;
     int Ret = pthread_create(&Tid, NULL, DECollect, plSrv);
     if (Ret != 0)
@@ -300,35 +329,6 @@ static inline VOID MakeDir (BYTE *DirPath)
     return;
 }
 
-static inline BYTE* GetSeedName (BYTE *SeedPath)
-{
-    /* id:000005 (,src:000001), time:0,orig:test-2 */
-    static BYTE SdName[FZ_SEED_NAME_LEN];
-    memset (SdName, 0, sizeof (SdName));
-
-    BYTE* ID = strstr (SeedPath, "id:");
-    assert (ID != NULL);
-    strncpy (SdName, ID, 9);
-    SdName[2] = '-';
-    SdName[9] = '-';
-
-    BYTE* ORG = strstr (SeedPath, "orig:");
-    if (ORG == NULL)
-    {
-        ORG = strstr (SeedPath, "src:");
-        assert (ORG != NULL);
-        strncpy (SdName+10, ORG, 10);
-        SdName[13] = '-';
-    }
-    else
-    {
-        strcat (SdName, ORG);
-        SdName[14] = '-';
-    }
-
-    return SdName;
-}
-
 
 static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
 {
@@ -338,11 +338,17 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
     DWORD Ret;
     BYTE SKey [FZ_SEED_NAME_LEN] = {0};
 
+    BYTE* SdName = GetSeedName (SdBlk->Sd->SName);
+
     Req.dwDataType = plSrv->DBBrVariableHandle;
-    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdBlk->Sd->SName, SdBlk->SIndex, SdBlk->Length, VarKey);
+    Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SdBlk->SIndex, SdBlk->Length, VarKey);
     Req.pKeyCtx    = SKey;
     Ret = QueryDataByKey(&Req, &Ack);
-    assert (Ret != R_FAIL);
+    if (Ret != R_SUCCESS)
+    {
+        DEBUG ("Query fail -> [BrVariable]: %s \r\n", SKey);
+        return NULL;
+    }
     BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
 
     /* FILE NAME */
@@ -393,13 +399,17 @@ static inline VOID LearningMain (PLServer *plSrv)
             SeedBlock *SdBlk = (SeedBlock*)SbHdr->Data;
             snprintf (BlkDir, sizeof (BlkDir), "%s/BLK-%u-%u", SdName, SdBlk->SIndex, SdBlk->Length);
             MakeDir (BlkDir);
-            DEBUG ("\t[%u]%s\r\n", SdBlkNo, BlkDir);
+            DEBUG ("\t@@@ [%u]%s\r\n", SdBlkNo, BlkDir);
 
             for (DWORD KeyId = 1; KeyId <= VarKeyNum; KeyId++)
             {
                 DWORD VarKey = *(DWORD*) GetDataByID (plSrv->DBBrVarKeyHandle, KeyId);
                 BYTE *DataFile = GenAnalysicData (plSrv, BlkDir, SdBlk, VarKey);
-                DEBUG ("\t\tVarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
+                if (DataFile == NULL)
+                {
+                    continue;
+                }
+                DEBUG ("\t@@@ VarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
 
                 ///// training proc here
                 ExeRegression (DataFile);
@@ -426,7 +436,7 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
     DWORD OFF = 0;
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ();
+        ULONG SbVal = random ()%256;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)
@@ -514,6 +524,9 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                 DEBUG ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+
+                /* !!!! clear the queue: AFL++'s validation will cause redundant events */
+                ClearQueue();
 
                 /* change to SRV_S_SEEDRCV */
                 SrvState = SRV_S_SEEDRCV;

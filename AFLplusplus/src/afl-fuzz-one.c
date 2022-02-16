@@ -5689,6 +5689,7 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 u8 *sample_addr = (u8*)(msg_itb + 1);
                 
                 *var = sample_addr[index];
+                fprintf (stderr, "\t[%u][%u:%u] var = %u, len = %u\r\n", index, msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
                 common_fuzz_stuff(afl, in_buf, len);
                 *var = origin;
                  
@@ -5700,6 +5701,7 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 u16 *sample_addr = (u16*)(msg_itb + 1);
                 
                 *((u16 *)var) = sample_addr[index];
+                fprintf (stderr, "\t[%u][%u:%u] var = %u, len = %u\r\n", index, msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u16 *)var) = origin;
                 
@@ -5711,7 +5713,7 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 u32 *sample_addr = (u32*)(msg_itb + 1);
                 
                 *((u32 *)var) = sample_addr[index];
-                //fprintf (stderr, "\t [%u:%u] var = %u, len = %u\r\n", msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
+                fprintf (stderr, "\t[%u][%u:%u] var = %u, len = %u\r\n", index, msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u32 *)var) = origin;
                 
@@ -5723,6 +5725,7 @@ u8 semantic_pl_fuzzing(afl_state_t *afl) {
                 u64 *sample_addr = (u64*)(msg_itb + 1);
                 
                 *((u64 *)var) = sample_addr[index];
+                fprintf (stderr, "\t[%u][%u:%u] var = %u, len = %u\r\n", index, msg_itb->SIndex, msg_itb->Length, *((u32 *)var), len);
                 common_fuzz_stuff(afl, in_buf, len);
                 *((u64 *)var) = origin;
                 

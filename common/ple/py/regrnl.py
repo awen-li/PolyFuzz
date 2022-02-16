@@ -24,21 +24,20 @@ class Regression ():
         Headers = DF.columns.values
         X  = np.array (DF.loc[ :, Headers[0]]).reshape(-1, 1) # var-name = DF.columns[0]
         y  = np.array (DF.loc[ :, Headers[1]]) # var-name = DF.columns[1]
-        print (X)
-        print (y)
         
         # Fit regression model
         SVR_RBF    = SVR(kernel="rbf", C=100, gamma=0.1, epsilon=0.1)
         SVR_LINEAR = SVR(kernel="linear", C=100, gamma="auto")
         SCR_POLY   = SVR(kernel="poly", C=100, gamma="auto", degree=3, epsilon=0.1, coef0=1)
 
-        SVRs     = [SVR_RBF, SVR_LINEAR, SCR_POLY]
+        SVRs     = [SVR_RBF, SVR_LINEAR]
         Kernals  = ["RBF", "Linear", "Polynomial"]
         MdColors = ["m", "c", "g"]
 
         lw = 2
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 10), sharey=True)
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10, 5), sharey=True)
         for ix, svr in enumerate(SVRs):
+            print ("\t SVR[%s] on %s\r\n" %(Kernals[ix], self.InputFile))
             axes[ix].plot(
                 X,
                 svr.fit(X, y).predict(X),
@@ -70,14 +69,15 @@ class Regression ():
                 shadow=True,
             )
 
-        fig.text(0.5, 0.04, "data", ha="center", va="center")
-        fig.text(0.06, 0.5, "target", ha="center", va="center", rotation="vertical")
-        fig.suptitle("Support Vector Regression", fontsize=14)
+        fig.text(0.5, 0.04, DF.columns[0], ha="center", va="center")
+        fig.text(0.06, 0.5, DF.columns[1], ha="center", va="center", rotation="vertical")
+        fig.suptitle("SVRs of " + self.InputFile, fontsize=14)
 
-        plt.title("Learning curve of %s" %(self.InputFile))
         plt.savefig(os.path.splitext(self.InputFile)[0] + ".png")
         plt.close()
-
+        print ("\t SVR done on %s\r\n" %(self.InputFile))
+        return
+    
 def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')
     
@@ -96,7 +96,6 @@ def main():
     if opts.filename is None:
         parser.error('filename is missing: required with the main options')
 
-    print ("filename = " + opts.filename + ", regression type = " + opts.type)
     Reg = Regression (opts.filename, opts.type)
     Reg.Run()
 

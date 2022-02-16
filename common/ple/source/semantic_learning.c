@@ -361,6 +361,14 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
 }
 
 
+static inline VOID ExeRegression (BYTE *DataFile)
+{
+    BYTE Cmd[1024];
+    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -t reg %s", DataFile);
+    DEBUG ("ExeRegression -> %s \r\n", Cmd);
+    system (Cmd);
+}
+
 static inline VOID LearningMain (PLServer *plSrv)
 {
     BYTE BlkDir[128];
@@ -394,6 +402,7 @@ static inline VOID LearningMain (PLServer *plSrv)
                 DEBUG ("\t\tVarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
 
                 ///// training proc here
+                ExeRegression (DataFile);
             }
 
             SdBlkNo++;

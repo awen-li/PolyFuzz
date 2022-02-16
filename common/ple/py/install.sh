@@ -17,5 +17,7 @@ PythonInstallPath ()
 	fi
 }
 
+pip install sklearn
+
 PythonPath=$(PythonInstallPath)
 cp ./regrnl.py $PythonPath/

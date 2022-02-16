@@ -309,6 +309,7 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     BYTE* ID = strstr (SeedPath, "id:");
     assert (ID != NULL);
     strncpy (SdName, ID, 9);
+    SdName[2] = '-';
     SdName[9] = '-';
 
     BYTE* ORG = strstr (SeedPath, "orig:");
@@ -317,10 +318,12 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
         ORG = strstr (SeedPath, "src:");
         assert (ORG != NULL);
         strncpy (SdName+10, ORG, 10);
+        SdName[13] = '-';
     }
     else
     {
         strcat (SdName, ORG);
+        SdName[14] = '-';
     }
 
     return SdName;
@@ -380,7 +383,7 @@ static inline VOID LearningMain (PLServer *plSrv)
         while (SbHdr != NULL)
         {
             SeedBlock *SdBlk = (SeedBlock*)SbHdr->Data;
-            snprintf (BlkDir, sizeof (BlkDir), "%s/BLK:%u-%u", SdName, SdBlk->SIndex, SdBlk->Length);
+            snprintf (BlkDir, sizeof (BlkDir), "%s/BLK-%u-%u", SdName, SdBlk->SIndex, SdBlk->Length);
             MakeDir (BlkDir);
             DEBUG ("\t[%u]%s\r\n", SdBlkNo, BlkDir);
 

@@ -41,7 +41,9 @@ int main(int argc, char ** argv)
     }
     else
     {
-        switch (Value)
+        /* y = x*x + 5x + 1*/
+        unsigned FValue = Value *Value + 5*Value - 100;
+        switch (FValue)
         {
             case 0:
             {

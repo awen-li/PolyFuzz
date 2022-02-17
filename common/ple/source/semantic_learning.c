@@ -214,7 +214,7 @@ static inline VOID AddBrVarKey (PLServer *plSrv, DWORD Key)
 
 
 
-static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov)
+static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWORD QItr)
 {    
     DbReq Req;
     DbAck Ack;
@@ -236,14 +236,21 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov)
     }
 
     BrVariable *BrVal = (BrVariable*)(Ack.pDataAddr);
-    DWORD Index = BrVal->ValNum % FZ_SAMPLE_NUM;
+
+    while (BrVal->ValIndex < QItr)
+    {
+        BrVal->ValIndex++;
+    }
     
     BrVal->Key  = Key;
     BrVal->Type = Ov->Type;
-    BrVal->Value [Index] = Ov->Value;
+    BrVal->Value [BrVal->ValIndex] = Ov->Value;
+    BrVal->ValideTag[BrVal->ValIndex] = TRUE;
+    BrVal->ValIndex++;
+    
     BrVal->ValNum++;
 
-    DEBUG ("AddBrVariable ->[%u/%u][%u]Key:%s, Value:%u\r\n", Index, (DWORD)BrVal->ValNum, Key, SKey, (DWORD)Ov->Value);
+    DEBUG ("AddBrVariable ->[%u/%u][%u]Key:%s, Value:%u\r\n", (DWORD)BrVal->ValNum, (DWORD)BrVal->ValIndex, Key, SKey, (DWORD)Ov->Value);
     
     AddBrVarKey (plSrv, Key);
     
@@ -272,7 +279,7 @@ void* DECollect (void *Para)
     PLServer *plSrv = (PLServer*)Para;
 
     DWORD QSize = QueueSize ();
-    DWORD Num = 0;
+    DWORD QItr  = 0;
     while (plSrv->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
@@ -282,16 +289,24 @@ void* DECollect (void *Para)
             continue;
         }
 
-        ObjValue *OV = (ObjValue *)QN->Buf;
+        if (QN->TrcKey == TARGET_EXIT_KEY)
+        {
+            QItr ++;
+            DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x target exit and turn to next iteration.... \r\n", QItr, QSize, QN->TrcKey);
+        }
+        else
+        {
+            ObjValue *OV = (ObjValue *)QN->Buf;
 
-        AddBrVariable (plSrv, QN->TrcKey, OV);
+            AddBrVariable (plSrv, QN->TrcKey, OV, QItr);
 
-        //DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
-        //        Num , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
-
+            //DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
+            //        QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
+        }
+        
         OutQueue (QN);
         QSize = QueueSize ();
-        Num ++;
+        
     }
     
     printf ("DECollect loop over.....\r\n");
@@ -359,6 +374,11 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
     fprintf (F, "SDBLK-%u-%u,BrVar-%u\n", SdBlk->SIndex, SdBlk->Length, VarKey);
     for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
     {
+        if (BrVal->ValideTag[Index] != TRUE)
+        {
+            continue;
+        }
+        
         fprintf (F, "%u,%u\n", (DWORD)SdBlk->Value[Index], (DWORD)BrVal->Value[Index]);    
     }
     fclose (F);

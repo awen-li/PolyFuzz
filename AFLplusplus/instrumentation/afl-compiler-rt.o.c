@@ -1446,6 +1446,16 @@ void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Key, uint32_
             QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
 }
 
+void __sanitizer_cov_trace_pc_guard_target_exit () {
+
+    QNode* QN  = InQueue ();
+    QN->TrcKey = TARGET_EXIT_KEY;  /* special key: indicate exit msg */
+    QN->IsReady = 1;
+
+    fprintf(stderr, "QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);
+}
+
+
 
 /* Init callback. Populates instrumentation IDs. Note that we're using
    ID of 0 as a special value to indicate non-instrumented bits. That may

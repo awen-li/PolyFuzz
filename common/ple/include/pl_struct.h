@@ -78,8 +78,12 @@ typedef struct BrVariable
     DWORD Key;
     WORD Type;
     WORD ValNum;
+
+    WORD ValIndex;
+    BYTE Rev[6];
     
     ULONG Value[FZ_SAMPLE_NUM];
+    BYTE  ValideTag[FZ_SAMPLE_NUM];
 }BrVariable;
 
 

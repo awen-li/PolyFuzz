@@ -81,6 +81,7 @@ static const uint64_t SanCtorAndDtorPriority = 2;
 
 const char SanCovTracePCGuardName[] = "__sanitizer_cov_trace_pc_guard";
 const char SanCovTracePCGuardNameDU32[] = "__sanitizer_cov_trace_pc_guard_du32";
+const char SanCovTracePCGuardTargetExit[] = "__sanitizer_cov_trace_pc_guard_target_exit";
 
 const char SanCovTracePCGuardInitName[] = "__sanitizer_cov_trace_pc_guard_init";
 const char SanCov8bitCountersInitName[] = "__sanitizer_cov_8bit_counters_init";
@@ -159,9 +160,59 @@ public:
         Int1Ty = IRB.getInt1Ty();
 
         SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int32Ty, Int32Ty);
+
+        TargetExitFunction = CurM->getOrInsertFunction(SanCovTracePCGuardTargetExit, VoidTy);
     }
 
     ~ModuleDuCov () {
+
+    }
+
+    inline void InjectExit () {
+        set<Instruction *> ExitInsts;
+        
+        /* return in main function */
+        Function *mainFunc = CurM->getFunction("main");
+        if (mainFunc != NULL) {
+
+            BasicBlock &termbBlock = CurFunc->back();
+            Instruction *retInst   = termbBlock.getTerminator();
+            if (isa<ReturnInst>(retInst))
+            {
+                ExitInsts.insert (retInst);
+            }
+        }
+
+        /* exit() in all functions */
+        for (auto &BB : *CurFunc) 
+        {    
+            for (auto &IN : BB) 
+            {
+                Instruction *Inst = &IN;
+                CallInst *Ci = dyn_cast<CallInst>(Inst);
+                if (Ci == NULL)
+                {
+                    continue;
+                }
+
+                Function *CalledFunc = Ci->getCalledFunction();
+                if (CalledFunc == NULL || !CalledFunc->hasName())
+                {
+                    continue;
+                }
+                
+                if (CalledFunc->getName().str() == "exit") 
+                {
+                    ExitInsts.insert(Inst);
+                }     
+            }  
+        }
+
+        for (auto it = ExitInsts.begin(); it != ExitInsts.end(); ++it) 
+        {
+            Instruction *Inst = *it;
+            CallInst::Create(TargetExitFunction, "", Inst);
+        }
 
     }
 
@@ -325,6 +376,8 @@ public:
                 DB_SHOWINST (__LINE__, *CI);
             }
         }
+
+        InjectExit ();
         return;
     }
 
@@ -342,6 +395,7 @@ private:
          *Int16Ty, *Int8Ty, *Int8PtrTy, *Int1Ty, *Int1PtrTy;
 
     DenseMap<int, FunctionCallee> SanCovTracePCGuardDuMap;
+    FunctionCallee TargetExitFunction;
     
 };
 

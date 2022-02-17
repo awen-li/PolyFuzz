@@ -14,6 +14,7 @@
 extern "C"{
 #endif 
 
+#define TARGET_EXIT_KEY     (0x11223344)
 
 typedef enum
 {

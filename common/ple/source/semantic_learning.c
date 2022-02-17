@@ -581,34 +581,45 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 MsgH = (MsgHdr *)plSrv->SrvSendBuf;
                 MsgH->MsgType = PL_MSG_ITR_BEGIN;
                 MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
-                
+
                 MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
-                while (OFF < CurSeed->SeedLen)
+                MsgItr->SampleNum = FZ_SAMPLE_NUM;
+
+                DWORD BlkLength[] = {1, 2, 4, 8};
+                for (DWORD LIndex = 0; LIndex < sizeof (BlkLength)/sizeof (DWORD); LIndex++)
                 {
-                    MsgItr->SIndex = OFF;
-                    MsgItr->Length = sizeof (DWORD);
-                    MsgItr->SampleNum = FZ_SAMPLE_NUM;
-
-                    /* generate samples by random */
-                    OFF += GenSamplings (plSrv, CurSeed, MsgItr);                 
-                    MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
-
-                    /* before the fuzzing iteration, start the thread for collecting the branch variables */
-                    plSrv->FzExit = FALSE;
-                    pthread_t CbvThrId = CollectBrVariables (plSrv);
-
-                    /* inform the fuzzer */
-                    Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
-
-                    MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
-                    assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[len-%u]: %u\r\n", MsgH->MsgLen, OFF);
-                    plSrv->FzExit = TRUE;
-
-                    VOID *TRet = NULL;
-                    pthread_join (CbvThrId, &TRet);
+                    MsgItr->Length = BlkLength [LIndex];
+                    if (MsgItr->Length > CurSeed->SeedLen)
+                    {
+                        break;
+                    }
                     
+                    OFF = 0;
+                    while (OFF < CurSeed->SeedLen)
+                    {               
+                        MsgItr->SIndex = OFF;
+                        
+                        /* generate samples by random */
+                        OFF += GenSamplings (plSrv, CurSeed, MsgItr);                 
+                        MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
+
+                        /* before the fuzzing iteration, start the thread for collecting the branch variables */
+                        plSrv->FzExit = FALSE;
+                        pthread_t CbvThrId = CollectBrVariables (plSrv);
+
+                        /* inform the fuzzer */
+                        Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
+                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[len-%u]: %u[%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+
+                        MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
+                        assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
+                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[len-%u]: %u[%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+                        plSrv->FzExit = TRUE;
+
+                        VOID *TRet = NULL;
+                        pthread_join (CbvThrId, &TRet);
+                        
+                    }
                 }
                 
                 SrvState = SRV_S_ITE;

@@ -39,6 +39,7 @@ typedef enum
     VT_DICT   = 18,
     VT_SET    = 19,
     VT_OBJ    = 20,
+    VT_UNKNOWN = 255,
 }ValueType;
 
 

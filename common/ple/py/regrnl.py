@@ -21,26 +21,29 @@ class Regression ():
 
     def Run (self):
         DF = pd.read_csv(self.InputFile, header=0)
+        DF = DF.sort_values(by=[DF.columns[0]])
+        #print (DF)
         Headers = DF.columns.values
         X  = np.array (DF.loc[ :, Headers[0]]).reshape(-1, 1) # var-name = DF.columns[0]
         y  = np.array (DF.loc[ :, Headers[1]]) # var-name = DF.columns[1]
         
         # Fit regression model
-        SVR_RBF    = SVR(kernel="rbf", C=100, gamma=0.1, epsilon=0.1)
-        SVR_LINEAR = SVR(kernel="linear", C=100, gamma="auto")
-        SCR_POLY   = SVR(kernel="poly", C=100, gamma="auto", degree=3, epsilon=0.1, coef0=1)
+        SVR_RBF    = SVR(kernel="rbf", C=5000)
+        SCR_POLY   = SVR(kernel="poly", coef0=3)
+        SVR_LINEAR = SVR(kernel="linear")
+        SVR_SIG    = SVR(kernel='sigmoid', C=1000, coef0=3)
 
-        SVRs     = [SVR_RBF, SVR_LINEAR]
-        Kernals  = ["RBF", "Linear", "Polynomial"]
-        MdColors = ["m", "c", "g"]
+        SVRs     = [SVR_RBF, SCR_POLY, SVR_LINEAR, SVR_SIG]
+        Kernals  = ["RBF", "Polynomial", "Linear", "Sigmoid"]
+        MdColors = ["m", "c", "g", "b"]
 
         lw = 2
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10, 5), sharey=True)
+        fig, axes = plt.subplots(nrows=1, ncols=len(SVRs), figsize=(14, 6), sharey=True)
         for ix, svr in enumerate(SVRs):
-            print ("\t SVR[%s] on %s\r\n" %(Kernals[ix], self.InputFile))
+            Preds = svr.fit(X, y).predict(X)
             axes[ix].plot(
                 X,
-                svr.fit(X, y).predict(X),
+                Preds,
                 color=MdColors[ix],
                 lw=lw,
                 label="{} model".format(Kernals[ix]),
@@ -51,7 +54,7 @@ class Regression ():
                 facecolor="none",
                 edgecolor=MdColors[ix],
                 s=50,
-                label="{} support vectors".format(Kernals[ix]),
+                label="{} SVs".format(Kernals[ix]),
             )
             axes[ix].scatter(
                 X[np.setdiff1d(np.arange(len(X)), svr.support_)],
@@ -68,6 +71,11 @@ class Regression ():
                 fancybox=True,
                 shadow=True,
             )
+
+            print ("\r\n============================================================================================")
+            print ("\t SVR[%s] on %s\r\n" %(Kernals[ix], self.InputFile))
+            print (y)
+            print (Preds)
 
         fig.text(0.5, 0.04, DF.columns[0], ha="center", va="center")
         fig.text(0.06, 0.5, DF.columns[1], ha="center", va="center", rotation="vertical")

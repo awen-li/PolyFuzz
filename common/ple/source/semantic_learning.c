@@ -456,7 +456,7 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
     DWORD OFF = 0;
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ()%256;
+        ULONG SbVal = random ()%64;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)

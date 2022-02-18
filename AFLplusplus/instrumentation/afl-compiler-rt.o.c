@@ -1427,24 +1427,66 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 }
 
-void __sanitizer_cov_trace_pc_guard_du32 (uint32_t *guard, uint32_t Key, uint32_t Value) {
 
-    if (guard != NULL)
-        __sanitizer_cov_trace_pc_guard__ (guard);
-        
+static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLength, uint64_t Value)
+{
     QNode* QN  = InQueue ();
     QN->TrcKey = Key;
 
     ObjValue *OV = (ObjValue *)QN->Buf;
-    OV->Type   = VT_INT;
     OV->Attr   = 0;
-    OV->Length = sizeof (uint32_t);
+    OV->Length = (uint16_t)ValLength;
     OV->Value  = Value;
+
+    switch (OV->Length)
+    {
+        case 1:  OV->Type = VT_CHAR; break;
+        case 2:  OV->Type = VT_SHORT; break;
+        case 4:  OV->Type = VT_SHORT; break;
+        case 8:  OV->Type = VT_SHORT; break;
+        default: OV->Type = VT_UNKNOWN; break;
+    }
 
     QN->IsReady = 1;
     fprintf(stderr, "QN ----> %p:[key-%u] type-%u, length-%u, Value-%lu\r\n", 
             QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
 }
+
+void __sanitizer_cov_trace_pc_guard_d8 (uint32_t *guard, uint32_t Key, uint8_t Value) {
+
+    if (guard != NULL)
+        __sanitizer_cov_trace_pc_guard__ (guard);
+        
+    sanitizer_cov_trace_into_queue (Key, 1, Value);
+}
+
+
+void __sanitizer_cov_trace_pc_guard_d16 (uint32_t *guard, uint32_t Key, uint16_t Value) {
+
+    if (guard != NULL)
+        __sanitizer_cov_trace_pc_guard__ (guard);
+        
+    sanitizer_cov_trace_into_queue (Key, 2, Value);
+}
+
+
+void __sanitizer_cov_trace_pc_guard_d32 (uint32_t *guard, uint32_t Key, uint32_t Value) {
+
+    if (guard != NULL)
+        __sanitizer_cov_trace_pc_guard__ (guard);
+        
+    sanitizer_cov_trace_into_queue (Key, 4, Value);
+}
+
+
+void __sanitizer_cov_trace_pc_guard_d64 (uint32_t *guard, uint32_t Key, uint8_t Value) {
+
+    if (guard != NULL)
+        __sanitizer_cov_trace_pc_guard__ (guard);
+        
+    sanitizer_cov_trace_into_queue (Key, 8, Value); 
+}
+
 
 void __sanitizer_cov_trace_pc_guard_target_exit () {
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned Getpasswd (unsigned Key);
+unsigned Getpasswd (unsigned char Key);
 
 
 int main(int argc, char ** argv) 
@@ -32,7 +32,7 @@ int main(int argc, char ** argv)
     fread (&Input, 1, sizeof (Input), f);
     fclose (f);
     
-    int Value = Input;
+    unsigned char Value = (unsigned char)Input;
     unsigned Pwd = 0;
 
     if (Value >= 4 && Value <= 16)
@@ -62,9 +62,10 @@ int main(int argc, char ** argv)
             }
             default:
             {
-                Pwd = 8;
+                exit (0);
             }
         }
+        
     }
     
     return Pwd;

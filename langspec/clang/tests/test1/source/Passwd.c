@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned Getpasswd (unsigned Key)
+unsigned Getpasswd (unsigned char Key)
 {
     unsigned Pwd;
     switch (Key)

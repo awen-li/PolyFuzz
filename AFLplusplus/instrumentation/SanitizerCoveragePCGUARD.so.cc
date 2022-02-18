@@ -80,8 +80,6 @@ const char SanCovModuleCtorBoolFlagName[] = "sancov.module_ctor_bool_flag";
 static const uint64_t SanCtorAndDtorPriority = 2;
 
 const char SanCovTracePCGuardName[] = "__sanitizer_cov_trace_pc_guard";
-const char SanCovTracePCGuardNameDU32[] = "__sanitizer_cov_trace_pc_guard_du32";
-const char SanCovTracePCGuardTargetExit[] = "__sanitizer_cov_trace_pc_guard_target_exit";
 
 const char SanCovTracePCGuardInitName[] = "__sanitizer_cov_trace_pc_guard_init";
 const char SanCov8bitCountersInitName[] = "__sanitizer_cov_8bit_counters_init";
@@ -159,9 +157,12 @@ public:
         Int8Ty = IRB.getInt8Ty();
         Int1Ty = IRB.getInt1Ty();
 
-        SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction(SanCovTracePCGuardNameDU32, VoidTy, Int32PtrTy, Int32Ty, Int32Ty);
+        SanCovTracePCGuardDuMap[8] = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_d8",   VoidTy, Int32PtrTy, Int32Ty, Int8Ty);
+        SanCovTracePCGuardDuMap[16] = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_d16", VoidTy, Int32PtrTy, Int32Ty, Int16Ty);
+        SanCovTracePCGuardDuMap[32] = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_d32", VoidTy, Int32PtrTy, Int32Ty, Int32Ty);
+        SanCovTracePCGuardDuMap[64] = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_d64", VoidTy, Int32PtrTy, Int32Ty, Int64Ty);
 
-        TargetExitFunction = CurM->getOrInsertFunction(SanCovTracePCGuardTargetExit, VoidTy);
+        TargetExitFunction = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_target_exit", VoidTy);
     }
 
     ~ModuleDuCov () {

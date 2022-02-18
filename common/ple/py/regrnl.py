@@ -34,7 +34,7 @@ def Load (InputFile):
 
     return X_Name, y_Name, X_Train, y_Train, X_Test, y_Test
 
-class Regression (metaclass=abc.ABCMeta):
+class RegrBase (metaclass=abc.ABCMeta):
     def __init__ (self, Kernal):
         self.Kernal    = Kernal
         self.Model     = None
@@ -42,28 +42,87 @@ class Regression (metaclass=abc.ABCMeta):
 
     def SVs (self):
         return self.Model.support_
+
+    @abc.abstractmethod
+    def Fit (self):
+        print ("[RegrBase] start to fit...")
+        return 0
     
     def Predict (self, X):
         return self.FitModel.predict (X)
         
 
-class RbfReg (Regression):
-    def __init__ (self, Kernal, X_Train, y_Train, C=100):
+class RbfReg (RegrBase):
+    def __init__ (self, Kernal):
         super(RbfReg, self).__init__(Kernal)
-        self.Model    = SVR(kernel="rbf", C=C)
-        self.FitModel = self.Model.fit (X_Train, y_Train)
+        self.Model    = None
+        self.FitModel = None
+        self.FitC     = None
 
-class PolyReg (Regression):
-    def __init__ (self, Kernal, X_Train, y_Train, Coef0=3):
+    def Fit (self, X_Train, y_Train, X_Test, y_Test):
+        CList = [0.01, 0.1, 0.3, 0.5, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
+        Model = None
+        FitModel = None
+        Distance = 4294967200
+        for C in CList:
+            Model    = SVR(kernel="rbf", C=C)
+            FitModel = Model.fit (X_Train, y_Train)
+            Predicts = FitModel.predict (X_Test)
+            
+            CurDis   = 0
+            for ix in range(len (y_Test)):
+                CurDis += abs (y_Test[ix] - Predicts[ix])
+            if CurDis < Distance:
+                self.Model    = Model
+                self.FitModel = FitModel
+                self.FitC     = C
+                Distance = CurDis
+        print ("[RbfReg] FitC = " + str (self.FitC) + ", MinDis = " + str (Distance))
+        return Distance
+
+class PolyReg (RegrBase):
+    def __init__ (self, Kernal, Coef0=3):
         super(PolyReg, self).__init__(Kernal)
-        self.Model    = SVR(kernel="poly", coef0=Coef0)
-        self.FitModel = self.Model.fit (X_Train, y_Train)
+        self.Model    = None
+        self.FitModel = None
+        self.FitCoef0 = None
 
-class LinearReg (Regression):
-    def __init__ (self,     Kernal, X_Train, y_Train):
+    def Fit (self, X_Train, y_Train, X_Test, y_Test):
+        Coef0List = [0.01, 0.1, 0.3, 0.5, 0.8, 1, 3, 5, 8, 10, 100]
+        Model = None
+        FitModel = None
+        Distance = 4294967200
+        for Coef0 in Coef0List:
+            Model    = SVR(kernel="poly", coef0=Coef0)
+            FitModel = Model.fit (X_Train, y_Train)
+            Predicts = FitModel.predict (X_Test)
+            
+            CurDis   = 0
+            for ix in range(len (y_Test)):
+                CurDis += abs (y_Test[ix] - Predicts[ix])
+            if CurDis < Distance:
+                self.Model    = Model
+                self.FitModel = FitModel
+                self.FitCoef0 = Coef0
+                Distance = CurDis
+        print ("[PolyReg] FitCoef0 = " + str (self.FitCoef0) + ", MinDis = " + str (Distance))
+        return Distance
+
+class LinearReg (RegrBase):
+    def __init__ (self,     Kernal):
         super(LinearReg, self).__init__(Kernal)
+        self.Model    = None
+        self.FitModel = None
+
+    def Fit (self, X_Train, y_Train, X_Test, y_Test):
         self.Model    = SVR(kernel="linear")
         self.FitModel = self.Model.fit (X_Train, y_Train)
+        Distance = 0
+        Predicts = self.FitModel.predict (X_Test)
+        for ix in range(len (y_Test)):
+            Distance += abs (y_Test[ix] - Predicts[ix])
+        print ("[LinearReg] MinDis = " + str (Distance))
+        return Distance
 
 
 def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
@@ -132,11 +191,15 @@ def RegMain (InputFile):
     if len (X_Train) == 0 or len (X_Test) == 0:
         return
     
-    SvrRbf    = RbfReg ("Rbf", X_Train, y_Train, 1000)
-    SvrPoly   = PolyReg ("Polynomial", X_Train, y_Train, 3)
-    SvrLinear = LinearReg ("Linear", X_Train, y_Train)
+    SvrRbf    = RbfReg ("Rbf")
+    SvrPoly   = PolyReg ("Polynomial")
+    SvrLinear = LinearReg ("Linear")
+    
+    SVRs = [SvrRbf, SvrPoly, SvrLinear]
+    for svr in SVRs:
+        svr.Fit (X_Train, y_Train, X_Test, y_Test)
 
-    Plot (InputFile, [SvrRbf, SvrPoly, SvrLinear], X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
+    Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
     
 def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')

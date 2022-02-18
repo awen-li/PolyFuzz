@@ -61,7 +61,7 @@ class PolyReg (Regression):
 
 class LinearReg (Regression):
     def __init__ (self,     Kernal, X_Train, y_Train):
-        super(PolyReg, self).__init__(Kernal)
+        super(LinearReg, self).__init__(Kernal)
         self.Model    = SVR(kernel="linear")
         self.FitModel = self.Model.fit (X_Train, y_Train)
 
@@ -129,10 +129,12 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
 
 def RegMain (InputFile):
     X_Name, y_Name, X_Train, y_Train, X_Test, y_Test = Load (InputFile)
+    if len (X_Train) == 0 or len (X_Test) == 0:
+        return
     
-    SvrRbf    = RbfReg ("Rbf", X_Train, y_Train, 5000)
-    SvrPoly   = RbfReg ("Polynomial", X_Train, y_Train, 3)
-    SvrLinear = RbfReg ("Linear", X_Train, y_Train)
+    SvrRbf    = RbfReg ("Rbf", X_Train, y_Train, 1000)
+    SvrPoly   = PolyReg ("Polynomial", X_Train, y_Train, 3)
+    SvrLinear = LinearReg ("Linear", X_Train, y_Train)
 
     Plot (InputFile, [SvrRbf, SvrPoly, SvrLinear], X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
     

@@ -1479,7 +1479,7 @@ void __sanitizer_cov_trace_pc_guard_d32 (uint32_t *guard, uint32_t Key, uint32_t
 }
 
 
-void __sanitizer_cov_trace_pc_guard_d64 (uint32_t *guard, uint32_t Key, uint8_t Value) {
+void __sanitizer_cov_trace_pc_guard_d64 (uint32_t *guard, uint32_t Key, uint64_t Value) {
 
     if (guard != NULL)
         __sanitizer_cov_trace_pc_guard__ (guard);

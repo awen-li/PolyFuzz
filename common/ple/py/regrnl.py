@@ -35,10 +35,20 @@ def Load (InputFile):
     return X_Name, y_Name, X_Train, y_Train, X_Test, y_Test
 
 class RegrBase (metaclass=abc.ABCMeta):
+
+    CList = [0.01, 0.1, 0.3, 0.5, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
+    EpsnList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    GammaList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    Coef0List = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 3, 5, 8, 10, 20, 50, 100]
+    
     def __init__ (self, Kernal):
         self.Kernal    = Kernal
         self.Model     = None
         self.FitModel  = None
+        self.FitC     = 0
+        self.FitEpsn  = 0
+        self.FitGamma = 0
+        self.FitCoef0 = 0
 
     def SVs (self):
         return self.Model.support_
@@ -57,55 +67,62 @@ class RbfReg (RegrBase):
         super(RbfReg, self).__init__(Kernal)
         self.Model    = None
         self.FitModel = None
-        self.FitC     = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
-        CList = [0.01, 0.1, 0.3, 0.5, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
-        Model = None
-        FitModel = None
         Distance = 4294967200
-        for C in CList:
-            Model    = SVR(kernel="rbf", C=C)
-            FitModel = Model.fit (X_Train, y_Train)
-            Predicts = FitModel.predict (X_Test)
-            
-            CurDis   = 0
-            for ix in range(len (y_Test)):
-                CurDis += abs (y_Test[ix] - Predicts[ix])
-            if CurDis < Distance:
-                self.Model    = Model
-                self.FitModel = FitModel
-                self.FitC     = C
-                Distance = CurDis
-        print ("[RbfReg] FitC = " + str (self.FitC) + ", MinDis = " + str (Distance))
+        for C in RegrBase.CList:
+            for epsilon in RegrBase.EpsnList:
+                for gamma in RegrBase.GammaList:            
+                    Model    = SVR(kernel="rbf", C=C, gamma=gamma, epsilon=epsilon)
+                    FitModel = Model.fit (X_Train, y_Train)
+                    Predicts = FitModel.predict (X_Test)
+                    
+                    CurDis   = 0
+                    for ix in range(len (y_Test)):
+                        CurDis += abs (y_Test[ix] - Predicts[ix])
+                    
+                    if CurDis < Distance:
+                        self.Model    = Model
+                        self.FitModel = FitModel
+                        
+                        self.FitC     = C
+                        self.FitEpsn  = epsilon
+                        self.FitGamma = gamma
+                        
+                        Distance = CurDis
+        
+        print ("[RbfReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, self.FitGamma))
         return Distance
 
 class PolyReg (RegrBase):
-    def __init__ (self, Kernal, Coef0=3):
+    def __init__ (self, Kernal):
         super(PolyReg, self).__init__(Kernal)
         self.Model    = None
         self.FitModel = None
         self.FitCoef0 = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
-        Coef0List = [0.01, 0.1, 0.3, 0.5, 0.8, 1, 3, 5, 8, 10, 100]
-        Model = None
-        FitModel = None
         Distance = 4294967200
-        for Coef0 in Coef0List:
-            Model    = SVR(kernel="poly", coef0=Coef0)
-            FitModel = Model.fit (X_Train, y_Train)
-            Predicts = FitModel.predict (X_Test)
-            
-            CurDis   = 0
-            for ix in range(len (y_Test)):
-                CurDis += abs (y_Test[ix] - Predicts[ix])
-            if CurDis < Distance:
-                self.Model    = Model
-                self.FitModel = FitModel
-                self.FitCoef0 = Coef0
-                Distance = CurDis
-        print ("[PolyReg] FitCoef0 = " + str (self.FitCoef0) + ", MinDis = " + str (Distance))
+        for Coef0 in RegrBase.Coef0List:
+            for epsilon in RegrBase.EpsnList:
+                Model    = SVR(kernel="poly", epsilon=epsilon, coef0=Coef0)
+                FitModel = Model.fit (X_Train, y_Train)
+                Predicts = FitModel.predict (X_Test)
+                        
+                CurDis   = 0
+                for ix in range(len (y_Test)):
+                    CurDis += abs (y_Test[ix] - Predicts[ix])
+                        
+                if CurDis < Distance:
+                    self.Model    = Model
+                    self.FitModel = FitModel
+                            
+                    self.FitCoef0 = Coef0
+                    self.FitEpsn  = epsilon
+
+                    Distance = CurDis
+        
+        print ("[PolyReg]Min-Dis: %d, FitCoef0:%f, FitEpsn:%f" %(Distance, self.FitCoef0, self.FitEpsn))
         return Distance
 
 class LinearReg (RegrBase):
@@ -115,13 +132,29 @@ class LinearReg (RegrBase):
         self.FitModel = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
-        self.Model    = SVR(kernel="linear")
-        self.FitModel = self.Model.fit (X_Train, y_Train)
-        Distance = 0
-        Predicts = self.FitModel.predict (X_Test)
-        for ix in range(len (y_Test)):
-            Distance += abs (y_Test[ix] - Predicts[ix])
-        print ("[LinearReg] MinDis = " + str (Distance))
+        Distance = 4294967200
+        for C in RegrBase.CList:
+            for epsilon in RegrBase.EpsnList:
+                for gamma in RegrBase.GammaList:
+                    Model    = SVR(kernel="linear", C=C, gamma=gamma, epsilon=epsilon)
+                    FitModel = Model.fit (X_Train, y_Train)
+                    Predicts = FitModel.predict (X_Test)
+
+                    CurDis   = 0
+                    for ix in range(len (y_Test)):
+                        CurDis += abs (y_Test[ix] - Predicts[ix])
+                        
+                    if CurDis < Distance:
+                        self.Model    = Model
+                        self.FitModel = FitModel
+                        
+                        self.FitC     = C
+                        self.FitEpsn  = epsilon
+                        self.FitGamma = gamma
+                        
+                        Distance = CurDis
+
+        print ("[LinearReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, self.FitGamma))
         return Distance
 
 

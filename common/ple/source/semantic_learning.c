@@ -445,7 +445,7 @@ static inline VOID LearningMain (PLServer *plSrv)
     return;
 }
 
-static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
+static inline VOID GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
 {
     SeedBlock* SBlk = AddSeedBlock (plSrv, CurSeed, MsgItr);
     assert (SBlk != NULL);
@@ -453,7 +453,6 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
     SBlk->Length = MsgItr->Length;
     plSrv->CurSdBlk = SBlk;
     
-    DWORD OFF = 0;
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
         ULONG SbVal = random ()%64;
@@ -465,28 +464,24 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
             {
                 BYTE *ValHdr = (BYTE*) (MsgItr + 1);
                 ValHdr [Index] = (BYTE)SbVal;
-                OFF += sizeof (BYTE);
                 break;
             }
             case 2:
             {
                 WORD *ValHdr = (WORD*) (MsgItr + 1);
                 ValHdr [Index] = (WORD)SbVal;
-                OFF += sizeof (WORD);
                 break;
             }
             case 4:
             {
                 DWORD *ValHdr = (DWORD*) (MsgItr + 1);
                 ValHdr [Index] = (DWORD)SbVal;
-                OFF += sizeof (DWORD);
                 break;
             }
             case 8:
             {
                 ULONG *ValHdr = (ULONG*) (MsgItr + 1);
                 ValHdr [Index] = (ULONG)SbVal;
-                OFF += sizeof (ULONG);
                 break;
             }
             default:
@@ -498,7 +493,7 @@ static inline DWORD GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
         SBlk->Value [Index] = SbVal;
     }
 
-    return OFF;
+    return;
 }
 
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
@@ -600,7 +595,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                         MsgItr->SIndex = OFF;
                         
                         /* generate samples by random */
-                        OFF += GenSamplings (plSrv, CurSeed, MsgItr);                 
+                        GenSamplings (plSrv, CurSeed, MsgItr);
+                        OFF += MsgItr->Length;
                         MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
 
                         /* before the fuzzing iteration, start the thread for collecting the branch variables */

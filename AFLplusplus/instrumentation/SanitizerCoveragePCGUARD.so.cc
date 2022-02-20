@@ -254,7 +254,15 @@ public:
         return It->second;
     }
 
-    inline void CmpPredProc (ICmpInst::Predicate pred)
+    inline void DumpBrVals (unsigned Key, char* Type, unsigned Predict, Value *Val)
+    {
+        FILE *F = fopen ("branch_vars.bv", "a+");
+        assert (F != NULL);
+        fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, Val);
+        fclose (F);
+    }
+
+    inline void CmpProc (Value* BrVal, ICmpInst::Predicate pred, Value* CmpVal)
     {
         switch (pred)
         {
@@ -290,6 +298,19 @@ public:
         }
     }
 
+    inline void SwitchProc (Instruction *St)
+    {
+        unsigned ix = 1;
+        unsigned OpNum = St->getNumOperands ();  
+        while (ix < OpNum) 
+        {
+             Value *Use = St->getOperand(ix);
+
+             ix++;
+        }      
+        return;
+    }
+
     inline void CollectDus () {
 
         T_InstSet BrInstSet;
@@ -315,41 +336,40 @@ public:
         for (auto It = BrInstSet.begin (); It != BrInstSet.end (); It++)
         {
             Instruction *Inst = *It;
-            errs ()<<*Inst<<"\r\n";
-            unsigned OpNum = Inst->getNumOperands ();  
-            while (OpNum > 0) 
-            {
-                OpNum--;
-                Value *Use = Inst->getOperand(OpNum);
-                if (!Use->getType()->isIntegerTy()) continue;
-                if (isa<ConstantInt>(Use))
-                {
-                    if (ICmpInst *CMP = dyn_cast<ICmpInst>(Inst))
-                    {
-                        ICmpInst::Predicate pred = CMP->getPredicate ();
-                        errs()<<"\t --> CMP-Predicate: "<<pred<<"\r\n";
-                        errs()<<"\t --> CMPConstant: "<<*Use<<"\r\n";
-                    }
-                    else
-                    {
-                        errs()<<"\t --> SwitchConstant: "<<*Use<<"\r\n";
-                    }
-    
-                    continue;
-                }
-                else
-                {
-                    BrValueSet.insert (Use);
 
-                    /* check use of formal arguments */
-                    for (auto It = CurFunc->arg_begin(); It != CurFunc->arg_end(); It++) {
-                        Value *Arg = &(*It);
-                        if (Arg == Use) {
-                           BrDefInst2PosInst [Inst] = Inst;
-                           BrInst2FormalUse[Inst] = Use;
-                           errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
-                        }
-                    }
+            Value *BrVar = NULL;
+            Value *BrConst = NULL;
+
+            if (ICmpInst *CMP = dyn_cast<ICmpInst>(Inst)) {
+                Value *Var = Inst->getOperand(0);
+                if (isa<ConstantInt>(Var)) {
+                    BrConst = Var;
+                    BrVar   = Inst->getOperand(1);
+                }
+                else {
+                    BrVar   = Var;
+                    BrConst = Inst->getOperand(1);
+                }
+                if (!BrVar->getType()->isIntegerTy()) continue;
+                
+                //CmpProc (BrVar, CMP->getPredicate (), BrConst);
+            }
+            else {
+                BrVar = Inst->getOperand(0);
+                if (!BrVar->getType()->isIntegerTy()) continue;
+                
+                //SwitchProc (Inst);
+            }
+
+            BrValueSet.insert (BrVar);
+
+            /* check use of formal arguments */
+            for (auto It = CurFunc->arg_begin(); It != CurFunc->arg_end(); It++) {
+                Value *Arg = &(*It);
+                if (Arg == BrVar) {
+                   BrDefInst2PosInst [Inst] = Inst;
+                   BrInst2FormalUse[Inst] = BrVar;
+                   errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
                 }
             }
         }

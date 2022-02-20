@@ -254,6 +254,42 @@ public:
         return It->second;
     }
 
+    inline void CmpPredProc (ICmpInst::Predicate pred)
+    {
+        switch (pred)
+        {
+            case ICmpInst::FCMP_OEQ:   /// = 1 < 0 0 0 1    True if ordered and equal
+            case ICmpInst::FCMP_OGT:   /// = 2,   ///< 0 0 1 0    True if ordered and greater than
+            case ICmpInst::FCMP_OGE:   /// = 3,   ///< 0 0 1 1    True if ordered and greater than or equal
+            case ICmpInst::FCMP_OLT:   /// = 4,   ///< 0 1 0 0    True if ordered and less than
+            case ICmpInst::FCMP_OLE:   /// = 5,   ///< 0 1 0 1    True if ordered and less than or equal
+            case ICmpInst::FCMP_ONE:   /// = 6,   ///< 0 1 1 0    True if ordered and operands are unequal
+            case ICmpInst::FCMP_ORD:   /// = 7,   ///< 0 1 1 1    True if ordered (no nans)
+            case ICmpInst::FCMP_UNO:   /// = 8,   ///< 1 0 0 0    True if unordered: isnan(X) | isnan(Y)
+            case ICmpInst::FCMP_UEQ:   /// = 9,   ///< 1 0 0 1    True if unordered or equal
+            case ICmpInst::FCMP_UGT:   /// = 10,  ///< 1 0 1 0    True if unordered or greater than
+            case ICmpInst::FCMP_UGE:   /// = 11,  ///< 1 0 1 1    True if unordered, greater than, or equal
+            case ICmpInst::FCMP_ULT:   /// = 12,  ///< 1 1 0 0    True if unordered or less than
+            case ICmpInst::FCMP_ULE:   /// = 13,  ///< 1 1 0 1    True if unordered, less than, or equal
+            case ICmpInst::FCMP_UNE:   /// = 14,  ///< 1 1 1 0    True if unordered or not equal
+            case ICmpInst::FCMP_TRUE:  /// = 15, ///< 1 1 1 1    Always true (always folded)
+            case ICmpInst::ICMP_EQ:    /// = 32,  ///< equal
+            case ICmpInst::ICMP_NE:    /// = 33,  ///< not equal
+            case ICmpInst::ICMP_UGT:   /// = 34, ///< unsigned greater than
+            case ICmpInst::ICMP_UGE:   /// = 35, ///< unsigned greater or equal
+            case ICmpInst::ICMP_ULT:   /// = 36, ///< unsigned less than
+            case ICmpInst::ICMP_ULE:   /// = 37, ///< unsigned less or equal
+            case ICmpInst::ICMP_SGT:   /// = 38, ///< signed greater than
+            case ICmpInst::ICMP_SGE:   /// = 39, ///< signed greater or equal
+            case ICmpInst::ICMP_SLT:   /// = 40, ///< signed less than
+            case ICmpInst::ICMP_SLE:   /// = 41, ///< signed less or equal
+            default:
+            {
+                return;
+            }
+        }
+    }
+
     inline void CollectDus () {
 
         T_InstSet BrInstSet;
@@ -279,24 +315,40 @@ public:
         for (auto It = BrInstSet.begin (); It != BrInstSet.end (); It++)
         {
             Instruction *Inst = *It;
-
+            errs ()<<*Inst<<"\r\n";
             unsigned OpNum = Inst->getNumOperands ();  
             while (OpNum > 0) 
             {
                 OpNum--;
                 Value *Use = Inst->getOperand(OpNum);
                 if (!Use->getType()->isIntegerTy()) continue;
-                if (isa<ConstantInt>(Use)) continue;
+                if (isa<ConstantInt>(Use))
+                {
+                    if (ICmpInst *CMP = dyn_cast<ICmpInst>(Inst))
+                    {
+                        ICmpInst::Predicate pred = CMP->getPredicate ();
+                        errs()<<"\t --> CMP-Predicate: "<<pred<<"\r\n";
+                        errs()<<"\t --> CMPConstant: "<<*Use<<"\r\n";
+                    }
+                    else
+                    {
+                        errs()<<"\t --> SwitchConstant: "<<*Use<<"\r\n";
+                    }
+    
+                    continue;
+                }
+                else
+                {
+                    BrValueSet.insert (Use);
 
-                BrValueSet.insert (Use);
-
-                /* check use of formal arguments */
-                for (auto It = CurFunc->arg_begin(); It != CurFunc->arg_end(); It++) {
-                    Value *Arg = &(*It);
-                    if (Arg == Use) {
-                       BrDefInst2PosInst [Inst] = Inst;
-                       BrInst2FormalUse[Inst] = Use;
-                       errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
+                    /* check use of formal arguments */
+                    for (auto It = CurFunc->arg_begin(); It != CurFunc->arg_end(); It++) {
+                        Value *Arg = &(*It);
+                        if (Arg == Use) {
+                           BrDefInst2PosInst [Inst] = Inst;
+                           BrInst2FormalUse[Inst] = Use;
+                           errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
+                        }
                     }
                 }
             }

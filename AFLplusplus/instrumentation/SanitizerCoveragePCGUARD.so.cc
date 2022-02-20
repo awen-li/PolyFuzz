@@ -265,7 +265,11 @@ public:
             if (ConstantData *CD = dyn_cast<ConstantData>(Val))
             {
                 errs ()<<"Warning: Not IntConstant but ----> "<<*Val<<"\r\n";
-            }  
+            }
+            else
+            {
+                ;
+            }
 
             return;
         }

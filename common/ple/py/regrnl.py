@@ -14,6 +14,47 @@ InitTicks = time.time()
 def TIME_COST (Name):
     print ("@@@@ ", Name, " time cost: ", str (time.time() - InitTicks))
 
+class BrValue ():
+    def __init__ (self, Key, Type, Predict, Value):
+        self.Key     = Key
+        self.Type    = Type
+        self.Pred    = Predict
+        self.Values  = []
+        self.Values.append (Value)
+
+    def AddValue (self, Value):
+        self.Values.append (Value)
+        
+
+class BrVSet ():
+    def __init__ (self, Path="branch_vars.bv"):
+        self.Path = Path
+        self.BrVals = {}
+        
+        self.LoadBrVars ()
+        self.Show ()
+
+    def Show (self):
+        for VKey, BV in self.BrVals.items ():
+           print ("VrKey:%d, Type:%s, Pred:%d, Value: " %(VKey, BV.Type, BV.Pred), end="")
+           print (BV.Values)
+    
+    def LoadBrVars (self):
+        with open(self.Path, 'r', encoding='latin1') as BrVF:
+            for line in BrVF:
+                Item = list (line.split (":"))
+                Key  = int (Item[0])
+                Type = Item[1]
+                Pred = int (Item[2])
+                Value= int (Item[3])
+
+                VrKey = int (str (Key) + str(Pred))
+                Bv = self.BrVals.get (VrKey)
+                if Bv == None:
+                    self.BrVals[VrKey] = BrValue (Key, Type, Pred, Value)
+                else:
+                    Bv.AddValue (Value)
+                
 
 def Load (InputFile):
     DF = pd.read_csv(InputFile, header=0)
@@ -253,6 +294,7 @@ def main():
         parser.error('filename is missing: required with the main options')
 
     RegMain (opts.filename)
+    BVS = BrVSet ()
 
 if __name__ == "__main__":
    main()

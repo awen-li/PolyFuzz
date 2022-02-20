@@ -256,14 +256,29 @@ public:
 
     inline void DumpBrVals (unsigned Key, char* Type, unsigned Predict, Value *Val)
     {
+        unsigned long ConstVal = 0;
+        if (ConstantInt* CI = dyn_cast<ConstantInt>(Val)) {
+            ConstVal = CI->getSExtValue();
+        }
+        else
+        {
+            if (ConstantData *CD = dyn_cast<ConstantData>(Val))
+            {
+                errs ()<<"Warning: Not IntConstant but ----> "<<*Val<<"\r\n";
+            }  
+
+            return;
+        }
+
         FILE *F = fopen ("branch_vars.bv", "a+");
         assert (F != NULL);
-        fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, Val);
+        fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, ConstVal);
         fclose (F);
     }
 
     inline void CmpProc (Value* BrVal, ICmpInst::Predicate pred, Value* CmpVal)
     {
+        unsigned Key = (unsigned)(unsigned long)BrVal;
         switch (pred)
         {
             case ICmpInst::FCMP_OEQ:   /// = 1 < 0 0 0 1    True if ordered and equal
@@ -281,6 +296,9 @@ public:
             case ICmpInst::FCMP_ULE:   /// = 13,  ///< 1 1 0 1    True if unordered, less than, or equal
             case ICmpInst::FCMP_UNE:   /// = 14,  ///< 1 1 1 0    True if unordered or not equal
             case ICmpInst::FCMP_TRUE:  /// = 15, ///< 1 1 1 1    Always true (always folded)
+            {
+                break;
+            }
             case ICmpInst::ICMP_EQ:    /// = 32,  ///< equal
             case ICmpInst::ICMP_NE:    /// = 33,  ///< not equal
             case ICmpInst::ICMP_UGT:   /// = 34, ///< unsigned greater than
@@ -291,6 +309,10 @@ public:
             case ICmpInst::ICMP_SGE:   /// = 39, ///< signed greater or equal
             case ICmpInst::ICMP_SLT:   /// = 40, ///< signed less than
             case ICmpInst::ICMP_SLE:   /// = 41, ///< signed less or equal
+            {
+                DumpBrVals (Key, (char*)"CMP", pred, CmpVal);
+                break;
+            }
             default:
             {
                 return;
@@ -300,13 +322,16 @@ public:
 
     inline void SwitchProc (Instruction *St)
     {
+        unsigned Key = (unsigned)(unsigned long)St->getOperand(0);
+        
         unsigned ix = 1;
-        unsigned OpNum = St->getNumOperands ();  
+        unsigned OpNum = St->getNumOperands ();
         while (ix < OpNum) 
         {
-             Value *Use = St->getOperand(ix);
+            Value *Use = St->getOperand(ix);
 
-             ix++;
+            DumpBrVals (Key, (char*)"SWITCH", 0, Use);
+            ix++;
         }      
         return;
     }
@@ -352,13 +377,13 @@ public:
                 }
                 if (!BrVar->getType()->isIntegerTy()) continue;
                 
-                //CmpProc (BrVar, CMP->getPredicate (), BrConst);
+                CmpProc (BrVar, CMP->getPredicate (), BrConst);
             }
             else {
                 BrVar = Inst->getOperand(0);
                 if (!BrVar->getType()->isIntegerTy()) continue;
                 
-                //SwitchProc (Inst);
+                SwitchProc (Inst);
             }
 
             BrValueSet.insert (BrVar);

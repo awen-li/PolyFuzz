@@ -355,17 +355,25 @@ def RegMain (InputFile):
     Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
     
     print ("@@@ MainSVR is" + str (MainSvr))
+    BlkSeedValues = []
     BVS = BrVSet ()
     for BrKey, BrV in BVS.BrVals.items ():
-        print (BrKey, end=", Predicts: ")
         Values = np.array(BrV.Values).reshape(-1, 1)
-        print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(MainSvr.Predict (Values))))
+        CurPreds = list (MainSvr.Predict (Values))
+        print (CurPreds)
+        BlkSeedValues += CurPreds
+        print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(CurPreds)))
+
+    with open(InputFile+".bs", 'w', encoding='latin1') as BSF:
+        for val in BlkSeedValues:
+            BSF.write (str(val) + "\n")
+            
     
 def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
-    grp.add_argument('-t', '--type', help='regression type')
+    grp.add_argument('-o', '--offset', help='the offset of seed block')
                   
     parser.add_argument('filename', nargs='?', help='input file')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')

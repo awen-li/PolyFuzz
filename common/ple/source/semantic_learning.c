@@ -387,10 +387,10 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
 }
 
 
-static inline VOID ExeRegression (BYTE *DataFile)
+static inline VOID ExeRegression (BYTE *DataFile, SeedBlock *SdBlk)
 {
     BYTE Cmd[1024];
-    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -t reg %s", DataFile);
+    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -o %u %s", SdBlk->SIndex/SdBlk->Length, DataFile);
     DEBUG ("ExeRegression -> %s \r\n", Cmd);
     system (Cmd);
 }
@@ -398,6 +398,7 @@ static inline VOID ExeRegression (BYTE *DataFile)
 static inline VOID LearningMain (PLServer *plSrv)
 {
     BYTE BlkDir[128];
+    BYTE ALignDir[128];
     DWORD SeedNum = QueryDataNum (plSrv->DBSeedHandle);
     DWORD SeedBlkNum = QueryDataNum (plSrv->DBSeedBlockHandle);
     DWORD VarKeyNum  = QueryDataNum (plSrv->DBBrVarKeyHandle);
@@ -417,7 +418,11 @@ static inline VOID LearningMain (PLServer *plSrv)
         while (SbHdr != NULL)
         {
             SeedBlock *SdBlk = (SeedBlock*)SbHdr->Data;
-            snprintf (BlkDir, sizeof (BlkDir), "%s/BLK-%u-%u", SdName, SdBlk->SIndex, SdBlk->Length);
+
+            snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", SdName, SdBlk->Length);
+            MakeDir (ALignDir);
+            
+            snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", SdName, SdBlk->Length, SdBlk->SIndex, SdBlk->Length);
             MakeDir (BlkDir);
             DEBUG ("\t@@@ [%u]%s\r\n", SdBlkNo, BlkDir);
 
@@ -432,7 +437,7 @@ static inline VOID LearningMain (PLServer *plSrv)
                 DEBUG ("\t@@@ VarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
 
                 ///// training proc here
-                ExeRegression (DataFile);
+                ExeRegression (DataFile, SdBlk);
             }
 
             SdBlkNo++;

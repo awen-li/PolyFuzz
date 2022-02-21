@@ -20,24 +20,86 @@ class BrValue ():
         self.Type    = Type
         self.Pred    = Predict
         self.Values  = []
-        self.Values.append (Value)
+        self.Values  += Value
 
     def AddValue (self, Value):
-        self.Values.append (Value)
+        self.Values  += Value
         
 
 class BrVSet ():
+    Pred2Mean = {}
+    Pred2Mean [0]  = "FCMP: Always false"
+    Pred2Mean [1]  = "FCMP: True if ordered and equal"
+    Pred2Mean [2]  = "FCMP: True if ordered and greater than"
+    Pred2Mean [3]  = "FCMP: True if ordered and greater than or equal"
+    Pred2Mean [4]  = "FCMP: True if ordered and less than"
+    Pred2Mean [5]  = "FCMP: True if ordered and less than or equal"
+    Pred2Mean [6]  = "FCMP: True if ordered and operands are unequal"
+    Pred2Mean [7]  = "FCMP: True if ordered (no nans)"
+    Pred2Mean [8]  = "FCMP: True if unordered: isnan(X) | isnan(Y)"
+    Pred2Mean [9]  = "FCMP: True if unordered or equal"
+    Pred2Mean [10] = "FCMP: True if unordered or greater than"
+    Pred2Mean [11] = "FCMP: True if unordered, greater than, or equal"
+    Pred2Mean [12] = "FCMP: True if unordered or less than"
+    Pred2Mean [13] = "FCMP: True if unordered, less than, or equal"
+    Pred2Mean [14] = "FCMP: True if unordered or not equal"
+    Pred2Mean [15] = "FCMP: Always true (always folded)"
+
+    Pred2Mean[32]  = "ICMP: equal"
+    Pred2Mean[33]  = "ICMP: not equal"
+    Pred2Mean[34]  = "ICMP: unsigned greater than"
+    Pred2Mean[35]  = "ICMP: unsigned greater or equal"
+    Pred2Mean[36]  = "ICMP: unsigned less than"
+    Pred2Mean[37]  = "ICMP: unsigned less or equal"
+    Pred2Mean[38]  = "ICMP: signed greater than"
+    Pred2Mean[39]  = "ICMP: signed greater or equal"
+    Pred2Mean[40]  = "ICMP: signed less than"
+    Pred2Mean[41]  = "ICMP: signed less or equal"
+
+    Pred2Mean[255]  = "SWITCH: enum"
+    
     def __init__ (self, Path="branch_vars.bv"):
         self.Path = Path
         self.BrVals = {}
         
         self.LoadBrVars ()
-        self.Show ()
+        #self.Show ()
 
     def Show (self):
         for VKey, BV in self.BrVals.items ():
-           print ("VrKey:%d, Type:%s, Pred:%d, Value: " %(VKey, BV.Type, BV.Pred), end="")
-           print (BV.Values)
+            PredMean = BrVSet.Pred2Mean.get (BV.Pred)
+            if PredMean == None:
+                PredMean = "None"
+            print ("VrKey:%d, Type:%s, Pred:%d[%s], Value: " %(VKey, BV.Type, BV.Pred, PredMean), end="")
+            print (BV.Values)
+
+    def GetValueList (self, Pred, Value):
+        ValueList = []
+        if Pred >= 0 and Pred <= 15:
+            pass
+        else:
+            if Pred == 32:
+               ValueList.append (Value)
+            elif Pred == 33:
+               ValueList.append (Value+1)
+               ValueList.append (Value-1)
+            elif Pred in [34, 38]:
+                ValueList.append (Value+1)
+                ValueList.append (Value+2)
+            elif Pred in [35, 39]:
+                ValueList.append (Value)
+                ValueList.append (Value+2)
+            elif Pred in [36, 40]:
+                ValueList.append (Value-1)
+                ValueList.append (Value-2)
+            elif Pred in [37, 41]:
+                ValueList.append (Value)
+                ValueList.append (Value-1)
+            elif Pred == 255:
+                ValueList.append (Value)
+
+        return ValueList
+                
     
     def LoadBrVars (self):
         with open(self.Path, 'r', encoding='latin1') as BrVF:
@@ -48,12 +110,13 @@ class BrVSet ():
                 Pred = int (Item[2])
                 Value= int (Item[3])
 
+                ValueList = self.GetValueList (Pred, Value)
                 VrKey = int (str (Key) + str(Pred))
                 Bv = self.BrVals.get (VrKey)
-                if Bv == None:
-                    self.BrVals[VrKey] = BrValue (Key, Type, Pred, Value)
+                if Bv == None:      
+                    self.BrVals[VrKey] = BrValue (Key, Type, Pred, ValueList)
                 else:
-                    Bv.AddValue (Value)
+                    Bv.AddValue (ValueList)
                 
 
 def Load (InputFile):
@@ -106,8 +169,6 @@ class RegrBase (metaclass=abc.ABCMeta):
 class RbfReg (RegrBase):
     def __init__ (self, Kernal):
         super(RbfReg, self).__init__(Kernal)
-        self.Model    = None
-        self.FitModel = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
         FitFailNum = 0
@@ -145,8 +206,6 @@ class RbfReg (RegrBase):
 class PolyReg (RegrBase):
     def __init__ (self, Kernal):
         super(PolyReg, self).__init__(Kernal)
-        self.Model    = None
-        self.FitModel = None
         self.FitCoef0 = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
@@ -183,8 +242,6 @@ class PolyReg (RegrBase):
 class LinearReg (RegrBase):
     def __init__ (self,     Kernal):
         super(LinearReg, self).__init__(Kernal)
-        self.Model    = None
-        self.FitModel = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
         FitFailNum = 0
@@ -274,7 +331,6 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
     fig.text(0.5, 0.04, X_Name, ha="center", va="center")
     fig.text(0.06, 0.5, y_Name, ha="center", va="center", rotation="vertical")
     fig.suptitle("SVRs of " + InputFile, fontsize=14)
-
     plt.savefig(os.path.splitext(InputFile)[0] + ".png")
     plt.close()        
 
@@ -289,10 +345,21 @@ def RegMain (InputFile):
     SvrLinear = LinearReg ("Linear")
     
     SVRs = [SvrRbf, SvrPoly, SvrLinear]
+    MainSvr = None
+    Distance = 4294967200
     for svr in SVRs:
-        Distance = svr.Fit (X_Train, y_Train, X_Test, y_Test)
-
+        CurDis = svr.Fit (X_Train, y_Train, X_Test, y_Test)
+        if CurDis < Distance:
+            Distance = CurDis
+            MainSvr  = svr
     Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
+    
+    print ("@@@ MainSVR is" + str (MainSvr))
+    BVS = BrVSet ()
+    for BrKey, BrV in BVS.BrVals.items ():
+        print (BrKey, end=", Predicts: ")
+        Values = np.array(BrV.Values).reshape(-1, 1)
+        print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(MainSvr.Predict (Values))))
     
 def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')
@@ -313,7 +380,6 @@ def main():
         parser.error('filename is missing: required with the main options')
 
     RegMain (opts.filename)
-    BVS = BrVSet ()
 
 if __name__ == "__main__":
    main()

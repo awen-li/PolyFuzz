@@ -285,6 +285,7 @@ public:
         unsigned Key = (unsigned)(unsigned long)BrVal;
         switch (pred)
         {
+            case ICmpInst::FCMP_FALSE: /// = 1 < 0 0 0 1    True if ordered and equal
             case ICmpInst::FCMP_OEQ:   /// = 1 < 0 0 0 1    True if ordered and equal
             case ICmpInst::FCMP_OGT:   /// = 2,   ///< 0 0 1 0    True if ordered and greater than
             case ICmpInst::FCMP_OGE:   /// = 3,   ///< 0 0 1 1    True if ordered and greater than or equal
@@ -334,7 +335,7 @@ public:
         {
             Value *Use = St->getOperand(ix);
 
-            DumpBrVals (Key, (char*)"SWITCH", 0, Use);
+            DumpBrVals (Key, (char*)"SWITCH", 255, Use);
             ix++;
         }      
         return;

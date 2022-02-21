@@ -61,11 +61,11 @@ def Load (InputFile):
     DF = DF.sort_values(by=[DF.columns[0]])
 
     Headers = DF.columns.values
-    X_Name = DF.columns[0]
-    y_Name = DF.columns[1]
+    y_Name = DF.columns[0]
+    X_Name = DF.columns[1]
         
-    X  = np.array (DF.loc[ :, Headers[0]]).reshape(-1, 1)
-    y  = np.array (DF.loc[ :, Headers[1]])
+    y  = np.array (DF.loc[ :, Headers[0]])
+    X  = np.array (DF.loc[ :, Headers[1]]).reshape(-1, 1)
 
     Len = int (len (X) * 0.8)
     X_Train = X [0:Len]
@@ -80,7 +80,7 @@ class RegrBase (metaclass=abc.ABCMeta):
     CList = [0.01, 0.1, 0.3, 0.5, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
     EpsnList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     GammaList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    Coef0List = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 3, 5, 8, 10, 20, 50, 100]
+    Coef0List = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 3, 5, 8, 10]
     
     def __init__ (self, Kernal):
         self.Kernal    = Kernal
@@ -110,13 +110,20 @@ class RbfReg (RegrBase):
         self.FitModel = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
+        FitFailNum = 0
         Distance = 4294967200
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
-                for gamma in RegrBase.GammaList:            
-                    Model    = SVR(kernel="rbf", C=C, gamma=gamma, epsilon=epsilon)
+                for gamma in RegrBase.GammaList:
+                    if FitFailNum >= 3:
+                        break
+                    
+                    Model    = SVR(kernel="rbf", C=C, gamma=gamma, epsilon=epsilon, max_iter=50000000)
                     FitModel = Model.fit (X_Train, y_Train)
                     Predicts = FitModel.predict (X_Test)
+
+                    if Model.fit_status_ == 1:
+                        FitFailNum += 1
                     
                     CurDis   = 0
                     for ix in range(len (y_Test)):
@@ -143,13 +150,20 @@ class PolyReg (RegrBase):
         self.FitCoef0 = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
+        FitFailNum = 0
         Distance = 4294967200
         for Coef0 in RegrBase.Coef0List:
             for epsilon in RegrBase.EpsnList:
-                Model    = SVR(kernel="poly", epsilon=epsilon, coef0=Coef0)
+                if FitFailNum >= 3:
+                    break
+                #print ("PolyReg -> Coef0 = %f, epsilon = %f\r\n " %(Coef0, epsilon))
+                Model    = SVR(kernel="poly", epsilon=epsilon, coef0=Coef0, max_iter=50000000)
                 FitModel = Model.fit (X_Train, y_Train)
                 Predicts = FitModel.predict (X_Test)
-                        
+
+                if Model.fit_status_ == 1:
+                    FitFailNum += 1
+                  
                 CurDis   = 0
                 for ix in range(len (y_Test)):
                     CurDis += abs (y_Test[ix] - Predicts[ix])
@@ -173,29 +187,34 @@ class LinearReg (RegrBase):
         self.FitModel = None
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
+        FitFailNum = 0
         Distance = 4294967200
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
-                for gamma in RegrBase.GammaList:
-                    Model    = SVR(kernel="linear", C=C, gamma=gamma, epsilon=epsilon)
-                    FitModel = Model.fit (X_Train, y_Train)
-                    Predicts = FitModel.predict (X_Test)
+                if FitFailNum >= 3:
+                    break
+                
+                Model    = SVR(kernel="linear", C=C, epsilon=epsilon, max_iter=50000000)
+                FitModel = Model.fit (X_Train, y_Train)
+                Predicts = FitModel.predict (X_Test)
 
-                    CurDis   = 0
-                    for ix in range(len (y_Test)):
-                        CurDis += abs (y_Test[ix] - Predicts[ix])
-                        
-                    if CurDis < Distance:
-                        self.Model    = Model
-                        self.FitModel = FitModel
-                        
-                        self.FitC     = C
-                        self.FitEpsn  = epsilon
-                        self.FitGamma = gamma
-                        
-                        Distance = CurDis
+                if Model.fit_status_ == 1:
+                    FitFailNum += 1
 
-        print ("[LinearReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, self.FitGamma))
+                CurDis   = 0
+                for ix in range(len (y_Test)):
+                    CurDis += abs (y_Test[ix] - Predicts[ix])
+                        
+                if CurDis < Distance:
+                    self.Model    = Model
+                    self.FitModel = FitModel
+                        
+                    self.FitC     = C
+                    self.FitEpsn  = epsilon
+                        
+                    Distance = CurDis
+
+        print ("[LinearReg]Min-Dis: %d, FitC:%f, FitEpsn:%f" %(Distance, self.FitC, self.FitEpsn))
         return Distance
 
 
@@ -271,7 +290,7 @@ def RegMain (InputFile):
     
     SVRs = [SvrRbf, SvrPoly, SvrLinear]
     for svr in SVRs:
-        svr.Fit (X_Train, y_Train, X_Test, y_Test)
+        Distance = svr.Fit (X_Train, y_Train, X_Test, y_Test)
 
     Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
     

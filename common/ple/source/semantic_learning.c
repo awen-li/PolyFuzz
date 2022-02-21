@@ -379,7 +379,7 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
             continue;
         }
         
-        fprintf (F, "%u,%u\n", (DWORD)SdBlk->Value[Index], (DWORD)BrVal->Value[Index]);    
+        fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);    
     }
     fclose (F);
     
@@ -649,9 +649,9 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
     LearningMain (plSrv);
 
     DEBUG ("[ple]SemanticLearning exit....\r\n");
-    DelDb();
     DelQueue ();
     close (plSrv->SockFd);
+    DelDb();
     return;
 }
 

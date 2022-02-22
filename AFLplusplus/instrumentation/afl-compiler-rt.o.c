@@ -1440,10 +1440,10 @@ static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLen
 
     switch (OV->Length)
     {
-        case 1:  OV->Type = VT_CHAR; break;
-        case 2:  OV->Type = VT_SHORT; break;
-        case 4:  OV->Type = VT_SHORT; break;
-        case 8:  OV->Type = VT_SHORT; break;
+        case 1:  OV->Type = VT_CHAR;  break;
+        case 2:  OV->Type = VT_WORD;  break;
+        case 4:  OV->Type = VT_DWORD; break;
+        case 8:  OV->Type = VT_LONG;  break;
         default: OV->Type = VT_UNKNOWN; break;
     }
 

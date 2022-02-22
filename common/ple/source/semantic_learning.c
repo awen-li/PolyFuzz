@@ -300,8 +300,8 @@ void* DECollect (void *Para)
 
             AddBrVariable (plSrv, QN->TrcKey, OV, QItr);
 
-            //DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
-            //        QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
+            DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
+                    QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
         }
         
         OutQueue (QN);
@@ -378,8 +378,34 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
         {
             continue;
         }
-        
-        fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);    
+
+        switch (BrVal->Type)
+        {
+            case VT_CHAR:
+            {
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                break;
+            }
+            case VT_WORD:
+            {
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                break;
+            }
+            case VT_DWORD:
+            {
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                break;
+            }
+            case VT_LONG:
+            {
+                fprintf (F, "%u,%ld\n", (DWORD)SdBlk->Value[Index], (long)BrVal->Value[Index]);
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }  
     }
     fclose (F);
     

@@ -28,8 +28,8 @@ typedef enum
 typedef enum
 {
     VT_CHAR   = 1,
-    VT_SHORT  = 2,
-    VT_INT    = 3,
+    VT_WORD   = 2,
+    VT_DWORD  = 3,
     VT_LONG   = 4,
     VT_FLOAT  = 5,
     VT_DOUBLE = 6,

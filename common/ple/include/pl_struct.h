@@ -105,6 +105,9 @@ typedef struct PLServer
     BYTE SrvSendBuf[SRV_BUF_LEN];
     BYTE SrvRecvBuf[SRV_BUF_LEN];
 
+    DWORD SeedBlock[8];
+    DWORD SeedBlockNum;
+
     DWORD FzExit;
     SeedBlock* CurSdBlk;
 

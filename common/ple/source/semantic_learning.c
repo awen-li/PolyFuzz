@@ -1,5 +1,6 @@
 #include "ctrace/Event.h"
 #include <pthread.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include "db.h"
 #include "Queue.h"
@@ -104,6 +105,13 @@ VOID InitDbTable (PLServer *plSrv)
 
     Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
+
+    memset (plSrv->SeedBlock, 0, sizeof (plSrv->SeedBlock));
+    plSrv->SeedBlockNum = 0;
+    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 1;
+    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 2;
+    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 4;
+    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 8;
 
     return;
 }
@@ -421,10 +429,60 @@ static inline VOID ExeRegression (BYTE *DataFile, SeedBlock *SdBlk)
     system (Cmd);
 }
 
+static inline VOID ReadBsList (BYTE* BsDir, List *BsList)
+{
+    DIR *Dir;
+    struct dirent *SD;
+
+    Dir = opendir((const char*)BsDir);
+    if (Dir == NULL)
+    {
+        return;
+    }
+    
+    while (SD = readdir(Dir))
+    {
+        if (strstr (SD->d_name, ".csv.bs") == NULL)
+        {
+            continue;
+        }
+
+        BYTE *Bsf = strdup (SD->d_name);
+        DEBUG ("### Get BSF[%s]: %s \r\n", BsDir, Bsf);
+        ListInsert(BsList, Bsf);  
+    }
+    
+    closedir (Dir);
+}
+
+static inline VOID GenNewSeeds (PLServer *plSrv, BYTE* SdName, DWORD SeedLen)
+{
+    BYTE BlkDir[256];
+    BYTE ALignDir[256];
+
+    for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
+    {
+        DWORD Align = plSrv->SeedBlock[LIndex];
+        snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", SdName, Align);
+
+        for (DWORD OFF = 0; OFF < SeedLen; OFF += Align)
+        {
+            List BsfList;
+            BsfList.Header = BsfList.Tail = NULL;
+            BsfList.NodeNum = 0;
+            
+            snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", SdName, Align, OFF, Align);
+            ReadBsList (BlkDir, &BsfList);
+        }
+    }
+    
+    return;
+}
+
 static inline VOID LearningMain (PLServer *plSrv)
 {
-    BYTE BlkDir[128];
-    BYTE ALignDir[128];
+    BYTE BlkDir[256];
+    BYTE ALignDir[256];
     DWORD SeedNum = QueryDataNum (plSrv->DBSeedHandle);
     DWORD SeedBlkNum = QueryDataNum (plSrv->DBSeedBlockHandle);
     DWORD VarKeyNum  = QueryDataNum (plSrv->DBBrVarKeyHandle);
@@ -470,6 +528,7 @@ static inline VOID LearningMain (PLServer *plSrv)
             SbHdr = SbHdr->Nxt;
         }
 
+        GenNewSeeds (plSrv, SdName, Sd->SeedLen);
         ListDel(&Sd->SdBlkList, NULL);
     }
 
@@ -486,7 +545,7 @@ static inline VOID GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
     
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ()%64;
+        ULONG SbVal = random ()%256;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)
@@ -611,10 +670,9 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
                 MsgItr->SampleNum = FZ_SAMPLE_NUM;
 
-                DWORD BlkLength[] = {1, 2, 4, 8};
-                for (DWORD LIndex = 0; LIndex < sizeof (BlkLength)/sizeof (DWORD); LIndex++)
+                for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
                 {
-                    MsgItr->Length = BlkLength [LIndex];
+                    MsgItr->Length = plSrv->SeedBlock[LIndex];
                     if (MsgItr->Length > CurSeed->SeedLen)
                     {
                         break;

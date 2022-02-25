@@ -413,15 +413,6 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
     return VarFile;    
 }
 
-
-static inline VOID ExeRegression (BYTE *DataFile, SeedBlock *SdBlk)
-{
-    BYTE Cmd[1024];
-    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -o %u %s", SdBlk->SIndex/SdBlk->Length, DataFile);
-    DEBUG ("ExeRegression -> %s \r\n", Cmd);
-    system (Cmd);
-}
-
 static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
 {
     DIR *Dir;
@@ -447,7 +438,11 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
         ListInsert(FList, Bsf);
     }
     closedir (Dir);
-    assert (FList->NodeNum != 0);
+    
+    if (FList->NodeNum == 0)
+    {
+        return;
+    }
 
     DWORD BaseNum = FList->NodeNum * 256;
     BsList->ValueList = (ULONG *)malloc (BaseNum * sizeof (ULONG));
@@ -582,7 +577,9 @@ static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
         assert (SAList != NULL);
         for (DWORD OFF = 0; OFF < SeedLen; OFF += Align)
         {
-            BsValue *BsList = &SAList [BlkNum++];          
+            BsValue *BsList = &SAList [BlkNum++];
+            BsList->ValueList = NULL;
+            
             snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
             ReadBsList (BlkDir, BsList);
             DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
@@ -602,6 +599,114 @@ static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
         free (CurSeed);
     }
     
+    return;
+}
+
+static inline ThrData* RequirThrRes (PLServer *plSrv)
+{
+    ThrResrc *LnRes = &plSrv->LearnThrs;
+    DWORD RequiredThrs;
+    ThrData* Td = NULL;
+    
+    while (TRUE)
+    {
+        mutex_lock (&LnRes->RnLock);
+        if (LnRes->RequiredNum < plSrv->PLOP.LnThrNum)
+        {
+            Td = LnRes->TD;
+            for (DWORD ix = 0; ix < plSrv->PLOP.LnThrNum; ix++)
+            {
+                if (Td->Status == 0)
+                {
+                    Td->Status = 1;
+                    Td->LearnThrs = (BYTE *)LnRes;
+                    break;
+                }
+            }
+            LnRes->RequiredNum++;
+        }
+        else
+        {
+            Td = NULL;
+        }
+        mutex_unlock (&LnRes->RnLock);
+
+        if (Td != NULL)
+        {
+            break;
+        }
+
+        sleep (1);
+    }
+
+    DEBUG ("@@@ RequirThrRes: RequiredNum=%u \r\n", LnRes->RequiredNum);
+    return Td;
+}
+
+
+static inline VOID RenderThrRes (ThrData* Td)
+{
+    ThrResrc *LnRes = (ThrResrc *)Td->LearnThrs;
+    mutex_lock (&LnRes->RnLock);
+    Td->Status = 0;
+    assert (LnRes->RequiredNum > 0);
+    LnRes->RequiredNum--;
+    mutex_unlock (&LnRes->RnLock);
+    return;
+}
+
+
+static inline VOID WaitForTraining (ThrResrc *LnRes)
+{
+    DWORD RequiredThrs = 0;
+    
+    while (TRUE)
+    {
+        mutex_lock (&LnRes->RnLock);
+        RequiredThrs = LnRes->RequiredNum;
+        mutex_unlock (&LnRes->RnLock);
+
+        if (RequiredThrs == 0)
+        {
+            break;
+        }
+        else
+        {
+            sleep (1);
+        }
+    }
+    return;
+}
+
+
+void* TrainingThread (void *Para)
+{
+    BYTE Cmd[1024];
+
+    ThrData *Td = (ThrData *)Para;
+    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -o %u %s", Td->SdBlk.SIndex/Td->SdBlk.Length, Td->TrainFile);
+    DEBUG ("TrainingThread -> %s \r\n", Cmd);
+    system (Cmd);
+
+    RenderThrRes (Td);
+}
+
+
+static inline VOID StartTraining (PLServer *plSrv, BYTE *DataFile, SeedBlock *SdBlk)
+{
+    ThrData *Td = RequirThrRes(plSrv);
+    strncpy (Td->TrainFile, DataFile, sizeof (Td->TrainFile));
+    memcpy (&Td->SdBlk, SdBlk, sizeof (SeedBlock));
+
+    
+    pthread_t Tid = 0;
+    int Ret = pthread_create(&Tid, NULL, TrainingThread, Td);
+    if (Ret != 0)
+    {
+        fprintf (stderr, "pthread_create for training fail, Ret = %d\r\n", Ret);
+        exit (0);
+    }
+
     return;
 }
 
@@ -648,12 +753,14 @@ static inline VOID LearningMain (PLServer *plSrv)
                 DEBUG ("\t@@@ VarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
 
                 ///// training proc here
-                ExeRegression (DataFile, SdBlk);
+                StartTraining (plSrv, DataFile, SdBlk);
             }
 
             SdBlkNo++;
             SbHdr = SbHdr->Nxt;
         }
+
+        WaitForTraining (&plSrv->LearnThrs);
 
         MakeDir(GEN_SEED);
         GenAllSeeds (plSrv, Sd->SeedLen);
@@ -719,6 +826,11 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
     memcpy (&plSrv->PLOP, PLOP, sizeof (PLOption));
 
+    ThrResrc *LearnThrs = &plSrv->LearnThrs;
+    memset (LearnThrs, 0, sizeof (ThrResrc));
+    mutex_lock_init (&LearnThrs->RnLock);
+    LearnThrs->RequiredNum = 0;
+    
     memset (plSrv->SeedBlock, 0, sizeof (plSrv->SeedBlock));
     plSrv->SeedBlockNum = 0;
     DWORD Bits = plSrv->PLOP.SdPattBits;
@@ -840,7 +952,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                     MsgItr->Length = plSrv->SeedBlock[LIndex];
                     if (MsgItr->Length > CurSeed->SeedLen)
                     {
-                        break;
+                        continue;
                     }
                     
                     OFF = 0;

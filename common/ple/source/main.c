@@ -29,6 +29,11 @@ int main(int argc, char *argv[])
     BYTE *SeedDir   = NULL;
     BYTE *DriverDir = NULL;
     PLOption PLOP   = {0};
+
+    /* default */
+    PLOP.LnThrNum   = 1;
+    PLOP.SdPattBits = 4;
+    PLOP.SdType     = SEED_BINARY;
     
     SDWORD Opt = 0;
     while ((Opt = getopt(argc, argv, "s:d:bp:t:")) > 0) 

@@ -17,6 +17,7 @@
 
 #define FZ_SAMPLE_NUM        (32)
 #define FZ_SEED_NAME_LEN     (512)
+#define MAX_THREAD_NUM       (256)
 #define GEN_SEED             ("gen_seeds")
 
 
@@ -115,9 +116,26 @@ typedef struct PLOption
 }PLOption;
 
 
+typedef struct ThrData
+{
+    BYTE TrainFile[FZ_SEED_NAME_LEN];
+    SeedBlock SdBlk;
+    DWORD Status;
+    BYTE *LearnThrs;
+}ThrData;
+
+typedef struct ThrResrc
+{
+    DWORD RequiredNum;
+    ThrData TD[MAX_THREAD_NUM];
+    mutex_lock_t RnLock;
+}ThrResrc;
+
+
 typedef struct PLServer
 {
     PLOption PLOP;
+    ThrResrc LearnThrs;
     
     INT SockFd;
     struct sockaddr_in ClientAddr;

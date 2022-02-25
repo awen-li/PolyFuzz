@@ -429,17 +429,20 @@ static inline VOID ExeRegression (BYTE *DataFile, SeedBlock *SdBlk)
     system (Cmd);
 }
 
-static inline VOID ReadBsList (BYTE* BsDir, List *BsList)
+static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
 {
     DIR *Dir;
     struct dirent *SD;
+    BYTE BSfPath[256];
+    BYTE BSValStr[64];
 
     Dir = opendir((const char*)BsDir);
     if (Dir == NULL)
     {
         return;
     }
-    
+
+    List *FList = ListAllot();   
     while (SD = readdir(Dir))
     {
         if (strstr (SD->d_name, ".csv.bs") == NULL)
@@ -448,11 +451,52 @@ static inline VOID ReadBsList (BYTE* BsDir, List *BsList)
         }
 
         BYTE *Bsf = strdup (SD->d_name);
-        DEBUG ("### Get BSF[%s]: %s \r\n", BsDir, Bsf);
-        ListInsert(BsList, Bsf);  
+        ListInsert(FList, Bsf);
     }
-    
     closedir (Dir);
+    assert (FList->NodeNum != 0);
+
+    DWORD BaseNum = FList->NodeNum * 256;
+    BsList->ValueList = (ULONG *)malloc (BaseNum * sizeof (ULONG));
+    BsList->ValueCap  = BaseNum;
+    BsList->ValueNum  = 0;
+    assert (BsList->ValueList != NULL);
+
+    LNode *LN = FList->Header;
+    while (LN != NULL)
+    {
+        BYTE* FName = (BYTE *)LN->Data;
+        snprintf (BSfPath, sizeof (BSfPath), "%s/%s", BsDir, FName);
+        DEBUG ("### Get BSF: %s \r\n", BSfPath);
+
+        FILE *BSF = fopen (BSfPath, "r");
+        assert (BSF != NULL);
+
+        while (!feof (BSF))
+        {
+            if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
+            {
+                ULONG Val = strtol(BSValStr, NULL, 10);
+                DEBUG ("\t read value: %lu \r\n", Val);
+
+                if (BsList->ValueNum >= BsList->ValueCap)
+                {
+                    DEBUG ("\t Realloc ValueList from %u to %u \r\n", BsList->ValueCap, BsList->ValueCap+BaseNum);
+                    BsList->ValueCap  = BsList->ValueCap + BaseNum;
+                    BsList->ValueList = (ULONG *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (ULONG));
+                    assert (BsList->ValueList != NULL);
+                }
+
+                BsList->ValueList[BsList->ValueNum] = Val;
+                BsList->ValueNum++;
+            }
+        }
+
+        LN = LN->Nxt;
+    }
+
+    ListDel(FList, free);
+    return;
 }
 
 static inline VOID GenNewSeeds (PLServer *plSrv, BYTE* SdName, DWORD SeedLen)
@@ -465,15 +509,21 @@ static inline VOID GenNewSeeds (PLServer *plSrv, BYTE* SdName, DWORD SeedLen)
         DWORD Align = plSrv->SeedBlock[LIndex];
         snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", SdName, Align);
 
+        DWORD ListNo  = 0;
+        BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (SeedLen/Align + 1));
         for (DWORD OFF = 0; OFF < SeedLen; OFF += Align)
         {
-            List BsfList;
-            BsfList.Header = BsfList.Tail = NULL;
-            BsfList.NodeNum = 0;
-            
+            BsValue *BsList = &SAList [ListNo++];          
             snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", SdName, Align, OFF, Align);
-            ReadBsList (BlkDir, &BsfList);
+            ReadBsList (BlkDir, BsList);
+            DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
         }
+
+        while (ListNo > 0)
+        {
+            free (SAList[--ListNo].ValueList);        
+        }
+        free (SAList);
     }
     
     return;

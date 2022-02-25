@@ -117,6 +117,12 @@ VOID ListDel (List *L, DelData Del)
 
     L->Header = NULL;
     L->Tail   = NULL;
+
+    if (L->HeapAlloc == HEAP_ALLOC)
+    {
+        free (L);
+    }
+    
     return;
 }
 
@@ -194,6 +200,7 @@ List* ListAllot ()
     L->Header  = NULL;
     L->Tail    = NULL;
     L->NodeNum = 0;
+    L->HeapAlloc = HEAP_ALLOC;
     
     return L;
 }

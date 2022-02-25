@@ -9,6 +9,7 @@
 #define __LIST_H__
 #include "macro.h"
 
+#define HEAP_ALLOC (0xbfafcfdf)
 
 typedef struct tag_LNode
 {
@@ -23,6 +24,7 @@ typedef struct tag_List
     LNode *Tail;
 
     DWORD NodeNum;
+    DWORD HeapAlloc;
 }List;
 
 VOID ListInsert (List *L, VOID *N);

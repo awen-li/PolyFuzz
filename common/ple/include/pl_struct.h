@@ -87,6 +87,14 @@ typedef struct BrVariable
 }BrVariable;
 
 
+typedef struct BsValue
+{
+    ULONG *ValueList;
+    DWORD ValueNum;
+    DWORD ValueCap;
+}BsValue;
+
+
 typedef enum
 {
     SRV_S_INIT = 0,

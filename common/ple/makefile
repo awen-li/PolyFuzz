@@ -10,7 +10,7 @@ INCLUDE_PATH = include
 OBJ_PATH     = obj
 
 #CFLAGS    = -fPIC -O3 -I$(INCLUDE_PATH) 
-CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) -D__DEBUG__ 
+CFLAGS     = -fPIC -g -I$(INCLUDE_PATH) #-D__DEBUG__ 
 LD_CFLAGS  = -lpthread -ldl -lshmQueue
 
 SOURCE_FILES = $(wildcard $(SOURCE_PATH)/*.c)

@@ -140,10 +140,9 @@ def Load (InputFile):
 
 class RegrBase (metaclass=abc.ABCMeta):
 
-    CList = [0.01, 0.1, 0.3, 0.5, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
-    EpsnList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    GammaList = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-    Coef0List = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 3, 5, 8, 10]
+    CList     = [0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
+    EpsnList  = [0.01, 0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0]
+    Coef0List = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     
     def __init__ (self, Kernal):
         self.Kernal    = Kernal
@@ -175,32 +174,32 @@ class RbfReg (RegrBase):
         Distance = 4294967200
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
-                for gamma in RegrBase.GammaList:
-                    if FitFailNum >= 3:
-                        break
+                #for gamma in RegrBase.GammaList:
+                if FitFailNum >= 3:
+                    break
                     
-                    Model    = SVR(kernel="rbf", C=C, gamma=gamma, epsilon=epsilon, max_iter=50000000)
-                    FitModel = Model.fit (X_Train, y_Train)
-                    Predicts = FitModel.predict (X_Test)
+                Model    = SVR(kernel="rbf", C=C, epsilon=epsilon, max_iter=50000000)
+                FitModel = Model.fit (X_Train, y_Train)
+                Predicts = FitModel.predict (X_Test)
 
-                    if Model.fit_status_ == 1:
-                        FitFailNum += 1
+                if Model.fit_status_ == 1:
+                    FitFailNum += 1
                     
-                    CurDis   = 0
-                    for ix in range(len (y_Test)):
-                        CurDis += abs (y_Test[ix] - Predicts[ix])
+                CurDis   = 0
+                for ix in range(len (y_Test)):
+                    CurDis += abs (y_Test[ix] - Predicts[ix])
                     
-                    if CurDis < Distance:
-                        self.Model    = Model
-                        self.FitModel = FitModel
+                if CurDis < Distance:
+                    self.Model    = Model
+                    self.FitModel = FitModel
                         
-                        self.FitC     = C
-                        self.FitEpsn  = epsilon
-                        self.FitGamma = gamma
+                    self.FitC     = C
+                    self.FitEpsn  = epsilon
+                    #self.FitGamma = gamma
                         
-                        Distance = CurDis
+                    Distance = CurDis
         
-        print ("[RbfReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, self.FitGamma))
+        print ("[RbfReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, 0))
         return Distance
 
 class PolyReg (RegrBase):
@@ -354,15 +353,15 @@ def RegMain (InputFile):
             MainSvr  = svr
     Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
     
-    print ("@@@ MainSVR is" + str (MainSvr))
+    #print ("@@@ MainSVR is" + str (MainSvr))
     BlkSeedValues = []
     BVS = BrVSet ()
     for BrKey, BrV in BVS.BrVals.items ():
         Values = np.array(BrV.Values).reshape(-1, 1)
         CurPreds = list (MainSvr.Predict (Values))
-        print (CurPreds)
+        #print (CurPreds)
         BlkSeedValues += CurPreds
-        print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(CurPreds)))
+        #print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(CurPreds)))
 
     with open(InputFile+".bs", 'w', encoding='latin1') as BSF:
         for val in BlkSeedValues:

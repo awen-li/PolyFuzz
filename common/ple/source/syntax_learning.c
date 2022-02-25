@@ -912,9 +912,9 @@ VOID BindPatternToSeeds (SeedPat *SP, BYTE* DriverDir)
 }
 
 
-void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
 {
-    InitSeedList (SeedDir, SeedAttr);
+    InitSeedList (SeedDir, PLOP->SdType);
     
     /* pilot fuzzing */
     RunPilotFuzzing (DriverDir);

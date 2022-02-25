@@ -106,14 +106,6 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    memset (plSrv->SeedBlock, 0, sizeof (plSrv->SeedBlock));
-    plSrv->SeedBlockNum = 0;
-    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 1;
-    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 2;
-    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 4;
-    plSrv->SeedBlock[plSrv->SeedBlockNum++] = 8;
-    plSrv->GenSeedNum = 0;
-
     return;
 }
 
@@ -722,18 +714,55 @@ static inline VOID GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
     return;
 }
 
-void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
+
+VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
-    PLServer *plSrv = &g_plSrv;
+    memcpy (&plSrv->PLOP, PLOP, sizeof (PLOption));
+
+    memset (plSrv->SeedBlock, 0, sizeof (plSrv->SeedBlock));
+    plSrv->SeedBlockNum = 0;
+    DWORD Bits = plSrv->PLOP.SdPattBits;
+    if (Bits == 0)
+    {
+        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 1;
+        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 2;
+        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 4;
+        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 8;
+    }
+    else
+    {
+        while (Bits != 0)
+        {
+            DWORD Patt = Bits%10;
+            if (Patt != 1 && Patt != 2 && Patt != 4 && Patt != 8)
+            {
+                fprintf (stderr, "SEED partition support [1,2,4,8]!!\r\n");
+                exit (0);
+            }
+
+            DEBUG ("Add seed partition: %u\r\n", Patt);
+            plSrv->SeedBlock[plSrv->SeedBlockNum++] = Patt;
+            Bits = Bits/10;
+        }
+    }    
+    plSrv->GenSeedNum = 0;
     
     DWORD Ret = SrvInit (plSrv);
     assert (Ret == R_SUCCESS);
 
     InitDbTable (plSrv);   
     InitQueue(MEMMOD_SHARE);
+
+    return;
+}
+
+void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
+{
+    PLServer *plSrv = &g_plSrv;
+    PLInit (plSrv, PLOP);
     
     pthread_t Tid = 0;
-    Ret = pthread_create(&Tid, NULL, PilotFuzzingProc, DriverDir);
+    DWORD Ret = pthread_create(&Tid, NULL, PilotFuzzingProc, DriverDir);
     if (Ret != 0)
     {
         fprintf (stderr, "pthread_create fail, Ret = %d\r\n", Ret);
@@ -787,7 +816,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr)
                 BYTE* SeedPath = (BYTE*)(MsgSd + 1);
 
                 CurSeed = AddSeed (plSrv, SeedPath);
-                CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, SeedAttr);
+                CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, plSrv->PLOP.SdType);
 
                 DEBUG ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
                 

@@ -17,6 +17,7 @@
 
 #define FZ_SAMPLE_NUM        (32)
 #define FZ_SEED_NAME_LEN     (512)
+#define GEN_SEED             ("gen_seeds")
 
 
 typedef struct _Seed_ 
@@ -106,8 +107,18 @@ typedef enum
 }SRV_STATE;
 
 
+typedef struct PLOption
+{
+    DWORD SdPattBits;
+    DWORD SdType;    /* SEED_TEXT: text, SEED_BINARY: binary */
+    DWORD LnThrNum;
+}PLOption;
+
+
 typedef struct PLServer
 {
+    PLOption PLOP;
+    
     INT SockFd;
     struct sockaddr_in ClientAddr;
     BYTE SrvSendBuf[SRV_BUF_LEN];

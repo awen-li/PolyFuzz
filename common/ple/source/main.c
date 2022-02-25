@@ -1,13 +1,12 @@
 #include "pl_learning.h"
 
-
-static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir, DWORD SeedAttr)
+static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir, PLOption *PLOP)
 {
     /* 1. learning the syntax pattern */
     //SyntaxLearning(SeedDir, DriverDir, SeedAttr);
 
     /* 2. learning the semantic pattern */
-    SemanticLearning(SeedDir, DriverDir, SeedAttr);
+    SemanticLearning(SeedDir, DriverDir, PLOP);
 
     return;
 }
@@ -29,10 +28,10 @@ int main(int argc, char *argv[])
 {
     BYTE *SeedDir   = NULL;
     BYTE *DriverDir = NULL;
-    DWORD SeedAttr  = SEED_TEXT;
+    PLOption PLOP   = {0};
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:b")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:bp:t:")) > 0) 
     {
         switch (Opt) 
         {
@@ -52,7 +51,17 @@ int main(int argc, char *argv[])
             }
             case 'b':
             {
-                SeedAttr = SEED_BINARY;
+                PLOP.SdType = SEED_BINARY;
+                break;
+            }
+            case 'p':
+            {
+                PLOP.SdPattBits = (DWORD)atoi(optarg);
+                break;
+            }
+            case 't':
+            {
+                PLOP.LnThrNum   = (DWORD)atoi(optarg);
                 break;
             }
             default:
@@ -69,7 +78,7 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    PLEmain (SeedDir, DriverDir, SeedAttr);
+    PLEmain (SeedDir, DriverDir, &PLOP);
 
     free (SeedDir);
     free (DriverDir);

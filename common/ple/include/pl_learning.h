@@ -7,10 +7,10 @@
 ************************************************************/
 #ifndef __PL_LEARNING_H__
 #define __PL_LEARNING_H__
-#include "macro.h"
+#include "pl_struct.h"
 
-void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr);
-void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, DWORD SeedAttr);
+void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP);
+void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP);
 
 
 #endif

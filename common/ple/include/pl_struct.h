@@ -123,6 +123,11 @@ typedef struct PLServer
     DWORD DBSeedBlockHandle;
     DWORD DBBrVariableHandle;
     DWORD DBBrVarKeyHandle;
+
+    DWORD CurAlign;
+    DWORD GenSeedNum;
+    BYTE* CurSeedName;
+    BYTE NewSeedPath[FZ_SEED_NAME_LEN];
 }PLServer;
 
 

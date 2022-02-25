@@ -112,6 +112,7 @@ VOID InitDbTable (PLServer *plSrv)
     plSrv->SeedBlock[plSrv->SeedBlockNum++] = 2;
     plSrv->SeedBlock[plSrv->SeedBlockNum++] = 4;
     plSrv->SeedBlock[plSrv->SeedBlockNum++] = 8;
+    plSrv->GenSeedNum = 0;
 
     return;
 }
@@ -476,8 +477,20 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
         {
             if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
             {
+                DWORD i;
                 ULONG Val = strtol(BSValStr, NULL, 10);
-                DEBUG ("\t read value: %lu \r\n", Val);
+                for (i = 0; i < BsList->ValueNum; i++)
+                {
+                    if (BsList->ValueList[i] == Val)
+                    {
+                        break;
+                    }
+                }
+
+                if (i < BsList->ValueNum)
+                {
+                    continue;
+                }
 
                 if (BsList->ValueNum >= BsList->ValueCap)
                 {
@@ -489,6 +502,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
 
                 BsList->ValueList[BsList->ValueNum] = Val;
                 BsList->ValueNum++;
+                DEBUG ("\t read value: %lu \r\n", Val);
             }
         }
 
@@ -499,7 +513,69 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
     return;
 }
 
-static inline VOID GenNewSeeds (PLServer *plSrv, BYTE* SdName, DWORD SeedLen)
+
+static inline VOID GenSeed (PLServer *plSrv, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
+{
+    for (DWORD Ei = 0; Ei < BsHeader->ValueNum ; Ei++)
+    {
+        CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
+        if (CurBlkNo+1 == BlkNum)
+        {
+            plSrv->GenSeedNum++;
+
+            snprintf (plSrv->NewSeedPath, sizeof (plSrv->NewSeedPath), "%s/%s_%u-%u", 
+                      GEN_SEED, plSrv->CurSeedName, plSrv->CurAlign, plSrv->GenSeedNum);
+            FILE *SF = fopen (plSrv->NewSeedPath, "w");
+            assert (SF != NULL);
+            
+            DEBUG ("@@@ [%s]SEED: ", plSrv->NewSeedPath);
+            for (DWORD si = 0; si < BlkNum; si++)
+            {
+                DEBUG ("%lu ", CurSeed[si]);
+                switch (plSrv->CurAlign)
+                {
+                    case 1:
+                    {
+                        BYTE Val = (BYTE)CurSeed[si];
+                        fwrite (&Val, sizeof (Val), 1, SF);
+                        break;
+                    }
+                    case 2:
+                    {
+                        WORD Val = (WORD)CurSeed[si];
+                        fwrite (&Val, sizeof (Val), 1, SF);
+                        break;
+                    }
+                    case 4:
+                    {
+                        DWORD Val = (DWORD)CurSeed[si];
+                        fwrite (&Val, sizeof (Val), 1, SF);
+                        break;
+                    }
+                    case 8:
+                    {
+                        ULONG Val = (ULONG)CurSeed[si];
+                        fwrite (&Val, sizeof (Val), 1, SF);
+                        break;
+                    }
+                    default:
+                    {
+                        assert (0);
+                    }
+                }
+            }
+            DEBUG ("\r\n");
+
+            fclose (SF);
+        }
+        else
+        {      
+            GenSeed (plSrv, BsHeader+1, BlkNum, CurBlkNo+1, CurSeed);
+        }
+    }
+}
+
+static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
 {
     BYTE BlkDir[256];
     BYTE ALignDir[256];
@@ -507,23 +583,31 @@ static inline VOID GenNewSeeds (PLServer *plSrv, BYTE* SdName, DWORD SeedLen)
     for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
     {
         DWORD Align = plSrv->SeedBlock[LIndex];
-        snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", SdName, Align);
+        snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", plSrv->CurSeedName, Align);
 
-        DWORD ListNo  = 0;
+        DWORD BlkNum  = 0;
         BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (SeedLen/Align + 1));
+        assert (SAList != NULL);
         for (DWORD OFF = 0; OFF < SeedLen; OFF += Align)
         {
-            BsValue *BsList = &SAList [ListNo++];          
-            snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", SdName, Align, OFF, Align);
+            BsValue *BsList = &SAList [BlkNum++];          
+            snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
             ReadBsList (BlkDir, BsList);
             DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
         }
 
-        while (ListNo > 0)
+        ULONG *CurSeed = (ULONG *) malloc (BlkNum * sizeof (ULONG));
+        assert (CurSeed != NULL);
+
+        plSrv->CurAlign = Align;
+        GenSeed (plSrv, SAList, BlkNum, 0, CurSeed);
+
+        while (BlkNum > 0)
         {
-            free (SAList[--ListNo].ValueList);        
+            free (SAList[--BlkNum].ValueList);        
         }
         free (SAList);
+        free (CurSeed);
     }
     
     return;
@@ -545,6 +629,7 @@ static inline VOID LearningMain (PLServer *plSrv)
 
         BYTE* SdName = GetSeedName(Sd->SName);
         MakeDir (SdName);
+        plSrv->CurSeedName = SdName;
         DEBUG ("\tSEED-name:%s \r\n", SdName);
 
         DWORD SdBlkNo = 0;
@@ -578,7 +663,8 @@ static inline VOID LearningMain (PLServer *plSrv)
             SbHdr = SbHdr->Nxt;
         }
 
-        GenNewSeeds (plSrv, SdName, Sd->SeedLen);
+        MakeDir(GEN_SEED);
+        GenAllSeeds (plSrv, Sd->SeedLen);
         ListDel(&Sd->SdBlkList, NULL);
     }
 

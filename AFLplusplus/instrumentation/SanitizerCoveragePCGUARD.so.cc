@@ -163,6 +163,11 @@ public:
         SanCovTracePCGuardDuMap[64] = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_d64", VoidTy, Int32PtrTy, Int32Ty, Int64Ty);
 
         TargetExitFunction = CurM->getOrInsertFunction("__sanitizer_cov_trace_pc_guard_target_exit", VoidTy);
+
+        CmpWithConstNum    = 0;
+        CmpWithIntConstNum = 0;
+        CmpWithNoConstNum  = 0;
+        CmpWithIntNoConstNum = 0;
     }
 
     ~ModuleDuCov () {
@@ -371,22 +376,39 @@ public:
             Value *BrConst = NULL;
 
             if (ICmpInst *CMP = dyn_cast<ICmpInst>(Inst)) {
-                Value *Var = Inst->getOperand(0);
-                if (isa<ConstantInt>(Var)) {
-                    BrConst = Var;
-                    BrVar   = Inst->getOperand(1);
+                Value *VarL = Inst->getOperand(0);
+                Value *VarR = Inst->getOperand(1);
+                if (isa<Constant>(VarL) || isa<Constant>(VarR)) {            
+                    if (isa<ConstantInt>(VarL)) {
+                        BrConst = VarL;
+                        BrVar   = VarR;
+                    }
+                    else {
+                        BrConst = VarR;
+                        BrVar   = VarL;             
+                    }
+
+                    CmpWithConstNum++;
+                    if (!BrVar->getType()->isIntegerTy()) continue;
+                    CmpWithIntConstNum++;
+                    
+                    CmpProc (BrVar, CMP->getPredicate (), BrConst);
                 }
                 else {
-                    BrVar   = Var;
-                    BrConst = Inst->getOperand(1);
+                    CmpWithNoConstNum++;
+                    if (VarR->getType()->isIntegerTy())
+                    {
+                        CmpWithIntNoConstNum++;
+                    }
+                    continue;
                 }
-                if (!BrVar->getType()->isIntegerTy()) continue;
-                
-                CmpProc (BrVar, CMP->getPredicate (), BrConst);
             }
             else {
                 BrVar = Inst->getOperand(0);
+                
+                CmpWithConstNum++;               
                 if (!BrVar->getType()->isIntegerTy()) continue;
+                CmpWithIntConstNum++;
                 
                 SwitchProc (Inst);
             }
@@ -432,10 +454,23 @@ public:
             }               
         }
 
+        DumpStatistic (&BrInstSet, CurFunc);
         printf("BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", 
                (unsigned)BrInstSet.size(), (unsigned)BrValueSet.size(), (unsigned)BB2FirstInst.size());
 
         return;
+    }
+
+    inline void DumpStatistic (T_InstSet *BrInstSet, Function *F)
+    {
+        FILE *SF = fopen ("cmp_statistic.info", "a+");
+        if (SF == NULL) return;
+
+        fprintf (SF, "%s:%u:%u:%u:%u:%u\n", 
+                 F->getName().data(), (unsigned)BrInstSet->size (),
+                 CmpWithConstNum, CmpWithIntConstNum,
+                 CmpWithNoConstNum, CmpWithIntNoConstNum);
+        fclose (SF);
     }
 
     inline CallInst* InjectOne (IRBuilder<> &IRB, Value *Def, Value* GuardPtr=NULL) {
@@ -499,6 +534,12 @@ private:
 
     DenseMap<int, FunctionCallee> SanCovTracePCGuardDuMap;
     FunctionCallee TargetExitFunction;
+
+    unsigned CmpWithConstNum;
+    unsigned CmpWithIntConstNum;
+    
+    unsigned CmpWithNoConstNum;
+    unsigned CmpWithIntNoConstNum;
     
 };
 

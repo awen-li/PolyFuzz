@@ -421,7 +421,7 @@ public:
                 if (Arg == BrVar) {
                    BrDefInst2PosInst [Inst] = Inst;
                    BrInst2FormalUse[Inst] = BrVar;
-                   errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
+                   //errs ()<<"Use formal argument ---> "<<*Inst<<"\r\n";
                 }
             }
         }
@@ -445,7 +445,7 @@ public:
                 if (It == BrValueSet.end ()) continue;
                 
                 BrDefInst = Inst;
-                errs ()<<"Brvariable DEF ----> "<<*BrDefInst<<"\r\n";
+                //errs ()<<"Brvariable DEF ----> "<<*BrDefInst<<"\r\n";
                 
                 BasicBlock *CurBB = &BB;
                 if (BB2FirstInst.find (CurBB) == BB2FirstInst.end ()) {
@@ -455,7 +455,7 @@ public:
         }
 
         DumpStatistic (&BrInstSet, CurFunc);
-        printf("BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", 
+        printf("[%s]BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", CurFunc->getName().data(),
                (unsigned)BrInstSet.size(), (unsigned)BrValueSet.size(), (unsigned)BB2FirstInst.size());
 
         return;
@@ -498,6 +498,11 @@ public:
             Instruction *PosInst = It->second;
             
             if (IsInjected (PosInst)) continue;
+
+            if (PosInst->getOpcode() == Instruction::PHI) {
+                BasicBlock *BB = PosInst->getParent();   
+                PosInst = BB->getFirstNonPHI ();
+            }
 
             Value *Def = BrDefInst;
             if (BrDefInst == PosInst) {

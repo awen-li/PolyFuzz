@@ -1064,6 +1064,9 @@ static void edit_params(u32 argc, char **argv, char **envp) {
 
 #endif
 
+  cc_params[cc_par_cnt++] = "-lxFuzztrace";
+  cc_params[cc_par_cnt++] = "-lshmQueue";
+
   cc_params[cc_par_cnt] = NULL;
 
 }

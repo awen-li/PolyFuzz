@@ -562,7 +562,7 @@ static inline VOID GenSeed (PLServer *plSrv, BsValue *BsHeader, DWORD BlkNum, DW
     }
 }
 
-static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
+static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
 {
     BYTE BlkDir[256];
     BYTE ALignDir[256];
@@ -573,9 +573,9 @@ static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
         snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", plSrv->CurSeedName, Align);
 
         DWORD BlkNum  = 0;
-        BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (SeedLen/Align + 1));
+        BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (Sd->SeedLen/Align + 1));
         assert (SAList != NULL);
-        for (DWORD OFF = 0; OFF < SeedLen; OFF += Align)
+        for (DWORD OFF = 0; OFF < Sd->SeedLen; OFF += Align)
         {
             BsValue *BsList = &SAList [BlkNum++];
             BsList->ValueList = NULL;
@@ -583,6 +583,12 @@ static inline VOID GenAllSeeds (PLServer *plSrv, DWORD SeedLen)
             snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
             ReadBsList (BlkDir, BsList);
             DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
+
+            /* For this seed block, we learned nothing, using original value instead */
+            if (BsList->ValueNum == 0)
+            {
+                ;
+            }
         }
 
         ULONG *CurSeed = (ULONG *) malloc (BlkNum * sizeof (ULONG));
@@ -684,7 +690,7 @@ void* TrainingThread (void *Para)
     BYTE Cmd[1024];
 
     ThrData *Td = (ThrData *)Para;
-    snprintf (Cmd, sizeof (Cmd), "python -m regrnl -o %u %s", Td->SdBlk.SIndex/Td->SdBlk.Length, Td->TrainFile);
+    snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s", Td->TrainFile);
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     system (Cmd);
 
@@ -763,7 +769,7 @@ static inline VOID LearningMain (PLServer *plSrv)
         WaitForTraining (&plSrv->LearnThrs);
 
         MakeDir(GEN_SEED);
-        GenAllSeeds (plSrv, Sd->SeedLen);
+        GenAllSeeds (plSrv, Sd);
         ListDel(&Sd->SdBlkList, NULL);
     }
 

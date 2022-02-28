@@ -187,8 +187,9 @@ class RbfReg (RegrBase):
                     
                 CurDis   = 0
                 for ix in range(len (y_Test)):
-                    CurDis += abs (y_Test[ix] - Predicts[ix])
-                    
+                    CurDis += abs (y_Test[ix] - Predicts[ix]) / y_Test[ix]
+                CurDis = CurDis / len (y_Test)
+                
                 if CurDis < Distance:
                     self.Model    = Model
                     self.FitModel = FitModel
@@ -199,7 +200,7 @@ class RbfReg (RegrBase):
                         
                     Distance = CurDis
         
-        print ("[RbfReg]Min-Dis: %d, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, 0))
+        print ("[RbfReg]Min-Dis: %.2f, FitC:%f, FitEpsn:%f, FitGamma:%f" %(Distance, self.FitC, self.FitEpsn, 0))
         return Distance
 
 class PolyReg (RegrBase):
@@ -209,7 +210,7 @@ class PolyReg (RegrBase):
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
         FitFailNum = 0
-        Distance = 4294967200
+        Distance = 1
         for Coef0 in RegrBase.Coef0List:
             for epsilon in RegrBase.EpsnList:
                 if FitFailNum >= 3:
@@ -224,7 +225,8 @@ class PolyReg (RegrBase):
                   
                 CurDis   = 0
                 for ix in range(len (y_Test)):
-                    CurDis += abs (y_Test[ix] - Predicts[ix])
+                    CurDis += abs (y_Test[ix] - Predicts[ix]) / y_Test[ix]
+                CurDis = CurDis / len (y_Test)
                         
                 if CurDis < Distance:
                     self.Model    = Model
@@ -235,7 +237,7 @@ class PolyReg (RegrBase):
 
                     Distance = CurDis
         
-        print ("[PolyReg]Min-Dis: %d, FitCoef0:%f, FitEpsn:%f" %(Distance, self.FitCoef0, self.FitEpsn))
+        print ("[PolyReg]Min-Dis: %.2f, FitCoef0:%f, FitEpsn:%f" %(Distance, self.FitCoef0, self.FitEpsn))
         return Distance
 
 class LinearReg (RegrBase):
@@ -244,7 +246,7 @@ class LinearReg (RegrBase):
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
         FitFailNum = 0
-        Distance = 4294967200
+        Distance = 1
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
                 if FitFailNum >= 3:
@@ -259,7 +261,8 @@ class LinearReg (RegrBase):
 
                 CurDis   = 0
                 for ix in range(len (y_Test)):
-                    CurDis += abs (y_Test[ix] - Predicts[ix])
+                    CurDis += abs (y_Test[ix] - Predicts[ix])/y_Test[ix]
+                CurDis = CurDis / len (y_Test)
                         
                 if CurDis < Distance:
                     self.Model    = Model
@@ -270,7 +273,7 @@ class LinearReg (RegrBase):
                         
                     Distance = CurDis
 
-        print ("[LinearReg]Min-Dis: %d, FitC:%f, FitEpsn:%f" %(Distance, self.FitC, self.FitEpsn))
+        print ("[LinearReg]Min-Dis: %.2f, FitC:%f, FitEpsn:%f" %(Distance, self.FitC, self.FitEpsn))
         return Distance
 
 
@@ -334,7 +337,7 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
     plt.close()        
 
 
-def RegMain (InputFile):
+def RegMain (InputFile, DisThreshold=0.1):
     X_Name, y_Name, X_Train, y_Train, X_Test, y_Test = Load (InputFile)
     if len (X_Train) == 0 or len (X_Test) == 0:
         return
@@ -345,13 +348,18 @@ def RegMain (InputFile):
     
     SVRs = [SvrRbf, SvrPoly, SvrLinear]
     MainSvr = None
-    Distance = 4294967200
+    Distance = 1
     for svr in SVRs:
         CurDis = svr.Fit (X_Train, y_Train, X_Test, y_Test)
         if CurDis < Distance:
             Distance = CurDis
             MainSvr  = svr
+    print ("@@@ [%s]MinDistance is: %.2f" %(str (MainSvr), Distance))
     Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
+
+    # set the threshold, default: 0.1
+    if Distance > DisThreshold:
+        return
     
     #print ("@@@ MainSVR is" + str (MainSvr))
     BlkSeedValues = []
@@ -373,6 +381,7 @@ def InitArgument (parser):
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
     grp.add_argument('-o', '--offset', help='the offset of seed block')
+    grp.add_argument('-d', '--distance', help='the distance threshold [0, 1]')
                   
     parser.add_argument('filename', nargs='?', help='input file')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')

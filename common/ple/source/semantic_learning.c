@@ -575,10 +575,13 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
         DWORD BlkNum  = 0;
         BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (Sd->SeedLen/Align + 1));
         assert (SAList != NULL);
+
+        DWORD LearnFailNum = 0;
         for (DWORD OFF = 0; OFF < Sd->SeedLen; OFF += Align)
         {
             BsValue *BsList = &SAList [BlkNum++];
             BsList->ValueList = NULL;
+            BsList->ValueCap = BsList->ValueNum = 0;
             
             snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
             ReadBsList (BlkDir, BsList);
@@ -587,22 +590,37 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
             /* For this seed block, we learned nothing, using original value instead */
             if (BsList->ValueNum == 0)
             {
-                ;
+                LearnFailNum++;
+                
+                BsList->ValueList = (ULONG *)malloc (sizeof (ULONG));
+                *(ULONG*)BsList->ValueList = 0;
+                BsList->ValueCap  = 1;
+                assert (BsList->ValueList != NULL);
+                memcpy (BsList->ValueList, Sd->SeedCtx+OFF, Align);
+                BsList->ValueNum++;
             }
         }
 
-        ULONG *CurSeed = (ULONG *) malloc (BlkNum * sizeof (ULONG));
-        assert (CurSeed != NULL);
+        if (LearnFailNum == Sd->SeedLen/Align)
+        {
+            printf ("@@@ [%s]blocknum:%u, learning fails...!\r\n", plSrv->CurSeedName, Sd->SeedLen/Align);        
+        }
+        else
+        {
+            ULONG *CurSeed = (ULONG *) malloc (BlkNum * sizeof (ULONG));
+            assert (CurSeed != NULL);
+            memset (CurSeed, 0, BlkNum * sizeof (ULONG));
 
-        plSrv->CurAlign = Align;
-        GenSeed (plSrv, SAList, BlkNum, 0, CurSeed);
+            plSrv->CurAlign = Align;
+            GenSeed (plSrv, SAList, BlkNum, 0, CurSeed);
+            free (CurSeed);
+        }
 
         while (BlkNum > 0)
         {
             free (SAList[--BlkNum].ValueList);        
         }
-        free (SAList);
-        free (CurSeed);
+        free (SAList);   
     }
     
     return;
@@ -1020,7 +1038,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
 
     LearningMain (plSrv);
 
-    DEBUG ("[ple]SemanticLearning exit....\r\n");
+    printf ("[ple]SemanticLearning exit, Learned seeds: %u....\r\n", plSrv->GenSeedNum);
     DelQueue ();
     close (plSrv->SockFd);
     DelDb();

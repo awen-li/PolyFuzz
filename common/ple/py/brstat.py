@@ -15,8 +15,7 @@ class Stat ():
         self.CmpWithPointerConstNum = CmpWithPointerConstNum
 
 class BrStat ():  
-    def __init__ (self, Path="cmp_statistic.info"):
-        self.Path = Path
+    def __init__ (self, Dir=None, Path=None):        
         self.Stats = []
         self.FuncNum  = 0
         self.TotalBrs = 0
@@ -25,31 +24,44 @@ class BrStat ():
         self.CmpWithNoConstNum  = 0
         self.CmpWithIntNoConstNum = 0
         self.CmpWithPointerConstNum = 0
-        self.LoadBrStats ()
-             
+
+        self.Path = []
+        if Path != None:
+            self.Path.append(Path)
+        elif Dir != None:
+            AllPaths = os.popen("find ./ -name cmp_statistic.info").read()
+            self.Path = list (AllPaths.split ('\n'))
+        else:
+            return
+
+        self.LoadBrStats ()  
     
     def LoadBrStats (self):
-        with open(self.Path, 'r', encoding='latin1') as BrVF:
-            for line in BrVF:
-                Item = list (line.split (":"))
-                FName                = Item[0]
-                TotalBrs             = int (Item[1])
-                CmpWithConstNum      = int (Item[2])
-                CmpWithIntConstNum   = int (Item[3])
-                CmpWithNoConstNum    = int (Item[4])
-                CmpWithIntNoConstNum = int (Item[5])
-                CmpWithPointerConstNum = int (Item[6])
+        for path in self.Path:
+            if len (path) == 0:
+                continue
+            print ("Read statistic from %s" %path)
+            with open(path, 'r', encoding='latin1') as BrVF:
+                for line in BrVF:
+                    Item = list (line.split (":"))
+                    FName                = Item[0]
+                    TotalBrs             = int (Item[1])
+                    CmpWithConstNum      = int (Item[2])
+                    CmpWithIntConstNum   = int (Item[3])
+                    CmpWithNoConstNum    = int (Item[4])
+                    CmpWithIntNoConstNum = int (Item[5])
+                    CmpWithPointerConstNum = int (Item[6])
 
-                self.TotalBrs += TotalBrs
-                self.CmpWithConstNum += CmpWithConstNum
-                self.CmpWithIntConstNum += CmpWithIntConstNum
-                self.CmpWithNoConstNum  += CmpWithNoConstNum
-                self.CmpWithIntNoConstNum += CmpWithIntNoConstNum
-                self.CmpWithPointerConstNum += CmpWithPointerConstNum
-                self.FuncNum += 1
-                
-                ST = Stat (FName, CmpWithConstNum, CmpWithIntConstNum, CmpWithNoConstNum, CmpWithIntNoConstNum, CmpWithPointerConstNum)
-                self.Stats.append (ST)
+                    self.TotalBrs += TotalBrs
+                    self.CmpWithConstNum += CmpWithConstNum
+                    self.CmpWithIntConstNum += CmpWithIntConstNum
+                    self.CmpWithNoConstNum  += CmpWithNoConstNum
+                    self.CmpWithIntNoConstNum += CmpWithIntNoConstNum
+                    self.CmpWithPointerConstNum += CmpWithPointerConstNum
+                    self.FuncNum += 1
+                    
+                    ST = Stat (FName, CmpWithConstNum, CmpWithIntConstNum, CmpWithNoConstNum, CmpWithIntNoConstNum, CmpWithPointerConstNum)
+                    self.Stats.append (ST)
 
     def ShowStat (self):
         print ("===============================================")
@@ -65,7 +77,7 @@ def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
-    grp.add_argument('-o', '--offset', help='the offset of seed block')
+    grp.add_argument('-d', '--directory', help='directory to compute statistic')
                   
     parser.add_argument('filename', nargs='?', help='input file')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')
@@ -76,11 +88,15 @@ def main():
     InitArgument (parser)
 
     opts = parser.parse_args()
-    if opts.filename is None:
-        parser.error('filename is missing: required with the main options')
+    if opts.filename != None:
+        BS = BrStat (Path=opts.filename)
+        BS.ShowStat()
+    elif opts.directory != None:
+        BS = BrStat (Dir=opts.directory)
+        BS.ShowStat()
+    else:
+        parser.error('filename or directory is missing: required with the main options')
 
-    BS = BrStat (opts.filename)
-    BS.ShowStat()
 
 if __name__ == "__main__":
    main()

@@ -168,6 +168,7 @@ public:
         CmpWithIntConstNum = 0;
         CmpWithNoConstNum  = 0;
         CmpWithIntNoConstNum = 0;
+        CmpWithPointerConstNum = 0;
     }
 
     ~ModuleDuCov () {
@@ -389,7 +390,10 @@ public:
                     }
 
                     CmpWithConstNum++;
-                    if (!BrVar->getType()->isIntegerTy()) continue;
+                    if (!BrVar->getType()->isIntegerTy()) {
+                        if (BrVar->getType()->isPointerTy()) CmpWithPointerConstNum++;
+                        continue;
+                    }
                     CmpWithIntConstNum++;
                     
                     CmpProc (BrVar, CMP->getPredicate (), BrConst);
@@ -455,8 +459,9 @@ public:
         }
 
         DumpStatistic (&BrInstSet, CurFunc);
-        printf("[%s]BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", CurFunc->getName().data(),
-               (unsigned)BrInstSet.size(), (unsigned)BrValueSet.size(), (unsigned)BB2FirstInst.size());
+        if (debug)
+            printf("[%s]BrInstSet: %u, BrValueSet: %u, BasicBlock Num: %u\r\n", CurFunc->getName().data(),
+                    (unsigned)BrInstSet.size(), (unsigned)BrValueSet.size(), (unsigned)BB2FirstInst.size());
 
         return;
     }
@@ -466,10 +471,10 @@ public:
         FILE *SF = fopen ("cmp_statistic.info", "a+");
         if (SF == NULL) return;
 
-        fprintf (SF, "%s:%u:%u:%u:%u:%u\n", 
+        fprintf (SF, "%s:%u:%u:%u:%u:%u:%u\n", 
                  F->getName().data(), (unsigned)BrInstSet->size (),
                  CmpWithConstNum, CmpWithIntConstNum,
-                 CmpWithNoConstNum, CmpWithIntNoConstNum);
+                 CmpWithNoConstNum, CmpWithIntNoConstNum, CmpWithPointerConstNum);
         fclose (SF);
     }
 
@@ -545,6 +550,8 @@ private:
     
     unsigned CmpWithNoConstNum;
     unsigned CmpWithIntNoConstNum;
+
+    unsigned CmpWithPointerConstNum;
     
 };
 
@@ -1531,7 +1538,8 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
     Instruction *InjectInst = &*IP;
     Instruction *InjectDu = MDu.GetBBFirstInst(&BB);
     if (InjectDu != NULL) {
-        errs ()<<"REPLACE: "<<*InjectInst<<" ==== WITH ==== "<<*InjectDu<<"\r\n";
+        if (debug)
+            errs ()<<"REPLACE: "<<*InjectInst<<" ==== WITH ==== "<<*InjectDu<<"\r\n";
         assert (InjectInst->getParent() == InjectDu->getParent());
 
         InjectInst = MDu.GetInstrmInst (InjectDu);

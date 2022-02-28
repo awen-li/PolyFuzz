@@ -5,12 +5,14 @@ import argparse
 import time
 
 class Stat ():
-    def __init__ (self, FName, CmpWithConstNum, CmpWithIntConstNum, CmpWithNoConstNum, CmpWithIntNoConstNum):
+    def __init__ (self, FName, CmpWithConstNum, CmpWithIntConstNum, 
+                      CmpWithNoConstNum, CmpWithIntNoConstNum, CmpWithPointerConstNum):
         self.FName = FName
         self.CmpWithConstNum      = CmpWithConstNum
         self.CmpWithIntConstNum   = CmpWithIntConstNum
         self.CmpWithNoConstNum    = CmpWithNoConstNum
         self.CmpWithIntNoConstNum = CmpWithIntNoConstNum
+        self.CmpWithPointerConstNum = CmpWithPointerConstNum
 
 class BrStat ():  
     def __init__ (self, Path="cmp_statistic.info"):
@@ -22,6 +24,7 @@ class BrStat ():
         self.CmpWithIntConstNum = 0
         self.CmpWithNoConstNum  = 0
         self.CmpWithIntNoConstNum = 0
+        self.CmpWithPointerConstNum = 0
         self.LoadBrStats ()
              
     
@@ -35,23 +38,27 @@ class BrStat ():
                 CmpWithIntConstNum   = int (Item[3])
                 CmpWithNoConstNum    = int (Item[4])
                 CmpWithIntNoConstNum = int (Item[5])
+                CmpWithPointerConstNum = int (Item[6])
 
                 self.TotalBrs += TotalBrs
                 self.CmpWithConstNum += CmpWithConstNum
                 self.CmpWithIntConstNum += CmpWithIntConstNum
                 self.CmpWithNoConstNum  += CmpWithNoConstNum
                 self.CmpWithIntNoConstNum += CmpWithIntNoConstNum
+                self.CmpWithPointerConstNum += CmpWithPointerConstNum
                 self.FuncNum += 1
                 
-                ST = Stat (FName, CmpWithConstNum, CmpWithIntConstNum, CmpWithNoConstNum, CmpWithIntNoConstNum)
+                ST = Stat (FName, CmpWithConstNum, CmpWithIntConstNum, CmpWithNoConstNum, CmpWithIntNoConstNum, CmpWithPointerConstNum)
                 self.Stats.append (ST)
 
     def ShowStat (self):
         print ("===============================================")
+        print ("===  Functions: %4d              " %self.FuncNum)
         print ("===  CMP&SWITCHs: %4d              " %self.TotalBrs)
         print ("===  CMP&SWITCHs with Consts: %4d (%.2f)  " %(self.CmpWithConstNum, self.CmpWithConstNum*1.0/self.TotalBrs))
         print ("===  CMP&SWITCHs with No Consts: %4d (%.2f)  " %(self.CmpWithNoConstNum, self.CmpWithNoConstNum*1.0/self.TotalBrs))
         print ("===  CMP&SWITCHs with INT Consts: %4d (%.2f)  " %(self.CmpWithIntConstNum, self.CmpWithIntConstNum*1.0/self.TotalBrs))
+        print ("===  CMP&SWITCHs with POINTER Consts: %4d (%.2f)  " %(self.CmpWithPointerConstNum, self.CmpWithPointerConstNum*1.0/self.TotalBrs))
         print ("===============================================\r\n")
     
 def InitArgument (parser):

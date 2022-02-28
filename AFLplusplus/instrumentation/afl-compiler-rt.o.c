@@ -1448,8 +1448,8 @@ static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLen
     }
 
     QN->IsReady = 1;
-    fprintf(stderr, "QN ----> %p:[key-%u] type-%u, length-%u, Value-%lu\r\n", 
-            QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
+    AFL_DEBUG_SHOW("QN ----> %p:[key-%u] type-%u, length-%u, Value-%lu\r\n", 
+                   QN, QN->TrcKey, (unsigned)OV->Type, (unsigned)OV->Length, OV->Value);
 }
 
 void __sanitizer_cov_trace_pc_guard_d8 (uint32_t *guard, uint32_t Key, uint8_t Value) {
@@ -1494,7 +1494,7 @@ void __sanitizer_cov_trace_pc_guard_target_exit () {
     QN->TrcKey = TARGET_EXIT_KEY;  /* special key: indicate exit msg */
     QN->IsReady = 1;
 
-    fprintf(stderr, "QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);
+    AFL_DEBUG_SHOW("QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);
 }
 
 

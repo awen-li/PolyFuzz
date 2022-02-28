@@ -288,6 +288,13 @@ public:
 
     inline void CmpProc (Value* BrVal, ICmpInst::Predicate pred, Value* CmpVal)
     {
+        uint64_t TypeSize = DL->getTypeStoreSizeInBits(CmpVal->getType());
+        if (TypeSize > 64)
+        {
+            errs ()<<"@@@ Warning: Type size is over 64!!!  --->  "<<*CmpVal<<"\r\n";
+            return;
+        }
+        
         unsigned Key = (unsigned)(unsigned long)BrVal;
         switch (pred)
         {

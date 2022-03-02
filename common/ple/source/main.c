@@ -34,9 +34,10 @@ int main(int argc, char *argv[])
     PLOP.LnThrNum   = 1;
     PLOP.SdPattBits = 4;
     PLOP.SdType     = SEED_BINARY;
+    PLOP.BvDir      = NULL;
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:bp:t:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:")) > 0) 
     {
         switch (Opt) 
         {
@@ -57,6 +58,13 @@ int main(int argc, char *argv[])
             case 'b':
             {
                 PLOP.SdType = SEED_BINARY;
+                break;
+            }
+            case 'B':
+            {
+                PLOP.BvDir = (BYTE *)strdup (optarg);
+                assert (DriverDir != NULL);
+                FormatPath (PLOP.BvDir);
                 break;
             }
             case 'p':
@@ -87,5 +95,6 @@ int main(int argc, char *argv[])
 
     free (SeedDir);
     free (DriverDir);
+    free (PLOP.BvDir);
     return 0;
 }

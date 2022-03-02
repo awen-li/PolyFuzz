@@ -113,6 +113,7 @@ typedef struct PLOption
     DWORD SdPattBits;
     DWORD SdType;    /* SEED_TEXT: text, SEED_BINARY: binary */
     DWORD LnThrNum;
+    BYTE  *BvDir;
 }PLOption;
 
 
@@ -122,6 +123,7 @@ typedef struct ThrData
     SeedBlock SdBlk;
     DWORD Status;
     BYTE *LearnThrs;
+    BYTE *BvDir;
 }ThrData;
 
 typedef struct ThrResrc

@@ -708,7 +708,14 @@ void* TrainingThread (void *Para)
     BYTE Cmd[1024];
 
     ThrData *Td = (ThrData *)Para;
-    snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s", Td->TrainFile);
+    if (Td->BvDir == NULL)
+    {
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s", Td->TrainFile);
+    }
+    else
+    {
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s", Td->BvDir, Td->TrainFile);
+    }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     system (Cmd);
 
@@ -721,7 +728,7 @@ static inline VOID StartTraining (PLServer *plSrv, BYTE *DataFile, SeedBlock *Sd
     ThrData *Td = RequirThrRes(plSrv);
     strncpy (Td->TrainFile, DataFile, sizeof (Td->TrainFile));
     memcpy (&Td->SdBlk, SdBlk, sizeof (SeedBlock));
-
+    Td->BvDir = plSrv->PLOP.BvDir;
     
     pthread_t Tid = 0;
     int Ret = pthread_create(&Tid, NULL, TrainingThread, Td);

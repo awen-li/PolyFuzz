@@ -272,14 +272,12 @@ public:
             {
                 errs ()<<"Warning: Not IntConstant but ----> "<<*Val<<"\r\n";
             }
-            else
-            {
-                ;
-            }
 
             return;
         }
 
+        if (debug)
+            errs ()<<"DumpBrVals ----> Key="<<Key<<" -----> BrConst == "<<*Val<< "\r\n";
         FILE *F = fopen ("branch_vars.bv", "a+");
         assert (F != NULL);
         fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, ConstVal);

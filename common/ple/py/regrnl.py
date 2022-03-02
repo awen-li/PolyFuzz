@@ -58,7 +58,7 @@ class BrVSet ():
 
     Pred2Mean[255]  = "SWITCH: enum"
     
-    def __init__ (self, Path="branch_vars.bv"):
+    def __init__ (self, Path=["branch_vars.bv"]):
         self.Path = Path
         self.BrVals = {}
         
@@ -102,21 +102,24 @@ class BrVSet ():
                 
     
     def LoadBrVars (self):
-        with open(self.Path, 'r', encoding='latin1') as BrVF:
-            for line in BrVF:
-                Item = list (line.split (":"))
-                Key  = int (Item[0])
-                Type = Item[1]
-                Pred = int (Item[2])
-                Value= int (Item[3])
+        for path in self.Path:
+            if len (path) == 0:
+                continue
+            with open(path, 'r', encoding='latin1') as BrVF:
+                for line in BrVF:
+                    Item = list (line.split (":"))
+                    Key  = int (Item[0])
+                    Type = Item[1]
+                    Pred = int (Item[2])
+                    Value= int (Item[3])
 
-                ValueList = self.GetValueList (Pred, Value)
-                VrKey = int (str (Key) + str(Pred))
-                Bv = self.BrVals.get (VrKey)
-                if Bv == None:      
-                    self.BrVals[VrKey] = BrValue (Key, Type, Pred, ValueList)
-                else:
-                    Bv.AddValue (ValueList)
+                    ValueList = self.GetValueList (Pred, Value)
+                    VrKey = int (str (Key) + str(Pred))
+                    Bv = self.BrVals.get (VrKey)
+                    if Bv == None:      
+                        self.BrVals[VrKey] = BrValue (Key, Type, Pred, ValueList)
+                    else:
+                        Bv.AddValue (ValueList)
                 
 
 def Load (InputFile):
@@ -337,7 +340,7 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
     plt.close()        
 
 
-def RegMain (InputFile, DisThreshold=0.1):
+def RegMain (InputFile, DisThreshold=0.1, Directory=None):
     X_Name, y_Name, X_Train, y_Train, X_Test, y_Test = Load (InputFile)
     if len (X_Train) == 0 or len (X_Test) == 0:
         return
@@ -360,10 +363,19 @@ def RegMain (InputFile, DisThreshold=0.1):
     # set the threshold, default: 0.1
     if Distance > DisThreshold:
         return
+
+    # load all files of branch_vars.cv
+    BVS = None
+    if Directory != None:
+        ALLFiles = os.popen("find ./ -name branch_vars.bv").read()
+        PathList = list (ALLFiles.split ('\n'))
+        print ("Get PathList: " + str (PathList))
+        BVS = BrVSet (PathList)
+    else:
+        BVS = BrVSet ()
     
     #print ("@@@ MainSVR is" + str (MainSvr))
-    BlkSeedValues = []
-    BVS = BrVSet ()
+    BlkSeedValues = []   
     for BrKey, BrV in BVS.BrVals.items ():
         Values = np.array(BrV.Values).reshape(-1, 1)
         CurPreds = list (MainSvr.Predict (Values))
@@ -380,7 +392,7 @@ def InitArgument (parser):
     parser.add_argument('--version', action='version', version='regrnl 1.0')
     
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
-    grp.add_argument('-o', '--offset', help='the offset of seed block')
+    grp.add_argument('-B', '--bvdir', help='the directory where store files of branch_vars.cv')
     grp.add_argument('-d', '--distance', help='the distance threshold [0, 1]')
                   
     parser.add_argument('filename', nargs='?', help='input file')
@@ -395,7 +407,7 @@ def main():
     if opts.filename is None:
         parser.error('filename is missing: required with the main options')
 
-    RegMain (opts.filename)
+    RegMain (opts.filename, Directory=opts.bvdir)
 
 if __name__ == "__main__":
    main()

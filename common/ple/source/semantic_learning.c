@@ -94,18 +94,21 @@ VOID InitDbTable (PLServer *plSrv)
 
     InitDb(NULL);
     
-    Ret = DbCreateTable(plSrv->DBSeedHandle, sizeof (Seed), 0);
+    Ret = DbCreateTable(plSrv->DBSeedHandle, 0, sizeof (Seed), 0);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, sizeof (SeedBlock), FZ_SEED_NAME_LEN);
+    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 96);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, sizeof (BrVariable), FZ_SEED_NAME_LEN);
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 96);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, sizeof (DWORD), sizeof (DWORD));
+    Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
+    printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u]\r\n",
+            TableSize (plSrv->DBSeedHandle), TableSize (plSrv->DBSeedBlockHandle),
+            TableSize (plSrv->DBBrVariableHandle), TableSize (plSrv->DBBrVarKeyHandle));
     return;
 }
 
@@ -316,7 +319,7 @@ void* DECollect (void *Para)
         
     }
     
-    printf ("DECollect loop over.....\r\n");
+    DEBUG ("DECollect loop over.....\r\n");
     pthread_exit ((void*)0);
 }
 
@@ -930,7 +933,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
             {
                 MsgH = (MsgHdr *) Recv(plSrv);
                 assert (MsgH->MsgType == PL_MSG_STARTUP);
-                DEBUG ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
+                printf ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
 
                 /* change to SRV_S_STARTUP */
                 SrvState = SRV_S_STARTUP;
@@ -942,7 +945,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 MsgH->MsgType = PL_MSG_STARTUP;
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                DEBUG ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+                printf ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
 
                 /* !!!! clear the queue: AFL++'s validation will cause redundant events */
                 ClearQueue();
@@ -967,7 +970,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 CurSeed = AddSeed (plSrv, SeedPath);
                 CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, plSrv->PLOP.SdType);
 
-                DEBUG ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
+                printf ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
                 
                 SrvState = SRV_S_ITB;
                 break;
@@ -1008,11 +1011,11 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
 
                         /* inform the fuzzer */
                         Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[len-%u]: %u[%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
 
                         MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                         assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[len-%u]: %u[%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
                         plSrv->FzExit = TRUE;
 
                         VOID *TRet = NULL;

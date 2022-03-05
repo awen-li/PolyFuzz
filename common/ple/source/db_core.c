@@ -692,7 +692,7 @@ DWORD QueryDataByID(DbReq* ptQueryReq, DbAck* pQueryAck)
 }
 
 
-DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataLen, DWORD dwKeyLen)
+DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataNum, DWORD dwDataLen, DWORD dwKeyLen)
 {
 	DWORD dwAvgThrCap;
 	ULONG ulMemSize;
@@ -705,8 +705,8 @@ DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataLen, DWORD dwKeyLen)
     ptCurTable->dwDataType = dwDataType;
 	ptCurTable->dwDataLen  = dwDataLen;
 	ptCurTable->dwKeyLen   = dwKeyLen;
-    ptCurTable->dwMaxDataNum  = M_BASE_DATA_NUM;
-	
+    ptCurTable->dwMaxDataNum  = (dwDataNum > M_BASE_DATA_NUM)?dwDataNum:M_BASE_DATA_NUM;
+
 	ptCurTable->dwCreateNum = 0;
 	ptCurTable->dwDeleteNum = 0;
 
@@ -782,5 +782,27 @@ DWORD QueryDataNum (DWORD dwDataType)
 
     return ptDataTable->tBusyDataTable.dwCurNodeNum;
 }
+
+
+DWORD TableSize (DWORD dwDataType)
+{
+    DbTable* ptDataTable;
+
+    if(0 == dwDataType || dwDataType >= DB_TYPE_END)
+    {
+        DEBUG ("Error datatype[%u]\r\n", dwDataType);
+        return 0;
+    }
+
+    ptDataTable = db_Type2Table(dwDataType);
+    if(NULL == ptDataTable)
+    {
+        DEBUG ("ptDataTable == NULL[%u]\r\n", dwDataType);
+        return 0;
+    }
+
+    return ptDataTable->dwMaxDataNum * ptDataTable->MU.dwUnitNum;
+}
+
 
 

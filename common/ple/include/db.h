@@ -45,9 +45,11 @@ DWORD QueryDataByID(DbReq* ptQueryReq, DbAck* pQueryAck);
 
 
 DWORD DeleteDataByID(DbReq* ptDelReq);
-DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataLen, DWORD dwKeyLen);
+DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataNum, DWORD dwDataLen, DWORD dwKeyLen);
 
 DWORD QueryDataNum (DWORD dwDataType);
+DWORD TableSize (DWORD dwDataType);
+
 
 VOID DelDb ();
 VOID InitDb (VOID *Addr);

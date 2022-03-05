@@ -179,9 +179,7 @@ public:
         set<Instruction *> ExitInsts;
         
         /* return in main function */
-        Function *mainFunc = CurM->getFunction("main");
-        if (mainFunc != NULL) {
-
+        if (strcmp (CurFunc->getName().data(), "main") == 0) {
             BasicBlock &termbBlock = CurFunc->back();
             Instruction *retInst   = termbBlock.getTerminator();
             if (isa<ReturnInst>(retInst))

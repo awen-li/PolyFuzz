@@ -6,7 +6,6 @@ import time
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVR
-import matplotlib.pyplot as plt
 
 
 InitTicks = time.time()
@@ -281,6 +280,8 @@ class LinearReg (RegrBase):
 
 
 def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
+    import matplotlib.pyplot as plt
+    
     lw = 2
     MdColors = ["m", "c", "g"]
     fig, axes = plt.subplots(nrows=1, ncols=len(SVRs), figsize=(14, 6), sharey=True)
@@ -340,7 +341,7 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
     plt.close()        
 
 
-def RegMain (InputFile, DisThreshold=0.1, Directory=None):
+def RegMain (InputFile, DisThreshold=0.1, Directory=None, Plot=False):
     X_Name, y_Name, X_Train, y_Train, X_Test, y_Test = Load (InputFile)
     if len (X_Train) == 0 or len (X_Test) == 0:
         return
@@ -358,7 +359,9 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None):
             Distance = CurDis
             MainSvr  = svr
     print ("@@@ [%s]MinDistance is: %.2f" %(str (MainSvr), Distance))
-    Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
+
+    if Plot == True:
+        Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test)
 
     # set the threshold, default: 0.1
     if Distance > DisThreshold:
@@ -394,6 +397,7 @@ def InitArgument (parser):
     grp = parser.add_argument_group('Main options', 'One of these (or --report) must be given')
     grp.add_argument('-B', '--bvdir', help='the directory where store files of branch_vars.cv')
     grp.add_argument('-d', '--distance', help='the distance threshold [0, 1]')
+    grp.add_argument('-p', '--plot', action='store_true', help='plot the regression results')
                   
     parser.add_argument('filename', nargs='?', help='input file')
     parser.add_argument('arguments', nargs=argparse.REMAINDER, help='arguments to the program')
@@ -407,7 +411,7 @@ def main():
     if opts.filename is None:
         parser.error('filename is missing: required with the main options')
 
-    RegMain (opts.filename, Directory=opts.bvdir)
+    RegMain (opts.filename, Directory=opts.bvdir, Plot=opts.plot)
 
 if __name__ == "__main__":
    main()

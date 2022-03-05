@@ -107,7 +107,7 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 16*1024, sizeof (BrVariable), 48);
+    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 8*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
     printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",

@@ -108,6 +108,13 @@ typedef enum
 }SRV_STATE;
 
 
+typedef enum
+{
+    RUNMOD_PILOT=1,
+    RUNMOD_OFFICIAL=2,
+}RUNMOD;
+
+
 typedef struct PLOption
 {
     DWORD SdPattBits;
@@ -138,6 +145,8 @@ typedef struct PLServer
 {
     PLOption PLOP;
     ThrResrc LearnThrs;
+
+    DWORD RunMode;
     
     INT SockFd;
     struct sockaddr_in ClientAddr;

@@ -714,6 +714,7 @@ DWORD QueryDataByKey(DbReq* ptQueryReq, DbAck* pQueryAck)
 
 	if(ptDataTable->dwKeyLen < ptQueryReq->dwKeyLen)
 	{
+	    assert (0);
 		return R_FAIL;
 	}
     

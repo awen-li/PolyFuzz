@@ -98,16 +98,16 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(plSrv->DBSeedHandle, 0, sizeof (Seed), 0);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 64);
+    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 48);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 64);
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
     Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 16*1024, sizeof (BrVariable), 64);
+    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 16*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
     printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
@@ -333,18 +333,21 @@ void* DECollect (void *Para)
     if (BrKeyNum == 0)
     {
         SeedBlock* SBlk = plSrv->CurSdBlk;
-        printf ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
-                GetSeedName (SBlk->Sd->SName),
-                SBlk->SIndex, SBlk->Length);
+        DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
+               GetSeedName (SBlk->Sd->SName),
+               SBlk->SIndex, SBlk->Length);
+        ResetTable (plSrv->DBCacheBrVarHandle);
     }
     else
     {
         CopyTable (plSrv->DBBrVariableHandle, plSrv->DBCacheBrVarHandle);
-        printf ("[Table%u] DataNum = %u after copy [Table%u][%u]!\r\n", 
+        printf ("\t@@@DECollect --- New BR found [to %u]. [Table%u] DataNum = %u after copy [Table%u][%u]! ---> Reset CacheBr to ",
+                QueryDataNum(plSrv->DBBrVarKeyHandle),
                 plSrv->DBBrVariableHandle, QueryDataNum(plSrv->DBBrVariableHandle),
                 plSrv->DBCacheBrVarHandle, QueryDataNum(plSrv->DBCacheBrVarHandle));
         
         ResetTable (plSrv->DBCacheBrVarHandle);
+        printf ("[%u] \r\n", TableSize(plSrv->DBCacheBrVarHandle));       
     }
     pthread_exit ((void*)0);
 }

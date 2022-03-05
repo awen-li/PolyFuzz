@@ -17,6 +17,7 @@ enum DB_TYPE
     DB_TYPE_SEED_BLOCK,
     DB_TYPE_BR_VARIABLE,
     DB_TYPE_BR_VARIABLE_KEY,
+    DB_TYPE_BR_VAR_CHACHE,
     DB_TYPE_END
 };
 
@@ -46,6 +47,9 @@ DWORD QueryDataByID(DbReq* ptQueryReq, DbAck* pQueryAck);
 
 DWORD DeleteDataByID(DbReq* ptDelReq);
 DWORD DbCreateTable(DWORD dwDataType, DWORD dwDataNum, DWORD dwDataLen, DWORD dwKeyLen);
+DWORD ResetTable (DWORD dwDataType);
+DWORD CopyTable (DWORD dwDstType, DWORD dwSrcType);
+
 
 DWORD QueryDataNum (DWORD dwDataType);
 DWORD TableSize (DWORD dwDataType);

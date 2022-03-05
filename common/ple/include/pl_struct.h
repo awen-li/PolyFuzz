@@ -154,6 +154,7 @@ typedef struct PLServer
     DWORD DBSeedBlockHandle;
     DWORD DBBrVariableHandle;
     DWORD DBBrVarKeyHandle;
+    DWORD DBCacheBrVarHandle;
 
     DWORD CurAlign;
     DWORD GenSeedNum;

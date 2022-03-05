@@ -91,24 +91,29 @@ VOID InitDbTable (PLServer *plSrv)
     plSrv->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
     plSrv->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
     plSrv->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
+    plSrv->DBCacheBrVarHandle =  DB_TYPE_BR_VAR_CHACHE;
 
     InitDb(NULL);
     
     Ret = DbCreateTable(plSrv->DBSeedHandle, 0, sizeof (Seed), 0);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 96);
+    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 64);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 96);
+    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 64);
     assert (Ret != R_FAIL);
 
     Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u]\r\n",
+    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 16*1024, sizeof (BrVariable), 64);
+    assert (Ret != R_FAIL);
+
+    printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
             TableSize (plSrv->DBSeedHandle), TableSize (plSrv->DBSeedBlockHandle),
-            TableSize (plSrv->DBBrVariableHandle), TableSize (plSrv->DBBrVarKeyHandle));
+            TableSize (plSrv->DBBrVariableHandle), TableSize (plSrv->DBBrVarKeyHandle), 
+            TableSize (plSrv->DBCacheBrVarHandle));
     return;
 }
 
@@ -193,7 +198,7 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 }
 
 
-static inline VOID AddBrVarKey (PLServer *plSrv, DWORD Key)
+static inline DWORD AddBrVarKey (PLServer *plSrv, DWORD Key)
 {    
     DbReq Req;
     DbAck Ack;
@@ -211,14 +216,18 @@ static inline VOID AddBrVarKey (PLServer *plSrv, DWORD Key)
 
         DWORD *BrValKey = (DWORD*)(Ack.pDataAddr);
         *BrValKey = Key;
-    }
 
-    return;
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
 }
 
 
 
-static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWORD QItr)
+static inline VOID CacheBrVar (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWORD QItr)
 {    
     DbReq Req;
     DbAck Ack;
@@ -228,7 +237,7 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWOR
     SeedBlock* SBlk = plSrv->CurSdBlk;
     BYTE* SdName = GetSeedName (SBlk->Sd->SName);
 
-    Req.dwDataType = plSrv->DBBrVariableHandle;
+    Req.dwDataType = plSrv->DBCacheBrVarHandle;
     Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SBlk->SIndex, SBlk->Length, Key);
     Req.pKeyCtx    = SKey;
 
@@ -243,6 +252,7 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWOR
 
     while (BrVal->ValIndex < QItr)
     {
+        BrVal->ValideTag[BrVal->ValIndex] = FALSE;
         BrVal->ValIndex++;
     }
 
@@ -260,10 +270,8 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWOR
     
     BrVal->ValNum++;
 
-    DEBUG ("AddBrVariable ->[%u/%u][%u]Key:%s, Value:%u\r\n", (DWORD)BrVal->ValNum, (DWORD)BrVal->ValIndex, Key, SKey, (DWORD)Ov->Value);
-    
-    AddBrVarKey (plSrv, Key);
-    
+    DEBUG ("CacheBrVar ->[%u/%u][%u]Key:%s, Value:%u\r\n", (DWORD)BrVal->ValNum, (DWORD)BrVal->ValIndex, Key, SKey, (DWORD)Ov->Value);
+
     return;
 }
 
@@ -290,6 +298,7 @@ void* DECollect (void *Para)
 
     DWORD QSize = QueueSize ();
     DWORD QItr  = 0;
+    DWORD BrKeyNum = 0;
     while (plSrv->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
@@ -308,8 +317,9 @@ void* DECollect (void *Para)
         {
             ObjValue *OV = (ObjValue *)QN->Buf;
 
-            AddBrVariable (plSrv, QN->TrcKey, OV, QItr);
+            BrKeyNum += AddBrVarKey (plSrv, QN->TrcKey);
 
+            CacheBrVar (plSrv, QN->TrcKey, OV, QItr);
             DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
                     QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
         }
@@ -317,9 +327,25 @@ void* DECollect (void *Para)
         OutQueue (QN);
         QSize = QueueSize ();
         
-    }
-    
+    }   
     DEBUG ("DECollect loop over.....\r\n");
+
+    if (BrKeyNum == 0)
+    {
+        SeedBlock* SBlk = plSrv->CurSdBlk;
+        printf ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
+                GetSeedName (SBlk->Sd->SName),
+                SBlk->SIndex, SBlk->Length);
+    }
+    else
+    {
+        CopyTable (plSrv->DBBrVariableHandle, plSrv->DBCacheBrVarHandle);
+        printf ("[Table%u] DataNum = %u after copy [Table%u][%u]!\r\n", 
+                plSrv->DBBrVariableHandle, QueryDataNum(plSrv->DBBrVariableHandle),
+                plSrv->DBCacheBrVarHandle, QueryDataNum(plSrv->DBCacheBrVarHandle));
+        
+        ResetTable (plSrv->DBCacheBrVarHandle);
+    }
     pthread_exit ((void*)0);
 }
 
@@ -612,7 +638,7 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
 
         if (LearnFailNum == Sd->SeedLen/Align)
         {
-            printf ("@@@ [%s]blocknum:%u, learning fails...!\r\n", plSrv->CurSeedName, Sd->SeedLen/Align);        
+            printf ("@@@GenAllSeeds [%s]blocknum:%u, learning fails...!\r\n", plSrv->CurSeedName, Sd->SeedLen/Align);        
         }
         else
         {

@@ -23,9 +23,10 @@ typedef struct tag_HashNode
 	//BYTE* pKeyArea;                
 	//BYTE* pDataArea;                
 
-	DWORD dwDataId:24;                
-	DWORD dwThrNo:8;                  
-	DWORD dwPailIndex;               
+    DWORD dwDataId;                
+    DWORD dwRealKeyLen;                  
+    DWORD dwPailIndex;
+    DWORD dwRev;
 
 #define KeyArea(node)            ((BYTE*)(node+1))
 #define DataArea(node, keylen)   ((BYTE*)(node+1) + keylen)

@@ -535,6 +535,7 @@ DWORD CreateDataByKey(DbReq* ptCreateReq, DbAck* pCreateAck)
 		return R_FAIL;
 	}
 	memcpy(KeyArea(ptHashNode), ptCreateReq->pKeyCtx, ptCreateReq->dwKeyLen);
+    ptHashNode->dwRealKeyLen = ptCreateReq->dwKeyLen;
 
 	ptHashNode->dwPailIndex = db_HashKey(ptCreateReq->pKeyCtx, ptCreateReq->dwKeyLen)%ptDataTable->dwPailNum;
 
@@ -614,6 +615,85 @@ DWORD DeleteDataByID(DbReq* ptDelReq)
     
 	return R_SUCCESS;
 }
+
+
+DWORD ResetTable (DWORD dwDataType)
+{
+    DWORD dwDataNum;
+    DWORD dwDataLen;
+    DWORD dwKeyLen;
+    DbTable* ptDataTable;
+
+    ptDataTable = db_Type2Table(dwDataType);
+    if(NULL == ptDataTable)
+    {
+        return R_FAIL;
+    }
+    dwDataNum = ptDataTable->dwMaxDataNum;
+    dwDataLen = ptDataTable->dwDataLen;
+    dwKeyLen  = ptDataTable->dwKeyLen;
+    
+    db_DelTable (ptDataTable);
+
+    return DbCreateTable(dwDataType, dwDataNum, dwDataLen, dwKeyLen);
+}
+
+
+DWORD CopyTable (DWORD dwDstType, DWORD dwSrcType)
+{
+    DbTable* ptDstTable, *pstSrcTable;
+
+    ptDstTable = db_Type2Table(dwDstType);
+    if(NULL == ptDstTable)
+    {
+        return R_FAIL;
+    }
+
+    pstSrcTable = db_Type2Table(dwSrcType);
+    if(NULL == pstSrcTable)
+    {
+        return R_FAIL;
+    }
+
+    if(ptDstTable->dwKeyLen != pstSrcTable->dwKeyLen &&
+       ptDstTable->dwDataLen != pstSrcTable->dwDataLen)
+    {
+        return R_FAIL;
+    }
+
+    DataManage *BusyDt = &pstSrcTable->tBusyDataTable;
+    HashNode* ptSrcNode = BusyDt->pHashNodeHdr;
+    while (ptSrcNode != NULL)
+    {
+        DWORD dwHashIndex = db_HashKey(KeyArea(ptSrcNode), ptSrcNode->dwRealKeyLen)%ptDstTable->dwPailNum;
+        HashNode *ptDstNode = db_QueryInsidePail(ptDstTable->ptHashPail+dwHashIndex, KeyArea(ptSrcNode), ptSrcNode->dwRealKeyLen);
+        if (NULL != ptDstNode)
+        {
+            ptSrcNode = ptSrcNode->pDataNxt;
+            continue;
+        }
+        
+        ptDstNode = db_GetIdleNode(ptDstTable);
+        if(NULL == ptDstNode)
+        {
+            return R_FAIL;
+        }
+        
+        memcpy(KeyArea(ptDstNode), KeyArea(ptSrcNode), ptSrcNode->dwRealKeyLen);
+        ptDstNode->dwRealKeyLen = ptSrcNode->dwRealKeyLen;
+
+        memcpy (DataArea(ptDstNode, ptDstTable->dwKeyLen),
+                DataArea(ptSrcNode, pstSrcTable->dwKeyLen), ptDstTable->dwDataLen);
+        
+        ptDstNode->dwPailIndex  = dwHashIndex;
+        db_InsertNode2Pail(ptDstTable, ptDstNode);
+
+        ptSrcNode = ptSrcNode->pDataNxt;
+    }
+
+    return R_SUCCESS;
+}
+
 
 DWORD QueryDataByKey(DbReq* ptQueryReq, DbAck* pQueryAck)
 {

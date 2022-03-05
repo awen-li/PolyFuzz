@@ -242,6 +242,12 @@ static inline VOID AddBrVariable (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWOR
     {
         BrVal->ValIndex++;
     }
+
+    /* In current implementation, we only save one value in an iteration */
+    if (BrVal->ValIndex > QItr)
+    {
+        BrVal->ValIndex = QItr;
+    }
     
     BrVal->Key  = Key;
     BrVal->Type = Ov->Type;
@@ -973,7 +979,6 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 DWORD OFF = 0;
                 MsgH = (MsgHdr *)plSrv->SrvSendBuf;
                 MsgH->MsgType = PL_MSG_ITR_BEGIN;
-                MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
 
                 MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
                 MsgItr->SampleNum = FZ_SAMPLE_NUM;
@@ -990,6 +995,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                     while (OFF < CurSeed->SeedLen)
                     {               
                         MsgItr->SIndex = OFF;
+                        MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
                         
                         /* generate samples by random */
                         GenSamplings (plSrv, CurSeed, MsgItr);

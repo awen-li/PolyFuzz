@@ -294,18 +294,18 @@ static inline BYTE* GetDataByID (DWORD DataType, DWORD DataID)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Thread for dynamic event collection
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline VOID IncLearnStat (PilotData *PD)
+static inline VOID IncLearnStat (PilotData *PD, DWORD BrNum)
 {
     SeedBlock* SBlk = PD->CurSdBlk;
 
     DWORD LearnIndex = SBlk->SIndex/LEARN_BLOCK_SIZE;
     if (LearnIndex < LEARN_BLOCK_NUM)
     {
-        PD->LearnStat[LearnIndex]++;
+        PD->LearnStat[LearnIndex] += BrNum;
     }
     else
     {
-        PD->LearnStat[LEARN_BLOCK_NUM-1]++;
+        PD->LearnStat[LEARN_BLOCK_NUM-1] += BrNum;
     } 
 }
 
@@ -393,7 +393,7 @@ void* DECollect (void *Para)
         ResetTable (DHL->DBCacheBrVarHandle);
         printf ("[%u] \r\n", TableSize(DHL->DBCacheBrVarHandle));
 
-        IncLearnStat (PD);
+        IncLearnStat (PD, BrKeyNum);
     }
     pthread_exit ((void*)0);
 }

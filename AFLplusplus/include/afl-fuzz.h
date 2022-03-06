@@ -851,12 +851,22 @@ typedef enum
 typedef struct pilot_data
 {
     u32 fz_state;
+    u32 seed_id;
 }pilot_data;
 
 
 typedef struct standd_data
 {
     u32 fz_state;
+
+    u8 skipped_fuzz;  
+    u8 exit_1;
+    
+    u64 prev_queued;
+    u32 prev_queued_paths;
+    u32 sync_interval_cnt;
+    u32 runs_in_current_cycle;
+    u32 seek_to;
 }standd_data;
 
 

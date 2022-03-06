@@ -405,7 +405,7 @@ static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
 }
 
  
-static void pl_init (pl_srv_t *pl_srv)
+static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
 {
     pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
     if(pl_srv->socket_fd < 0)  
@@ -426,13 +426,30 @@ static void pl_init (pl_srv_t *pl_srv)
     pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));
 
     /* start from standard fuzzing */
-    pl_srv->run_mode = pl_mode_standard;
+    pl_srv->run_mode = pl_mode_pilot;
+
+    /* init standard data */
+    standd_data *sd = &pl_srv->sd;
+    sd->skipped_fuzz = 0;  
+    sd->exit_1 = !!afl->afl_env.afl_bench_just_one;   
+    sd->prev_queued = 0;
+    sd->prev_queued_paths = 0;
+    sd->sync_interval_cnt = 0;
+    sd->runs_in_current_cycle = (u32)-1;
+    sd->seek_to = 0;
+    sd->fz_state = FZ_S_STARTUP;
+
+    /* init pilot data */
+    pilot_data *pd = &pl_srv->pd;
+    pd->fz_state = FZ_S_STARTUP;
+    pd->seed_id  = 0;
 
     return;
 }
 
-static inline char* pl_recv (pl_srv_t *pl_srv)
+static inline char* pl_recv ()
 {
+    pl_srv_t *pl_srv = &g_pl_srv;
     memset (pl_srv->recv_buf, 0, sizeof(pl_srv->recv_buf));
 
     int sk_len   = sizeof (struct sockaddr_in);
@@ -443,8 +460,9 @@ static inline char* pl_recv (pl_srv_t *pl_srv)
     return pl_srv->recv_buf;
 }
 
-static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
+static inline void pl_send (char *msg, unsigned msg_len)
 {
+    pl_srv_t *pl_srv = &g_pl_srv;
     int sk_len   = sizeof (struct sockaddr_in);
     int send_num = sendto(pl_srv->socket_fd, msg, msg_len, 0, (struct sockaddr *)&pl_srv->addr_serv, sk_len);
     assert (send_num != 0);
@@ -452,128 +470,128 @@ static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
     return;
 }
 
-static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
-
+static inline MsgHdr* format_msg (u32 msg_type)
+{
     pl_srv_t *pl_srv = &g_pl_srv;
 
-    cull_queue(afl);
-    afl->current_entry = 0;
+    MsgHdr *msg_header;
+    msg_header = (MsgHdr *)pl_srv->send_buf;
+    msg_header->MsgType = msg_type;
+    msg_header->MsgLen  = sizeof (MsgHdr);
+    return msg_header;
+}
 
-    int srv_state = FZ_S_STARTUP;
-    MsgHdr *msg_header = NULL;
-    u32 is_exit = false;
-    while (!is_exit)
+static inline void switch_mode (u32 run_mode)
+{
+    pl_srv_t *pl_srv = &g_pl_srv;
+
+    assert (run_mode == pl_mode_pilot || run_mode == pl_mode_standard);
+    pl_srv->run_mode = run_mode;
+    return;
+}
+
+static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
+
+    MsgHdr *msg_header;
+    switch (pd->fz_state)
     {
-        switch (srv_state)
+        case FZ_S_STARTUP:
         {
-            case FZ_S_STARTUP:
+            msg_header = format_msg (PL_MSG_STARTUP);
+            pl_send ((char*)msg_header, msg_header->MsgLen);
+            fprintf (stderr, "[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
+
+            msg_header = (MsgHdr *) pl_recv();
+            assert (msg_header->MsgType == PL_MSG_STARTUP);
+            fprintf (stderr, "[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
+
+            /* change to SRV_S_SEEDRCV */
+            pd->fz_state = FZ_S_SEEDSEND;
+            break;
+        }
+        case FZ_S_SEEDSEND:
+        {
+            if (pd->seed_id >= afl->queued_paths)
             {
-                msg_header = (MsgHdr *)pl_srv->send_buf;
-                msg_header->MsgType = PL_MSG_STARTUP;
-                msg_header->MsgLen  = sizeof (MsgHdr);
-                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                fprintf (stderr, "[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
-
-                msg_header = (MsgHdr *) pl_recv(pl_srv);
-                assert (msg_header->MsgType == PL_MSG_STARTUP);
-                fprintf (stderr, "[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
-
-                /* change to SRV_S_SEEDRCV */
-                srv_state = FZ_S_SEEDSEND;
+                pd->fz_state = FZ_S_FIN;
                 break;
             }
-            case FZ_S_SEEDSEND:
+
+            msg_header = format_msg (PL_MSG_SEED);
+            MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
+            msg_seed->SeedKey = afl->current_entry;       
+            char* seed_path   = (char*) (msg_seed + 1);
+
+            afl->queue_cur = afl->queue_buf[afl->current_entry];
+                
+            char *cur_dir = get_current_dir_name ();
+            sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
+            msg_seed->SeedLength = strlen (seed_path)+1;
+                
+            msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
+
+            pl_send ((char*)msg_header, msg_header->MsgLen);
+            fprintf (stderr, "[%u/%u][FZ-SEEDSEND] send PL_MSG_SEED: %s\r\n", 
+                     pd->seed_id, afl->queued_paths, seed_path);
+                
+            pd->fz_state = FZ_S_ITB;
+            ++pd->seed_id;
+            break;
+        }
+        case FZ_S_ITB:
+        { 
+            while (true)
             {
-                if (afl->current_entry >= afl->queued_paths)
+                msg_header = (MsgHdr *) pl_recv();
+                if (msg_header->MsgType == PL_MSG_ITR_END)
                 {
-                    srv_state = FZ_S_FIN;
                     break;
                 }
+                assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
 
-                msg_header = (MsgHdr *)pl_srv->send_buf;
-                msg_header->MsgType = PL_MSG_SEED;
-                msg_header->MsgLen  = sizeof (MsgHdr);
+                afl->msg_itb = (MsgIB*)(msg_header + 1);
+                //fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u [%u]\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
 
-                MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
-                msg_seed->SeedKey = afl->current_entry;       
-                char* seed_path   = (char*) (msg_seed + 1);
+                /////////////////////
+                //  conduct fuzzing
+                /////////////////////                   
+                fuzz_one(afl);
 
-                afl->queue_cur = afl->queue_buf[afl->current_entry];
+                msg_header = format_msg (PL_MSG_ITR_BEGIN);
+                pl_send ((char*)msg_header, msg_header->MsgLen);
+                //fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u [%u] (done)\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
+            }
                 
-                char *cur_dir = get_current_dir_name ();
-                sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
-                msg_seed->SeedLength = strlen (seed_path)+1;
-                
-                msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
+            pd->fz_state = FZ_S_ITE;
+            break;
+        }
+        case FZ_S_ITE:
+        {
+            pd->fz_state = FZ_S_SEEDSEND;
+            break;
+        }
+        case FZ_S_FIN:
+        {
+            msg_header = format_msg (PL_MSG_FZ_FIN);
+            pl_send ((char*)msg_header, msg_header->MsgLen);
+            fprintf (stderr, "[FZ-FIN] send PL_MSG_FZ_FIN...\r\n");
 
-                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                fprintf (stderr, "[%u/%u][FZ-SEEDSEND] send PL_MSG_SEED: %s\r\n", 
-                         afl->current_entry, afl->queued_paths, seed_path);
-                
-                srv_state = FZ_S_ITB;
-                ++afl->current_entry;
-                break;
-            }
-            case FZ_S_ITB:
-            { 
-                while (true)
-                {
-                    msg_header = (MsgHdr *) pl_recv(pl_srv);
-                    if (msg_header->MsgType == PL_MSG_ITR_END)
-                    {
-                        break;
-                    }
-                    assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
-
-                    afl->msg_itb = (MsgIB*)(msg_header + 1);
-                    //fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u [%u]\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
-
-                    /////////////////////
-                    //  conduct fuzzing
-                    /////////////////////                   
-                    fuzz_one(afl);
-
-                    msg_header = (MsgHdr *)pl_srv->send_buf;
-                    msg_header->MsgType = PL_MSG_ITR_BEGIN;
-                    msg_header->MsgLen  = sizeof (MsgHdr);
-                    pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-                    //fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u [%u] (done)\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
-                }
-                
-                srv_state = FZ_S_ITE;
-                break;
-            }
-            case FZ_S_ITE:
-            {
-                srv_state = FZ_S_SEEDSEND;
-                break;
-            }
-            case FZ_S_FIN:
-            {
-                msg_header = (MsgHdr *)pl_srv->send_buf;
-                msg_header->MsgType = PL_MSG_FZ_FIN;
-                msg_header->MsgLen  = sizeof (MsgHdr);
-                pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
-
-                fprintf (stderr, "[FZ-FIN] send PL_MSG_FZ_FIN...\r\n");
-                    
-                is_exit = true;
-                break;
-            }
-            default:
-            {
-                assert (0);
-            }
+            pd->fz_state = FZ_S_SEEDSEND;
+            switch_mode (pl_mode_standard);
+            break;
+        }
+        default:
+        {
+            assert (0);
         }
     }
-
 
     return;
 }
 
 
 
-static inline u32 pl_fuzzing_loop (afl_state_t *afl) {
+static inline u32 pl_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
     switch (afl->pl_fuzzing_type)
     {
         case PL_SYNTAX_FZ:
@@ -583,7 +601,7 @@ static inline u32 pl_fuzzing_loop (afl_state_t *afl) {
         }
         case PL_SEMANTIC_FZ:
         {
-            pl_semantic_fuzzing_loop (afl);
+            pl_semantic_fuzzing_loop (pd, afl);
             break;
         }
         default:
@@ -596,97 +614,79 @@ static inline u32 pl_fuzzing_loop (afl_state_t *afl) {
 }
 
 
-static inline u32 standard_fuzzing_loop (afl_state_t *afl) {
-    u8  skipped_fuzz;  
-    u8 exit_1 = !!afl->afl_env.afl_bench_just_one;
+static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
+   
+    if (unlikely(afl->old_seed_selection)) sd->seek_to = find_start_position(afl);
     
-    u64 prev_queued = 0;
-    u32 prev_queued_paths = 0;
-    u32 sync_interval_cnt = 0;
-    u32 runs_in_current_cycle = (u32)-1;
-    u32 seek_to = 0;
+    cull_queue(afl);
 
-    if (unlikely(afl->old_seed_selection)) seek_to = find_start_position(afl);
-    
-    while (likely(!afl->stop_soon)) {
+    if (unlikely((!afl->old_seed_selection &&
+                  sd->runs_in_current_cycle > afl->queued_paths) ||
+                  (afl->old_seed_selection && !afl->queue_cur))) {
 
-        cull_queue(afl);
+        if (unlikely((afl->last_sync_cycle < afl->queue_cycle ||
+                    (!afl->queue_cycle && afl->afl_env.afl_import_first)) && afl->sync_id)) {
 
-        if (unlikely((!afl->old_seed_selection &&
-                    runs_in_current_cycle > afl->queued_paths) ||
-                    (afl->old_seed_selection && !afl->queue_cur))) {
+            sync_fuzzers(afl);
 
-            if (unlikely((afl->last_sync_cycle < afl->queue_cycle ||
-                          (!afl->queue_cycle && afl->afl_env.afl_import_first)) && afl->sync_id)) {
+        }
 
-                sync_fuzzers(afl);
+        ++afl->queue_cycle;
+        sd->runs_in_current_cycle = (u32)-1;
+        afl->cur_skipped_paths = 0;
 
+        if (unlikely(afl->old_seed_selection)) {
+
+            afl->current_entry = 0;
+            while (unlikely(afl->current_entry < afl->queued_paths &&
+                            afl->queue_buf[afl->current_entry]->disabled)) {
+
+                ++afl->current_entry;
             }
 
-            ++afl->queue_cycle;
-            runs_in_current_cycle = (u32)-1;
-            afl->cur_skipped_paths = 0;
+            if (afl->current_entry >= afl->queued_paths) { afl->current_entry = 0; }
 
-            if (unlikely(afl->old_seed_selection)) {
+            afl->queue_cur = afl->queue_buf[afl->current_entry];
 
-                afl->current_entry = 0;
-                while (unlikely(afl->current_entry < afl->queued_paths &&
-                                afl->queue_buf[afl->current_entry]->disabled)) {
+            if (unlikely(sd->seek_to)) {
 
-                    ++afl->current_entry;
-
+                if (unlikely(sd->seek_to >= afl->queued_paths)) {
+                    // This should never happen.
+                    FATAL("BUG: seek_to location out of bounds!\n");
                 }
 
-                if (afl->current_entry >= afl->queued_paths) { afl->current_entry = 0; }
+                afl->current_entry = sd->seek_to;
+                afl->queue_cur = afl->queue_buf[sd->seek_to];
+                sd->seek_to = 0;
+            }
 
-                afl->queue_cur = afl->queue_buf[afl->current_entry];
+        }
 
-                if (unlikely(seek_to)) {
+        if (unlikely(afl->not_on_tty)) {
 
-                    if (unlikely(seek_to >= afl->queued_paths)) {
-                        // This should never happen.
-                        FATAL("BUG: seek_to location out of bounds!\n");
-                    }
+            ACTF("Entering queue cycle %llu.", afl->queue_cycle);
+            fflush(stdout);
+        }
 
-                    afl->current_entry = seek_to;
-                    afl->queue_cur = afl->queue_buf[seek_to];
-                    seek_to = 0;
+        /* If we had a full queue cycle with no new finds, try
+            recombination strategies next. */
 
+        if (unlikely(afl->queued_paths == sd->prev_queued
+            /* FIXME TODO BUG: && (get_cur_time() - afl->start_time) >= 3600 */)) {
+            if (afl->use_splicing) {
+
+                ++afl->cycles_wo_finds;
+                if (unlikely(afl->shm.cmplog_mode && afl->cmplog_max_filesize < MAX_FILE)) {
+                    afl->cmplog_max_filesize <<= 4;
                 }
 
-            }
+                switch (afl->expand_havoc) {
 
-            if (unlikely(afl->not_on_tty)) {
-
-                ACTF("Entering queue cycle %llu.", afl->queue_cycle);
-                fflush(stdout);
-
-            }
-
-            /* If we had a full queue cycle with no new finds, try
-               recombination strategies next. */
-
-            if (unlikely(afl->queued_paths == prev_queued
-                   /* FIXME TODO BUG: && (get_cur_time() - afl->start_time) >=
-                      3600 */)) {
-
-                if (afl->use_splicing) {
-
-                    ++afl->cycles_wo_finds;
-
-                    if (unlikely(afl->shm.cmplog_mode &&
-                        afl->cmplog_max_filesize < MAX_FILE)) {
-
-                        afl->cmplog_max_filesize <<= 4;
-                    }
-
-                    switch (afl->expand_havoc) {
-
-                        case 0:
+                    case 0:
                           // this adds extra splicing mutation options to havoc mode
                           afl->expand_havoc = 1;
                           break;
-                        case 1:
+                    case 1:
                           // add MOpt mutator
                           /*
                           if (afl->limit_time_sig == 0 && !afl->custom_only &&
@@ -701,28 +701,28 @@ static inline u32 standard_fuzzing_loop (afl_state_t *afl) {
                           afl->expand_havoc = 2;
                           if (afl->cmplog_lvl && afl->cmplog_lvl < 2) afl->cmplog_lvl = 2;
                           break;
-                        case 2:
+                    case 2:
                           // increase havoc mutations per fuzz attempt
                           afl->havoc_stack_pow2++;
                           afl->expand_havoc = 3;
                           break;
-                        case 3:
+                    case 3:
                           // further increase havoc mutations per fuzz attempt
                           afl->havoc_stack_pow2++;
                           afl->expand_havoc = 4;
                           break;
-                        case 4:
+                    case 4:
                           afl->expand_havoc = 5;
                           // if (afl->cmplog_lvl && afl->cmplog_lvl < 3) afl->cmplog_lvl =
                           // 3;
                           break;
-                        case 5:
+                    case 5:
                           // nothing else currently
                           break;
 
-                    }
+                }
 
-                } else {
+            } else {
 
                     #ifndef NO_SPLICING
                           afl->use_splicing = 1;
@@ -730,138 +730,119 @@ static inline u32 standard_fuzzing_loop (afl_state_t *afl) {
                           afl->use_splicing = 0;
                     #endif
 
-                }
-
-            } else {
-
-                afl->cycles_wo_finds = 0;
-
             }
 
-  #ifdef INTROSPECTION
-            fprintf(afl->introspection_file,
-                    "CYCLE cycle=%llu cycle_wo_finds=%llu expand_havoc=%u queue=%u\n",
-                    afl->queue_cycle, afl->cycles_wo_finds, afl->expand_havoc,
-                    afl->queued_paths);
-  #endif
+        } else {
 
-            if (afl->cycle_schedules) {
-
-                /* we cannot mix non-AFLfast schedules with others */
-                switch (afl->schedule) {
-
-                      case EXPLORE:
-                        afl->schedule = EXPLOIT;
-                        break;
-                      case EXPLOIT:
-                        afl->schedule = MMOPT;
-                        break;
-                      case MMOPT:
-                        afl->schedule = SEEK;
-                        break;
-                      case SEEK:
-                        afl->schedule = EXPLORE;
-                        break;
-                      case FAST:
-                        afl->schedule = COE;
-                        break;
-                      case COE:
-                        afl->schedule = LIN;
-                        break;
-                      case LIN:
-                        afl->schedule = QUAD;
-                        break;
-                      case QUAD:
-                        afl->schedule = RARE;
-                        break;
-                      case RARE:
-                        afl->schedule = FAST;
-                        break;
-
-                }
-
-                // we must recalculate the scores of all queue entries
-                for (u32 i = 0; i < afl->queued_paths; i++) {
-
-                    if (likely(!afl->queue_buf[i]->disabled)) {
-                        update_bitmap_score(afl, afl->queue_buf[i]);
-                    }
-
-                }
-
-            }
-
-            prev_queued = afl->queued_paths;
+            afl->cycles_wo_finds = 0;
 
         }
 
-        ++runs_in_current_cycle;
+  #ifdef INTROSPECTION
+        fprintf(afl->introspection_file,
+                "CYCLE cycle=%llu cycle_wo_finds=%llu expand_havoc=%u queue=%u\n",
+                afl->queue_cycle, afl->cycles_wo_finds, afl->expand_havoc,
+                afl->queued_paths);
+  #endif
 
-        do {
+        if (afl->cycle_schedules) {
 
-            if (likely(!afl->old_seed_selection)) {
+            /* we cannot mix non-AFLfast schedules with others */
+            switch (afl->schedule) {
 
-                if (unlikely(prev_queued_paths < afl->queued_paths || afl->reinit_table)) {
+                case EXPLORE:
+                        afl->schedule = EXPLOIT;
+                        break;
+                case EXPLOIT:
+                        afl->schedule = MMOPT;
+                        break;
+                case MMOPT:
+                        afl->schedule = SEEK;
+                        break;
+                case SEEK:
+                        afl->schedule = EXPLORE;
+                        break;
+                case FAST:
+                        afl->schedule = COE;
+                        break;
+                case COE:
+                        afl->schedule = LIN;
+                        break;
+                case LIN:
+                        afl->schedule = QUAD;
+                        break;
+                case QUAD:
+                        afl->schedule = RARE;
+                        break;
+                case RARE:
+                        afl->schedule = FAST;
+                        break;
+            }
 
-                    // we have new queue entries since the last run, recreate alias table
-                     prev_queued_paths = afl->queued_paths;
-                     create_alias_table(afl);
+            // we must recalculate the scores of all queue entries
+            for (u32 i = 0; i < afl->queued_paths; i++) {
+                if (likely(!afl->queue_buf[i]->disabled)) {
+                    update_bitmap_score(afl, afl->queue_buf[i]);
                 }
+            }
 
-                afl->current_entry = select_next_queue_entry(afl);
+        }
+
+        sd->prev_queued = afl->queued_paths;
+
+    }
+
+    ++sd->runs_in_current_cycle;
+
+    do {
+        if (likely(!afl->old_seed_selection)) {
+
+            if (unlikely(sd->prev_queued_paths < afl->queued_paths || afl->reinit_table)) {
+                // we have new queue entries since the last run, recreate alias table
+                sd->prev_queued_paths = afl->queued_paths;
+                create_alias_table(afl);
+            }
+
+            afl->current_entry = select_next_queue_entry(afl);
+            afl->queue_cur = afl->queue_buf[afl->current_entry];
+
+        }
+
+        sd->skipped_fuzz = fuzz_one(afl);
+
+        if (unlikely(!afl->stop_soon && sd->exit_1)) { afl->stop_soon = 2; }
+
+        if (unlikely(afl->old_seed_selection)) {
+
+            while (++afl->current_entry < afl->queued_paths &&
+                   afl->queue_buf[afl->current_entry]->disabled);
+            if (unlikely(afl->current_entry >= afl->queued_paths ||
+                         afl->queue_buf[afl->current_entry] == NULL ||
+                         afl->queue_buf[afl->current_entry]->disabled))
+                afl->queue_cur = NULL;
+            else
                 afl->queue_cur = afl->queue_buf[afl->current_entry];
 
-            }
+        }
 
-            skipped_fuzz = fuzz_one(afl);
+    } while (sd->skipped_fuzz && afl->queue_cur && !afl->stop_soon);
 
-            if (unlikely(!afl->stop_soon && exit_1)) { afl->stop_soon = 2; }
+    if (likely(!afl->stop_soon && afl->sync_id)) {
 
-            if (unlikely(afl->old_seed_selection)) {
-
-                while (++afl->current_entry < afl->queued_paths &&
-                       afl->queue_buf[afl->current_entry]->disabled);
-                if (unlikely(afl->current_entry >= afl->queued_paths ||
-                    afl->queue_buf[afl->current_entry] == NULL ||
-                    afl->queue_buf[afl->current_entry]->disabled))
-                        afl->queue_cur = NULL;
-                else
-                        afl->queue_cur = afl->queue_buf[afl->current_entry];
-
-            }
-
-        } while (skipped_fuzz && afl->queue_cur && !afl->stop_soon);
-
-        if (likely(!afl->stop_soon && afl->sync_id)) {
-
-            if (likely(afl->skip_deterministic)) {
-
-                if (unlikely(afl->is_main_node)) {
-
-                    if (unlikely(get_cur_time() > (SYNC_TIME >> 1) + afl->last_sync_time)) {
-
-                        if (!(sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
+        if (likely(afl->skip_deterministic)) {
+            if (unlikely(afl->is_main_node)) {
+                if (unlikely(get_cur_time() > (SYNC_TIME >> 1) + afl->last_sync_time)) {
+                    if (!(sd->sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
                             sync_fuzzers(afl);
-                        }
-
                     }
-
-                } else {
-
-                    if (unlikely(get_cur_time() > SYNC_TIME + afl->last_sync_time)) {
-
-                        if (!(sync_interval_cnt++ % SYNC_INTERVAL)) { sync_fuzzers(afl); }
-
-                    }
-
                 }
-
             } else {
-
-                sync_fuzzers(afl);
-
+                if (unlikely(get_cur_time() > SYNC_TIME + afl->last_sync_time)) {
+                    if (!(sd->sync_interval_cnt++ % SYNC_INTERVAL)) { sync_fuzzers(afl); }
+                }
             }
-
+        } else {
+            sync_fuzzers(afl);
         }
 
     }
@@ -875,7 +856,7 @@ static inline u32 standard_fuzzing_loop (afl_state_t *afl) {
 
 static inline void main_fuzzing_loop (afl_state_t *afl) {
     pl_srv_t *pl_srv = &g_pl_srv;
-    pl_init (pl_srv);
+    pl_init (pl_srv, afl);
     
     while (likely(!afl->stop_soon)) {
 
@@ -883,12 +864,12 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
         {
             case pl_mode_pilot:
             {
-                pl_fuzzing_loop(afl);
+                pl_fuzzing_loop(&pl_srv->pd, afl);
                 break;
             }
             case pl_mode_standard:
             {
-                standard_fuzzing_loop(afl);
+                standard_fuzzing_loop(&pl_srv->sd, afl);
                 break;
             }
             default:
@@ -2486,12 +2467,6 @@ int main(int argc, char **argv_orig, char **envp) {
   setvbuf(afl->introspection_file, NULL, _IONBF, 0);
   OKF("Writing mutation introspection to '%s'", ifn);
   #endif
-
-  if (afl->pl_fuzzing_type == PL_SYNTAX_FZ ||
-      afl->pl_fuzzing_type == PL_SEMANTIC_FZ) {
-    pl_fuzzing_loop (afl);
-    goto stop_fuzzing;
-  }
 
   DEBUG_PRINT("Run into fuzzing loop....\r\n");
   main_fuzzing_loop (afl);

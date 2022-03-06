@@ -451,28 +451,21 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
     cull_queue(afl);
     afl->current_entry = 0;
 
-    int srv_state = FZ_S_INIT;
+    int srv_state = FZ_S_STARTUP;
     MsgHdr *msg_header = NULL;
     u32 is_exit = false;
     while (!is_exit)
     {
         switch (srv_state)
         {
-            case FZ_S_INIT:
+            case FZ_S_STARTUP:
             {
                 msg_header = (MsgHdr *)pl_srv->msg_buf;
                 msg_header->MsgType = PL_MSG_STARTUP;
                 msg_header->MsgLen  = sizeof (MsgHdr);
-
                 pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
                 fprintf (stderr, "[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
 
-                /* change to FZ_S_STARTUP */
-                srv_state = FZ_S_STARTUP;
-                break;
-            }
-            case FZ_S_STARTUP:
-            {
                 msg_header = (MsgHdr *) pl_recv(pl_srv);
                 assert (msg_header->MsgType == PL_MSG_STARTUP);
                 fprintf (stderr, "[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
@@ -494,7 +487,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                 msg_header->MsgLen  = sizeof (MsgHdr);
 
                 MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
-                msg_seed->SeedKey = 1111;       
+                msg_seed->SeedKey = afl->current_entry;       
                 char* seed_path   = (char*) (msg_seed + 1);
 
                 afl->queue_cur = afl->queue_buf[afl->current_entry];

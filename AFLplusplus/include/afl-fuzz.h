@@ -840,8 +840,7 @@ typedef struct pl_srv
 
 typedef enum
 {
-    FZ_S_INIT = 0,
-    FZ_S_STARTUP,
+    FZ_S_STARTUP = 0,
     FZ_S_SEEDRCV,
     FZ_S_SEEDSEND,
     FZ_S_ITB,

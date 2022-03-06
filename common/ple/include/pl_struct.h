@@ -34,6 +34,7 @@ typedef struct _Seed_
     DWORD SeedSDLen;
 
     List SdBlkList;
+    DWORD IsLearned;
 } Seed;
 
 
@@ -101,20 +102,12 @@ typedef struct BsValue
 
 typedef enum
 {
-    SRV_S_INIT = 0,
-    SRV_S_STARTUP,
+    SRV_S_STARTUP = 0,
     SRV_S_SEEDRCV,
     SRV_S_ITB,
     SRV_S_ITE,
     SRV_S_FIN
 }SRV_STATE;
-
-
-typedef enum
-{
-    RUNMOD_PILOT=1,
-    RUNMOD_OFFICIAL=2,
-}RUNMOD;
 
 
 typedef struct PLOption
@@ -124,8 +117,10 @@ typedef struct PLOption
     DWORD LnThrNum;
     DWORD TryLength;
     BYTE  *BvDir;
-}PLOption;
 
+    DWORD SeedBlock[8];
+    DWORD SeedBlockNum;
+}PLOption;
 
 typedef struct ThrData
 {
@@ -143,6 +138,50 @@ typedef struct ThrResrc
     mutex_lock_t RnLock;
 }ThrResrc;
 
+typedef struct SocketInfo
+{
+    INT SockFd;
+    struct sockaddr_in ClientAddr;
+    BYTE SrvSendBuf[SRV_BUF_LEN];
+    BYTE SrvRecvBuf[SRV_BUF_LEN];
+}SocketInfo;
+
+typedef struct DB_HANDLE
+{
+    DWORD DBSeedHandle;
+    DWORD DBSeedBlockHandle;
+    DWORD DBBrVariableHandle;
+    DWORD DBBrVarKeyHandle;
+    DWORD DBCacheBrVarHandle;
+}DbHandle;
+
+typedef enum
+{
+    RUNMOD_PILOT=1,
+    RUNMOD_OFFICIAL=2,
+    //////////////////////////////
+    RUNMOD_NUM=RUNMOD_OFFICIAL,
+}RUNMOD;
+
+
+typedef struct PilotData
+{
+    DWORD SrvState;
+    DWORD FzExit;
+    
+    PLOption *PLOP;
+    DbHandle  *DHL;
+
+    Seed *CurSeed;
+    SeedBlock* CurSdBlk;
+    
+    BYTE* CurSeedName;
+    DWORD CurAlign;
+    DWORD GenSeedNum;    
+    BYTE NewSeedPath[FZ_SEED_NAME_LEN];
+
+    DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
+}PilotData;
 
 typedef struct PLServer
 {
@@ -150,31 +189,16 @@ typedef struct PLServer
     ThrResrc LearnThrs;
 
     DWORD RunMode;
+    PilotData PD;
+
+    SocketInfo SkInfo;
+    DbHandle   DHL;
+
     
-    INT SockFd;
-    struct sockaddr_in ClientAddr;
-    BYTE SrvSendBuf[SRV_BUF_LEN];
-    BYTE SrvRecvBuf[SRV_BUF_LEN];
-
-    DWORD SeedBlock[8];
-    DWORD SeedBlockNum;
-
-    DWORD FzExit;
-    SeedBlock* CurSdBlk;
-
-    DWORD DBSeedHandle;
-    DWORD DBSeedBlockHandle;
-    DWORD DBBrVariableHandle;
-    DWORD DBBrVarKeyHandle;
-    DWORD DBCacheBrVarHandle;
-
-    DWORD CurAlign;
-    DWORD GenSeedNum;
-    BYTE* CurSeedName;
-    BYTE NewSeedPath[FZ_SEED_NAME_LEN];
+    
 
 
-    DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
+    
 }PLServer;
 
 

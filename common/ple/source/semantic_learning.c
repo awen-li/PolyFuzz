@@ -12,7 +12,7 @@ BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Thread for ALF++ fuzzing process
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-void* PilotFuzzingProc (void *Para)
+void* FuzzingProc (void *Para)
 {
     BYTE* DriverDir = (BYTE *)Para;    
     BYTE Cmd[1024];
@@ -29,10 +29,10 @@ void* PilotFuzzingProc (void *Para)
 /// ple SERVER setup
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define AFL_PL_SOCKET_PORT   ("9999")
-static inline DWORD SrvInit (PLServer *plSrv)
+static inline DWORD SrvInit (SocketInfo *SkInfo)
 {
-    plSrv->SockFd = socket(AF_INET, SOCK_DGRAM, 0);
-    if(plSrv->SockFd < 0)
+    SkInfo->SockFd = socket(AF_INET, SOCK_DGRAM, 0);
+    if(SkInfo->SockFd < 0)
     {
         DEBUG ("Create socket fail....\r\n");
         return R_FAIL;
@@ -47,9 +47,9 @@ static inline DWORD SrvInit (PLServer *plSrv)
     addr_serv.sin_addr.s_addr = htonl(INADDR_ANY);
     len = sizeof(addr_serv);
     
-    if(bind(plSrv->SockFd, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
+    if(bind(SkInfo->SockFd, (struct sockaddr *)&addr_serv, sizeof(addr_serv)) < 0)
     {
-        DEBUG ("Bind socket to port[%d] fail....\r\n", plSrv->SockFd);
+        DEBUG ("Bind socket to port[%d] fail....\r\n", SkInfo->SockFd);
         return R_FAIL;
     }
 
@@ -58,22 +58,22 @@ static inline DWORD SrvInit (PLServer *plSrv)
 }
 
 
-static inline BYTE* Recv (PLServer *plSrv)
+static inline BYTE* Recv (SocketInfo *SkInfo)
 {
-    memset (plSrv->SrvRecvBuf, 0, sizeof(plSrv->SrvRecvBuf));
+    memset (SkInfo->SrvRecvBuf, 0, sizeof(SkInfo->SrvRecvBuf));
 
     INT SkLen   = sizeof (struct sockaddr_in);
-    INT RecvNum = recvfrom(plSrv->SockFd, plSrv->SrvRecvBuf, sizeof(plSrv->SrvRecvBuf), 
-                           0, (struct sockaddr *)&plSrv->ClientAddr, (socklen_t *)&SkLen);
+    INT RecvNum = recvfrom(SkInfo->SockFd, SkInfo->SrvRecvBuf, sizeof(SkInfo->SrvRecvBuf), 
+                           0, (struct sockaddr *)&SkInfo->ClientAddr, (socklen_t *)&SkLen);
     assert (RecvNum != 0);
 
-    return plSrv->SrvRecvBuf;
+    return SkInfo->SrvRecvBuf;
 }
 
-static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
+static inline VOID Send (SocketInfo *SkInfo, BYTE* Data, DWORD DataLen)
 {
     INT SkLen   = sizeof (struct sockaddr_in);
-    INT SendNum = sendto(plSrv->SockFd, Data, DataLen, 0, (struct sockaddr *)&plSrv->ClientAddr, SkLen);
+    INT SendNum = sendto(SkInfo->SockFd, Data, DataLen, 0, (struct sockaddr *)&SkInfo->ClientAddr, SkLen);
     assert (SendNum != 0);
 
     return;
@@ -86,44 +86,45 @@ static inline VOID Send (PLServer *plSrv, BYTE* Data, DWORD DataLen)
 VOID InitDbTable (PLServer *plSrv)
 {
     DWORD Ret;
+    DbHandle *DHL = &plSrv->DHL;
 
-    plSrv->DBSeedHandle       = DB_TYPE_SEED;
-    plSrv->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
-    plSrv->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
-    plSrv->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
-    plSrv->DBCacheBrVarHandle =  DB_TYPE_BR_VAR_CHACHE;
+    DHL->DBSeedHandle       = DB_TYPE_SEED;
+    DHL->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
+    DHL->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
+    DHL->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
+    DHL->DBCacheBrVarHandle =  DB_TYPE_BR_VAR_CHACHE;
 
     InitDb(NULL);
     
-    Ret = DbCreateTable(plSrv->DBSeedHandle, 0, sizeof (Seed), 0);
+    Ret = DbCreateTable(DHL->DBSeedHandle, 0, sizeof (Seed), 0);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 48);
+    Ret = DbCreateTable(DHL->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 48);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 48);
+    Ret = DbCreateTable(DHL->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
+    Ret = DbCreateTable(DHL->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(plSrv->DBCacheBrVarHandle, 8*1024, sizeof (BrVariable), 48);
+    Ret = DbCreateTable(DHL->DBCacheBrVarHandle, 8*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
     printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
-            TableSize (plSrv->DBSeedHandle), TableSize (plSrv->DBSeedBlockHandle),
-            TableSize (plSrv->DBBrVariableHandle), TableSize (plSrv->DBBrVarKeyHandle), 
-            TableSize (plSrv->DBCacheBrVarHandle));
+            TableSize (DHL->DBSeedHandle), TableSize (DHL->DBSeedBlockHandle),
+            TableSize (DHL->DBBrVariableHandle), TableSize (DHL->DBBrVarKeyHandle), 
+            TableSize (DHL->DBCacheBrVarHandle));
     return;
 }
 
 
-static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
+static inline Seed* AddSeed (BYTE* SeedName)
 {    
     DbReq Req;
     DbAck Ack;
 
-    Req.dwDataType = plSrv->DBSeedHandle;
+    Req.dwDataType = DB_TYPE_SEED;
     Req.dwKeyLen   = 0;
     
     DWORD Ret = CreateDataNonKey (&Req, &Ack);
@@ -131,6 +132,7 @@ static inline Seed* AddSeed (PLServer *plSrv, BYTE* SeedName)
 
     Seed* Sn = (Seed*)(Ack.pDataAddr);
     strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
+    Sn->IsLearned = FALSE;
 
     return Sn;
 }
@@ -166,7 +168,7 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
 }
 
 
-static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
+static inline SeedBlock* AddSeedBlock (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
 {    
     DbReq Req;
     DbAck Ack;
@@ -174,7 +176,7 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 
     BYTE* SdName = GetSeedName (CurSeed->SName);
 
-    Req.dwDataType = plSrv->DBSeedBlockHandle;
+    Req.dwDataType = PD->DHL->DBSeedBlockHandle;
     Req.dwKeyLen = snprintf (SKey, sizeof (SKey), "%s-%u-%u", SdName, MsgItr->SIndex, MsgItr->Length);
     Req.pKeyCtx  = SKey;
 
@@ -198,13 +200,13 @@ static inline SeedBlock* AddSeedBlock (PLServer *plSrv, Seed* CurSeed, MsgIB *Ms
 }
 
 
-static inline DWORD AddBrVarKey (PLServer *plSrv, DWORD Key)
+static inline DWORD AddBrVarKey (PilotData *PD, DWORD Key)
 {    
     DbReq Req;
     DbAck Ack;
     DWORD Ret;
 
-    Req.dwDataType = plSrv->DBBrVarKeyHandle;
+    Req.dwDataType = PD->DHL->DBBrVarKeyHandle;
     Req.dwKeyLen   = sizeof (DWORD);
     Req.pKeyCtx    = (BYTE*)&Key;
 
@@ -227,17 +229,17 @@ static inline DWORD AddBrVarKey (PLServer *plSrv, DWORD Key)
 
 
 
-static inline VOID CacheBrVar (PLServer *plSrv, DWORD Key, ObjValue *Ov, DWORD QItr)
+static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QItr)
 {    
     DbReq Req;
     DbAck Ack;
     DWORD Ret;
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
-    SeedBlock* SBlk = plSrv->CurSdBlk;
+    SeedBlock* SBlk = PD->CurSdBlk;
     BYTE* SdName = GetSeedName (SBlk->Sd->SName);
 
-    Req.dwDataType = plSrv->DBCacheBrVarHandle;
+    Req.dwDataType = PD->DHL->DBCacheBrVarHandle;
     Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SBlk->SIndex, SBlk->Length, Key);
     Req.pKeyCtx    = SKey;
 
@@ -292,27 +294,27 @@ static inline BYTE* GetDataByID (DWORD DataType, DWORD DataID)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Thread for dynamic event collection
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline VOID IncLearnStat (PLServer *plSrv)
+static inline VOID IncLearnStat (PilotData *PD)
 {
-    SeedBlock* SBlk = plSrv->CurSdBlk;
+    SeedBlock* SBlk = PD->CurSdBlk;
 
     DWORD LearnIndex = SBlk->SIndex/LEARN_BLOCK_SIZE;
     if (LearnIndex < LEARN_BLOCK_NUM)
     {
-        plSrv->LearnStat[LearnIndex]++;
+        PD->LearnStat[LearnIndex]++;
     }
     else
     {
-        plSrv->LearnStat[LEARN_BLOCK_NUM-1]++;
+        PD->LearnStat[LEARN_BLOCK_NUM-1]++;
     } 
 }
 
-static inline VOID ShowLearnStat (PLServer *plSrv)
+static inline VOID ShowLearnStat (PilotData *PD)
 {
     printf ("******************************  ShowLearnStat  ******************************\r\n");
     for (DWORD ix = 0; ix < LEARN_BLOCK_NUM; ix++)
     {
-        DWORD Stat  = plSrv->LearnStat [ix];
+        DWORD Stat  = PD->LearnStat [ix];
         if (Stat == 0)
         {
             continue;
@@ -335,12 +337,13 @@ static inline VOID ShowLearnStat (PLServer *plSrv)
 
 void* DECollect (void *Para)
 {
-    PLServer *plSrv = (PLServer*)Para;
+    PilotData *PD   = (PilotData*)Para;
+    DbHandle *DHL = PD->DHL;
 
     DWORD QSize = QueueSize ();
     DWORD QItr  = 0;
     DWORD BrKeyNum = 0;
-    while (plSrv->FzExit == FALSE || QSize != 0)
+    while (PD->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
@@ -358,9 +361,9 @@ void* DECollect (void *Para)
         {
             ObjValue *OV = (ObjValue *)QN->Buf;
 
-            BrKeyNum += AddBrVarKey (plSrv, QN->TrcKey);
+            BrKeyNum += AddBrVarKey (PD, QN->TrcKey);
 
-            CacheBrVar (plSrv, QN->TrcKey, OV, QItr);
+            CacheBrVar (PD, QN->TrcKey, OV, QItr);
             DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
                     QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
         }
@@ -373,24 +376,24 @@ void* DECollect (void *Para)
 
     if (BrKeyNum == 0)
     {
-        SeedBlock* SBlk = plSrv->CurSdBlk;
+        SeedBlock* SBlk = PD->CurSdBlk;
         DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
                GetSeedName (SBlk->Sd->SName),
                SBlk->SIndex, SBlk->Length);
-        ResetTable (plSrv->DBCacheBrVarHandle);
+        ResetTable (DHL->DBCacheBrVarHandle);
     }
     else
     {
-        CopyTable (plSrv->DBBrVariableHandle, plSrv->DBCacheBrVarHandle);
+        CopyTable (DHL->DBBrVariableHandle, DHL->DBCacheBrVarHandle);
         printf ("\t@@@DECollect --- New BR found [to %u]. [Table%u] DataNum = %u after copy [Table%u][%u]! ---> Reset CacheBr to ",
-                QueryDataNum(plSrv->DBBrVarKeyHandle),
-                plSrv->DBBrVariableHandle, QueryDataNum(plSrv->DBBrVariableHandle),
-                plSrv->DBCacheBrVarHandle, QueryDataNum(plSrv->DBCacheBrVarHandle));
+                QueryDataNum(DHL->DBBrVarKeyHandle),
+                DHL->DBBrVariableHandle, QueryDataNum(DHL->DBBrVariableHandle),
+                DHL->DBCacheBrVarHandle, QueryDataNum(DHL->DBCacheBrVarHandle));
         
-        ResetTable (plSrv->DBCacheBrVarHandle);
-        printf ("[%u] \r\n", TableSize(plSrv->DBCacheBrVarHandle));
+        ResetTable (DHL->DBCacheBrVarHandle);
+        printf ("[%u] \r\n", TableSize(DHL->DBCacheBrVarHandle));
 
-        IncLearnStat (plSrv);
+        IncLearnStat (PD);
     }
     pthread_exit ((void*)0);
 }
@@ -400,10 +403,10 @@ void* DECollect (void *Para)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Main logic of PLE server
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline pthread_t CollectBrVariables (PLServer *plSrv)
+static inline pthread_t CollectBrVariables (PilotData *PD)
 {
     pthread_t Tid = 0;
-    int Ret = pthread_create(&Tid, NULL, DECollect, plSrv);
+    int Ret = pthread_create(&Tid, NULL, DECollect, PD);
     if (Ret != 0)
     {
         fprintf (stderr, "pthread_create for DECollect fail, Ret = %d\r\n", Ret);
@@ -427,7 +430,7 @@ static inline VOID MakeDir (BYTE *DirPath)
 }
 
 
-static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
+static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
 {
     static BYTE VarFile[128];
     DbReq Req;
@@ -437,7 +440,7 @@ static inline BYTE* GenAnalysicData (PLServer *plSrv, BYTE *BlkDir, SeedBlock *S
 
     BYTE* SdName = GetSeedName (SdBlk->Sd->SName);
 
-    Req.dwDataType = plSrv->DBBrVariableHandle;
+    Req.dwDataType = PD->DHL->DBBrVariableHandle;
     Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SdBlk->SIndex, SdBlk->Length, VarKey);
     Req.pKeyCtx    = SKey;
     Ret = QueryDataByKey(&Req, &Ack);
@@ -582,25 +585,25 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
 }
 
 
-static inline VOID GenSeed (PLServer *plSrv, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
+static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
 {
     for (DWORD Ei = 0; Ei < BsHeader->ValueNum ; Ei++)
     {
         CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
         if (CurBlkNo+1 == BlkNum)
         {
-            plSrv->GenSeedNum++;
+            PD->GenSeedNum++;
 
-            snprintf (plSrv->NewSeedPath, sizeof (plSrv->NewSeedPath), "%s/%s_%u-%u", 
-                      GEN_SEED, plSrv->CurSeedName, plSrv->CurAlign, plSrv->GenSeedNum);
-            FILE *SF = fopen (plSrv->NewSeedPath, "w");
+            snprintf (PD->NewSeedPath, sizeof (PD->NewSeedPath), "%s/%s_%u-%u", 
+                      GEN_SEED, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum);
+            FILE *SF = fopen (PD->NewSeedPath, "w");
             assert (SF != NULL);
             
-            DEBUG ("@@@ [%s]SEED: ", plSrv->NewSeedPath);
+            DEBUG ("@@@ [%s]SEED: ", PD->NewSeedPath);
             for (DWORD si = 0; si < BlkNum; si++)
             {
                 DEBUG ("%lu ", CurSeed[si]);
-                switch (plSrv->CurAlign)
+                switch (PD->CurAlign)
                 {
                     case 1:
                     {
@@ -638,20 +641,22 @@ static inline VOID GenSeed (PLServer *plSrv, BsValue *BsHeader, DWORD BlkNum, DW
         }
         else
         {      
-            GenSeed (plSrv, BsHeader+1, BlkNum, CurBlkNo+1, CurSeed);
+            GenSeed (PD, BsHeader+1, BlkNum, CurBlkNo+1, CurSeed);
         }
     }
 }
 
-static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
+static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
 {
     BYTE BlkDir[256];
     BYTE ALignDir[256];
 
-    for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
+    PLOption *PLOP = PD->PLOP;
+
+    for (DWORD LIndex = 0; LIndex < PLOP->SeedBlockNum; LIndex++)
     {
-        DWORD Align = plSrv->SeedBlock[LIndex];
-        snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", plSrv->CurSeedName, Align);
+        DWORD Align = PLOP->SeedBlock[LIndex];
+        snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", PD->CurSeedName, Align);
 
         DWORD BlkNum  = 0;
         BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (Sd->SeedLen/Align + 1));
@@ -664,9 +669,9 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
             BsList->ValueList = NULL;
             BsList->ValueCap = BsList->ValueNum = 0;
 
-            if (OFF < plSrv->PLOP.TryLength)
+            if (OFF < PLOP->TryLength)
             {     
-                snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
+                snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", PD->CurSeedName, Align, OFF, Align);
                 ReadBsList (BlkDir, BsList);
                 DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
             }
@@ -687,7 +692,7 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
 
         if (LearnFailNum == Sd->SeedLen/Align)
         {
-            printf ("@@@GenAllSeeds [%s]blocknum:%u, learning fails...!\r\n", plSrv->CurSeedName, Sd->SeedLen/Align);        
+            printf ("@@@GenAllSeeds [%s]blocknum:%u, learning fails...!\r\n", PD->CurSeedName, Sd->SeedLen/Align);        
         }
         else
         {
@@ -695,8 +700,8 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
             assert (CurSeed != NULL);
             memset (CurSeed, 0, BlkNum * sizeof (ULONG));
 
-            plSrv->CurAlign = Align;
-            GenSeed (plSrv, SAList, BlkNum, 0, CurSeed);
+            PD->CurAlign = Align;
+            GenSeed (PD, SAList, BlkNum, 0, CurSeed);
             free (CurSeed);
         }
 
@@ -710,8 +715,10 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
     return;
 }
 
-static inline ThrData* RequirThrRes (PLServer *plSrv)
+static inline ThrData* RequirThrRes ()
 {
+    PLServer *plSrv    = &g_plSrv;
+    
     ThrResrc *LnRes = &plSrv->LearnThrs;
     DWORD RequiredThrs;
     ThrData* Td = NULL;
@@ -764,8 +771,9 @@ static inline VOID RenderThrRes (ThrData* Td)
 }
 
 
-static inline VOID WaitForTraining (ThrResrc *LnRes)
+static inline VOID WaitForTraining ()
 {
+    ThrResrc *LnRes = &g_plSrv.LearnThrs;
     DWORD RequiredThrs = 0;
     
     while (TRUE)
@@ -807,12 +815,14 @@ void* TrainingThread (void *Para)
 }
 
 
-static inline VOID StartTraining (PLServer *plSrv, BYTE *DataFile, SeedBlock *SdBlk)
+static inline VOID StartTraining (PilotData *PD, BYTE *DataFile, SeedBlock *SdBlk)
 {
-    ThrData *Td = RequirThrRes(plSrv);
+    ThrData *Td = RequirThrRes();
+    printf (">>>[StartTraining] %s --- [%u-%u]\r\n", DataFile, SdBlk->SIndex, SdBlk->Length);
+    
     strncpy (Td->TrainFile, DataFile, sizeof (Td->TrainFile));
     memcpy (&Td->SdBlk, SdBlk, sizeof (SeedBlock));
-    Td->BvDir = plSrv->PLOP.BvDir;
+    Td->BvDir = PD->PLOP->BvDir;
     
     pthread_t Tid = 0;
     int Ret = pthread_create(&Tid, NULL, TrainingThread, Td);
@@ -825,22 +835,28 @@ static inline VOID StartTraining (PLServer *plSrv, BYTE *DataFile, SeedBlock *Sd
     return;
 }
 
-static inline VOID LearningMain (PLServer *plSrv)
+static inline VOID LearningMain (PilotData *PD)
 {
     BYTE BlkDir[256];
     BYTE ALignDir[256];
-    DWORD SeedNum = QueryDataNum (plSrv->DBSeedHandle);
-    DWORD SeedBlkNum = QueryDataNum (plSrv->DBSeedBlockHandle);
-    DWORD VarKeyNum  = QueryDataNum (plSrv->DBBrVarKeyHandle);
+
+    DbHandle *DHL = PD->DHL;
+    DWORD SeedNum = QueryDataNum (DHL->DBSeedHandle);
+    DWORD SeedBlkNum = QueryDataNum (DHL->DBSeedBlockHandle);
+    DWORD VarKeyNum  = QueryDataNum (DHL->DBBrVarKeyHandle);
     
     DEBUG ("SeedNum = %u, SeedBlkNum = %u, VarKeyNum = %u \r\n", SeedNum, SeedBlkNum, VarKeyNum);
     for (DWORD SdId = 1; SdId <= SeedNum; SdId++)
     {
-        Seed *Sd = (Seed*) GetDataByID (plSrv->DBSeedHandle, SdId);
+        Seed *Sd = (Seed*) GetDataByID (DHL->DBSeedHandle, SdId);
+        if (Sd->IsLearned == TRUE)
+        {
+            continue;
+        }
 
         BYTE* SdName = GetSeedName(Sd->SName);
         MakeDir (SdName);
-        plSrv->CurSeedName = SdName;
+        PD->CurSeedName = SdName;
         
         printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] \r\n", SdId, SdName, Sd->SeedLen);
 
@@ -859,8 +875,8 @@ static inline VOID LearningMain (PLServer *plSrv)
 
             for (DWORD KeyId = 1; KeyId <= VarKeyNum; KeyId++)
             {
-                DWORD VarKey = *(DWORD*) GetDataByID (plSrv->DBBrVarKeyHandle, KeyId);
-                BYTE *DataFile = GenAnalysicData (plSrv, BlkDir, SdBlk, VarKey);
+                DWORD VarKey = *(DWORD*) GetDataByID (DHL->DBBrVarKeyHandle, KeyId);
+                BYTE *DataFile = GenAnalysicData (PD, BlkDir, SdBlk, VarKey);
                 if (DataFile == NULL)
                 {
                     continue;
@@ -868,30 +884,32 @@ static inline VOID LearningMain (PLServer *plSrv)
                 DEBUG ("\t@@@ VarKey: %x - %u -> %s\r\n", VarKey, VarKey, DataFile);
 
                 ///// training proc here
-                StartTraining (plSrv, DataFile, SdBlk);
+                StartTraining (PD, DataFile, SdBlk);
             }
 
             SdBlkNo++;
             SbHdr = SbHdr->Nxt;
         }
 
-        WaitForTraining (&plSrv->LearnThrs);
+        WaitForTraining ();
 
         MakeDir(GEN_SEED);
-        GenAllSeeds (plSrv, Sd);
+        GenAllSeeds (PD, Sd);
         ListDel(&Sd->SdBlkList, NULL);
+        Sd->IsLearned = TRUE;
     }
 
+    printf ("[ple]PilotMode exit, Learned seeds: %u....\r\n", PD->GenSeedNum);
     return;
 }
 
-static inline VOID GenSamplings (PLServer *plSrv, Seed* CurSeed, MsgIB *MsgItr)
+static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
 {
-    SeedBlock* SBlk = AddSeedBlock (plSrv, CurSeed, MsgItr);
+    SeedBlock* SBlk = AddSeedBlock (PD, CurSeed, MsgItr);
     assert (SBlk != NULL);
     SBlk->SIndex = MsgItr->SIndex;
     SBlk->Length = MsgItr->Length;
-    plSrv->CurSdBlk = SBlk;
+    PD->CurSdBlk = SBlk;
     
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
@@ -941,20 +959,23 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
     memcpy (&plSrv->PLOP, PLOP, sizeof (PLOption));
 
+    /* multi-thread init */
     ThrResrc *LearnThrs = &plSrv->LearnThrs;
     memset (LearnThrs, 0, sizeof (ThrResrc));
     mutex_lock_init (&LearnThrs->RnLock);
     LearnThrs->RequiredNum = 0;
-    
-    memset (plSrv->SeedBlock, 0, sizeof (plSrv->SeedBlock));
-    plSrv->SeedBlockNum = 0;
-    DWORD Bits = plSrv->PLOP.SdPattBits;
+
+    /* init seed block in PLOP */
+    PLOP = &plSrv->PLOP;
+    memset (PLOP->SeedBlock, 0, sizeof (PLOP->SeedBlock));
+    PLOP->SeedBlockNum = 0;
+    DWORD Bits = PLOP->SdPattBits;
     if (Bits == 0)
     {
-        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 1;
-        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 2;
-        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 4;
-        plSrv->SeedBlock[plSrv->SeedBlockNum++] = 8;
+        PLOP->SeedBlock[PLOP->SeedBlockNum++] = 1;
+        PLOP->SeedBlock[PLOP->SeedBlockNum++] = 2;
+        PLOP->SeedBlock[PLOP->SeedBlockNum++] = 4;
+        PLOP->SeedBlock[PLOP->SeedBlockNum++] = 8;
     }
     else
     {
@@ -968,161 +989,230 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
             }
 
             printf ("[PLInit]Add seed partition: %u\r\n", Patt);
-            plSrv->SeedBlock[plSrv->SeedBlockNum++] = Patt;
+            PLOP->SeedBlock[PLOP->SeedBlockNum++] = Patt;
             Bits = Bits/10;
         }
-    }    
-    plSrv->GenSeedNum = 0;
+    }
+
+    /* init pilot data */
+    PilotData *PD = &plSrv->PD;
+    PD->GenSeedNum = 0;
+    PD->SrvState   = SRV_S_STARTUP;
+    PD->DHL        = &plSrv->DHL;
+    PD->PLOP       = &plSrv->PLOP;
     
-    DWORD Ret = SrvInit (plSrv);
+    /* init msg server */
+    DWORD Ret = SrvInit (&plSrv->SkInfo);
     assert (Ret == R_SUCCESS);
 
+    /* init DB */
     InitDbTable (plSrv);   
+
+    /* init event queue */
     InitQueue(MEMMOD_SHARE);
+
+    /* set default run-mode */
+    plSrv->RunMode = RUNMOD_PILOT;
 
     return;
 }
 
-void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
+
+VOID PLDeInit (PLServer *plSrv)
+{
+    DelQueue ();
+    close (plSrv->SkInfo.SockFd);
+    DelDb();
+
+    return;
+}
+
+static inline MsgHdr* FormatMsg (SocketInfo *SkInfo, DWORD MsgType)
+{
+    MsgHdr *MsgH;
+    
+    MsgH = (MsgHdr *)SkInfo->SrvSendBuf;
+    MsgH->MsgType = MsgType;
+    MsgH->MsgLen  = sizeof (MsgHdr);
+
+    return MsgH;
+}
+
+static inline VOID SwitchMode (RUNMOD RunMode)
 {
     PLServer *plSrv = &g_plSrv;
+    plSrv->RunMode = RunMode;
+    return;
+}
+
+static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
+{
+    Seed *CurSeed;
+    MsgHdr *MsgRev;
+    MsgHdr *MsgSend;
+    PLOption *PLOP = PD->PLOP;
+
+    switch (PD->SrvState)
+    {
+        case SRV_S_STARTUP:
+        {
+            MsgRev = (MsgHdr *) Recv(SkInfo);
+            assert (MsgRev->MsgType == PL_MSG_STARTUP);
+            printf ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
+
+            MsgSend = FormatMsg (SkInfo, PL_MSG_STARTUP);
+            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+            printf ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+
+            /* !!!! clear the queue: AFL++'s validation will cause redundant events */
+            ClearQueue();
+
+            /* change to SRV_S_SEEDRCV */
+            PD->SrvState = SRV_S_SEEDRCV;
+            break;
+        }
+        case SRV_S_SEEDRCV:
+        {
+            MsgRev = (MsgHdr *) Recv(SkInfo);
+            if (MsgRev->MsgType == PL_MSG_FZ_FIN)
+            {
+                PD->SrvState = SRV_S_FIN;
+                break;
+            }
+            assert (MsgRev->MsgType == PL_MSG_SEED);
+    
+            MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
+            BYTE* SeedPath = (BYTE*)(MsgSd + 1);
+    
+            CurSeed = AddSeed (SeedPath);
+            CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
+            PD->CurSeed = CurSeed;
+    
+            printf ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
+                    
+            PD->SrvState = SRV_S_ITB;
+            break;
+        }
+        case SRV_S_ITB:
+        {
+            CurSeed = PD->CurSeed;
+            assert (CurSeed != NULL);
+            
+            MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_BEGIN);
+            MsgIB *MsgItr = (MsgIB *) (MsgSend + 1);
+            MsgItr->SampleNum = FZ_SAMPLE_NUM;
+
+            DWORD OFF = 0;
+            DWORD TryLength = (PLOP->TryLength < CurSeed->SeedLen) 
+                              ? PLOP->TryLength
+                              : CurSeed->SeedLen;
+            for (DWORD LIndex = 0; LIndex < PLOP->SeedBlockNum; LIndex++)
+            {
+                MsgItr->Length = PLOP->SeedBlock[LIndex];
+                if (MsgItr->Length > TryLength)
+                {
+                    continue;
+                }
+                        
+                OFF = 0;
+                while (OFF < TryLength)
+                {               
+                    MsgItr->SIndex = OFF;
+                    MsgSend->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
+                            
+                    /* generate samples by random */
+                    GenSamplings (PD, CurSeed, MsgItr);
+                    OFF += MsgItr->Length;
+                    MsgSend->MsgLen += MsgItr->SampleNum * MsgItr->Length;
+    
+                    /* before the fuzzing iteration, start the thread for collecting the branch variables */
+                    PD->FzExit = FALSE;
+                    pthread_t CbvThrId = CollectBrVariables (PD);
+    
+                    /* inform the fuzzer */
+                    Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
+    
+                    MsgHdr *MsgRecv = (MsgHdr *) Recv(SkInfo);
+                    assert (MsgSend->MsgType == PL_MSG_ITR_BEGIN);
+                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
+                    PD->FzExit = TRUE;
+    
+                    VOID *TRet = NULL;
+                    pthread_join (CbvThrId, &TRet);
+                            
+                }
+            }
+                    
+            PD->SrvState = SRV_S_ITE;
+            break;
+        }
+        case SRV_S_ITE:
+        {
+            MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_END);
+            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+            DEBUG ("[ple-ITE] send PL_MSG_ITR_END...\r\n");
+                    
+            ShowLearnStat (PD);
+                    
+            /* change to SRV_S_SEEDRCV, wait for next seed */
+            PD->SrvState = SRV_S_SEEDRCV;
+            break;
+        }
+        case SRV_S_FIN:
+        {
+            DEBUG ("[ple-FIN] recv PL_MSG_FZ_FIN...\r\n");
+            LearningMain (PD);
+            SwitchMode (RUNMOD_OFFICIAL);
+            break;
+        }
+        default:
+        {
+            assert (0);
+        }
+    }
+
+    return FALSE;
+}
+
+
+static inline DWORD OfficialMode (PilotData *RD, SocketInfo *SkInfo, MsgHdr *MsgRev)
+{
+    printf ("Entry OfficialMode...\r\n");
+    sleep (1);
+    return FALSE;
+}
+
+
+VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
+{
+    PLServer *plSrv    = &g_plSrv;
+    SocketInfo *SkInfo = &plSrv->SkInfo;
+    
     PLInit (plSrv, PLOP);
     
     pthread_t Tid = 0;
-    DWORD Ret = pthread_create(&Tid, NULL, PilotFuzzingProc, DriverDir);
+    DWORD Ret = pthread_create(&Tid, NULL, FuzzingProc, DriverDir);
     if (Ret != 0)
     {
         fprintf (stderr, "pthread_create fail, Ret = %d\r\n", Ret);
         return;
     }
-
-    DWORD SrvState = SRV_S_INIT;
-    MsgHdr *MsgH   = NULL;
-    Seed *CurSeed  = NULL;
+    
+    MsgHdr *MsgRev = NULL;
     DWORD IsExit   = FALSE;
     while (!IsExit)
     {
-        switch (SrvState)
+        switch (plSrv->RunMode)
         {
-            case SRV_S_INIT:
+            case RUNMOD_PILOT:
             {
-                MsgH = (MsgHdr *) Recv(plSrv);
-                assert (MsgH->MsgType == PL_MSG_STARTUP);
-                printf ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
-
-                /* change to SRV_S_STARTUP */
-                SrvState = SRV_S_STARTUP;
+                IsExit = PilotMode (&plSrv->PD, SkInfo);
                 break;
             }
-            case SRV_S_STARTUP:
+            case RUNMOD_OFFICIAL:
             {
-                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
-                MsgH->MsgType = PL_MSG_STARTUP;
-                MsgH->MsgLen  = sizeof (MsgHdr);
-                Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                printf ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
-
-                /* !!!! clear the queue: AFL++'s validation will cause redundant events */
-                ClearQueue();
-
-                /* change to SRV_S_SEEDRCV */
-                SrvState = SRV_S_SEEDRCV;
-                break;
-            }
-            case SRV_S_SEEDRCV:
-            {
-                MsgH = (MsgHdr *) Recv(plSrv);
-                if (MsgH->MsgType == PL_MSG_FZ_FIN)
-                {
-                    SrvState = SRV_S_FIN;
-                    break;
-                }
-                assert (MsgH->MsgType == PL_MSG_SEED);
-
-                MsgSeed *MsgSd = (MsgSeed*) (MsgH + 1);
-                BYTE* SeedPath = (BYTE*)(MsgSd + 1);
-
-                CurSeed = AddSeed (plSrv, SeedPath);
-                CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, plSrv->PLOP.SdType);
-
-                printf ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
-                
-                SrvState = SRV_S_ITB;
-                break;
-            }
-            case SRV_S_ITB:
-            {
-                assert (CurSeed != NULL);
-                
-                DWORD OFF = 0;
-                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
-                MsgH->MsgType = PL_MSG_ITR_BEGIN;
-
-                MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
-                MsgItr->SampleNum = FZ_SAMPLE_NUM;
-
-                DWORD TryLength = (plSrv->PLOP.TryLength < CurSeed->SeedLen) 
-                                  ? plSrv->PLOP.TryLength
-                                  : CurSeed->SeedLen;
-                for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
-                {
-                    MsgItr->Length = plSrv->SeedBlock[LIndex];
-                    if (MsgItr->Length > TryLength)
-                    {
-                        continue;
-                    }
-                    
-                    OFF = 0;
-                    while (OFF < TryLength)
-                    {               
-                        MsgItr->SIndex = OFF;
-                        MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
-                        
-                        /* generate samples by random */
-                        GenSamplings (plSrv, CurSeed, MsgItr);
-                        OFF += MsgItr->Length;
-                        MsgH->MsgLen += MsgItr->SampleNum * MsgItr->Length;
-
-                        /* before the fuzzing iteration, start the thread for collecting the branch variables */
-                        plSrv->FzExit = FALSE;
-                        pthread_t CbvThrId = CollectBrVariables (plSrv);
-
-                        /* inform the fuzzer */
-                        Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, TryLength);
-
-                        MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
-                        assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, TryLength);
-                        plSrv->FzExit = TRUE;
-
-                        VOID *TRet = NULL;
-                        pthread_join (CbvThrId, &TRet);
-                        
-                    }
-                }
-                
-                SrvState = SRV_S_ITE;
-                break;
-            }
-            case SRV_S_ITE:
-            {
-                MsgH = (MsgHdr *)plSrv->SrvSendBuf;
-                MsgH->MsgType = PL_MSG_ITR_END;
-                MsgH->MsgLen  = sizeof (MsgHdr);
-                Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                DEBUG ("[ple-ITE] send PL_MSG_ITR_END...\r\n");
-                
-                ShowLearnStat (plSrv);
-                
-                /* change to SRV_S_SEEDRCV, wait for next seed */
-                SrvState = SRV_S_SEEDRCV;
-                break;
-            }
-            case SRV_S_FIN:
-            {
-                DEBUG ("[ple-FIN] recv PL_MSG_FZ_FIN...\r\n");
-                IsExit = TRUE;
+                IsExit = OfficialMode (&plSrv->PD, SkInfo, MsgRev);
                 break;
             }
             default:
@@ -1132,12 +1222,7 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
         }
     }
 
-    LearningMain (plSrv);
-
-    printf ("[ple]SemanticLearning exit, Learned seeds: %u....\r\n", plSrv->GenSeedNum);
-    DelQueue ();
-    close (plSrv->SockFd);
-    DelDb();
+    PLDeInit (plSrv);
     return;
 }
 

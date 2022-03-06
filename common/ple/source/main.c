@@ -35,9 +35,10 @@ int main(int argc, char *argv[])
     PLOP.SdPattBits = 4;
     PLOP.SdType     = SEED_BINARY;
     PLOP.BvDir      = NULL;
+    PLOP.TryLength  = LEARN_BLOCK_SIZE * (LEARN_BLOCK_NUM);
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:")) > 0) 
     {
         switch (Opt) 
         {
@@ -75,6 +76,11 @@ int main(int argc, char *argv[])
             case 't':
             {
                 PLOP.LnThrNum   = (DWORD)atoi(optarg);
+                break;
+            }
+            case 'l':
+            {
+                PLOP.TryLength   = (DWORD)atoi(optarg);
                 break;
             }
             default:

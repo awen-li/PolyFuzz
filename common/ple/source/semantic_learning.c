@@ -292,6 +292,47 @@ static inline BYTE* GetDataByID (DWORD DataType, DWORD DataID)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Thread for dynamic event collection
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+static inline VOID IncLearnStat (PLServer *plSrv)
+{
+    SeedBlock* SBlk = plSrv->CurSdBlk;
+
+    DWORD LearnIndex = SBlk->SIndex/LEARN_BLOCK_SIZE;
+    if (LearnIndex < LEARN_BLOCK_NUM)
+    {
+        plSrv->LearnStat[LearnIndex]++;
+    }
+    else
+    {
+        plSrv->LearnStat[LEARN_BLOCK_NUM-1]++;
+    } 
+}
+
+static inline VOID ShowLearnStat (PLServer *plSrv)
+{
+    printf ("******************************  ShowLearnStat  ******************************\r\n");
+    for (DWORD ix = 0; ix < LEARN_BLOCK_NUM; ix++)
+    {
+        DWORD Stat  = plSrv->LearnStat [ix];
+        if (Stat == 0)
+        {
+            continue;
+        }
+        
+        DWORD Start = ix * LEARN_BLOCK_SIZE;
+        DWORD End   = Start + LEARN_BLOCK_SIZE;
+        if (ix + 1 < LEARN_BLOCK_NUM)
+        {
+            printf ("\t[%-2u -> %-2u]: %u \r\n", Start, End, Stat);
+        }
+        else
+        {
+            printf ("\t[%-2u -> +++]: %u \r\n", Start, Stat);
+        }
+    }
+    printf ("*****************************************************************************\r\n");
+}
+
+
 void* DECollect (void *Para)
 {
     PLServer *plSrv = (PLServer*)Para;
@@ -347,7 +388,9 @@ void* DECollect (void *Para)
                 plSrv->DBCacheBrVarHandle, QueryDataNum(plSrv->DBCacheBrVarHandle));
         
         ResetTable (plSrv->DBCacheBrVarHandle);
-        printf ("[%u] \r\n", TableSize(plSrv->DBCacheBrVarHandle));       
+        printf ("[%u] \r\n", TableSize(plSrv->DBCacheBrVarHandle));
+
+        IncLearnStat (plSrv);
     }
     pthread_exit ((void*)0);
 }
@@ -620,16 +663,19 @@ static inline VOID GenAllSeeds (PLServer *plSrv, Seed *Sd)
             BsValue *BsList = &SAList [BlkNum++];
             BsList->ValueList = NULL;
             BsList->ValueCap = BsList->ValueNum = 0;
-            
-            snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
-            ReadBsList (BlkDir, BsList);
-            DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
+
+            if (OFF < plSrv->PLOP.TryLength)
+            {     
+                snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", plSrv->CurSeedName, Align, OFF, Align);
+                ReadBsList (BlkDir, BsList);
+                DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
+            }
 
             /* For this seed block, we learned nothing, using original value instead */
             if (BsList->ValueNum == 0)
             {
                 LearnFailNum++;
-                
+                    
                 BsList->ValueList = (ULONG *)malloc (sizeof (ULONG));
                 *(ULONG*)BsList->ValueList = 0;
                 BsList->ValueCap  = 1;
@@ -748,11 +794,11 @@ void* TrainingThread (void *Para)
     ThrData *Td = (ThrData *)Para;
     if (Td->BvDir == NULL)
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s", Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.35", Td->TrainFile);
     }
     else
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s", Td->BvDir, Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.35", Td->BvDir, Td->TrainFile);
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     system (Cmd);
@@ -791,12 +837,12 @@ static inline VOID LearningMain (PLServer *plSrv)
     for (DWORD SdId = 1; SdId <= SeedNum; SdId++)
     {
         Seed *Sd = (Seed*) GetDataByID (plSrv->DBSeedHandle, SdId);
-        DEBUG ("SEED[%u]%s-[%u] \r\n", SdId, Sd->SName, Sd->SeedLen);
 
         BYTE* SdName = GetSeedName(Sd->SName);
         MakeDir (SdName);
         plSrv->CurSeedName = SdName;
-        DEBUG ("\tSEED-name:%s \r\n", SdName);
+        
+        printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] \r\n", SdId, SdName, Sd->SeedLen);
 
         DWORD SdBlkNo = 0;
         LNode *SbHdr  = Sd->SdBlkList.Header;
@@ -921,7 +967,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
                 exit (0);
             }
 
-            DEBUG ("Add seed partition: %u\r\n", Patt);
+            printf ("[PLInit]Add seed partition: %u\r\n", Patt);
             plSrv->SeedBlock[plSrv->SeedBlockNum++] = Patt;
             Bits = Bits/10;
         }
@@ -1015,16 +1061,19 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 MsgIB *MsgItr = (MsgIB *) (MsgH + 1);
                 MsgItr->SampleNum = FZ_SAMPLE_NUM;
 
+                DWORD TryLength = (plSrv->PLOP.TryLength < CurSeed->SeedLen) 
+                                  ? plSrv->PLOP.TryLength
+                                  : CurSeed->SeedLen;
                 for (DWORD LIndex = 0; LIndex < plSrv->SeedBlockNum; LIndex++)
                 {
                     MsgItr->Length = plSrv->SeedBlock[LIndex];
-                    if (MsgItr->Length > CurSeed->SeedLen)
+                    if (MsgItr->Length > TryLength)
                     {
                         continue;
                     }
                     
                     OFF = 0;
-                    while (OFF < CurSeed->SeedLen)
+                    while (OFF < TryLength)
                     {               
                         MsgItr->SIndex = OFF;
                         MsgH->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
@@ -1040,11 +1089,11 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
 
                         /* inform the fuzzer */
                         Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
-                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+                        DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, TryLength);
 
                         MsgHdr *MsgRecv = (MsgHdr *) Recv(plSrv);
                         assert (MsgH->MsgType == PL_MSG_ITR_BEGIN);
-                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, CurSeed->SeedLen);
+                        DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgH->MsgLen, OFF, TryLength);
                         plSrv->FzExit = TRUE;
 
                         VOID *TRet = NULL;
@@ -1063,6 +1112,8 @@ void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 MsgH->MsgLen  = sizeof (MsgHdr);
                 Send (plSrv, (BYTE*)MsgH, MsgH->MsgLen);
                 DEBUG ("[ple-ITE] send PL_MSG_ITR_END...\r\n");
+                
+                ShowLearnStat (plSrv);
                 
                 /* change to SRV_S_SEEDRCV, wait for next seed */
                 SrvState = SRV_S_SEEDRCV;

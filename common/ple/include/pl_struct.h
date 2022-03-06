@@ -18,6 +18,8 @@
 #define FZ_SAMPLE_NUM        (32)
 #define FZ_SEED_NAME_LEN     (512)
 #define MAX_THREAD_NUM       (256)
+#define LEARN_BLOCK_SIZE     (128)
+#define LEARN_BLOCK_NUM      (32)
 #define GEN_SEED             ("gen_seeds")
 
 
@@ -120,6 +122,7 @@ typedef struct PLOption
     DWORD SdPattBits;
     DWORD SdType;    /* SEED_TEXT: text, SEED_BINARY: binary */
     DWORD LnThrNum;
+    DWORD TryLength;
     BYTE  *BvDir;
 }PLOption;
 
@@ -169,6 +172,9 @@ typedef struct PLServer
     DWORD GenSeedNum;
     BYTE* CurSeedName;
     BYTE NewSeedPath[FZ_SEED_NAME_LEN];
+
+
+    DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
 }PLServer;
 
 

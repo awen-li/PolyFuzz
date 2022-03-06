@@ -341,7 +341,7 @@ def Plot (InputFile, SVRs, X_Name, y_Name, X_Train, y_Train, X_Test, y_Test):
     plt.close()        
 
 
-def RegMain (InputFile, DisThreshold=0.1, Directory=None, Plot=False):
+def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
     X_Name, y_Name, X_Train, y_Train, X_Test, y_Test = Load (InputFile)
     if len (X_Train) == 0 or len (X_Test) == 0:
         return
@@ -411,7 +411,10 @@ def main():
     if opts.filename is None:
         parser.error('filename is missing: required with the main options')
 
-    RegMain (opts.filename, Directory=opts.bvdir, Plot=opts.plot)
+    if opts.distance is None:
+        opts.distance = 0.1
+
+    RegMain (opts.filename, DisThreshold=opts.distance, Directory=opts.bvdir, IsPlot=opts.plot)
 
 if __name__ == "__main__":
    main()

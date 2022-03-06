@@ -830,13 +830,7 @@ typedef struct afl_state {
 
 
 #define SRV_BUF_LEN               (1024)
-typedef struct pl_srv
-{
-    int socket_fd;
-    struct sockaddr_in addr_serv;
-
-    char msg_buf[SRV_BUF_LEN];
-}pl_srv_t;
+#define AFL_PL_SOCKET_PORT        ("9999")
 
 typedef enum
 {
@@ -847,6 +841,39 @@ typedef enum
     FZ_S_ITE,
     FZ_S_FIN
 }FZ_STATE;
+
+typedef enum
+{
+    pl_mode_pilot=1,
+    pl_mode_standard=2,
+}pl_fuzz_mode;
+
+typedef struct pilot_data
+{
+    u32 fz_state;
+}pilot_data;
+
+
+typedef struct standd_data
+{
+    u32 fz_state;
+}standd_data;
+
+
+typedef struct pl_srv
+{
+    int socket_fd;
+    struct sockaddr_in addr_serv;
+
+    u32 run_mode; /* pl_mode_pilot | pl_mode_standard */
+    pilot_data pd;
+    standd_data sd;
+
+    char recv_buf[SRV_BUF_LEN];
+    char send_buf[SRV_BUF_LEN];
+}pl_srv_t;
+
+
 
 
 struct custom_mutator {

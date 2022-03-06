@@ -43,6 +43,8 @@
 extern u64 time_spent_working;
 #endif
 
+static pl_srv_t g_pl_srv; 
+
 static void at_exit() {
 
   s32   i, pid1 = 0, pid2 = 0;
@@ -402,7 +404,7 @@ static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
     return;
 }
 
-static pl_srv_t g_pl_srv;  
+ 
 static void pl_init (pl_srv_t *pl_srv)
 {
     pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
@@ -412,26 +414,33 @@ static void pl_init (pl_srv_t *pl_srv)
     }
 
     char *str_pl_port = getenv ("AFL_PL_SOCKET_PORT");
-    assert (str_pl_port != NULL);
+    if (str_pl_port == NULL)
+    {
+        str_pl_port = AFL_PL_SOCKET_PORT;     
+        WARNF("the env AFL_PL_SOCKET_PORT did not set, use default 9999....");
+    }
 
     memset(&pl_srv->addr_serv, 0, sizeof(pl_srv->addr_serv));  
     pl_srv->addr_serv.sin_family = AF_INET;  
     pl_srv->addr_serv.sin_addr.s_addr = inet_addr("127.0.0.1");  
-    pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));  
+    pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));
+
+    /* start from standard fuzzing */
+    pl_srv->run_mode = pl_mode_standard;
 
     return;
 }
 
 static inline char* pl_recv (pl_srv_t *pl_srv)
 {
-    memset (pl_srv->msg_buf, 0, sizeof(pl_srv->msg_buf));
+    memset (pl_srv->recv_buf, 0, sizeof(pl_srv->recv_buf));
 
     int sk_len   = sizeof (struct sockaddr_in);
-    int recv_num = recvfrom(pl_srv->socket_fd, pl_srv->msg_buf, sizeof(pl_srv->msg_buf), 
+    int recv_num = recvfrom(pl_srv->socket_fd, pl_srv->recv_buf, sizeof(pl_srv->recv_buf), 
                             0, (struct sockaddr *)&pl_srv->addr_serv, (socklen_t *)&sk_len);
     assert (recv_num != 0);
     
-    return pl_srv->msg_buf;
+    return pl_srv->recv_buf;
 }
 
 static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
@@ -446,7 +455,6 @@ static inline void pl_send (pl_srv_t *pl_srv, char *msg, unsigned msg_len)
 static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
 
     pl_srv_t *pl_srv = &g_pl_srv;
-    pl_init (pl_srv);
 
     cull_queue(afl);
     afl->current_entry = 0;
@@ -460,7 +468,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
         {
             case FZ_S_STARTUP:
             {
-                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header = (MsgHdr *)pl_srv->send_buf;
                 msg_header->MsgType = PL_MSG_STARTUP;
                 msg_header->MsgLen  = sizeof (MsgHdr);
                 pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
@@ -482,7 +490,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     break;
                 }
 
-                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header = (MsgHdr *)pl_srv->send_buf;
                 msg_header->MsgType = PL_MSG_SEED;
                 msg_header->MsgLen  = sizeof (MsgHdr);
 
@@ -525,7 +533,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
                     /////////////////////                   
                     fuzz_one(afl);
 
-                    msg_header = (MsgHdr *)pl_srv->msg_buf;
+                    msg_header = (MsgHdr *)pl_srv->send_buf;
                     msg_header->MsgType = PL_MSG_ITR_BEGIN;
                     msg_header->MsgLen  = sizeof (MsgHdr);
                     pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
@@ -542,7 +550,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
             }
             case FZ_S_FIN:
             {
-                msg_header = (MsgHdr *)pl_srv->msg_buf;
+                msg_header = (MsgHdr *)pl_srv->send_buf;
                 msg_header->MsgType = PL_MSG_FZ_FIN;
                 msg_header->MsgLen  = sizeof (MsgHdr);
                 pl_send (pl_srv, (char*)msg_header, msg_header->MsgLen);
@@ -588,7 +596,7 @@ static inline u32 pl_fuzzing_loop (afl_state_t *afl) {
 }
 
 
-static inline u32 standard_fuzzing_loop (afl_state_t *afl, u32 seek_to) {
+static inline u32 standard_fuzzing_loop (afl_state_t *afl) {
     u8  skipped_fuzz;  
     u8 exit_1 = !!afl->afl_env.afl_bench_just_one;
     
@@ -596,6 +604,9 @@ static inline u32 standard_fuzzing_loop (afl_state_t *afl, u32 seek_to) {
     u32 prev_queued_paths = 0;
     u32 sync_interval_cnt = 0;
     u32 runs_in_current_cycle = (u32)-1;
+    u32 seek_to = 0;
+
+    if (unlikely(afl->old_seed_selection)) seek_to = find_start_position(afl);
     
     while (likely(!afl->stop_soon)) {
 
@@ -862,13 +873,39 @@ static inline u32 standard_fuzzing_loop (afl_state_t *afl, u32 seek_to) {
 }
 
 
+static inline void main_fuzzing_loop (afl_state_t *afl) {
+    pl_srv_t *pl_srv = &g_pl_srv;
+    pl_init (pl_srv);
+    
+    while (likely(!afl->stop_soon)) {
+
+        switch (pl_srv->run_mode)
+        {
+            case pl_mode_pilot:
+            {
+                pl_fuzzing_loop(afl);
+                break;
+            }
+            case pl_mode_standard:
+            {
+                standard_fuzzing_loop(afl);
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+    }
+
+    return;
+}
 
 /* Main entry point */
 int main(int argc, char **argv_orig, char **envp) {
 
   s32 opt, auto_sync = 0 /*, user_set_cache = 0*/;
-  u32 seek_to = 0, show_help = 0,
-      map_size = get_map_size();
+  u32 show_help = 0, map_size = get_map_size();
   u8 *extras_dir[4];
   u8  mem_limit_given = 0, debug = 0,
      extras_dir_cnt = 0 /*, have_p = 0*/;
@@ -2411,8 +2448,6 @@ int main(int argc, char **argv_orig, char **envp) {
 
   show_init_stats(afl);
 
-  if (unlikely(afl->old_seed_selection)) seek_to = find_start_position(afl);
-
   afl->start_time = get_cur_time();
   if (afl->in_place_resume || afl->afl_env.afl_autoresume) {
 
@@ -2459,7 +2494,7 @@ int main(int argc, char **argv_orig, char **envp) {
   }
 
   DEBUG_PRINT("Run into fuzzing loop....\r\n");
-  standard_fuzzing_loop (afl, seek_to);
+  main_fuzzing_loop (afl);
 
 stop_fuzzing:
 

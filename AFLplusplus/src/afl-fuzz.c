@@ -565,7 +565,7 @@ static void pl_semantic_fuzzing_loop (afl_state_t *afl) {
 
 
 
-static void pl_fuzzing_loop (afl_state_t *afl) {
+static inline u32 pl_fuzzing_loop (afl_state_t *afl) {
     switch (afl->pl_fuzzing_type)
     {
         case PL_SYNTAX_FZ:
@@ -580,21 +580,297 @@ static void pl_fuzzing_loop (afl_state_t *afl) {
         }
         default:
         {
-            return;
+            return 0;
         }
     }
+
+    return 0;
 }
+
+
+static inline u32 standard_fuzzing_loop (afl_state_t *afl, u32 seek_to) {
+    u8  skipped_fuzz;  
+    u8 exit_1 = !!afl->afl_env.afl_bench_just_one;
+    
+    u64 prev_queued = 0;
+    u32 prev_queued_paths = 0;
+    u32 sync_interval_cnt = 0;
+    u32 runs_in_current_cycle = (u32)-1;
+    
+    while (likely(!afl->stop_soon)) {
+
+        cull_queue(afl);
+
+        if (unlikely((!afl->old_seed_selection &&
+                    runs_in_current_cycle > afl->queued_paths) ||
+                    (afl->old_seed_selection && !afl->queue_cur))) {
+
+            if (unlikely((afl->last_sync_cycle < afl->queue_cycle ||
+                          (!afl->queue_cycle && afl->afl_env.afl_import_first)) && afl->sync_id)) {
+
+                sync_fuzzers(afl);
+
+            }
+
+            ++afl->queue_cycle;
+            runs_in_current_cycle = (u32)-1;
+            afl->cur_skipped_paths = 0;
+
+            if (unlikely(afl->old_seed_selection)) {
+
+                afl->current_entry = 0;
+                while (unlikely(afl->current_entry < afl->queued_paths &&
+                                afl->queue_buf[afl->current_entry]->disabled)) {
+
+                    ++afl->current_entry;
+
+                }
+
+                if (afl->current_entry >= afl->queued_paths) { afl->current_entry = 0; }
+
+                afl->queue_cur = afl->queue_buf[afl->current_entry];
+
+                if (unlikely(seek_to)) {
+
+                    if (unlikely(seek_to >= afl->queued_paths)) {
+                        // This should never happen.
+                        FATAL("BUG: seek_to location out of bounds!\n");
+                    }
+
+                    afl->current_entry = seek_to;
+                    afl->queue_cur = afl->queue_buf[seek_to];
+                    seek_to = 0;
+
+                }
+
+            }
+
+            if (unlikely(afl->not_on_tty)) {
+
+                ACTF("Entering queue cycle %llu.", afl->queue_cycle);
+                fflush(stdout);
+
+            }
+
+            /* If we had a full queue cycle with no new finds, try
+               recombination strategies next. */
+
+            if (unlikely(afl->queued_paths == prev_queued
+                   /* FIXME TODO BUG: && (get_cur_time() - afl->start_time) >=
+                      3600 */)) {
+
+                if (afl->use_splicing) {
+
+                    ++afl->cycles_wo_finds;
+
+                    if (unlikely(afl->shm.cmplog_mode &&
+                        afl->cmplog_max_filesize < MAX_FILE)) {
+
+                        afl->cmplog_max_filesize <<= 4;
+                    }
+
+                    switch (afl->expand_havoc) {
+
+                        case 0:
+                          // this adds extra splicing mutation options to havoc mode
+                          afl->expand_havoc = 1;
+                          break;
+                        case 1:
+                          // add MOpt mutator
+                          /*
+                          if (afl->limit_time_sig == 0 && !afl->custom_only &&
+                              !afl->python_only) {
+
+                            afl->limit_time_sig = -1;
+                            afl->limit_time_puppet = 0;
+
+                          }
+
+                          */
+                          afl->expand_havoc = 2;
+                          if (afl->cmplog_lvl && afl->cmplog_lvl < 2) afl->cmplog_lvl = 2;
+                          break;
+                        case 2:
+                          // increase havoc mutations per fuzz attempt
+                          afl->havoc_stack_pow2++;
+                          afl->expand_havoc = 3;
+                          break;
+                        case 3:
+                          // further increase havoc mutations per fuzz attempt
+                          afl->havoc_stack_pow2++;
+                          afl->expand_havoc = 4;
+                          break;
+                        case 4:
+                          afl->expand_havoc = 5;
+                          // if (afl->cmplog_lvl && afl->cmplog_lvl < 3) afl->cmplog_lvl =
+                          // 3;
+                          break;
+                        case 5:
+                          // nothing else currently
+                          break;
+
+                    }
+
+                } else {
+
+                    #ifndef NO_SPLICING
+                          afl->use_splicing = 1;
+                    #else
+                          afl->use_splicing = 0;
+                    #endif
+
+                }
+
+            } else {
+
+                afl->cycles_wo_finds = 0;
+
+            }
+
+  #ifdef INTROSPECTION
+            fprintf(afl->introspection_file,
+                    "CYCLE cycle=%llu cycle_wo_finds=%llu expand_havoc=%u queue=%u\n",
+                    afl->queue_cycle, afl->cycles_wo_finds, afl->expand_havoc,
+                    afl->queued_paths);
+  #endif
+
+            if (afl->cycle_schedules) {
+
+                /* we cannot mix non-AFLfast schedules with others */
+                switch (afl->schedule) {
+
+                      case EXPLORE:
+                        afl->schedule = EXPLOIT;
+                        break;
+                      case EXPLOIT:
+                        afl->schedule = MMOPT;
+                        break;
+                      case MMOPT:
+                        afl->schedule = SEEK;
+                        break;
+                      case SEEK:
+                        afl->schedule = EXPLORE;
+                        break;
+                      case FAST:
+                        afl->schedule = COE;
+                        break;
+                      case COE:
+                        afl->schedule = LIN;
+                        break;
+                      case LIN:
+                        afl->schedule = QUAD;
+                        break;
+                      case QUAD:
+                        afl->schedule = RARE;
+                        break;
+                      case RARE:
+                        afl->schedule = FAST;
+                        break;
+
+                }
+
+                // we must recalculate the scores of all queue entries
+                for (u32 i = 0; i < afl->queued_paths; i++) {
+
+                    if (likely(!afl->queue_buf[i]->disabled)) {
+                        update_bitmap_score(afl, afl->queue_buf[i]);
+                    }
+
+                }
+
+            }
+
+            prev_queued = afl->queued_paths;
+
+        }
+
+        ++runs_in_current_cycle;
+
+        do {
+
+            if (likely(!afl->old_seed_selection)) {
+
+                if (unlikely(prev_queued_paths < afl->queued_paths || afl->reinit_table)) {
+
+                    // we have new queue entries since the last run, recreate alias table
+                     prev_queued_paths = afl->queued_paths;
+                     create_alias_table(afl);
+                }
+
+                afl->current_entry = select_next_queue_entry(afl);
+                afl->queue_cur = afl->queue_buf[afl->current_entry];
+
+            }
+
+            skipped_fuzz = fuzz_one(afl);
+
+            if (unlikely(!afl->stop_soon && exit_1)) { afl->stop_soon = 2; }
+
+            if (unlikely(afl->old_seed_selection)) {
+
+                while (++afl->current_entry < afl->queued_paths &&
+                       afl->queue_buf[afl->current_entry]->disabled);
+                if (unlikely(afl->current_entry >= afl->queued_paths ||
+                    afl->queue_buf[afl->current_entry] == NULL ||
+                    afl->queue_buf[afl->current_entry]->disabled))
+                        afl->queue_cur = NULL;
+                else
+                        afl->queue_cur = afl->queue_buf[afl->current_entry];
+
+            }
+
+        } while (skipped_fuzz && afl->queue_cur && !afl->stop_soon);
+
+        if (likely(!afl->stop_soon && afl->sync_id)) {
+
+            if (likely(afl->skip_deterministic)) {
+
+                if (unlikely(afl->is_main_node)) {
+
+                    if (unlikely(get_cur_time() > (SYNC_TIME >> 1) + afl->last_sync_time)) {
+
+                        if (!(sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
+                            sync_fuzzers(afl);
+                        }
+
+                    }
+
+                } else {
+
+                    if (unlikely(get_cur_time() > SYNC_TIME + afl->last_sync_time)) {
+
+                        if (!(sync_interval_cnt++ % SYNC_INTERVAL)) { sync_fuzzers(afl); }
+
+                    }
+
+                }
+
+            } else {
+
+                sync_fuzzers(afl);
+
+            }
+
+        }
+
+    }
+
+    write_bitmap(afl);
+    save_auto(afl);
+
+    return 0;
+}
+
 
 
 /* Main entry point */
 int main(int argc, char **argv_orig, char **envp) {
 
   s32 opt, auto_sync = 0 /*, user_set_cache = 0*/;
-  u64 prev_queued = 0;
-  u32 sync_interval_cnt = 0, seek_to = 0, show_help = 0,
+  u32 seek_to = 0, show_help = 0,
       map_size = get_map_size();
   u8 *extras_dir[4];
-  u8  mem_limit_given = 0, exit_1 = 0, debug = 0,
+  u8  mem_limit_given = 0, debug = 0,
      extras_dir_cnt = 0 /*, have_p = 0*/;
   char * afl_preload;
   char * frida_afl_preload = NULL;
@@ -627,7 +903,6 @@ int main(int argc, char **argv_orig, char **envp) {
   if (debug) { afl->fsrv.debug = true; }
   read_afl_environment(afl, envp);
   if (afl->shm.map_size) { afl->fsrv.map_size = afl->shm.map_size; }
-  exit_1 = !!afl->afl_env.afl_bench_just_one;
 
   OKF ("Init map_size as: %u \r\n", afl->fsrv.map_size);
   SAYF(cCYA "afl-fuzz" VERSION cRST
@@ -2164,10 +2439,6 @@ int main(int argc, char **argv_orig, char **envp) {
   // real start time, we reset, so this works correctly with -V
   afl->start_time = get_cur_time();
 
-  u32 runs_in_current_cycle = (u32)-1;
-  u32 prev_queued_paths = 0;
-  u8  skipped_fuzz;
-
   #ifdef INTROSPECTION
   char ifn[4096];
   snprintf(ifn, sizeof(ifn), "%s/introspection.txt", afl->out_dir);
@@ -2188,280 +2459,7 @@ int main(int argc, char **argv_orig, char **envp) {
   }
 
   DEBUG_PRINT("Run into fuzzing loop....\r\n");
-  while (likely(!afl->stop_soon)) {
-
-    cull_queue(afl);
-
-    if (unlikely((!afl->old_seed_selection &&
-                  runs_in_current_cycle > afl->queued_paths) ||
-                 (afl->old_seed_selection && !afl->queue_cur))) {
-
-      if (unlikely((afl->last_sync_cycle < afl->queue_cycle ||
-                    (!afl->queue_cycle && afl->afl_env.afl_import_first)) &&
-                   afl->sync_id)) {
-
-        sync_fuzzers(afl);
-
-      }
-
-      ++afl->queue_cycle;
-      runs_in_current_cycle = (u32)-1;
-      afl->cur_skipped_paths = 0;
-
-      if (unlikely(afl->old_seed_selection)) {
-
-        afl->current_entry = 0;
-        while (unlikely(afl->current_entry < afl->queued_paths &&
-                        afl->queue_buf[afl->current_entry]->disabled)) {
-
-          ++afl->current_entry;
-
-        }
-
-        if (afl->current_entry >= afl->queued_paths) { afl->current_entry = 0; }
-
-        afl->queue_cur = afl->queue_buf[afl->current_entry];
-
-        if (unlikely(seek_to)) {
-
-          if (unlikely(seek_to >= afl->queued_paths)) {
-
-            // This should never happen.
-            FATAL("BUG: seek_to location out of bounds!\n");
-
-          }
-
-          afl->current_entry = seek_to;
-          afl->queue_cur = afl->queue_buf[seek_to];
-          seek_to = 0;
-
-        }
-
-      }
-
-      if (unlikely(afl->not_on_tty)) {
-
-        ACTF("Entering queue cycle %llu.", afl->queue_cycle);
-        fflush(stdout);
-
-      }
-
-      /* If we had a full queue cycle with no new finds, try
-         recombination strategies next. */
-
-      if (unlikely(afl->queued_paths == prev_queued
-                   /* FIXME TODO BUG: && (get_cur_time() - afl->start_time) >=
-                      3600 */
-                   )) {
-
-        if (afl->use_splicing) {
-
-          ++afl->cycles_wo_finds;
-
-          if (unlikely(afl->shm.cmplog_mode &&
-                       afl->cmplog_max_filesize < MAX_FILE)) {
-
-            afl->cmplog_max_filesize <<= 4;
-
-          }
-
-          switch (afl->expand_havoc) {
-
-            case 0:
-              // this adds extra splicing mutation options to havoc mode
-              afl->expand_havoc = 1;
-              break;
-            case 1:
-              // add MOpt mutator
-              /*
-              if (afl->limit_time_sig == 0 && !afl->custom_only &&
-                  !afl->python_only) {
-
-                afl->limit_time_sig = -1;
-                afl->limit_time_puppet = 0;
-
-              }
-
-              */
-              afl->expand_havoc = 2;
-              if (afl->cmplog_lvl && afl->cmplog_lvl < 2) afl->cmplog_lvl = 2;
-              break;
-            case 2:
-              // increase havoc mutations per fuzz attempt
-              afl->havoc_stack_pow2++;
-              afl->expand_havoc = 3;
-              break;
-            case 3:
-              // further increase havoc mutations per fuzz attempt
-              afl->havoc_stack_pow2++;
-              afl->expand_havoc = 4;
-              break;
-            case 4:
-              afl->expand_havoc = 5;
-              // if (afl->cmplog_lvl && afl->cmplog_lvl < 3) afl->cmplog_lvl =
-              // 3;
-              break;
-            case 5:
-              // nothing else currently
-              break;
-
-          }
-
-        } else {
-
-  #ifndef NO_SPLICING
-          afl->use_splicing = 1;
-  #else
-          afl->use_splicing = 0;
-  #endif
-
-        }
-
-      } else {
-
-        afl->cycles_wo_finds = 0;
-
-      }
-
-  #ifdef INTROSPECTION
-      fprintf(afl->introspection_file,
-              "CYCLE cycle=%llu cycle_wo_finds=%llu expand_havoc=%u queue=%u\n",
-              afl->queue_cycle, afl->cycles_wo_finds, afl->expand_havoc,
-              afl->queued_paths);
-  #endif
-
-      if (afl->cycle_schedules) {
-
-        /* we cannot mix non-AFLfast schedules with others */
-
-        switch (afl->schedule) {
-
-          case EXPLORE:
-            afl->schedule = EXPLOIT;
-            break;
-          case EXPLOIT:
-            afl->schedule = MMOPT;
-            break;
-          case MMOPT:
-            afl->schedule = SEEK;
-            break;
-          case SEEK:
-            afl->schedule = EXPLORE;
-            break;
-          case FAST:
-            afl->schedule = COE;
-            break;
-          case COE:
-            afl->schedule = LIN;
-            break;
-          case LIN:
-            afl->schedule = QUAD;
-            break;
-          case QUAD:
-            afl->schedule = RARE;
-            break;
-          case RARE:
-            afl->schedule = FAST;
-            break;
-
-        }
-
-        // we must recalculate the scores of all queue entries
-        for (u32 i = 0; i < afl->queued_paths; i++) {
-
-          if (likely(!afl->queue_buf[i]->disabled)) {
-
-            update_bitmap_score(afl, afl->queue_buf[i]);
-
-          }
-
-        }
-
-      }
-
-      prev_queued = afl->queued_paths;
-
-    }
-
-    ++runs_in_current_cycle;
-
-    do {
-
-      if (likely(!afl->old_seed_selection)) {
-
-        if (unlikely(prev_queued_paths < afl->queued_paths ||
-                     afl->reinit_table)) {
-
-          // we have new queue entries since the last run, recreate alias table
-          prev_queued_paths = afl->queued_paths;
-          create_alias_table(afl);
-
-        }
-
-        afl->current_entry = select_next_queue_entry(afl);
-        afl->queue_cur = afl->queue_buf[afl->current_entry];
-
-      }
-
-      skipped_fuzz = fuzz_one(afl);
-
-      if (unlikely(!afl->stop_soon && exit_1)) { afl->stop_soon = 2; }
-
-      if (unlikely(afl->old_seed_selection)) {
-
-        while (++afl->current_entry < afl->queued_paths &&
-               afl->queue_buf[afl->current_entry]->disabled)
-          ;
-        if (unlikely(afl->current_entry >= afl->queued_paths ||
-                     afl->queue_buf[afl->current_entry] == NULL ||
-                     afl->queue_buf[afl->current_entry]->disabled))
-          afl->queue_cur = NULL;
-        else
-          afl->queue_cur = afl->queue_buf[afl->current_entry];
-
-      }
-
-    } while (skipped_fuzz && afl->queue_cur && !afl->stop_soon);
-
-    if (likely(!afl->stop_soon && afl->sync_id)) {
-
-      if (likely(afl->skip_deterministic)) {
-
-        if (unlikely(afl->is_main_node)) {
-
-          if (unlikely(get_cur_time() >
-                       (SYNC_TIME >> 1) + afl->last_sync_time)) {
-
-            if (!(sync_interval_cnt++ % (SYNC_INTERVAL / 3))) {
-
-              sync_fuzzers(afl);
-
-            }
-
-          }
-
-        } else {
-
-          if (unlikely(get_cur_time() > SYNC_TIME + afl->last_sync_time)) {
-
-            if (!(sync_interval_cnt++ % SYNC_INTERVAL)) { sync_fuzzers(afl); }
-
-          }
-
-        }
-
-      } else {
-
-        sync_fuzzers(afl);
-
-      }
-
-    }
-
-  }
-
-  write_bitmap(afl);
-  save_auto(afl);
+  standard_fuzzing_loop (afl, seek_to);
 
 stop_fuzzing:
 

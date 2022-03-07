@@ -6510,7 +6510,13 @@ u8 fuzz_one_standard(afl_state_t *afl)
     pl_send ((char*)msg_header, msg_header->MsgLen);
 
     msg_header = (MsgHdr *)pl_recv();
-    assert (msg_header->MsgType == PL_MSG_SEED);
+    if (msg_header->MsgType == PL_MSG_SWMODE)
+    {
+        switch_fz_mode(pl_mode_pilot);
+    }
+    else {
+        assert (msg_header->MsgType == PL_MSG_SEED);
+    }
 
     /* set env for current seed-ID */
     u8 SeedId[16];

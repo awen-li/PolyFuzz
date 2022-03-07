@@ -502,7 +502,7 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
     return;
 }
 
-static inline void switch_mode (u32 run_mode)
+void switch_fz_mode (u32 run_mode)
 {
     pl_srv_t *pl_srv = &g_pl_srv;
 
@@ -591,7 +591,7 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
             fprintf (stderr, "[FZ-FIN] send PL_MSG_FZ_FIN...\r\n");
 
             pd->fz_state = FZ_S_SEEDSEND;
-            switch_mode (pl_mode_standard);
+            switch_fz_mode (pl_mode_standard);
             break;
         }
         default:

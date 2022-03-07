@@ -12,6 +12,7 @@ typedef enum
 {
     PL_MSG_STARTUP=1,
     PL_MSG_SEED,
+    PL_MSG_SWMODE,
     PL_MSG_ITR_BEGIN,
     PL_MSG_ITR_END,
     PL_MSG_FZ_FIN

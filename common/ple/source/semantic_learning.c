@@ -191,9 +191,9 @@ static inline Seed* AddSeed (BYTE* SeedName, DWORD SeedKey)
 
     Seed* Sn = (Seed*)(Ack.pDataAddr);
     strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
-    Sn->IsLearned = FALSE;
-    Sn->BrVarChg  = 0;
-    Sn->SeedKey   = SeedKey;
+    Sn->LearnStatus = LS_NONE;
+    Sn->BrVarChg    = 0;
+    Sn->SeedKey     = SeedKey;
 
     return Sn;
 }
@@ -878,7 +878,7 @@ static inline VOID LearningMain (PilotData *PD)
     for (DWORD SdId = 1; SdId <= SeedNum; SdId++)
     {
         Seed *Sd = (Seed*) GetDataByID (DHL->DBSeedHandle, SdId);
-        if (Sd->IsLearned == TRUE)
+        if (Sd->LearnStatus == LS_DONE)
         {
             continue;
         }
@@ -925,7 +925,7 @@ static inline VOID LearningMain (PilotData *PD)
         MakeDir(GEN_SEED);
         GenAllSeeds (PD, Sd);
         ListDel(&Sd->SdBlkList, NULL);
-        Sd->IsLearned = TRUE;
+        Sd->LearnStatus = LS_DONE;
     }
 
     printf ("[ple]PilotMode exit, Learned seeds: %u....\r\n", PD->GenSeedNum);
@@ -998,6 +998,7 @@ static inline VOID DeShm ()
 
 VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
+    DeShm ();
     memcpy (&plSrv->PLOP, PLOP, sizeof (PLOption));
 
     /* multi-thread init */
@@ -1061,7 +1062,8 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     /* set default run-mode */
     plSrv->RunMode = RUNMOD_STANDD;
 
-    DeShm ();
+    mutex_lock_init(&plSrv->FlSdLock);
+    memset (&plSrv->FLSdList, 0, sizeof (plSrv->FLSdList));
 
     return;
 }
@@ -1215,23 +1217,33 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Standard-fuzzing mode: for standard fuzzing
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline DWORD IsBrVarChg (StanddData *SD)
+static inline VOID CacheSeedToLearn (Seed *CurSeed)
 {
-    DWORD BrChange = 0;
-    mutex_lock(&SD->SDLock);
-    BrChange = SD->BrVarChange;
-    mutex_unlock(&SD->SDLock);
-
-    return BrChange;
-}
-
-static inline VOID ResetBrVarChg (StanddData *SD)
-{
-    mutex_lock(&SD->SDLock);
-    SD->BrVarChange = 0;
-    mutex_unlock(&SD->SDLock);
+    PLServer *plSrv = &g_plSrv;
+    
+    if (CurSeed->LearnStatus != LS_NONE)
+    {
+        return;
+    }
+    CurSeed->LearnStatus = LS_READY;
+    
+    mutex_lock(&plSrv->FlSdLock);
+    ListInsert(&plSrv->FLSdList, CurSeed);   
+    mutex_unlock(&plSrv->FlSdLock);
 
     return;
+}
+
+static inline DWORD HasSeedToLearn ()
+{
+    PLServer *plSrv = &g_plSrv;
+    DWORD SeedNum;
+    
+    mutex_lock(&plSrv->FlSdLock);
+    SeedNum = plSrv->FLSdList.NodeNum;  
+    mutex_unlock(&plSrv->FlSdLock);
+
+    return SeedNum;
 }
 
 
@@ -1259,8 +1271,10 @@ void* DEMonitor (void *Para)
                 Seed *CurSeed = GetSeedByKey (ExtI->SeedKey);
                 if (CurSeed != NULL)
                 {
-                    printf ("\t->[DEMonitor][QSize-%u][SKey-%u]%s -> BrVarChg = %u\r\n", QSize, ExtI->SeedKey, CurSeed->SName, BrVarChg);
+                    printf ("\t->[DEMonitor][QSize-%u][SKey-%u]%s -> BrVarChg:%u, LearnStatus:%u\r\n", 
+                            QSize, ExtI->SeedKey, CurSeed->SName, BrVarChg, CurSeed->LearnStatus);
                     CurSeed->BrVarChg += BrVarChg;
+                    CacheSeedToLearn (CurSeed);
                 }
                 
                 BrVarChg = 0;
@@ -1282,11 +1296,11 @@ void* DEMonitor (void *Para)
 
 static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 {
-    SD->FzExit  = FALSE;
-    mutex_lock_init(&SD->SDLock);
-    
-    pthread_t Tid = 0;
-    DWORD Ret = pthread_create(&Tid, NULL, DEMonitor, SD);
+    /* Inform monitor not to exit. */
+    SD->FzExit = FALSE;
+
+    pthread_t DemId = 0;
+    DWORD Ret = pthread_create(&DemId, NULL, DEMonitor, SD);
     if (Ret != 0)
     {
         fprintf (stderr, "pthread_create fail, Ret = %d\r\n", Ret);
@@ -1298,28 +1312,37 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
     Seed *CurSeed;
     while (TRUE)
     {
-        switch (SD->SrvState)
+        /* keep recving seed from fuzzer */
+        MsgRev = (MsgHdr *) Recv(SkInfo);
+        assert (MsgRev->MsgType == PL_MSG_SEED);
+
+        MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
+        BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
+        CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
+        DEBUG ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
+
+        /* check for-learn seed list */
+        DWORD SeedNum = HasSeedToLearn ();
+        if (SeedNum != 0)
         {
-            case SRV_S_SEEDRCV:
-            {
-                MsgRev = (MsgHdr *) Recv(SkInfo);
-                assert (MsgRev->MsgType == PL_MSG_SEED);
+            MsgSend = FormatMsg(SkInfo, PL_MSG_SWMODE);
+            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+            
+            SD->FzExit = TRUE;
 
-                MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
-                BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
-                CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
-                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
+            VOID *TRet = NULL;
+            pthread_join (DemId, &TRet);
 
-                MsgSend = FormatMsg(SkInfo, PL_MSG_SEED);
-                Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-                break;
-            }
-            default:
-            {
-                assert (0);
-            }
+            SwitchMode(RUNMOD_PILOT);
+            printf ("[StandardMode] %u seeds ready to learn, switch to PILOT\r\n", SeedNum);
+            
+            break;
         }
-        
+        else
+        {
+            MsgSend = FormatMsg(SkInfo, PL_MSG_SEED);
+            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen); 
+        }        
     }
     
     return FALSE;
@@ -1345,7 +1368,7 @@ static inline VOID HandShake (PLServer *plSrv)
 
     /* !!!! clear the queue: AFL++'s validation will cause redundant events */
     ClearQueue();
-    
+
     return;       
 }
 

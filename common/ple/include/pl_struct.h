@@ -22,6 +22,13 @@
 #define LEARN_BLOCK_NUM      (32)
 #define GEN_SEED             ("gen_seeds")
 
+typedef enum
+{
+    LS_NONE = 0,
+    LS_READY= 1,
+    LS_DONE = 2,
+}SEED_LS;
+
 
 typedef struct _Seed_ 
 {
@@ -34,7 +41,7 @@ typedef struct _Seed_
     DWORD SeedSDLen;
 
     List SdBlkList;
-    DWORD IsLearned;
+    DWORD LearnStatus;
     DWORD SeedKey;
     DWORD BrVarChg;
 } Seed;
@@ -193,9 +200,6 @@ typedef struct StanddData
     
     PLOption *PLOP;
     DbHandle  *DHL;
-
-    mutex_lock_t SDLock;
-    DWORD BrVarChange;
     
 }StanddData;
 
@@ -210,6 +214,9 @@ typedef struct PLServer
 
     SocketInfo SkInfo;
     DbHandle   DHL;
+
+    List FLSdList;
+    mutex_lock_t FlSdLock;
     
 }PLServer;
 

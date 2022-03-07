@@ -870,6 +870,7 @@ typedef struct standd_data
 
 
 u32 get_fz_mode ();
+void switch_fz_mode (u32 run_mode);
 MsgHdr* format_msg (u32 msg_type);
 void pl_send (char *msg, unsigned msg_len);
 char* pl_recv ();

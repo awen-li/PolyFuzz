@@ -1,9 +1,10 @@
-#include "ctrace/Event.h"
 #include <pthread.h>
 #include <dirent.h>
+#include <sys/shm.h>
 #include <sys/stat.h>
 #include "db.h"
 #include "Queue.h"
+#include "ctrace/Event.h"
 #include "pl_struct.h"
 
 static PLServer g_plSrv;
@@ -962,6 +963,18 @@ static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
     return;
 }
 
+static inline VOID DeShm ()
+{
+    int SharedId = shmget(0xC3B3C5D0, 0, 0666);
+    if (SharedId < 0)
+    {
+        return;
+    }
+    printf ("[DeShm] Delete SharedId of %d \r\n", SharedId);
+    shmctl(SharedId, IPC_RMID, 0);
+    return;
+}
+
 
 VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
@@ -1027,6 +1040,8 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 
     /* set default run-mode */
     plSrv->RunMode = RUNMOD_STANDD;
+
+    DeShm ();
 
     return;
 }

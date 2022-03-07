@@ -404,50 +404,6 @@ static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
     return;
 }
 
- 
-static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
-{
-    pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
-    if(pl_srv->socket_fd < 0)  
-    {  
-        FATAL("create socket for communication with ple fail...\r\n"); 
-    }
-
-    char *str_pl_port = getenv ("AFL_PL_SOCKET_PORT");
-    if (str_pl_port == NULL)
-    {
-        str_pl_port = AFL_PL_SOCKET_PORT;     
-        WARNF("the env AFL_PL_SOCKET_PORT did not set, use default 9999....");
-    }
-
-    memset(&pl_srv->addr_serv, 0, sizeof(pl_srv->addr_serv));  
-    pl_srv->addr_serv.sin_family = AF_INET;  
-    pl_srv->addr_serv.sin_addr.s_addr = inet_addr("127.0.0.1");  
-    pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));
-
-    /* start from standard fuzzing */
-    pl_srv->run_mode = pl_mode_standard;
-
-    /* init standard data */
-    standd_data *sd = &pl_srv->sd;
-    sd->skipped_fuzz = 0;  
-    sd->exit_1 = !!afl->afl_env.afl_bench_just_one;   
-    sd->prev_queued = 0;
-    sd->prev_queued_paths = 0;
-    sd->sync_interval_cnt = 0;
-    sd->runs_in_current_cycle = (u32)-1;
-    sd->seek_to = 0;
-    sd->fz_state = FZ_S_STARTUP;
-
-    /* init pilot data */
-    pilot_data *pd = &pl_srv->pd;
-    pd->fz_state = FZ_S_STARTUP;
-    pd->seed_id  = 0;
-
-    OKF ("pl_init success..");
-    return;
-}
-
 static inline char* pl_recv ()
 {
     pl_srv_t *pl_srv = &g_pl_srv;
@@ -482,6 +438,70 @@ static inline MsgHdr* format_msg (u32 msg_type)
     return msg_header;
 }
 
+static inline void hand_shake (pl_srv_t *pl_srv)
+{
+    MsgHdr *msg_header = format_msg (PL_MSG_STARTUP);
+    pl_send ((char*)msg_header, msg_header->MsgLen);
+    OKF("[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
+
+    msg_header = (MsgHdr *) pl_recv();
+    assert (msg_header->MsgType == PL_MSG_STARTUP);
+    MsgHandShake *MsgHs = (MsgHandShake *)(msg_header + 1);
+    pl_srv->run_mode = MsgHs->RunMode;
+    OKF("[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
+
+    /* change to SRV_S_SEEDRCV */
+    pl_srv->pd.fz_state = FZ_S_SEEDSEND;
+    pl_srv->sd.fz_state = FZ_S_SEEDSEND;
+    
+    return;
+}
+
+ 
+static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
+{
+    pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
+    if(pl_srv->socket_fd < 0)  
+    {  
+        FATAL("create socket for communication with ple fail...\r\n"); 
+    }
+
+    char *str_pl_port = getenv ("AFL_PL_SOCKET_PORT");
+    if (str_pl_port == NULL)
+    {
+        str_pl_port = AFL_PL_SOCKET_PORT;     
+        WARNF("the env AFL_PL_SOCKET_PORT did not set, use default 9999....");
+    }
+
+    memset(&pl_srv->addr_serv, 0, sizeof(pl_srv->addr_serv));  
+    pl_srv->addr_serv.sin_family = AF_INET;  
+    pl_srv->addr_serv.sin_addr.s_addr = inet_addr("127.0.0.1");  
+    pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));
+
+    /* start from standard fuzzing */
+    pl_srv->run_mode = pl_mode_pilot;
+
+    /* init standard data */
+    standd_data *sd = &pl_srv->sd;
+    sd->skipped_fuzz = 0;  
+    sd->exit_1 = !!afl->afl_env.afl_bench_just_one;   
+    sd->prev_queued = 0;
+    sd->prev_queued_paths = 0;
+    sd->sync_interval_cnt = 0;
+    sd->runs_in_current_cycle = (u32)-1;
+    sd->seek_to = 0;
+    sd->fz_state = FZ_S_STARTUP;
+
+    /* init pilot data */
+    pilot_data *pd = &pl_srv->pd;
+    pd->fz_state = FZ_S_STARTUP;
+    pd->seed_id  = 0;
+
+    hand_shake (pl_srv);
+    OKF ("pl_init success..");
+    return;
+}
+
 static inline void switch_mode (u32 run_mode)
 {
     pl_srv_t *pl_srv = &g_pl_srv;
@@ -503,20 +523,6 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
     MsgHdr *msg_header;
     switch (pd->fz_state)
     {
-        case FZ_S_STARTUP:
-        {
-            msg_header = format_msg (PL_MSG_STARTUP);
-            pl_send ((char*)msg_header, msg_header->MsgLen);
-            fprintf (stderr, "[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
-
-            msg_header = (MsgHdr *) pl_recv();
-            assert (msg_header->MsgType == PL_MSG_STARTUP);
-            fprintf (stderr, "[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
-
-            /* change to SRV_S_SEEDRCV */
-            pd->fz_state = FZ_S_SEEDSEND;
-            break;
-        }
         case FZ_S_SEEDSEND:
         {
             if (pd->seed_id >= afl->queued_paths)

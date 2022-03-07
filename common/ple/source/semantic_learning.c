@@ -96,7 +96,7 @@ VOID InitDbTable (PLServer *plSrv)
 
     InitDb(NULL);
     
-    Ret = DbCreateTable(DHL->DBSeedHandle, 0, sizeof (Seed), 0);
+    Ret = DbCreateTable(DHL->DBSeedHandle, 8*1024, sizeof (Seed), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
     Ret = DbCreateTable(DHL->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 48);
@@ -116,25 +116,6 @@ VOID InitDbTable (PLServer *plSrv)
             TableSize (DHL->DBBrVariableHandle), TableSize (DHL->DBBrVarKeyHandle), 
             TableSize (DHL->DBCacheBrVarHandle));
     return;
-}
-
-
-static inline Seed* AddSeed (BYTE* SeedName)
-{    
-    DbReq Req;
-    DbAck Ack;
-
-    Req.dwDataType = DB_TYPE_SEED;
-    Req.dwKeyLen   = 0;
-    
-    DWORD Ret = CreateDataNonKey (&Req, &Ack);
-    assert (Ret == R_SUCCESS);
-
-    Seed* Sn = (Seed*)(Ack.pDataAddr);
-    strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
-    Sn->IsLearned = FALSE;
-
-    return Sn;
 }
 
 
@@ -165,6 +146,34 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     }
 
     return SdName;
+}
+
+
+static inline Seed* AddSeed (BYTE* SeedName, DWORD SeedKey)
+{    
+    DbReq Req;
+    DbAck Ack;
+    DWORD SeedId = SeedKey;
+
+    Req.dwDataType = DB_TYPE_SEED;
+    Req.dwKeyLen   = sizeof (DWORD);
+    Req.pKeyCtx    = (BYTE*)&SeedId;
+
+    DWORD Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret == R_SUCCESS)
+    {
+        return (Seed*)(Ack.pDataAddr);
+    }
+    
+    Ret = CreateDataByKey (&Req, &Ack);
+    assert (Ret == R_SUCCESS);
+
+    Seed* Sn = (Seed*)(Ack.pDataAddr);
+    strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
+    Sn->IsLearned = FALSE;
+    Sn->SeedId    = SeedKey;
+
+    return Sn;
 }
 
 
@@ -226,7 +235,6 @@ static inline DWORD AddBrVarKey (PilotData *PD, DWORD Key)
         return FALSE;
     }
 }
-
 
 
 static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QItr)
@@ -397,7 +405,6 @@ void* DECollect (void *Para)
     }
     pthread_exit ((void*)0);
 }
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1012,7 +1019,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     InitQueue(MEMMOD_SHARE);
 
     /* set default run-mode */
-    plSrv->RunMode = RUNMOD_PILOT;
+    plSrv->RunMode = RUNMOD_STANDD;
 
     return;
 }
@@ -1045,6 +1052,10 @@ static inline VOID SwitchMode (RUNMOD RunMode)
     return;
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Pilot-fuzzing mode: for pattern learning
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 {
     Seed *CurSeed;
@@ -1054,23 +1065,6 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 
     switch (PD->SrvState)
     {
-        case SRV_S_STARTUP:
-        {
-            MsgRev = (MsgHdr *) Recv(SkInfo);
-            assert (MsgRev->MsgType == PL_MSG_STARTUP);
-            printf ("[ple-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
-
-            MsgSend = FormatMsg (SkInfo, PL_MSG_STARTUP);
-            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-            printf ("[ple-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
-
-            /* !!!! clear the queue: AFL++'s validation will cause redundant events */
-            ClearQueue();
-
-            /* change to SRV_S_SEEDRCV */
-            PD->SrvState = SRV_S_SEEDRCV;
-            break;
-        }
         case SRV_S_SEEDRCV:
         {
             MsgRev = (MsgHdr *) Recv(SkInfo);
@@ -1084,11 +1078,14 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
             MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
             BYTE* SeedPath = (BYTE*)(MsgSd + 1);
     
-            CurSeed = AddSeed (SeedPath);
+            CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);
             CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
             PD->CurSeed = CurSeed;
+
+            /* !!!! clear the queue: AFL++'s validation will cause redundant events */
+            ClearQueue();
     
-            printf ("[ple-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", MsgSd->SeedKey, SeedPath, CurSeed->SeedLen);
+            printf ("[PilotMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", CurSeed->SeedId, SeedPath, CurSeed->SeedLen);
                     
             PD->SrvState = SRV_S_ITB;
             break;
@@ -1131,11 +1128,11 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
     
                     /* inform the fuzzer */
                     Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-                    DEBUG ("[ple-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
+                    DEBUG ("[PilotMode-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
     
                     MsgHdr *MsgRecv = (MsgHdr *) Recv(SkInfo);
                     assert (MsgSend->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[ple-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
+                    DEBUG ("[PilotMode-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
                     PD->FzExit = TRUE;
     
                     VOID *TRet = NULL;
@@ -1151,7 +1148,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
         {
             MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_END);
             Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-            DEBUG ("[ple-ITE] send PL_MSG_ITR_END...\r\n");
+            DEBUG ("[PilotMode-ITE] send PL_MSG_ITR_END...\r\n");
                     
             ShowLearnStat (PD);
                     
@@ -1161,9 +1158,9 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
         }
         case SRV_S_FIN:
         {
-            DEBUG ("[ple-FIN] recv PL_MSG_FZ_FIN...\r\n");
+            DEBUG ("[PilotMode-FIN] recv PL_MSG_FZ_FIN...\r\n");
             LearningMain (PD);
-            SwitchMode (RUNMOD_OFFICIAL);
+            SwitchMode (RUNMOD_STANDD);
             break;
         }
         default:
@@ -1176,13 +1173,169 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Standard-fuzzing mode: for standard fuzzing
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+static inline DWORD IsBrVarExist (StanddData *SD, DWORD Key)
+{    
+    DbReq Req;
+    DbAck Ack;
+    DWORD Ret;
+
+    Req.dwDataType = SD->DHL->DBBrVarKeyHandle;
+    Req.dwKeyLen   = sizeof (DWORD);
+    Req.pKeyCtx    = (BYTE*)&Key;
+
+    Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret != R_SUCCESS)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
+}
+
+
+static inline DWORD IsBrVarChg (StanddData *SD)
+{
+    DWORD BrChange = 0;
+    mutex_lock(&SD->SDLock);
+    BrChange = SD->BrVarChange;
+    mutex_unlock(&SD->SDLock);
+
+    return BrChange;
+}
+
+static inline VOID ResetBrVarChg (StanddData *SD)
+{
+    mutex_lock(&SD->SDLock);
+    SD->BrVarChange = 0;
+    mutex_unlock(&SD->SDLock);
+
+    return;
+}
+
+
+void* DEMonitor (void *Para)
+{
+    StanddData *SD = (StanddData*)Para;
+    DbHandle *DHL = SD->DHL;
+
+    DWORD QSize    = QueueSize ();
+    DWORD SeedId   = 0;
+    while (SD->FzExit == FALSE || QSize != 0)
+    {
+        QNode *QN = FrontQueue ();
+        if (QN == NULL || QN->IsReady == FALSE)
+        {
+            QSize = QueueSize ();
+            continue;
+        }
+
+        if (QN->TrcKey == TARGET_EXIT_KEY)
+        {
+            SeedId++;
+        }
+        else
+        {
+            ObjValue *OV = (ObjValue *)QN->Buf;
+            if (IsBrVarExist (SD, QN->TrcKey) == TRUE)
+            {
+            }
+        }
+        
+        OutQueue (QN);
+        QSize = QueueSize ();
+        
+    }   
+ 
+    pthread_exit ((void*)0);
+}
+
 static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 {
-    printf ("Entry OfficialMode...\r\n");
-    sleep (1);
+    SD->CurSeed = NULL;
+    mutex_lock_init(&SD->SDLock);
+    
+    pthread_t Tid = 0;
+    DWORD Ret = pthread_create(&Tid, NULL, DEMonitor, SD);
+    if (Ret != 0)
+    {
+        fprintf (stderr, "pthread_create fail, Ret = %d\r\n", Ret);
+        return TRUE;
+    }
+
+    MsgHdr *MsgRev;
+    MsgHdr *MsgSend;
+    while (TRUE)
+    {
+        switch (SD->SrvState)
+        {
+            case SRV_S_SEEDRCV:
+            {
+                MsgRev = (MsgHdr *) Recv(SkInfo);
+                assert (MsgRev->MsgType == PL_MSG_SEED);
+
+                MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
+                BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
+                SD->CurSeed    = AddSeed (SeedPath, MsgSd->SeedKey);
+                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", SD->CurSeed->SeedId, SeedPath, SD->CurSeed->SeedLen);
+                
+                if (IsBrVarChg (SD) == FALSE)
+                {
+                    continue;
+                }
+        
+                break;
+            }
+            case SRV_S_ITB:
+            {
+                
+                break;
+            }
+            case SRV_S_ITE:
+            {
+               
+                break;
+            }
+            case SRV_S_FIN:
+            {
+
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+        
+    }
+    
     return FALSE;
 }
 
+
+static inline VOID HandShake (PLServer *plSrv)
+{
+    MsgHdr *MsgRev = (MsgHdr *) Recv(&plSrv->SkInfo);
+    assert (MsgRev->MsgType == PL_MSG_STARTUP);
+    printf ("[PilotMode-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
+
+    MsgHdr *MsgSend = FormatMsg (&plSrv->SkInfo, PL_MSG_STARTUP);
+    MsgHandShake *MsgHs = (MsgHandShake *)(MsgSend + 1);
+    MsgHs->RunMode = plSrv->RunMode;
+    MsgSend->MsgLen += sizeof (MsgHandShake);   
+    Send (&plSrv->SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+    printf ("[PilotMode-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+
+    /* swtich the SM of PD and SD */
+    plSrv->PD.SrvState = SRV_S_SEEDRCV;
+    plSrv->SD.SrvState = SRV_S_SEEDRCV;
+    
+    return;       
+}
 
 VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
 {
@@ -1199,9 +1352,16 @@ VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
         return;
     }
     
-    DWORD IsExit   = FALSE;
+    DWORD IsExit      = FALSE;
+    DWORD IsHandShake = FALSE;
     while (!IsExit)
     {
+        if (IsHandShake == FALSE)
+        {
+            HandShake (plSrv);
+            IsHandShake = TRUE;
+        }
+        
         switch (plSrv->RunMode)
         {
             case RUNMOD_PILOT:
@@ -1209,7 +1369,7 @@ VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
                 IsExit = PilotMode (&plSrv->PD, SkInfo);
                 break;
             }
-            case RUNMOD_OFFICIAL:
+            case RUNMOD_STANDD:
             {
                 IsExit = StandardMode (&plSrv->SD, SkInfo);
                 break;

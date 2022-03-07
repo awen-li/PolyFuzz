@@ -35,6 +35,7 @@ typedef struct _Seed_
 
     List SdBlkList;
     DWORD IsLearned;
+    DWORD SeedId;
 } Seed;
 
 
@@ -158,9 +159,9 @@ typedef struct DB_HANDLE
 typedef enum
 {
     RUNMOD_PILOT=1,
-    RUNMOD_OFFICIAL=2,
+    RUNMOD_STANDD=2,
     //////////////////////////////
-    RUNMOD_NUM=RUNMOD_OFFICIAL,
+    RUNMOD_NUM=RUNMOD_STANDD,
 }RUNMOD;
 
 
@@ -191,8 +192,11 @@ typedef struct StanddData
     
     PLOption *PLOP;
     DbHandle  *DHL;
-}StanddData;
 
+    mutex_lock_t SDLock;
+    DWORD BrVarChange;
+    Seed *CurSeed;
+}StanddData;
 
 typedef struct PLServer
 {

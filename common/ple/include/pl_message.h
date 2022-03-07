@@ -31,6 +31,10 @@ typedef struct MsgSeed
     // byte* seed
 }MsgSeed;
 
+typedef struct MsgHandShake
+{
+    unsigned RunMode;
+}MsgHandShake;
 
 typedef struct MsgIB
 {

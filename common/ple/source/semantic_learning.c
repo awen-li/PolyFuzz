@@ -149,6 +149,26 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     return SdName;
 }
 
+static inline Seed* GetSeedByKey (DWORD SeedKey)
+{
+    DbReq Req;
+    DbAck Ack;
+    DWORD SeedId = SeedKey;
+
+    Req.dwDataType = DB_TYPE_SEED;
+    Req.dwKeyLen   = sizeof (DWORD);
+    Req.pKeyCtx    = (BYTE*)&SeedId;
+
+    DWORD Ret = QueryDataByKey(&Req, &Ack);
+    if (Ret == R_SUCCESS)
+    {
+        return (Seed*)(Ack.pDataAddr);
+    }
+    else
+    {
+        return NULL;
+    }
+}
 
 static inline Seed* AddSeed (BYTE* SeedName, DWORD SeedKey)
 {    
@@ -173,7 +193,7 @@ static inline Seed* AddSeed (BYTE* SeedName, DWORD SeedKey)
     strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
     Sn->IsLearned = FALSE;
     Sn->BrVarChg  = 0;
-    Sn->SeedId    = SeedKey;
+    Sn->SeedKey   = SeedKey;
 
     return Sn;
 }
@@ -1104,7 +1124,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
             CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
             PD->CurSeed = CurSeed;
     
-            printf ("[PilotMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", CurSeed->SeedId, SeedPath, CurSeed->SeedLen);
+            printf ("[PilotMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", CurSeed->SeedKey, SeedPath, CurSeed->SeedLen);
                     
             PD->SrvState = SRV_S_ITB;
             break;
@@ -1232,13 +1252,14 @@ void* DEMonitor (void *Para)
         }
 
         if (QN->TrcKey == TARGET_EXIT_KEY)
-        {   
+        {     
             if (BrVarChg != 0)
             {
-                Seed *CurSeed = SD->CurSeed;
+                ExitInfo *ExtI = (ExitInfo*)QN->Buf;
+                Seed *CurSeed = GetSeedByKey (ExtI->SeedKey);
                 if (CurSeed != NULL)
                 {
-                    printf ("\t->[DEMonitor][QSize-%u]%s -> BrVarChg = %u\r\n", QSize, CurSeed->SName, BrVarChg);
+                    printf ("\t->[DEMonitor][QSize-%u][SKey-%u]%s -> BrVarChg = %u\r\n", QSize, ExtI->SeedKey, CurSeed->SName, BrVarChg);
                     CurSeed->BrVarChg += BrVarChg;
                 }
                 
@@ -1261,7 +1282,6 @@ void* DEMonitor (void *Para)
 
 static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 {
-    SD->CurSeed = NULL;
     SD->FzExit  = FALSE;
     mutex_lock_init(&SD->SDLock);
     
@@ -1275,6 +1295,7 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 
     MsgHdr *MsgRev;
     MsgHdr *MsgSend;
+    Seed *CurSeed;
     while (TRUE)
     {
         switch (SD->SrvState)
@@ -1286,8 +1307,8 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 
                 MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
                 BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
-                SD->CurSeed    = AddSeed (SeedPath, MsgSd->SeedKey);                
-                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [ID-%u]%s\r\n", SD->CurSeed->SeedId, SeedPath);
+                CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
+                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
 
                 MsgSend = FormatMsg(SkInfo, PL_MSG_SEED);
                 Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);

@@ -6512,6 +6512,11 @@ u8 fuzz_one_standard(afl_state_t *afl)
     msg_header = (MsgHdr *)pl_recv();
     assert (msg_header->MsgType == PL_MSG_SEED);
 
+    /* set env for current seed-ID */
+    u8 SeedId[16];
+    snprintf (SeedId, sizeof (SeedId), "%u", afl->current_entry);
+    setenv ("AFL_CURRENT_SEEDID", SeedId, 1);
+    
     return fuzz_one_original(afl);
 }
 

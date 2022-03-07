@@ -35,7 +35,7 @@ typedef struct _Seed_
 
     List SdBlkList;
     DWORD IsLearned;
-    DWORD SeedId;
+    DWORD SeedKey;
     DWORD BrVarChg;
 } Seed;
 
@@ -196,7 +196,7 @@ typedef struct StanddData
 
     mutex_lock_t SDLock;
     DWORD BrVarChange;
-    Seed *CurSeed;
+    
 }StanddData;
 
 typedef struct PLServer

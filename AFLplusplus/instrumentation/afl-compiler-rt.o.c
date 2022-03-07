@@ -1494,6 +1494,13 @@ void __sanitizer_cov_trace_pc_guard_target_exit () {
     QN->TrcKey = TARGET_EXIT_KEY;  /* special key: indicate exit msg */
     QN->IsReady = 1;
 
+    u8 *SSID = getenv ("AFL_CURRENT_SEEDID");
+    if (SSID != NULL)
+    {
+        ExitInfo *ExtI = (ExitInfo*)QN->Buf;
+        ExtI->SeedKey  = atoi (SSID);
+    }
+
     AFL_DEBUG_SHOW("QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);
 }
 

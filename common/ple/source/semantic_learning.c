@@ -17,7 +17,7 @@ void* FuzzingProc (void *Para)
     BYTE* DriverDir = (BYTE *)Para;    
     BYTE Cmd[1024];
 
-    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 3", DriverDir);
+    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
     printf ("CMD: %s \r\n", Cmd);
     system (Cmd);
     
@@ -1176,7 +1176,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 }
 
 
-static inline DWORD OfficialMode (PilotData *RD, SocketInfo *SkInfo, MsgHdr *MsgRev)
+static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 {
     printf ("Entry OfficialMode...\r\n");
     sleep (1);
@@ -1199,7 +1199,6 @@ VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
         return;
     }
     
-    MsgHdr *MsgRev = NULL;
     DWORD IsExit   = FALSE;
     while (!IsExit)
     {
@@ -1212,7 +1211,7 @@ VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
             }
             case RUNMOD_OFFICIAL:
             {
-                IsExit = OfficialMode (&plSrv->PD, SkInfo, MsgRev);
+                IsExit = StandardMode (&plSrv->SD, SkInfo);
                 break;
             }
             default:

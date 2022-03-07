@@ -6528,10 +6528,14 @@ u8 fuzz_one(afl_state_t *afl) {
     case PL_SYNTAX_FZ:
         return syntax_pl_fuzzing(afl);
     case PL_SEMANTIC_FZ:
-        return semantic_pl_fuzzing(afl);
-        break;
-    case PL_OFFICIAL_FZ:
-        return pl_offical_fuzzing(afl);
+        if (get_fz_mode() == pl_mode_pilot)
+        {
+            return semantic_pl_fuzzing(afl);
+        }
+        else
+        {
+            return fuzz_one_original(afl);
+        }
     default:
         break;
   }

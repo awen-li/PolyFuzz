@@ -561,7 +561,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
     /* Try to calibrate inline; this also calls update_bitmap_score() when
        successful. */
-    if (afl->pl_fuzzing_type != PL_SEMANTIC_FZ) { /* in PL semantic mode, we don't want to calibrate */
+    if (afl->pl_fuzzing_type != PL_SEMANTIC_FZ && get_fz_mode() != pl_mode_pilot) { /* in PL semantic mode, we don't want to calibrate */
 
         res = calibrate_case(afl, afl->queue_top, mem, afl->queue_cycle - 1, 0);
 

@@ -426,7 +426,7 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
     pl_srv->addr_serv.sin_port = htons((short)atoi (str_pl_port));
 
     /* start from standard fuzzing */
-    pl_srv->run_mode = pl_mode_pilot;
+    pl_srv->run_mode = pl_mode_standard;
 
     /* init standard data */
     standd_data *sd = &pl_srv->sd;
@@ -444,6 +444,7 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
     pd->fz_state = FZ_S_STARTUP;
     pd->seed_id  = 0;
 
+    OKF ("pl_init success..");
     return;
 }
 
@@ -488,6 +489,13 @@ static inline void switch_mode (u32 run_mode)
     assert (run_mode == pl_mode_pilot || run_mode == pl_mode_standard);
     pl_srv->run_mode = run_mode;
     return;
+}
+
+u32 get_fz_mode ()
+{
+    pl_srv_t *pl_srv = &g_pl_srv;
+
+    return pl_srv->run_mode;
 }
 
 static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
@@ -615,7 +623,7 @@ static inline u32 pl_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
 
 
 static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
-   
+  
     if (unlikely(afl->old_seed_selection)) sd->seek_to = find_start_position(afl);
     
     cull_queue(afl);
@@ -732,10 +740,9 @@ static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
 
             }
 
-        } else {
-
+        } 
+        else {
             afl->cycles_wo_finds = 0;
-
         }
 
   #ifdef INTROSPECTION
@@ -805,7 +812,6 @@ static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
 
             afl->current_entry = select_next_queue_entry(afl);
             afl->queue_cur = afl->queue_buf[afl->current_entry];
-
         }
 
         sd->skipped_fuzz = fuzz_one(afl);
@@ -857,7 +863,7 @@ static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
 static inline void main_fuzzing_loop (afl_state_t *afl) {
     pl_srv_t *pl_srv = &g_pl_srv;
     pl_init (pl_srv, afl);
-    
+
     while (likely(!afl->stop_soon)) {
 
         switch (pl_srv->run_mode)
@@ -1606,10 +1612,9 @@ int main(int argc, char **argv_orig, char **envp) {
       {
         /* enable pattern recognization fuzzing */
         afl->pl_fuzzing_type  = (u32)atoi (optarg);
-        if (afl->pl_fuzzing_type != PL_SYNTAX_FZ && 
-            afl->pl_fuzzing_type != PL_SEMANTIC_FZ &&
-            afl->pl_fuzzing_type != PL_OFFICIAL_FZ) {
-            FATAL("[-P]pf_fuzzing_type: PL_SYNTAX_FZ=1, PL_SEMANTIC_FZ=2 PL_OFFICIAL_FZ=3, "
+        if (afl->pl_fuzzing_type != PL_SYNTAX_FZ &&
+            afl->pl_fuzzing_type != PL_SEMANTIC_FZ) {
+            FATAL("[-P]pf_fuzzing_type: PL_SYNTAX_FZ=1, PL_SEMANTIC_FZ=2, "
                   "please select a correct value!");
         }
         

@@ -183,6 +183,17 @@ typedef struct PilotData
     DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
 }PilotData;
 
+
+typedef struct StanddData
+{
+    DWORD SrvState;
+    DWORD FzExit;
+    
+    PLOption *PLOP;
+    DbHandle  *DHL;
+}StanddData;
+
+
 typedef struct PLServer
 {
     PLOption PLOP;
@@ -190,14 +201,10 @@ typedef struct PLServer
 
     DWORD RunMode;
     PilotData PD;
+    StanddData SD;
 
     SocketInfo SkInfo;
     DbHandle   DHL;
-
-    
-    
-
-
     
 }PLServer;
 

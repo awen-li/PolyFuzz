@@ -260,8 +260,7 @@ typedef struct seed_tmpt
 enum {
 
     PL_SYNTAX_FZ=1,    /* PL -> syntax learning fuzzing */
-    PL_OFFICIAL_FZ=2,  /* PL -> PL-based offical fuzzing */
-    PL_SEMANTIC_FZ=3   /* PL -> semantic learning fuzzing */
+    PL_SEMANTIC_FZ=2   /* PL -> semantic learning fuzzing */
 };
 
 enum {
@@ -870,6 +869,7 @@ typedef struct standd_data
 }standd_data;
 
 
+u32 get_fz_mode ();
 typedef struct pl_srv
 {
     int socket_fd;
@@ -882,8 +882,6 @@ typedef struct pl_srv
     char recv_buf[SRV_BUF_LEN];
     char send_buf[SRV_BUF_LEN];
 }pl_srv_t;
-
-
 
 
 struct custom_mutator {

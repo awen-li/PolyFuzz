@@ -426,7 +426,7 @@ static void check_term_size(afl_state_t *afl) {
 void show_stats(afl_state_t *afl) {
 
   if (afl->pl_fuzzing_type == PL_SYNTAX_FZ ||
-      afl->pl_fuzzing_type == PL_SEMANTIC_FZ) {
+      (afl->pl_fuzzing_type == PL_SEMANTIC_FZ && get_fz_mode() == pl_mode_pilot)) {
     return;
   }
 

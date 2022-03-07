@@ -870,6 +870,11 @@ typedef struct standd_data
 
 
 u32 get_fz_mode ();
+MsgHdr* format_msg (u32 msg_type);
+void pl_send (char *msg, unsigned msg_len);
+char* pl_recv ();
+
+
 typedef struct pl_srv
 {
     int socket_fd;

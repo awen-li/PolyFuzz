@@ -17,7 +17,7 @@
 
 #define FZ_SAMPLE_NUM        (32)
 #define FZ_SEED_NAME_LEN     (512)
-#define MAX_THREAD_NUM       (256)
+#define MAX_THREAD_NUM       (128)
 #define LEARN_BLOCK_SIZE     (128)
 #define LEARN_BLOCK_NUM      (32)
 #define GEN_SEED             ("gen_seeds")
@@ -36,6 +36,7 @@ typedef struct _Seed_
     List SdBlkList;
     DWORD IsLearned;
     DWORD SeedId;
+    DWORD BrVarChg;
 } Seed;
 
 

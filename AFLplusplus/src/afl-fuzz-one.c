@@ -6497,6 +6497,24 @@ abandon_entry:
 }
 
 
+u8 fuzz_one_standard(afl_state_t *afl)
+{
+    MsgHdr *msg_header = format_msg (PL_MSG_SEED);
+    MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
+    msg_seed->SeedKey = afl->current_entry;       
+    char* seed_path   = (char*) (msg_seed + 1);         
+    char *cur_dir = get_current_dir_name ();
+    sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
+    msg_seed->SeedLength = strlen (seed_path)+1;
+    msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;   
+    pl_send ((char*)msg_header, msg_header->MsgLen);
+
+    msg_header = (MsgHdr *)pl_recv();
+    assert (msg_header->MsgType == PL_MSG_SEED);
+
+    return fuzz_one_original(afl);
+}
+
 
 /* larger change for MOpt implementation: the original fuzz_one was renamed
    to fuzz_one_original. All documentation references to fuzz_one therefore
@@ -6526,15 +6544,15 @@ u8 fuzz_one(afl_state_t *afl) {
 
   switch (afl->pl_fuzzing_type) {
     case PL_SYNTAX_FZ:
-        return syntax_pl_fuzzing(afl);
+        return syntax_pl_fuzzing (afl);
     case PL_SEMANTIC_FZ:
         if (get_fz_mode() == pl_mode_pilot)
         {
-            return semantic_pl_fuzzing(afl);
+            return semantic_pl_fuzzing (afl);
         }
         else
         {
-            return fuzz_one_original(afl);
+            return fuzz_one_standard (afl);
         }
     default:
         break;

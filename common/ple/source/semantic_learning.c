@@ -171,6 +171,7 @@ static inline Seed* AddSeed (BYTE* SeedName, DWORD SeedKey)
     Seed* Sn = (Seed*)(Ack.pDataAddr);
     strncpy (Sn->SName, SeedName, sizeof (Sn->SName));
     Sn->IsLearned = FALSE;
+    Sn->BrVarChg  = 0;
     Sn->SeedId    = SeedKey;
 
     return Sn;
@@ -209,13 +210,13 @@ static inline SeedBlock* AddSeedBlock (PilotData *PD, Seed* CurSeed, MsgIB *MsgI
 }
 
 
-static inline DWORD AddBrVarKey (PilotData *PD, DWORD Key)
+static inline DWORD AddBrVarKey (DWORD DataType, DWORD Key)
 {    
     DbReq Req;
     DbAck Ack;
     DWORD Ret;
 
-    Req.dwDataType = PD->DHL->DBBrVarKeyHandle;
+    Req.dwDataType = DataType;
     Req.dwKeyLen   = sizeof (DWORD);
     Req.pKeyCtx    = (BYTE*)&Key;
 
@@ -369,7 +370,7 @@ void* DECollect (void *Para)
         {
             ObjValue *OV = (ObjValue *)QN->Buf;
 
-            BrKeyNum += AddBrVarKey (PD, QN->TrcKey);
+            BrKeyNum += AddBrVarKey (PD->DHL->DBBrVarKeyHandle, QN->TrcKey);
 
             CacheBrVar (PD, QN->TrcKey, OV, QItr);
             DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
@@ -1007,6 +1008,12 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     PD->SrvState   = SRV_S_STARTUP;
     PD->DHL        = &plSrv->DHL;
     PD->PLOP       = &plSrv->PLOP;
+
+    /* init standard data */
+    StanddData *SD = &plSrv->SD;
+    SD->SrvState   = SRV_S_STARTUP;
+    SD->DHL        = &plSrv->DHL;
+    SD->PLOP       = &plSrv->PLOP;
     
     /* init msg server */
     DWORD Ret = SrvInit (&plSrv->SkInfo);
@@ -1081,9 +1088,6 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
             CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);
             CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
             PD->CurSeed = CurSeed;
-
-            /* !!!! clear the queue: AFL++'s validation will cause redundant events */
-            ClearQueue();
     
             printf ("[PilotMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", CurSeed->SeedId, SeedPath, CurSeed->SeedLen);
                     
@@ -1176,28 +1180,6 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Standard-fuzzing mode: for standard fuzzing
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline DWORD IsBrVarExist (StanddData *SD, DWORD Key)
-{    
-    DbReq Req;
-    DbAck Ack;
-    DWORD Ret;
-
-    Req.dwDataType = SD->DHL->DBBrVarKeyHandle;
-    Req.dwKeyLen   = sizeof (DWORD);
-    Req.pKeyCtx    = (BYTE*)&Key;
-
-    Ret = QueryDataByKey(&Req, &Ack);
-    if (Ret != R_SUCCESS)
-    {
-        return FALSE;
-    }
-    else
-    {
-        return TRUE;
-    }
-}
-
-
 static inline DWORD IsBrVarChg (StanddData *SD)
 {
     DWORD BrChange = 0;
@@ -1223,8 +1205,8 @@ void* DEMonitor (void *Para)
     StanddData *SD = (StanddData*)Para;
     DbHandle *DHL = SD->DHL;
 
-    DWORD QSize    = QueueSize ();
-    DWORD SeedId   = 0;
+    DWORD QSize  = QueueSize ();
+    DWORD BrVarChg = 0;
     while (SD->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
@@ -1235,15 +1217,23 @@ void* DEMonitor (void *Para)
         }
 
         if (QN->TrcKey == TARGET_EXIT_KEY)
-        {
-            SeedId++;
+        {   
+            if (BrVarChg != 0)
+            {
+                Seed *CurSeed = SD->CurSeed;
+                if (CurSeed != NULL)
+                {
+                    printf ("\t->[DEMonitor][QSize-%u]%s -> BrVarChg = %u\r\n", QSize, CurSeed->SName, BrVarChg);
+                    CurSeed->BrVarChg += BrVarChg;
+                }
+                
+                BrVarChg = 0;
+            }
         }
         else
         {
             ObjValue *OV = (ObjValue *)QN->Buf;
-            if (IsBrVarExist (SD, QN->TrcKey) == TRUE)
-            {
-            }
+            BrVarChg += AddBrVarKey (SD->DHL->DBBrVarKeyHandle, QN->TrcKey);
         }
         
         OutQueue (QN);
@@ -1257,6 +1247,7 @@ void* DEMonitor (void *Para)
 static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 {
     SD->CurSeed = NULL;
+    SD->FzExit  = FALSE;
     mutex_lock_init(&SD->SDLock);
     
     pthread_t Tid = 0;
@@ -1280,29 +1271,11 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 
                 MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
                 BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
-                SD->CurSeed    = AddSeed (SeedPath, MsgSd->SeedKey);
-                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", SD->CurSeed->SeedId, SeedPath, SD->CurSeed->SeedLen);
-                
-                if (IsBrVarChg (SD) == FALSE)
-                {
-                    continue;
-                }
-        
-                break;
-            }
-            case SRV_S_ITB:
-            {
-                
-                break;
-            }
-            case SRV_S_ITE:
-            {
-               
-                break;
-            }
-            case SRV_S_FIN:
-            {
+                SD->CurSeed    = AddSeed (SeedPath, MsgSd->SeedKey);                
+                printf ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [ID-%u]%s\r\n", SD->CurSeed->SeedId, SeedPath);
 
+                MsgSend = FormatMsg(SkInfo, PL_MSG_SEED);
+                Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
                 break;
             }
             default:
@@ -1333,6 +1306,9 @@ static inline VOID HandShake (PLServer *plSrv)
     /* swtich the SM of PD and SD */
     plSrv->PD.SrvState = SRV_S_SEEDRCV;
     plSrv->SD.SrvState = SRV_S_SEEDRCV;
+
+    /* !!!! clear the queue: AFL++'s validation will cause redundant events */
+    ClearQueue();
     
     return;       
 }

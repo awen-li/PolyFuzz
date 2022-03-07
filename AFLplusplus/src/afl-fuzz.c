@@ -404,7 +404,7 @@ static void pl_syntax_fuzzing_loop (afl_state_t *afl) {
     return;
 }
 
-static inline char* pl_recv ()
+char* pl_recv ()
 {
     pl_srv_t *pl_srv = &g_pl_srv;
     memset (pl_srv->recv_buf, 0, sizeof(pl_srv->recv_buf));
@@ -417,7 +417,7 @@ static inline char* pl_recv ()
     return pl_srv->recv_buf;
 }
 
-static inline void pl_send (char *msg, unsigned msg_len)
+void pl_send (char *msg, unsigned msg_len)
 {
     pl_srv_t *pl_srv = &g_pl_srv;
     int sk_len   = sizeof (struct sockaddr_in);
@@ -427,7 +427,7 @@ static inline void pl_send (char *msg, unsigned msg_len)
     return;
 }
 
-static inline MsgHdr* format_msg (u32 msg_type)
+MsgHdr* format_msg (u32 msg_type)
 {
     pl_srv_t *pl_srv = &g_pl_srv;
 

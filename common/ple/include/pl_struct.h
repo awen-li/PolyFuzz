@@ -112,7 +112,7 @@ typedef struct BsValue
 typedef enum
 {
     SRV_S_STARTUP = 0,
-    SRV_S_SEEDRCV,
+    SRV_S_SEEDSEND,
     SRV_S_ITB,
     SRV_S_ITE,
     SRV_S_FIN
@@ -161,6 +161,8 @@ typedef struct DB_HANDLE
     DWORD DBSeedBlockHandle;
     DWORD DBBrVariableHandle;
     DWORD DBBrVarKeyHandle;
+
+    DWORD DBCacheBrVarKeyHandle;
     DWORD DBCacheBrVarHandle;
 }DbHandle;
 

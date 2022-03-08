@@ -93,6 +93,8 @@ VOID InitDbTable (PLServer *plSrv)
     DHL->DBSeedBlockHandle  = DB_TYPE_SEED_BLOCK;
     DHL->DBBrVariableHandle = DB_TYPE_BR_VARIABLE;
     DHL->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
+
+    DHL->DBCacheBrVarKeyHandle = DB_TYPE_BR_VARIABLE_KEY_CACHE;
     DHL->DBCacheBrVarHandle =  DB_TYPE_BR_VAR_CHACHE;
 
     InitDb(NULL);
@@ -109,13 +111,16 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(DHL->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
+    Ret = DbCreateTable(DHL->DBCacheBrVarKeyHandle, 128*1024, sizeof (BrVariable), 48);
+    assert (Ret != R_FAIL);
+    
     Ret = DbCreateTable(DHL->DBCacheBrVarHandle, 8*1024, sizeof (BrVariable), 48);
     assert (Ret != R_FAIL);
 
-    printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
+    printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
             TableSize (DHL->DBSeedHandle), TableSize (DHL->DBSeedBlockHandle),
             TableSize (DHL->DBBrVariableHandle), TableSize (DHL->DBBrVarKeyHandle), 
-            TableSize (DHL->DBCacheBrVarHandle));
+            TableSize (DHL->DBCacheBrVarKeyHandle), TableSize (DHL->DBCacheBrVarHandle));
     return;
 }
 
@@ -385,13 +390,14 @@ void* DECollect (void *Para)
         if (QN->TrcKey == TARGET_EXIT_KEY)
         {
             QItr ++;
+            assert (QItr <= FZ_SAMPLE_NUM);
             DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x target exit and turn to next iteration.... \r\n", QItr, QSize, QN->TrcKey);
         }
         else
         {
             ObjValue *OV = (ObjValue *)QN->Buf;
 
-            BrKeyNum += AddBrVarKey (PD->DHL->DBBrVarKeyHandle, QN->TrcKey);
+            BrKeyNum += AddBrVarKey (PD->DHL->DBCacheBrVarKeyHandle, QN->TrcKey);
 
             CacheBrVar (PD, QN->TrcKey, OV, QItr);
             DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
@@ -416,7 +422,7 @@ void* DECollect (void *Para)
     {
         CopyTable (DHL->DBBrVariableHandle, DHL->DBCacheBrVarHandle);
         printf ("\t@@@DECollect --- New BR found [to %u]. [Table%u] DataNum = %u after copy [Table%u][%u]! ---> Reset CacheBr to ",
-                QueryDataNum(DHL->DBBrVarKeyHandle),
+                QueryDataNum(DHL->DBCacheBrVarKeyHandle),
                 DHL->DBBrVariableHandle, QueryDataNum(DHL->DBBrVariableHandle),
                 DHL->DBCacheBrVarHandle, QueryDataNum(DHL->DBCacheBrVarHandle));
         
@@ -864,20 +870,30 @@ static inline VOID StartTraining (PilotData *PD, BYTE *DataFile, SeedBlock *SdBl
     return;
 }
 
+static inline List* GetFLSeedList ()
+{
+    PLServer *plSrv = &g_plSrv;
+
+    return &plSrv->FLSdList;  
+}
+
 static inline VOID LearningMain (PilotData *PD)
 {
     BYTE BlkDir[256];
     BYTE ALignDir[256];
 
     DbHandle *DHL = PD->DHL;
-    DWORD SeedNum = QueryDataNum (DHL->DBSeedHandle);
     DWORD SeedBlkNum = QueryDataNum (DHL->DBSeedBlockHandle);
-    DWORD VarKeyNum  = QueryDataNum (DHL->DBBrVarKeyHandle);
+    DWORD VarKeyNum  = QueryDataNum (DHL->DBCacheBrVarKeyHandle);
+
+    List *FlSdList = GetFLSeedList ();
+    LNode *LNSeed  = FlSdList->Header;
+    DWORD SeedNum  = FlSdList->NodeNum;
     
     DEBUG ("SeedNum = %u, SeedBlkNum = %u, VarKeyNum = %u \r\n", SeedNum, SeedBlkNum, VarKeyNum);
-    for (DWORD SdId = 1; SdId <= SeedNum; SdId++)
+    for (DWORD Index = 0; Index < SeedNum; Index++, LNSeed = LNSeed->Nxt)
     {
-        Seed *Sd = (Seed*) GetDataByID (DHL->DBSeedHandle, SdId);
+        Seed *Sd = (Seed*) LNSeed->Data;
         if (Sd->LearnStatus == LS_DONE)
         {
             continue;
@@ -887,7 +903,7 @@ static inline VOID LearningMain (PilotData *PD)
         MakeDir (SdName);
         PD->CurSeedName = SdName;
         
-        printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] \r\n", SdId, SdName, Sd->SeedLen);
+        printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] \r\n", Index, SdName, Sd->SeedLen);
 
         DWORD SdBlkNo = 0;
         LNode *SbHdr  = Sd->SdBlkList.Header;
@@ -904,7 +920,7 @@ static inline VOID LearningMain (PilotData *PD)
 
             for (DWORD KeyId = 1; KeyId <= VarKeyNum; KeyId++)
             {
-                DWORD VarKey = *(DWORD*) GetDataByID (DHL->DBBrVarKeyHandle, KeyId);
+                DWORD VarKey = *(DWORD*) GetDataByID (DHL->DBCacheBrVarKeyHandle, KeyId);
                 BYTE *DataFile = GenAnalysicData (PD, BlkDir, SdBlk, VarKey);
                 if (DataFile == NULL)
                 {
@@ -1106,110 +1122,134 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
     MsgHdr *MsgRev;
     MsgHdr *MsgSend;
     PLOption *PLOP = PD->PLOP;
-
-    switch (PD->SrvState)
+    
+    List *FlSdList = GetFLSeedList ();
+    LNode *LNSeed  = FlSdList->Header;
+    if (LNSeed == NULL)
     {
-        case SRV_S_SEEDRCV:
-        {
-            MsgRev = (MsgHdr *) Recv(SkInfo);
-            if (MsgRev->MsgType == PL_MSG_FZ_FIN)
-            {
-                PD->SrvState = SRV_S_FIN;
-                break;
-            }
-            assert (MsgRev->MsgType == PL_MSG_SEED);
-    
-            MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
-            BYTE* SeedPath = (BYTE*)(MsgSd + 1);
-    
-            CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);
-            CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
-            PD->CurSeed = CurSeed;
-    
-            printf ("[PilotMode-SEEDRCV] recv PL_MSG_SEED: [%u]%s[%u]\r\n", CurSeed->SeedKey, SeedPath, CurSeed->SeedLen);
-                    
-            PD->SrvState = SRV_S_ITB;
-            break;
-        }
-        case SRV_S_ITB:
-        {
-            CurSeed = PD->CurSeed;
-            assert (CurSeed != NULL);
-            
-            MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_BEGIN);
-            MsgIB *MsgItr = (MsgIB *) (MsgSend + 1);
-            MsgItr->SampleNum = FZ_SAMPLE_NUM;
-
-            DWORD OFF = 0;
-            DWORD TryLength = (PLOP->TryLength < CurSeed->SeedLen) 
-                              ? PLOP->TryLength
-                              : CurSeed->SeedLen;
-            for (DWORD LIndex = 0; LIndex < PLOP->SeedBlockNum; LIndex++)
-            {
-                MsgItr->Length = PLOP->SeedBlock[LIndex];
-                if (MsgItr->Length > TryLength)
-                {
-                    continue;
-                }
-                        
-                OFF = 0;
-                while (OFF < TryLength)
-                {               
-                    MsgItr->SIndex = OFF;
-                    MsgSend->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
-                            
-                    /* generate samples by random */
-                    GenSamplings (PD, CurSeed, MsgItr);
-                    OFF += MsgItr->Length;
-                    MsgSend->MsgLen += MsgItr->SampleNum * MsgItr->Length;
-    
-                    /* before the fuzzing iteration, start the thread for collecting the branch variables */
-                    PD->FzExit = FALSE;
-                    pthread_t CbvThrId = CollectBrVariables (PD);
-    
-                    /* inform the fuzzer */
-                    Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-                    DEBUG ("[PilotMode-ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
-    
-                    MsgHdr *MsgRecv = (MsgHdr *) Recv(SkInfo);
-                    assert (MsgSend->MsgType == PL_MSG_ITR_BEGIN);
-                    DEBUG ("[PilotMode-ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u]\r\n", MsgSend->MsgLen, OFF, TryLength);
-                    PD->FzExit = TRUE;
-    
-                    VOID *TRet = NULL;
-                    pthread_join (CbvThrId, &TRet);
-                            
-                }
-            }
-                    
-            PD->SrvState = SRV_S_ITE;
-            break;
-        }
-        case SRV_S_ITE:
-        {
-            MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_END);
-            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-            DEBUG ("[PilotMode-ITE] send PL_MSG_ITR_END...\r\n");
-                    
-            ShowLearnStat (PD);
-                    
-            /* change to SRV_S_SEEDRCV, wait for next seed */
-            PD->SrvState = SRV_S_SEEDRCV;
-            break;
-        }
-        case SRV_S_FIN:
-        {
-            DEBUG ("[PilotMode-FIN] recv PL_MSG_FZ_FIN...\r\n");
-            LearningMain (PD);
-            SwitchMode (RUNMOD_STANDD);
-            break;
-        }
-        default:
-        {
-            assert (0);
-        }
+        printf ("[PilotMode] Warning: entry pilot-mode with no seeds for learning.\r\n");
+        return FALSE;
     }
 
+    DWORD IsExit  = FALSE;
+    while (!IsExit)
+    {
+        switch (PD->SrvState)
+        {
+            case SRV_S_SEEDSEND:
+            {
+                if (LNSeed == NULL)
+                {
+                    PD->SrvState = SRV_S_FIN;
+                    break;
+                }
+
+                CurSeed = (Seed *)LNSeed->Data;
+                CurSeed->SeedCtx = ReadFile (CurSeed->SName, &CurSeed->SeedLen, PLOP->SdType);
+                PD->CurSeed = CurSeed;          
+
+                MsgSend  = FormatMsg(SkInfo, PL_MSG_SEED);              
+                MsgSeed *MsgSd = (MsgSeed*) (MsgSend + 1);
+                MsgSd->SeedKey = CurSeed->SeedKey;
+                char* SeedName = (char*) (MsgSd + 1);
+                MsgSd->SeedLength = sprintf (SeedName, "%s", CurSeed->SName);
+                
+                MsgSend->MsgLen += sizeof (MsgSeed) + MsgSd->SeedLength;
+                Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                printf ("[PilotMode] send PL_MSG_SEED: [%u]%s[LENGTH:%u]\r\n", CurSeed->SeedKey, CurSeed->SName, CurSeed->SeedLen);
+                        
+                PD->SrvState = SRV_S_ITB;
+                LNSeed = LNSeed->Nxt;
+                break;
+            }
+            case SRV_S_ITB:
+            {
+                CurSeed = PD->CurSeed;
+                assert (CurSeed != NULL);
+                
+                MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_BEGIN);
+                MsgIB *MsgItr = (MsgIB *) (MsgSend + 1);
+                MsgItr->SampleNum = FZ_SAMPLE_NUM;
+
+                DWORD OFF = 0;
+                DWORD TryLength = (PLOP->TryLength < CurSeed->SeedLen) 
+                                  ? PLOP->TryLength
+                                  : CurSeed->SeedLen;
+                for (DWORD LIndex = 0; LIndex < PLOP->SeedBlockNum; LIndex++)
+                {
+                    MsgItr->Length = PLOP->SeedBlock[LIndex];
+                    if (MsgItr->Length > TryLength)
+                    {
+                        continue;
+                    }
+                            
+                    OFF = 0;
+                    while (OFF < TryLength)
+                    {               
+                        MsgItr->SIndex = OFF;
+                        MsgSend->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
+                                
+                        /* generate samples by random */
+                        GenSamplings (PD, CurSeed, MsgItr);
+                        OFF += MsgItr->Length;
+                        MsgSend->MsgLen += MsgItr->SampleNum * MsgItr->Length;
+        
+                        /* before the fuzzing iteration, start the thread for collecting the branch variables */
+                        PD->FzExit = FALSE;
+                        pthread_t CbvThrId = CollectBrVariables (PD);
+        
+                        /* inform the fuzzer */
+                        Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                        DEBUG ("[PilotMode][ITB-SEND] send PL_MSG_ITR_BEGIN[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u][Sample:%u]\r\n", 
+                                MsgSend->MsgLen, OFF, TryLength, MsgItr->SampleNum);
+        
+                        MsgHdr *MsgRecv = (MsgHdr *) Recv(SkInfo);
+                        assert (MsgRecv->MsgType == PL_MSG_ITR_BEGIN);
+                        DEBUG ("[PilotMode][ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u][Sample:%u]\r\n", 
+                                MsgSend->MsgLen, OFF, TryLength, MsgItr->SampleNum);
+                        PD->FzExit = TRUE;
+        
+                        VOID *TRet = NULL;
+                        pthread_join (CbvThrId, &TRet);
+                                
+                    }
+                }
+                        
+                PD->SrvState = SRV_S_ITE;
+                break;
+            }
+            case SRV_S_ITE:
+            {
+                MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_END);
+                Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                DEBUG ("[PilotMode][ITE] send PL_MSG_ITR_END...\r\n");
+                        
+                ShowLearnStat (PD);
+                        
+                /* change to SRV_S_SEEDSEND, wait for next seed */
+                PD->SrvState = SRV_S_SEEDSEND;
+                break;
+            }
+            case SRV_S_FIN:
+            {
+                MsgSend = FormatMsg(SkInfo, PL_MSG_FZ_FIN);
+                Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                printf ("[PilotMode][FIN] send PL_MSG_FZ_FIN...\r\n");
+                
+                LearningMain (PD);
+                ListDel(FlSdList, NULL);
+                
+                SwitchMode (RUNMOD_STANDD);
+                IsExit = TRUE;
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+    }
+    
     return FALSE;
 }
 
@@ -1290,7 +1330,8 @@ void* DEMonitor (void *Para)
         QSize = QueueSize ();
         
     }   
- 
+
+    printf ("[DEMonitor] exit with QUEUE size: %u \r\n", QSize);
     pthread_exit ((void*)0);
 }
 
@@ -1319,22 +1360,28 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
         MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
         BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
         CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
-        DEBUG ("[StandardMode-SEEDRCV] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
+        DEBUG ("[StandardMode] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
 
         /* check for-learn seed list */
         DWORD SeedNum = HasSeedToLearn ();
         if (SeedNum != 0)
         {
+            /* inform fuzzer to switch mode */
             MsgSend = FormatMsg(SkInfo, PL_MSG_SWMODE);
             Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-            
+
+            /* wait for the end of current fuzzing */
+            MsgRev = (MsgHdr *) Recv(SkInfo);
+            assert (MsgRev->MsgType == PL_MSG_SWMODE_READY);
+
+            /* infor MONITOR to exit when QUEUE becomes EMPTY */
             SD->FzExit = TRUE;
 
             VOID *TRet = NULL;
             pthread_join (DemId, &TRet);
 
             SwitchMode(RUNMOD_PILOT);
-            printf ("[StandardMode] %u seeds ready to learn, switch to PILOT\r\n", SeedNum);
+            printf ("\r\n\r\n[StandardMode] OBTAIN %u seeds ready to learn, switch to PILOT\r\n", SeedNum);
             
             break;
         }
@@ -1353,18 +1400,18 @@ static inline VOID HandShake (PLServer *plSrv)
 {
     MsgHdr *MsgRev = (MsgHdr *) Recv(&plSrv->SkInfo);
     assert (MsgRev->MsgType == PL_MSG_STARTUP);
-    printf ("[PilotMode-INIT] recv PL_MSG_STARTUP from Fuzzer...\r\n");
+    printf ("[HandShake] recv PL_MSG_STARTUP from Fuzzer...\r\n");
 
     MsgHdr *MsgSend = FormatMsg (&plSrv->SkInfo, PL_MSG_STARTUP);
     MsgHandShake *MsgHs = (MsgHandShake *)(MsgSend + 1);
     MsgHs->RunMode = plSrv->RunMode;
     MsgSend->MsgLen += sizeof (MsgHandShake);   
     Send (&plSrv->SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-    printf ("[PilotMode-STARTUP] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
+    printf ("[HandShake] reply PL_MSG_STARTUP to Fuzzer and complete handshake...\r\n");
 
     /* swtich the SM of PD and SD */
-    plSrv->PD.SrvState = SRV_S_SEEDRCV;
-    plSrv->SD.SrvState = SRV_S_SEEDRCV;
+    plSrv->PD.SrvState = SRV_S_SEEDSEND;
+    plSrv->SD.SrvState = SRV_S_SEEDSEND;
 
     /* !!!! clear the queue: AFL++'s validation will cause redundant events */
     ClearQueue();
@@ -1396,16 +1443,18 @@ VOID SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP)
             HandShake (plSrv);
             IsHandShake = TRUE;
         }
-        
+
         switch (plSrv->RunMode)
         {
             case RUNMOD_PILOT:
             {
+                printf ("[SemanticLearning] run mode: RUNMOD_PILOT \r\n");
                 IsExit = PilotMode (&plSrv->PD, SkInfo);
                 break;
             }
             case RUNMOD_STANDD:
             {
+                printf ("[SemanticLearning] run mode: RUNMOD_STANDD \r\n");
                 IsExit = StandardMode (&plSrv->SD, SkInfo);
                 break;
             }

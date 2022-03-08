@@ -6510,20 +6510,24 @@ u8 fuzz_one_standard(afl_state_t *afl)
     pl_send ((char*)msg_header, msg_header->MsgLen);
 
     msg_header = (MsgHdr *)pl_recv();
-    if (msg_header->MsgType == PL_MSG_SWMODE)
-    {
-        switch_fz_mode(pl_mode_pilot);
-    }
-    else {
-        assert (msg_header->MsgType == PL_MSG_SEED);
-    }
 
     /* set env for current seed-ID */
     u8 SeedId[16];
     snprintf (SeedId, sizeof (SeedId), "%u", afl->current_entry);
     setenv ("AFL_CURRENT_SEEDID", SeedId, 1);
     
-    return fuzz_one_original(afl);
+    u8 ret = fuzz_one_original(afl);
+    if (msg_header->MsgType == PL_MSG_SWMODE)
+    {
+        switch_fz_mode(pl_mode_pilot);
+        msg_header = format_msg (PL_MSG_SWMODE_READY);
+        pl_send ((char*)msg_header, msg_header->MsgLen);
+    }
+    else {
+        assert (msg_header->MsgType == PL_MSG_SEED);
+    }
+    
+    return ret;
 }
 
 

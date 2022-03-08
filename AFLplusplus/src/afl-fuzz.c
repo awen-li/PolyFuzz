@@ -450,9 +450,9 @@ static inline void hand_shake (pl_srv_t *pl_srv)
     pl_srv->run_mode = MsgHs->RunMode;
     OKF("[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
 
-    /* change to SRV_S_SEEDRCV */
-    pl_srv->pd.fz_state = FZ_S_SEEDSEND;
-    pl_srv->sd.fz_state = FZ_S_SEEDSEND;
+    /* change to FZ_S_SEEDRCV */
+    pl_srv->pd.fz_state = FZ_S_SEEDRCV;
+    pl_srv->sd.fz_state = FZ_S_SEEDRCV;
     
     return;
 }
@@ -460,6 +460,11 @@ static inline void hand_shake (pl_srv_t *pl_srv)
  
 static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
 {
+    if (afl->pl_fuzzing_type == 0) {
+        pl_srv->run_mode = pl_mode_standard;
+        return;
+    }
+    
     pl_srv->socket_fd = socket(AF_INET, SOCK_DGRAM, 0);  
     if(pl_srv->socket_fd < 0)  
     {  
@@ -523,33 +528,24 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
     MsgHdr *msg_header;
     switch (pd->fz_state)
     {
-        case FZ_S_SEEDSEND:
+        case FZ_S_SEEDRCV:
         {
-            if (pd->seed_id >= afl->queued_paths)
+            msg_header = (MsgHdr *) pl_recv();
+            if (msg_header->MsgType == PL_MSG_FZ_FIN)
             {
                 pd->fz_state = FZ_S_FIN;
                 break;
             }
+            assert (msg_header->MsgType == PL_MSG_SEED);
 
-            msg_header = format_msg (PL_MSG_SEED);
             MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
-            msg_seed->SeedKey = afl->current_entry;       
-            char* seed_path   = (char*) (msg_seed + 1);
-
+            assert (msg_seed->SeedKey < afl->queued_paths);
+            afl->current_entry = msg_seed->SeedKey;
             afl->queue_cur = afl->queue_buf[afl->current_entry];
-                
-            char *cur_dir = get_current_dir_name ();
-            sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
-            msg_seed->SeedLength = strlen (seed_path)+1;
-                
-            msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
 
-            pl_send ((char*)msg_header, msg_header->MsgLen);
-            fprintf (stderr, "[%u/%u][FZ-SEEDSEND] send PL_MSG_SEED: %s\r\n", 
-                     pd->seed_id, afl->queued_paths, seed_path);
-                
+            //fprintf (stderr, "[FZ-SEEDRECV] recv PL_MSG_SEED: [%u]%s\r\n", msg_seed->SeedKey, (char*) (msg_seed + 1));          
             pd->fz_state = FZ_S_ITB;
-            ++pd->seed_id;
+            pd->seed_id  = msg_seed->SeedKey;
             break;
         }
         case FZ_S_ITB:
@@ -559,12 +555,14 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
                 msg_header = (MsgHdr *) pl_recv();
                 if (msg_header->MsgType == PL_MSG_ITR_END)
                 {
+                    fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_END\r\n");
                     break;
                 }
                 assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
 
                 afl->msg_itb = (MsgIB*)(msg_header + 1);
-                //fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN: %u [%u]\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
+                //fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_BEGIN[seed-%u]: OFF:%u, LENGTH:%u\r\n", 
+                //         pd->seed_id, afl->msg_itb->SIndex, afl->msg_itb->Length);
 
                 /////////////////////
                 //  conduct fuzzing
@@ -573,7 +571,8 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
 
                 msg_header = format_msg (PL_MSG_ITR_BEGIN);
                 pl_send ((char*)msg_header, msg_header->MsgLen);
-                //fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN: %u [%u] (done)\r\n", afl->msg_itb->SIndex, afl->msg_itb->Length);
+                //fprintf (stderr, "[FZ-ITB] send PL_MSG_ITR_BEGIN[seed-%u]: OFF:%u, LENGTH:%u (done)\r\n", 
+                //         pd->seed_id, afl->msg_itb->SIndex, afl->msg_itb->Length);
             }
                 
             pd->fz_state = FZ_S_ITE;
@@ -581,16 +580,13 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
         }
         case FZ_S_ITE:
         {
-            pd->fz_state = FZ_S_SEEDSEND;
+            pd->fz_state = FZ_S_SEEDRCV;
             break;
         }
         case FZ_S_FIN:
         {
-            msg_header = format_msg (PL_MSG_FZ_FIN);
-            pl_send ((char*)msg_header, msg_header->MsgLen);
-            fprintf (stderr, "[FZ-FIN] send PL_MSG_FZ_FIN...\r\n");
-
-            pd->fz_state = FZ_S_SEEDSEND;
+            //fprintf (stderr, "[FZ-FIN] recv PL_MSG_FZ_FIN...\r\n");
+            pd->fz_state = FZ_S_SEEDRCV;
             switch_fz_mode (pl_mode_standard);
             break;
         }
@@ -876,11 +872,13 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
         {
             case pl_mode_pilot:
             {
+                //fprintf (stderr, "@@@@@ [main_fuzzing_loop] -> pl_fuzzing_loop\r\n");
                 pl_fuzzing_loop(&pl_srv->pd, afl);
                 break;
             }
             case pl_mode_standard:
             {
+                //fprintf (stderr, "@@@@@ [main_fuzzing_loop] -> standard_fuzzing_loop\r\n");
                 standard_fuzzing_loop(&pl_srv->sd, afl);
                 break;
             }
@@ -889,6 +887,7 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
                 break;
             }
         }
+
     }
 
     return;

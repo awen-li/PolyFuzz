@@ -442,13 +442,13 @@ static inline void hand_shake (pl_srv_t *pl_srv)
 {
     MsgHdr *msg_header = format_msg (PL_MSG_STARTUP);
     pl_send ((char*)msg_header, msg_header->MsgLen);
-    OKF("[FZ-INIT] send PL_MSG_STARTUP to pl-server...\r\n");
+    OKF("[hand_shake] send PL_MSG_STARTUP to pl-server...\r\n");
 
     msg_header = (MsgHdr *) pl_recv();
     assert (msg_header->MsgType == PL_MSG_STARTUP);
     MsgHandShake *MsgHs = (MsgHandShake *)(msg_header + 1);
     pl_srv->run_mode = MsgHs->RunMode;
-    OKF("[FZ-STARTUP] recv PL_MSG_STARTUP from pl-server...\r\n");
+    OKF("[hand_shake] recv PL_MSG_STARTUP from pl-server[%u]...\r\n", pl_srv->run_mode);
 
     /* change to FZ_S_SEEDRCV */
     pl_srv->pd.fz_state = FZ_S_SEEDRCV;
@@ -555,7 +555,7 @@ static void pl_semantic_fuzzing_loop (pilot_data *pd, afl_state_t *afl) {
                 msg_header = (MsgHdr *) pl_recv();
                 if (msg_header->MsgType == PL_MSG_ITR_END)
                 {
-                    fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_END\r\n");
+                    //fprintf (stderr, "[FZ-ITB] recv PL_MSG_ITR_END\r\n");
                     break;
                 }
                 assert (msg_header->MsgType == PL_MSG_ITR_BEGIN);
@@ -816,6 +816,7 @@ static inline u32 standard_fuzzing_loop (standd_data *sd, afl_state_t *afl) {
             afl->queue_cur = afl->queue_buf[afl->current_entry];
         }
 
+        //OKF (">>[standard_fuzzing_loop]afl->current_entry = %u\r\n", afl->current_entry);
         sd->skipped_fuzz = fuzz_one(afl);
 
         if (unlikely(!afl->stop_soon && sd->exit_1)) { afl->stop_soon = 2; }
@@ -872,13 +873,13 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
         {
             case pl_mode_pilot:
             {
-                //fprintf (stderr, "@@@@@ [main_fuzzing_loop] -> pl_fuzzing_loop\r\n");
+                OKF (">>[main_fuzzing_loop] -> pl_fuzzing_loop\r\n");
                 pl_fuzzing_loop(&pl_srv->pd, afl);
                 break;
             }
             case pl_mode_standard:
             {
-                //fprintf (stderr, "@@@@@ [main_fuzzing_loop] -> standard_fuzzing_loop\r\n");
+                OKF (">>[main_fuzzing_loop] -> standard_fuzzing_loop\r\n");
                 standard_fuzzing_loop(&pl_srv->sd, afl);
                 break;
             }
@@ -887,7 +888,6 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
                 break;
             }
         }
-
     }
 
     return;

@@ -6496,25 +6496,44 @@ abandon_entry:
     return ret_val;
 }
 
+static inline void dump_seed_key (u32 seed_key)
+{
+    FILE *SF = fopen ("/tmp/AFL_CURRENT_SEEDID", "w");
+    assert (SF != NULL);
+    fprintf (SF, "%u", seed_key);
+    fclose (SF);
+
+    return;
+}
+
 
 u8 fuzz_one_standard(afl_state_t *afl)
 {
-    MsgHdr *msg_header = format_msg (PL_MSG_SEED);
-    MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
-    msg_seed->SeedKey = afl->current_entry;       
-    char* seed_path   = (char*) (msg_seed + 1);         
-    char *cur_dir = get_current_dir_name ();
-    sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
-    msg_seed->SeedLength = strlen (seed_path)+1;
-    msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;   
+    MsgHdr *msg_header;
+
+    if (afl->queue_cur->is_send == 0) {
+        msg_header = format_msg (PL_MSG_SEED);
+        MsgSeed *msg_seed = (MsgSeed*)(msg_header + 1);
+        msg_seed->SeedKey = afl->current_entry;       
+        char* seed_path   = (char*) (msg_seed + 1);         
+        char *cur_dir = get_current_dir_name ();
+        sprintf (seed_path, "%s/%s", cur_dir, afl->queue_cur->fname);
+        msg_seed->SeedLength = strlen (seed_path)+1;
+        msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
+        afl->queue_cur->is_send = 1;
+        //OKF (">>[fuzz_one_standard]send PL_MSG_SEED: [%u]%s", msg_seed->SeedKey, seed_path);
+    }
+    else {
+        msg_header = format_msg (PL_MSG_EMPTY);
+        //OKF (">>[fuzz_one_standard]send PL_MSG_EMPTY");
+    }
     pl_send ((char*)msg_header, msg_header->MsgLen);
 
+    /* wait response before start fuzzing */
     msg_header = (MsgHdr *)pl_recv();
 
-    /* set env for current seed-ID */
-    u8 SeedId[16];
-    snprintf (SeedId, sizeof (SeedId), "%u", afl->current_entry);
-    setenv ("AFL_CURRENT_SEEDID", SeedId, 1);
+    /* save current seed-ID */
+    dump_seed_key (afl->current_entry);
     
     u8 ret = fuzz_one_original(afl);
     if (msg_header->MsgType == PL_MSG_SWMODE)
@@ -6522,11 +6541,13 @@ u8 fuzz_one_standard(afl_state_t *afl)
         switch_fz_mode(pl_mode_pilot);
         msg_header = format_msg (PL_MSG_SWMODE_READY);
         pl_send ((char*)msg_header, msg_header->MsgLen);
+        ret = 0; /* skip the next seed */
     }
     else {
         assert (msg_header->MsgType == PL_MSG_SEED);
     }
-    
+
+    //OKF (">>[fuzz_one_standard]seed %u fuzzing done.", afl->current_entry);
     return ret;
 }
 

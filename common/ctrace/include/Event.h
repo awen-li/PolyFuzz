@@ -55,6 +55,7 @@ typedef struct ObjValue
 typedef struct ExitInfo
 {
     unsigned SeedKey;
+    unsigned Rev;
 } ExitInfo;
 
 typedef BYTE* EHANDLE;

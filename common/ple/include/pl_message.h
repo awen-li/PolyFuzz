@@ -16,7 +16,8 @@ typedef enum
     PL_MSG_SWMODE_READY,
     PL_MSG_ITR_BEGIN,
     PL_MSG_ITR_END,
-    PL_MSG_FZ_FIN
+    PL_MSG_FZ_FIN,
+    PL_MSG_EMPTY,
 }MSG_TYPE;
 
 typedef struct MsgHdr

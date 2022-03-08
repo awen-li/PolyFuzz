@@ -1292,25 +1292,26 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Standard-fuzzing mode: for standard fuzzing
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-static inline VOID CacheSeedToLearn (Seed *CurSeed)
+static inline DWORD CacheSeedToLearn (Seed *CurSeed)
 {
+    DWORD CacheSdNum;
     PLServer *plSrv = &g_plSrv;
-    
-    if (CurSeed->LearnStatus != LS_NONE)
-    {
-        return;
-    }
-    CurSeed->LearnStatus = LS_READY;
     
     mutex_lock(&plSrv->FlSdLock);
     if (plSrv->FLSdList == NULL)
     {
         plSrv->FLSdList = ListAllot ();   
     }
-    ListInsert(plSrv->FLSdList, CurSeed);   
+
+    if (CurSeed->LearnStatus == LS_NONE)
+    {
+        ListInsert(plSrv->FLSdList, CurSeed);
+        CurSeed->LearnStatus = LS_READY;
+    }
+    CacheSdNum = plSrv->FLSdList->NodeNum;
     mutex_unlock(&plSrv->FlSdLock);
 
-    return;
+    return CacheSdNum;
 }
 
 static inline DWORD HasSeedToLearn ()
@@ -1337,6 +1338,7 @@ void* DEMonitor (void *Para)
 {
     StanddData *SD = (StanddData*)Para;
     DbHandle *DHL = SD->DHL;
+    DWORD CacheSdNum = 0;
 
     DWORD QSize  = QueueSize ();
     DWORD BrVarChg = 0;
@@ -1357,10 +1359,14 @@ void* DEMonitor (void *Para)
                 Seed *CurSeed = GetSeedByKey (ExtI->SeedKey);
                 if (CurSeed != NULL)
                 {
-                    printf ("\t->[DEMonitor][QSize-%u][SKey-%u]%s -> BrVarChg:%u, LearnStatus:%u\r\n", 
-                            QSize, ExtI->SeedKey, CurSeed->SName, BrVarChg, CurSeed->LearnStatus);
-                    CurSeed->BrVarChg += BrVarChg;
-                    CacheSeedToLearn (CurSeed);
+                    CurSeed->BrVarChg += BrVarChg; 
+                    CacheSdNum = CacheSeedToLearn (CurSeed);
+                    DEBUG ("\t->[DEMonitor][SKey-%u]%s -> BrVarChg:%u, CacheSdNum:%u\r\n", 
+                           ExtI->SeedKey, CurSeed->SName, CurSeed->BrVarChg, CacheSdNum);
+                }
+                else
+                {
+                    printf ("\t->[DEMonitor][Warning][SKey-%u]Get seed fail!!! -> BrVarChg:%u\r\n", ExtI->SeedKey, BrVarChg);
                 }
                 
                 BrVarChg = 0;
@@ -1377,7 +1383,7 @@ void* DEMonitor (void *Para)
         
     }   
 
-    printf ("[DEMonitor] exit with QUEUE size: %u \r\n", QSize);
+    printf ("[DEMonitor] exit with QUEUE size: %u, CacheSdNum = %u \r\n", QSize, CacheSdNum);
     pthread_exit ((void*)0);
 }
 
@@ -1401,12 +1407,26 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
     {
         /* keep recving seed from fuzzer */
         MsgRev = (MsgHdr *) Recv(SkInfo);
-        assert (MsgRev->MsgType == PL_MSG_SEED);
-
-        MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
-        BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
-        CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
-        DEBUG ("[StandardMode] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
+        switch (MsgRev->MsgType)
+        {
+            case PL_MSG_SEED:
+            {
+                MsgSeed *MsgSd = (MsgSeed*) (MsgRev + 1);
+                BYTE* SeedPath = (BYTE*)(MsgSd + 1);  
+                CurSeed = AddSeed (SeedPath, MsgSd->SeedKey);                
+                DEBUG ("[StandardMode] recv PL_MSG_SEED: [SKey-%u]%s\r\n", CurSeed->SeedKey, SeedPath);
+                break;
+            }
+            case PL_MSG_EMPTY:
+            {
+                DEBUG ("[StandardMode] recv PL_MSG_EMPTY..\r\n");
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
 
         /* check for-learn seed list */
         DWORD SeedNum = HasSeedToLearn ();

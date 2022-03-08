@@ -266,6 +266,39 @@ static inline DWORD AddBrVarKey (DWORD DataType, DWORD Key)
 }
 
 
+static inline VOID SetBrVFalg (BrVariable *BrVal, DWORD Bit, DWORD Value)
+{
+    DWORD No = Bit>>3;
+    DWORD Offset = Bit&0x7;
+
+    if (Value)
+    {
+        BrVal->ValideTag[No] |= (1<<Offset);
+    }
+    else
+    {
+        BrVal->ValideTag[No] &= ~(1<<Offset);
+    }
+
+    return;
+}
+
+
+static inline BOOL CheckBrVFalg (BrVariable *BrVal, DWORD Bit)
+{
+    DWORD No = Bit>>3;
+    DWORD Offset = Bit&0x7;
+
+    if (No < FZ_SAMPLE_BITNUM)
+    {
+        return (BrVal->ValideTag[No] & (1<<Offset));
+    }
+    else
+    {
+        return FALSE;
+    }    
+}
+
 static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QItr)
 {    
     DbReq Req;
@@ -291,7 +324,7 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
 
     while (BrVal->ValIndex < QItr)
     {
-        BrVal->ValideTag[BrVal->ValIndex] = FALSE;
+        SetBrVFalg (BrVal, BrVal->ValIndex, FALSE);
         BrVal->ValIndex++;
     }
 
@@ -304,7 +337,7 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
     BrVal->Key  = Key;
     BrVal->Type = Ov->Type;
     BrVal->Value [BrVal->ValIndex] = Ov->Value;
-    BrVal->ValideTag[BrVal->ValIndex] = TRUE;
+    SetBrVFalg (BrVal, BrVal->ValIndex, TRUE);
     BrVal->ValIndex++;
     
     BrVal->ValNum++;
@@ -496,7 +529,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     fprintf (F, "SDBLK-%u-%u,BrVar-%u\n", SdBlk->SIndex, SdBlk->Length, VarKey);
     for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
     {
-        if (BrVal->ValideTag[Index] != TRUE)
+        if (CheckBrVFalg(BrVal, Index) == FALSE)
         {
             continue;
         }
@@ -566,7 +599,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
     }
 
     DWORD BaseNum = FList->NodeNum * 256;
-    BsList->ValueList = (ULONG *)malloc (BaseNum * sizeof (ULONG));
+    BsList->ValueList = (DWORD *)malloc (BaseNum * sizeof (DWORD));
     BsList->ValueCap  = BaseNum;
     BsList->ValueNum  = 0;
     assert (BsList->ValueList != NULL);
@@ -586,7 +619,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
             if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
             {
                 DWORD i;
-                ULONG Val = strtol(BSValStr, NULL, 10);
+                DWORD Val = strtol(BSValStr, NULL, 10);
                 for (i = 0; i < BsList->ValueNum; i++)
                 {
                     if (BsList->ValueList[i] == Val)
@@ -604,7 +637,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
                 {
                     DEBUG ("\t Realloc ValueList from %u to %u \r\n", BsList->ValueCap, BsList->ValueCap+BaseNum);
                     BsList->ValueCap  = BsList->ValueCap + BaseNum;
-                    BsList->ValueList = (ULONG *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (ULONG));
+                    BsList->ValueList = (DWORD *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (DWORD));
                     assert (BsList->ValueList != NULL);
                 }
 
@@ -718,8 +751,8 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             {
                 LearnFailNum++;
                     
-                BsList->ValueList = (ULONG *)malloc (sizeof (ULONG));
-                *(ULONG*)BsList->ValueList = 0;
+                BsList->ValueList = (DWORD *)malloc (sizeof (DWORD));
+                *(DWORD*)BsList->ValueList = 0;
                 BsList->ValueCap  = 1;
                 assert (BsList->ValueList != NULL);
                 memcpy (BsList->ValueList, Sd->SeedCtx+OFF, Align);

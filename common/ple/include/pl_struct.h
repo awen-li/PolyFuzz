@@ -16,6 +16,9 @@
 #include "pl_message.h"
 
 #define FZ_SAMPLE_NUM        (32)
+#define FZ_SAMPLE_BITNUM     (FZ_SAMPLE_NUM/8)
+
+
 #define FZ_SEED_NAME_LEN     (512)
 #define MAX_THREAD_NUM       (128)
 #define LEARN_BLOCK_SIZE     (128)
@@ -83,7 +86,7 @@ typedef struct SeedBlock
     DWORD SIndex;
     DWORD Length;
 
-    ULONG Value[FZ_SAMPLE_NUM];
+    DWORD Value[FZ_SAMPLE_NUM];
 } SeedBlock;
 
 
@@ -96,14 +99,14 @@ typedef struct BrVariable
     WORD ValIndex;
     BYTE Rev[6];
     
-    ULONG Value[FZ_SAMPLE_NUM];
-    BYTE  ValideTag[FZ_SAMPLE_NUM];
+    DWORD Value[FZ_SAMPLE_NUM];
+    BYTE  ValideTag[FZ_SAMPLE_BITNUM];
 }BrVariable;
 
 
 typedef struct BsValue
 {
-    ULONG *ValueList;
+    DWORD *ValueList;
     DWORD ValueNum;
     DWORD ValueCap;
 }BsValue;

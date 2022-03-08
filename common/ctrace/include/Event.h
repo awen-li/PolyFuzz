@@ -52,6 +52,10 @@ typedef struct ObjValue
     unsigned long  Value;
 } ObjValue;
 
+typedef struct ExitInfo
+{
+    unsigned SeedKey;
+} ExitInfo;
 
 typedef BYTE* EHANDLE;
 

@@ -870,11 +870,17 @@ static inline VOID StartTraining (PilotData *PD, BYTE *DataFile, SeedBlock *SdBl
     return;
 }
 
-static inline List* GetFLSeedList ()
+static inline List* GetAndResetFLSeedList ()
 {
     PLServer *plSrv = &g_plSrv;
+    List* FlSeedList;
 
-    return &plSrv->FLSdList;  
+    mutex_lock(&plSrv->FlSdLock);
+    FlSeedList = plSrv->FLSdList;
+    plSrv->FLSdList = NULL;   
+    mutex_unlock(&plSrv->FlSdLock);
+
+    return FlSeedList;  
 }
 
 static inline VOID LearningMain (PilotData *PD)
@@ -886,7 +892,7 @@ static inline VOID LearningMain (PilotData *PD)
     DWORD SeedBlkNum = QueryDataNum (DHL->DBSeedBlockHandle);
     DWORD VarKeyNum  = QueryDataNum (DHL->DBCacheBrVarKeyHandle);
 
-    List *FlSdList = GetFLSeedList ();
+    List *FlSdList = PD->FlSdList;
     LNode *LNSeed  = FlSdList->Header;
     DWORD SeedNum  = FlSdList->NodeNum;
     
@@ -1079,7 +1085,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     plSrv->RunMode = RUNMOD_STANDD;
 
     mutex_lock_init(&plSrv->FlSdLock);
-    memset (&plSrv->FLSdList, 0, sizeof (plSrv->FLSdList));
+    plSrv->FLSdList = NULL;
 
     return;
 }
@@ -1116,6 +1122,25 @@ static inline VOID SwitchMode (RUNMOD RunMode)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Pilot-fuzzing mode: for pattern learning
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* LearningMainThread (void *Para)
+{
+    PilotData *PD = (PilotData *)Para;
+    
+    LearningMain (PD);
+    ListDel(PD->FlSdList, NULL);
+    
+    PD->FlSdList = NULL;
+    PD->PilotStatus = FALSE;
+    
+    return NULL;
+}
+
+static inline DWORD GetPilotStatus ()
+{
+    PLServer *plSrv = &g_plSrv;
+    return plSrv->PD.PilotStatus;
+}
+
 static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 {
     Seed *CurSeed;
@@ -1123,7 +1148,10 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
     MsgHdr *MsgSend;
     PLOption *PLOP = PD->PLOP;
     
-    List *FlSdList = GetFLSeedList ();
+    List *FlSdList = GetAndResetFLSeedList ();
+    assert (FlSdList != NULL);
+    PD->FlSdList = FlSdList;
+    
     LNode *LNSeed  = FlSdList->Header;
     if (LNSeed == NULL)
     {
@@ -1235,9 +1263,16 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 MsgSend = FormatMsg(SkInfo, PL_MSG_FZ_FIN);
                 Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
                 printf ("[PilotMode][FIN] send PL_MSG_FZ_FIN...\r\n");
-                
-                LearningMain (PD);
-                ListDel(FlSdList, NULL);
+
+                /* start a thread for trainning */
+                pthread_t Tid = 0;
+                PD->PilotStatus = TRUE; /* set the PILOT as busy: not switch to PILOT until free (FALSE) */
+                int Ret = pthread_create(&Tid, NULL, LearningMainThread, PD);
+                if (Ret != 0)
+                {
+                    fprintf (stderr, "pthread_create for DECollect fail, Ret = %d\r\n", Ret);
+                    exit (0);
+                }                
                 
                 SwitchMode (RUNMOD_STANDD);
                 IsExit = TRUE;
@@ -1268,7 +1303,11 @@ static inline VOID CacheSeedToLearn (Seed *CurSeed)
     CurSeed->LearnStatus = LS_READY;
     
     mutex_lock(&plSrv->FlSdLock);
-    ListInsert(&plSrv->FLSdList, CurSeed);   
+    if (plSrv->FLSdList == NULL)
+    {
+        plSrv->FLSdList = ListAllot ();   
+    }
+    ListInsert(plSrv->FLSdList, CurSeed);   
     mutex_unlock(&plSrv->FlSdLock);
 
     return;
@@ -1280,7 +1319,14 @@ static inline DWORD HasSeedToLearn ()
     DWORD SeedNum;
     
     mutex_lock(&plSrv->FlSdLock);
-    SeedNum = plSrv->FLSdList.NodeNum;  
+    if (plSrv->FLSdList == NULL)
+    {
+        SeedNum = 0;
+    }
+    else
+    {
+        SeedNum = plSrv->FLSdList->NodeNum;
+    }
     mutex_unlock(&plSrv->FlSdLock);
 
     return SeedNum;
@@ -1364,7 +1410,7 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 
         /* check for-learn seed list */
         DWORD SeedNum = HasSeedToLearn ();
-        if (SeedNum != 0)
+        if (SeedNum != 0 && GetPilotStatus () == FALSE)
         {
             /* inform fuzzer to switch mode */
             MsgSend = FormatMsg(SkInfo, PL_MSG_SWMODE);

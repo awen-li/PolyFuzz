@@ -177,6 +177,8 @@ typedef enum
 
 typedef struct PilotData
 {
+    DWORD PilotStatus;
+    
     DWORD SrvState;
     DWORD FzExit;
     
@@ -192,6 +194,8 @@ typedef struct PilotData
     BYTE NewSeedPath[FZ_SEED_NAME_LEN];
 
     DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
+
+    List *FlSdList;
 }PilotData;
 
 
@@ -217,7 +221,7 @@ typedef struct PLServer
     SocketInfo SkInfo;
     DbHandle   DHL;
 
-    List FLSdList;
+    List *FLSdList;          /* A temp list to cache the seeds for learning */
     mutex_lock_t FlSdLock;
     
 }PLServer;

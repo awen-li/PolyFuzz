@@ -6521,7 +6521,11 @@ u8 fuzz_one_standard(afl_state_t *afl)
         msg_seed->SeedLength = strlen (seed_path)+1;
         msg_header->MsgLen += sizeof (MsgSeed) + msg_seed->SeedLength;
         afl->queue_cur->is_send = 1;
+        free (cur_dir);
         //OKF (">>[fuzz_one_standard]send PL_MSG_SEED: [%u]%s", msg_seed->SeedKey, seed_path);
+
+        /* save current seed-ID */
+        dump_seed_key (afl->current_entry);
     }
     else {
         msg_header = format_msg (PL_MSG_EMPTY);
@@ -6531,20 +6535,37 @@ u8 fuzz_one_standard(afl_state_t *afl)
 
     /* wait response before start fuzzing */
     msg_header = (MsgHdr *)pl_recv();
-
-    /* save current seed-ID */
-    dump_seed_key (afl->current_entry);
     
     u8 ret = fuzz_one_original(afl);
-    if (msg_header->MsgType == PL_MSG_SWMODE)
+    
+    switch (msg_header->MsgType)
     {
-        switch_fz_mode(pl_mode_pilot);
-        msg_header = format_msg (PL_MSG_SWMODE_READY);
-        pl_send ((char*)msg_header, msg_header->MsgLen);
-        ret = 0; /* skip the next seed */
-    }
-    else {
-        assert (msg_header->MsgType == PL_MSG_SEED);
+        case PL_MSG_SWMODE:
+        {
+            switch_fz_mode(pl_mode_pilot);
+            msg_header = format_msg (PL_MSG_SWMODE_READY);
+            pl_send ((char*)msg_header, msg_header->MsgLen);
+            ret = 0; /* skip the next seed */
+            break;
+        }
+        case PL_MSG_SEED:
+        {
+            break;
+        }
+        case PL_MSG_GEN_SEED:
+        {
+            CLEAR_SCRING;
+            
+            char *seed_dir = (char *)(msg_header + 1);      
+            //OKF ("[fuzz_one_standard] recv PL_MSG_GEN_SEED: %s, queued_paths:%u", seed_dir, afl->queued_paths);
+            read_testcases(afl, seed_dir);
+            //OKF ("[fuzz_one_standard] finish READING new seeds, queued_paths:%u", afl->queued_paths);
+            break;
+        }
+        default:
+        {
+            assert (0);
+        }
     }
 
     //OKF (">>[fuzz_one_standard]seed %u fuzzing done.", afl->current_entry);

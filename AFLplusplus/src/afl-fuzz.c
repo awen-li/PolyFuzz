@@ -873,13 +873,13 @@ static inline void main_fuzzing_loop (afl_state_t *afl) {
         {
             case pl_mode_pilot:
             {
-                OKF (">>[main_fuzzing_loop] -> pl_fuzzing_loop\r\n");
+                //OKF (">>[main_fuzzing_loop] -> pl_fuzzing_loop\r\n");
                 pl_fuzzing_loop(&pl_srv->pd, afl);
                 break;
             }
             case pl_mode_standard:
             {
-                OKF (">>[main_fuzzing_loop] -> standard_fuzzing_loop\r\n");
+                //OKF (">>[main_fuzzing_loop] -> standard_fuzzing_loop\r\n");
                 standard_fuzzing_loop(&pl_srv->sd, afl);
                 break;
             }

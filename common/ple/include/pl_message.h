@@ -18,6 +18,7 @@ typedef enum
     PL_MSG_ITR_END,
     PL_MSG_FZ_FIN,
     PL_MSG_EMPTY,
+    PL_MSG_GEN_SEED,
 }MSG_TYPE;
 
 typedef struct MsgHdr
@@ -48,6 +49,6 @@ typedef struct MsgIB
     // byte *samples
 }MsgIB;
 
-
+#define CLEAR_SCRING printf ("\e[1;1H\e[2J")
 #endif
 

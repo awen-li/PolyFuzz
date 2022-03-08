@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "db.h"
 #include "Queue.h"
 #include "ctrace/Event.h"
@@ -9,6 +10,7 @@
 
 static PLServer g_plSrv;
 
+extern char *get_current_dir_name(void);
 BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Thread for ALF++ fuzzing process
@@ -950,7 +952,7 @@ static inline VOID LearningMain (PilotData *PD)
         Sd->LearnStatus = LS_DONE;
     }
 
-    printf ("[ple]PilotMode exit, Learned seeds: %u....\r\n", PD->GenSeedNum);
+    printf ("[ple]LearningMain exit, Learned seeds: %u....\r\n", PD->GenSeedNum);
     return;
 }
 
@@ -1128,6 +1130,16 @@ void* LearningMainThread (void *Para)
     
     LearningMain (PD);
     ListDel(PD->FlSdList, NULL);
+
+    /* send a msg to inform FUZZER that new seed ready */
+    if (PD->GenSeedNum != 0)
+    {
+        PLServer *plSrv = &g_plSrv;
+        MsgHdr *MsgSend  = FormatMsg(&plSrv->SkInfo, PL_MSG_GEN_SEED);              
+        BYTE *GenSeedDir = (BYTE*)(MsgSend+1);
+        MsgSend->MsgLen += sprintf (GenSeedDir, "%s/%s", get_current_dir_name (), GEN_SEED);
+        Send(&plSrv->SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+    }
     
     PD->FlSdList = NULL;
     PD->PilotStatus = FALSE;

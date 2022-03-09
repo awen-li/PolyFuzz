@@ -39,7 +39,7 @@ typedef struct _Queue_
 /////////////////////////////////////////////////////////////////////////
 // Default parameters
 /////////////////////////////////////////////////////////////////////////
-#define DEFAULT_QUEUE_SIZE     (8092)
+#define DEFAULT_QUEUE_SIZE     (8 * 1024)
 #define DEFAULT_SHARE_KEY      ("0xC3B3C5D0")
 #define Q_2_NODELIST(Q)        (QNode *)(Q + 1)
 
@@ -169,6 +169,11 @@ void ClearQueue ()
 }
 
 QNode* InQueue ()
+{ 
+    return InQueueKey (0, NULL, NULL);
+}
+
+QNode* InQueueKey (unsigned Key, Q_SetData QSet, void *Data)
 {
     if (g_Queue == NULL)
     {
@@ -183,7 +188,17 @@ QNode* InQueue ()
     if ((Q->Tindex+1) != Q->Hindex)
     {
         Node = Q_2_NODELIST(Q) + Q->Tindex++;
-        Node->IsReady = 0;
+        Node->TrcKey = Key;
+        if (QSet != NULL)
+        {
+            QSet (Node, Data);
+            Node->IsReady = 1;
+        }
+        else
+        {
+            Node->IsReady = 0;
+        }
+        
 
         if (Q->Tindex >= Q->NodeNum)
         {

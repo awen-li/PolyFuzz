@@ -19,7 +19,7 @@
 #include <pthread.h>
 
 
-#define  BUF_SIZE               (64)
+#define  BUF_SIZE               (32)
 #define  SHM_QUEUE_CAP          ("SHM_QUEUE_CAP")
 #define  SHM_QUEUE_KEY          ("SHM_QUEUE_KEY")
 
@@ -45,7 +45,10 @@ static inline QNode* QBUF2QNODE (char *Qbuf)
 void InitQueue (MEMMOD MemMode);
 void ClearQueue ();
 
-QNode* InQueue (void);
+typedef void (*Q_SetData) (QNode *QN, void *Data);
+
+QNode* InQueueKey (unsigned Key, Q_SetData QSet, void *Data);
+QNode* InQueue ();
 QNode* FrontQueue (void);
 void OutQueue (QNode* QN);
 unsigned QueueSize (void);

@@ -1149,6 +1149,10 @@ static inline MsgHdr* FormatMsg (SocketInfo *SkInfo, DWORD MsgType)
 static inline VOID SwitchMode (RUNMOD RunMode)
 {
     PLServer *plSrv = &g_plSrv;
+    if (RunMode == RUNMOD_PILOT)
+    {
+        plSrv->PD.SrvState = SRV_S_SEEDSEND;
+    }
     plSrv->RunMode = RunMode;
     return;
 }

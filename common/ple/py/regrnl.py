@@ -150,10 +150,10 @@ class RegrBase (metaclass=abc.ABCMeta):
         self.Kernal    = Kernal
         self.Model     = None
         self.FitModel  = None
-        self.FitC     = 0
-        self.FitEpsn  = 0
-        self.FitGamma = 0
-        self.FitCoef0 = 0
+        self.FitC     = -1
+        self.FitEpsn  = -1
+        self.FitGamma = -1
+        self.FitCoef0 = -1
 
     def SVs (self):
         return self.Model.support_
@@ -208,7 +208,7 @@ class RbfReg (RegrBase):
 class PolyReg (RegrBase):
     def __init__ (self, Kernal):
         super(PolyReg, self).__init__(Kernal)
-        self.FitCoef0 = None
+        self.FitCoef0 = -1
 
     def Fit (self, X_Train, y_Train, X_Test, y_Test):
         FitFailNum = 0

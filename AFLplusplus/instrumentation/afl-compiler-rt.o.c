@@ -1431,10 +1431,11 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLength, uint64_t Value)
 {
     QNode* QN  = InQueue ();
-    if (QN == NULL) {
-        fprintf (stderr, "Warning: msg-Queue is full, event missed\r\n");
-        return;
+    while (QN == NULL) {
+        QN = InQueue ();
+        sleep (1);
     }
+    
     QN->TrcKey = Key;
 
     ObjValue *OV = (ObjValue *)QN->Buf;
@@ -1496,7 +1497,10 @@ static inline u32 load_seed_key ()
 {
     u32 seed_key = -1;
     FILE *SF = fopen ("/tmp/AFL_CURRENT_SEEDID", "r");
-    assert (SF != NULL);
+    if (SF == NULL)
+    {
+        return -1;
+    }
     fscanf (SF, "%u", &seed_key);
     fclose (SF);
 
@@ -1506,6 +1510,11 @@ static inline u32 load_seed_key ()
 void __sanitizer_cov_trace_pc_guard_target_exit () {
 
     QNode* QN  = InQueue ();
+    while (QN == NULL) {
+        QN = InQueue ();
+        sleep (1);
+    }
+    
     ExitInfo *ExtI = (ExitInfo*)QN->Buf;
     
     ExtI->SeedKey  = load_seed_key ();

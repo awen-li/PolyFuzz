@@ -304,6 +304,8 @@ ifdef TEST_MMAP
 	LDFLAGS += -Wno-deprecated-declarations
 endif
 
+LDFLAGS += -lshmQueue
+
 .PHONY: all
 all:	test_x86 test_shm test_python ready $(PROGS) afl-as llvm gcc_plugin test_build all_done
 
@@ -457,7 +459,7 @@ unit_maybe_alloc: test/unittests/unit_maybe_alloc.o
 	./test/unittests/unit_maybe_alloc
 
 test/unittests/unit_hash.o : $(COMM_HDR) include/alloc-inl.h test/unittests/unit_hash.c $(AFL_FUZZ_FILES) src/afl-performance.o
-	@$(CC) $(CFLAGS) $(ASAN_CFLAGS) -c test/unittests/unit_hash.c -o test/unittests/unit_hash.o
+	@$(CC) $(CFLAGS) $(ASAN_CFLAGS) -c test/unittests/unit_hash.c -o test/unittests/unit_hash.o -lshmQueue
 
 unit_hash: test/unittests/unit_hash.o src/afl-performance.o
 	@$(CC) $(CFLAGS) -Wl,--wrap=exit -Wl,--wrap=printf $^ -o test/unittests/unit_hash $(LDFLAGS) $(ASAN_LDFLAGS) -lcmocka

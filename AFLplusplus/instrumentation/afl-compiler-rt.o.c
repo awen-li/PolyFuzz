@@ -1430,11 +1430,8 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 
 static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLength, uint64_t Value)
 {
-    QNode* QN  = InQueue ();
-    while (QN == NULL) {
-        QN = InQueue ();
-        sleep (1);
-    }
+    QNode* QN;
+    while ((QN  = InQueue ()) == NULL);
     
     QN->TrcKey = Key;
 
@@ -1493,36 +1490,17 @@ void __sanitizer_cov_trace_pc_guard_d64 (uint32_t *guard, uint32_t Key, uint64_t
 }
 
 
-static inline u32 load_seed_key ()
-{
-    u32 seed_key = -1;
-    FILE *SF = fopen ("/tmp/AFL_CURRENT_SEEDID", "r");
-    if (SF == NULL)
-    {
-        return -1;
-    }
-    fscanf (SF, "%u", &seed_key);
-    fclose (SF);
-
-    return seed_key;
-}
-
 void __sanitizer_cov_trace_pc_guard_target_exit () {
 
     QNode* QN  = InQueue ();
-    while (QN == NULL) {
-        QN = InQueue ();
-        sleep (1);
-    }
-    
-    ExitInfo *ExtI = (ExitInfo*)QN->Buf;
-    
-    ExtI->SeedKey  = load_seed_key ();
-    ExtI->Rev = 12345678;
+  
+    ExitInfo *ExtI = (ExitInfo*)QN->Buf;   
+    ExtI->SeedKey = 0;
+    ExtI->Where = 0;
 
     QN->TrcKey = TARGET_EXIT_KEY;  /* special key: indicate exit msg */
     QN->IsReady = 1;
-    AFL_DEBUG_SHOW("QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);
+    AFL_DEBUG_SHOW("QN ----> %p:[key-%u] target exit....\r\n", QN, QN->TrcKey);   
 }
 
 

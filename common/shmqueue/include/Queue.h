@@ -33,7 +33,9 @@ typedef enum
 typedef struct _QNode_
 {
     unsigned TrcKey;
-    unsigned IsReady;          
+    unsigned IsReady;
+    unsigned TimeStamp;
+    unsigned Rev;
     char  Buf [BUF_SIZE];
 }QNode;
 
@@ -57,6 +59,7 @@ void SetQueueExit ();
 unsigned GetQueueExit ();
 void DelQueue (void);
 
+void ShowQueue (unsigned Num);
 
 
 #endif 

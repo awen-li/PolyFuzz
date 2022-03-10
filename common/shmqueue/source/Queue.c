@@ -187,8 +187,11 @@ QNode* InQueueKey (unsigned Key, Q_SetData QSet, void *Data)
     process_lock(&Q->QLock);
     if ((Q->Tindex+1) != Q->Hindex)
     {
-        Node = Q_2_NODELIST(Q) + Q->Tindex++;
+        Node = Q_2_NODELIST(Q) + Q->Tindex;
+        Node->TimeStamp = time (NULL);
         Node->TrcKey = Key;
+        Q->Tindex++;
+        
         if (QSet != NULL)
         {
             QSet (Node, Data);
@@ -249,7 +252,9 @@ void OutQueue (QNode* QN)
     {
         Q->Hindex = 0;
     }
+    QN->TrcKey  = 0;
     QN->IsReady = 0;
+    QN->TimeStamp = 0;
     process_unlock(&Q->QLock);
 
     return;
@@ -275,6 +280,32 @@ unsigned QueueSize ()
     return Size;
 }
 
+
+void ShowQueue (unsigned Num)
+{
+    Queue* Q = g_Queue;
+    if (Q == NULL)
+    {
+        return;
+    }
+
+    process_lock(&Q->QLock);
+    printf ("[QUEUE]HIndex: %u, TIndex:%u\r\n", Q->Hindex, Q->Tindex);
+    unsigned Size = ((Q->Tindex + Q->NodeNum) - Q->Hindex)% Q->NodeNum;
+    for (unsigned ix = 0; ix < Size; ix++)
+    {
+        QNode *Node = Q_2_NODELIST(Q) + (Q->Hindex+ix)%Q->NodeNum;
+        printf ("[QUEUE][%u] key:%u, ready:%u\r\n", (Q->Hindex+ix)%Q->NodeNum, Node->TrcKey, Node->IsReady);
+        if (ix >= Num)
+        {
+            break;
+        }
+    }
+    process_unlock(&Q->QLock);
+
+    exit (0);
+    return;
+}
 
 void SetQueueExit ()
 {

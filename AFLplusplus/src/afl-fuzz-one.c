@@ -6496,17 +6496,6 @@ abandon_entry:
     return ret_val;
 }
 
-static inline void dump_seed_key (u32 seed_key)
-{
-    FILE *SF = fopen ("/tmp/AFL_CURRENT_SEEDID", "w");
-    assert (SF != NULL);
-    fprintf (SF, "%u", seed_key);
-    fclose (SF);
-
-    return;
-}
-
-
 u8 fuzz_one_standard(afl_state_t *afl)
 {
     MsgHdr *msg_header;
@@ -6523,13 +6512,10 @@ u8 fuzz_one_standard(afl_state_t *afl)
         afl->queue_cur->is_send = 1;
         free (cur_dir);
         //OKF (">>[fuzz_one_standard]send PL_MSG_SEED: [%u]%s", msg_seed->SeedKey, seed_path);
-
-        /* save current seed-ID */
-        dump_seed_key (afl->current_entry);
     }
     else {
         msg_header = format_msg (PL_MSG_EMPTY);
-        //OKF (">>[fuzz_one_standard]send PL_MSG_EMPTY");
+        //OKF (">>[fuzz_one_standard]send PL_MSG_EMPTY: [%u]", afl->current_entry);
     }
     pl_send ((char*)msg_header, msg_header->MsgLen);
 
@@ -6546,9 +6532,11 @@ u8 fuzz_one_standard(afl_state_t *afl)
             msg_header = format_msg (PL_MSG_SWMODE_READY);
             pl_send ((char*)msg_header, msg_header->MsgLen);
             ret = 0; /* skip the next seed */
+            //OKF (">>[fuzz_one_standard]recv PL_MSG_SWMODE, send PL_MSG_SWMODE_READY back.");
             break;
         }
         case PL_MSG_SEED:
+        case PL_MSG_EMPTY:
         {
             break;
         }
@@ -6564,6 +6552,7 @@ u8 fuzz_one_standard(afl_state_t *afl)
         }
         default:
         {
+            //OKF (">>[fuzz_one_standard]unexpected msg type: %u", msg_header->MsgType);
             assert (0);
         }
     }

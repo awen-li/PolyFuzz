@@ -411,14 +411,21 @@ void* DECollect (void *Para)
     DbHandle *DHL = PD->DHL;
 
     DWORD QSize = QueueSize ();
+    DEBUG ("[DECollect] entry with QUEUE size: %u.....\r\n", QSize);
+    
     DWORD QItr  = 0;
     DWORD BrKeyNum = 0;
+    DWORD ProccEvent = 0;
     while (PD->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
         {
-            QSize = QueueSize ();
+            if (QN && (time (NULL) - QN->TimeStamp >= 3))
+            {
+                OutQueue (QN);
+            }
+            QSize = QueueSize ();  
             continue;
         }
 
@@ -426,7 +433,8 @@ void* DECollect (void *Para)
         {
             QItr ++;
             assert (QItr <= FZ_SAMPLE_NUM);
-            DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x target exit and turn to next iteration.... \r\n", QItr, QSize, QN->TrcKey);
+            DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x, Where:%u, target exit.... \r\n", 
+                    QItr, QSize, QN->TrcKey, ((ExitInfo*)(QN->Buf))->Where);
         }
         else
         {
@@ -438,12 +446,13 @@ void* DECollect (void *Para)
             DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
                     QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
         }
-        
+
+        ProccEvent++;
         OutQueue (QN);
         QSize = QueueSize ();
         
     }   
-    DEBUG ("DECollect loop over.....\r\n");
+    DEBUG ("DECollect loop over.....[%u] EVENT processed\r\n", ProccEvent);
 
     if (BrKeyNum == 0)
     {
@@ -1171,11 +1180,15 @@ void* LearningMainThread (void *Para)
     /* send a msg to inform FUZZER that new seed ready */
     if (PD->GenSeedNum != 0)
     {
-        PLServer *plSrv = &g_plSrv;
-        MsgHdr *MsgSend  = FormatMsg(&plSrv->SkInfo, PL_MSG_GEN_SEED);              
+        BYTE SrvSendBuf[SRV_BUF_LEN];
+        MsgHdr *MsgSend  = (MsgHdr *)SrvSendBuf;
+        MsgSend->MsgType = PL_MSG_GEN_SEED;
+        MsgSend->MsgLen  = sizeof (MsgHdr);
+        
         BYTE *GenSeedDir = (BYTE*)(MsgSend+1);
         MsgSend->MsgLen += sprintf (GenSeedDir, "%s/%s", get_current_dir_name (), GEN_SEED);
-        Send(&plSrv->SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+        Send(&g_plSrv.SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+        DEBUG ("[LearningMainThread] send PL_MSG_GEN_SEED.\r\n");
     }
     
     PD->FlSdList = NULL;
@@ -1388,14 +1401,19 @@ void* DEMonitor (void *Para)
     StanddData *SD = (StanddData*)Para;
     DbHandle *DHL = SD->DHL;
     DWORD CacheSdNum = 0;
-
-    DWORD QSize  = QueueSize ();
+    DWORD QSize = QueueSize ();
+    
+    DEBUG ("[DEMonitor] entry with QUEUE size: %u\r\n", QSize);  
     DWORD BrVarChg = 0;
     while (SD->FzExit == FALSE || QSize != 0)
     {
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
         {
+            if (QN && (time (NULL) - QN->TimeStamp >= 3))
+            {
+                OutQueue (QN);
+            }
             QSize = QueueSize ();
             continue;
         }
@@ -1410,12 +1428,12 @@ void* DEMonitor (void *Para)
                 {
                     CurSeed->BrVarChg += BrVarChg; 
                     CacheSdNum = CacheSeedToLearn (CurSeed);
-                    DEBUG ("\t->[DEMonitor][SKey-%u]%s -> BrVarChg:%u, CacheSdNum:%u\r\n", 
-                           ExtI->SeedKey, CurSeed->SName, CurSeed->BrVarChg, CacheSdNum);
+                    DEBUG ("[DEMonitor][SKey-%u]%s, Where:%u -> BrVarChg:%u, CacheSdNum:%u\r\n", 
+                            ExtI->SeedKey, CurSeed->SName, ExtI->Where, CurSeed->BrVarChg, CacheSdNum);
                 }
                 else
                 {
-                    printf ("\t->[DEMonitor][Warning][SKey-%u]Get seed fail!!! -> BrVarChg:%u\r\n", ExtI->SeedKey, BrVarChg);
+                    printf ("[DEMonitor][Warning][SKey-%u]Where:%u, Get seed fail!!! -> BrVarChg:%u\r\n", ExtI->SeedKey, ExtI->Where, BrVarChg);
                 }
                 
                 BrVarChg = 0;
@@ -1484,6 +1502,7 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
             /* inform fuzzer to switch mode */
             MsgSend = FormatMsg(SkInfo, PL_MSG_SWMODE);
             Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+            DEBUG ("[StandardMode] send PL_MSG_SWMODE to fuzzer...");
 
             /* wait for the end of current fuzzing */
             MsgRev = (MsgHdr *) Recv(SkInfo);
@@ -1492,18 +1511,21 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
             /* infor MONITOR to exit when QUEUE becomes EMPTY */
             SD->FzExit = TRUE;
 
+            DEBUG ("[StandardMode] waiting Demonitor to exit...");
             VOID *TRet = NULL;
             pthread_join (DemId, &TRet);
 
             SwitchMode(RUNMOD_PILOT);
-            printf ("\r\n\r\n[StandardMode] OBTAIN %u seeds ready to learn, switch to PILOT\r\n", SeedNum);
+            DEBUG ("[StandardMode] OBTAIN %u [Total:%u] seeds ready to learn, switch to PILOT\r\n", 
+            SeedNum, QueryDataNum (SD->DHL->DBSeedHandle));
             
             break;
         }
         else
         {
-            MsgSend = FormatMsg(SkInfo, PL_MSG_SEED);
-            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen); 
+            MsgSend = FormatMsg(SkInfo, MsgRev->MsgType);
+            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+            DEBUG ("[StandardMode] send PL_MSG_SEED[2] PL_MSG_EMPTY[8]: %u ..\r\n", MsgRev->MsgType);
         }        
     }
     

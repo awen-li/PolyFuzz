@@ -33,6 +33,9 @@
 #endif
 
 #include "cmplog.h"
+#include <ctrace/Event.h>
+#include <Queue.h>
+
 
 #ifdef PROFILING
 u64 time_spent_working = 0;
@@ -913,6 +916,19 @@ abort_trimming:
 
 }
 
+static inline void insert_exit_event (afl_state_t *afl)
+{
+    QNode* QN;
+    while ((QN  = InQueue ()) == NULL);
+    ExitInfo *ExtI = (ExitInfo *)QN->Buf;
+    ExtI->SeedKey  = afl->current_entry;
+    ExtI->Where = 1;
+
+    QN->TrcKey = TARGET_EXIT_KEY;  /* special key: indicate exit msg */
+    QN->IsReady = 1;
+}
+
+
 /* Write a modified test case, run program, process results. Handle
    error conditions, returning 1 if it's time to bail out. This is
    a helper function for fuzz_one(). */
@@ -925,6 +941,9 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
   write_to_testcase(afl, out_buf, len);
 
   fault = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
+  
+  afl->current_fz_fault = fault;
+  insert_exit_event (afl);
 
   if (afl->stop_soon) { return 1; }
 

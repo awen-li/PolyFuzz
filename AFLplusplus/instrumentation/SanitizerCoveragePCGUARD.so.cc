@@ -528,7 +528,7 @@ public:
             }
         }
 
-        InjectExit ();
+        //InjectExit ();
         return;
     }
 

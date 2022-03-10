@@ -14,7 +14,7 @@
 extern "C"{
 #endif 
 
-#define TARGET_EXIT_KEY     (0x11223344)
+#define TARGET_EXIT_KEY     (12345678)
 
 typedef enum
 {
@@ -55,7 +55,7 @@ typedef struct ObjValue
 typedef struct ExitInfo
 {
     unsigned SeedKey;
-    unsigned Rev;
+    unsigned Where;
 } ExitInfo;
 
 typedef BYTE* EHANDLE;

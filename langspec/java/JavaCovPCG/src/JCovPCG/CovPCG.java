@@ -57,6 +57,21 @@ public class CovPCG extends BodyTransformer
         BlackList.put("static void <clinit>()", 1);
 	}
 	
+	private int GetStmtID (Map<Stmt, Integer> StmtIDMap, Stmt CurSt)
+	{
+		int StID = 0;
+		if (!StmtIDMap.containsKey (CurSt))
+		{
+			StID = StmtIDMap.size();
+			StmtIDMap.put(CurSt, StID);
+		}
+		else
+		{
+			StID = StmtIDMap.get(CurSt);
+		}
+		return StID;
+	}
+	
 	private boolean IsInBlackList (String FuncName)
 	{
 	    System.out.println("@@@ IsInBlackList: " + FuncName);
@@ -98,7 +113,7 @@ public class CovPCG extends BodyTransformer
 	{
 		if (stmt.toString().indexOf("caughtexception") != -1)
 		{
-		    return true;
+			return true;
 		}
 		
 		return false;
@@ -128,11 +143,20 @@ public class CovPCG extends BodyTransformer
 		}	
 	}
 	
+	private String GetSaIR (Map<Stmt, Integer> StmtIDMap, Unit CurUnit)
+	{
+		Stmt CurSt = (Stmt)CurUnit;
+		
+		int StID = GetStmtID (StmtIDMap, CurSt);
+		return Integer.toString(StID);
+	}
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
 		
 		Map<Block, Integer> Block2ID = new HashMap<>();
+		Map<Stmt, Integer> StmtIDMap = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
 		System.out.println("@@@ instrumenting method : " + CurMethod.getSignature());
@@ -170,6 +194,19 @@ public class CovPCG extends BodyTransformer
 		{
 			Block CurB= wfQueue.get(0);
 			wfQueue.remove(0);
+			
+			/* for each block, translate the statement to SA-IR */
+			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
+			for (Unit CurUnit : CurB)
+			{
+				if (CurUnit.hashCode() == 0)
+				{
+					System.out.println("\t Not code....statement ->  " + CurUnit.toString());
+					continue;
+				}
+				String SaIR = GetSaIR (StmtIDMap, CurUnit);
+				System.out.println("\t statement ->  " + CurUnit.toString() + ", SA-IR: " + SaIR);
+			}
 			
 			List<Block> Succs = CurB.getSuccs();
 			for (Block su: Succs)

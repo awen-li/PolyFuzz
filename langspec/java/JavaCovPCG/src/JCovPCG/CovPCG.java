@@ -9,6 +9,7 @@ import java.util.Iterator;
 
 import soot.Body;
 import soot.BodyTransformer;
+import soot.Local;
 import soot.toolkits.graph.Block;
 import soot.toolkits.graph.BlockGraph;
 import soot.toolkits.graph.BriefBlockGraph;
@@ -17,8 +18,14 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.Value;
+import soot.ValueBox;
+import soot.jimple.ConditionExpr;
+import soot.jimple.EqExpr;
+import soot.jimple.IfStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
+import soot.jimple.NeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
@@ -143,12 +150,92 @@ public class CovPCG extends BodyTransformer
 		}	
 	}
 	
+	private String ValueType (Value V)
+	{
+		String ValueType = "";
+		if (V.getType() instanceof soot.IntType)
+		{
+			ValueType = "#i";				
+		}
+		else
+		{
+			ValueType = "#o";
+		}
+		
+		return ValueType;
+	}
+	
+	private String ValueName (Value V)
+	{
+		String Name = V.toString();
+		if (Name.indexOf(" ") != -1)
+		{
+			return "";
+		}
+		
+		return Name;
+	}
+	
+	private void GenBranchVar (IfStmt CurSt)
+	{
+		ConditionExpr expr = (ConditionExpr) CurSt.getCondition();
+		boolean isTargetIf = false;
+		if (((expr instanceof EqExpr) || (expr instanceof NeExpr))) 
+		{
+			if (expr.getOp1() instanceof Local && expr.getOp2() instanceof Local) {
+				isTargetIf = true;
+			}
+		}
+		
+		return;
+	}
+	
+	
+	/* SA-IR
+	 * Type: i: integer, o: other 
+	 *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
+	 *  other statement: 
+	 * */
 	private String GetSaIR (Map<Stmt, Integer> StmtIDMap, Unit CurUnit)
 	{
+		String SaIR = "";
 		Stmt CurSt = (Stmt)CurUnit;
 		
+		if(CurSt instanceof IfStmt)
+		{
+			SaIR += "CMP:";
+		}
+		
+		List<ValueBox> DefValues =  CurSt.getDefBoxes();
+		if (DefValues.size() != 0)
+		{
+			Value Def = DefValues.get(0).getValue();
+			String Name = ValueName (Def);
+			if (Name != "")
+			{
+				SaIR += Name + ValueType (Def);
+			}
+		}
+		SaIR += ":";
+		
+		List<ValueBox> RefValues =  CurSt.getUseBoxes();
+		for (ValueBox VB : RefValues) 
+		{
+			Value Use = VB.getValue();
+			String Name = ValueName (Use);
+			if (Name != "")
+			{
+				SaIR += Name + ValueType (Use) + ":";
+			}		
+		}
+		
+		if (SaIR.length() < 4)
+		{
+			return "";
+		}
+		
 		int StID = GetStmtID (StmtIDMap, CurSt);
-		return Integer.toString(StID);
+		return  Integer.toString(StID) + ":" + SaIR;
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

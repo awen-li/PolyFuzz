@@ -9,6 +9,8 @@ unsigned pcgCFGAlloct (unsigned EntryId);
 void pcgCFGDel (unsigned Handle);
 
 void pcgCFGEdge (unsigned Handle, unsigned SNode, unsigned ENode);
+void pcgInsertIR (unsigned Handle, unsigned BlockId, const char* SaIR);
+
 void pcgBuild (unsigned Handle);
 
 bool pcgNeedInstrumented (unsigned Handle, unsigned Node);

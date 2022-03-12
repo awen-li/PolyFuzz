@@ -4,8 +4,142 @@
 #include "GenericGraph.h"
 #include "GraphViz.h"
 #include <algorithm>
+#include <vector>
+#include <string>
+#include <iostream>
 
+using namespace std;
 class CFGNode;
+
+enum
+{
+    V_TYPE_OTHER=0,
+    V_TYPE_INT=1,
+    V_TYPE_NONE=255,
+};
+
+struct ValueIR
+{
+    DWORD m_Type;
+    string m_Name;
+
+    ValueIR ()
+    {
+        m_Type = V_TYPE_NONE;
+        m_Name = "";
+    }
+};
+
+struct StmtIR
+{
+    DWORD m_StId;
+    DWORD m_CMP;
+    ValueIR m_Def;
+    vector<ValueIR> m_Uses;
+
+    string m_IRExpr;
+    
+    StmtIR (string IRExpr)
+    {
+        m_StId   = -1;
+        m_CMP    = 0;
+        m_IRExpr = IRExpr;
+
+        Decode(IRExpr);
+        ShowStmt ();
+    }
+
+    /* SA-IR
+     * Type: i: integer, o: other 
+     *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
+     *  other statement: 
+     * */
+
+    inline void DecodeValue (string Value, ValueIR &VI)
+    {
+        cout<<"DecodeValue -> "<<Value<<endl;
+        size_t pos = Value.find("#");
+        assert (pos != Value.npos && pos > 0);
+
+        VI.m_Name = Value.substr(0, pos);
+        cout<<"\t VI.m_Name = "<<VI.m_Name<<endl;
+        
+        string Type = Value.substr(pos+1, Value.size());
+        cout<<"\t VI.Type = "<<Type<<endl;
+        
+        if (Type == "i")
+        {
+            VI.m_Type = V_TYPE_INT;
+        }
+        else if (Type == "o")
+        {
+            VI.m_Type = V_TYPE_OTHER;
+        }
+        else
+        {
+            assert (0);
+        }
+
+        return;
+    }
+    
+    inline void Decode (string IRExpr)
+    {
+        DWORD IDX = 0;
+        size_t pos = IRExpr.find(":");
+        while(pos != IRExpr.npos)
+        {
+            string Temp = IRExpr.substr(0, pos);
+            if (Temp != "")
+            {                
+                switch (IDX)
+                {
+                    case 0:
+                    {
+                        m_StId = std::stoi(Temp);
+                        break;
+                    }
+                    case 1:
+                    {
+                        m_CMP = (DWORD) (Temp == "CMP");
+                        break;
+                    }
+                    case 2:
+                    {
+                        DecodeValue (Temp, m_Def);
+                        break;
+                    }
+                    default:
+                    {
+                        ValueIR Use;
+                        DecodeValue (Temp, Use);
+                        m_Uses.push_back (Use);
+                        break;
+                    }
+                }
+            }
+
+            IDX++;
+            IRExpr = IRExpr.substr(pos+1, IRExpr.size());
+            pos = IRExpr.find(":");
+        }    
+    }
+
+    inline void ShowStmt ()
+    {
+        printf ("[STMT]%s  --->Decode: [%u]", m_IRExpr.c_str (), m_StId);
+        printf ("CMP:%u, ", m_CMP);
+        printf ("Def: %s:%u, Uses: ", m_Def.m_Name.c_str(), m_Def.m_Type);
+        if (m_Uses.size ())
+        {
+            for (DWORD ix = 0; ix < m_Uses.size (); ix++)
+            {
+                printf ("%s:%u  ", m_Uses[ix].m_Name.c_str(), m_Uses[ix].m_Type);
+            }
+        }
+        printf ("\r\n");
+    }
+};
 
 class CFGEdge : public GenericEdge<CFGNode> 
 {
@@ -24,12 +158,19 @@ public:
 class CFGNode : public GenericNode<CFGEdge> 
 {
 public:
+    vector<StmtIR> m_Stmts;
 
     CFGNode(DWORD Id): GenericNode<CFGEdge>(Id) 
     {
         DEBUG ("@@@ new CFG node: %u \r\n", Id);
     }
 
+    inline void AddStmtIR (const char* IRExpr)
+    {
+        StmtIR SIR (IRExpr); 
+        m_Stmts.push_back (SIR);
+        return;
+    }
 };
 
 

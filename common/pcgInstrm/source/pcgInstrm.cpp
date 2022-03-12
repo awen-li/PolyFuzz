@@ -37,6 +37,17 @@ void pcgCFGEdge (unsigned Handle, unsigned SNode, unsigned ENode)
     return;
 }
 
+void pcgInsertIR (unsigned Handle, unsigned BlockId, const char* SaIR)
+{
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    
+    CFGNode *CfgNode = Cfg->GetGNode (BlockId);
+    CfgNode->AddStmtIR(SaIR);
+    
+    return;
+}
+
+
 void pcgBuild (unsigned Handle)
 {
     CFGGraph *Cfg = pcgHdl.GetCFG (Handle);

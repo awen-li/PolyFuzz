@@ -33,6 +33,14 @@ JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGEdge
 
 /*
  * Class:     JCovPCG_PCGuidance
+ * Method:    pcgInsertIR
+ * Signature: (IILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgInsertIR
+  (JNIEnv *, jclass, jint, jint, jstring);
+
+/*
+ * Class:     JCovPCG_PCGuidance
  * Method:    pcgBuild
  * Signature: (I)V
  */

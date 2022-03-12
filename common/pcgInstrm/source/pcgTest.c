@@ -12,8 +12,19 @@ void Test1 ()
 
     /* Insert EDGEs */
     pcgCFGEdge(Hd, 1, 2);
+    pcgInsertIR(Hd, 1, "12::$r8#o:");
+    pcgInsertIR(Hd, 1, "14:::i1#i:");
+    pcgInsertIR(Hd, 1, "9::$r5#o:$r4#o:0#i");
+    
     pcgCFGEdge(Hd, 2, 4);
+    pcgInsertIR(Hd, 2, "10::$r6#o:$r5#o:");
+    pcgInsertIR(Hd, 2, "11::i1#i:$r6#o:");
+    pcgInsertIR(Hd, 2, "8::$r4#o:$r3#o:");
+    
     pcgCFGEdge(Hd, 4, 5);
+    pcgInsertIR(Hd, 4, "10::$r6#o:$r5#o:");
+    pcgInsertIR(Hd, 4, "4:CMP::$i0#i:0#i:");
+    
     pcgCFGEdge(Hd, 5, 7);
     pcgCFGEdge(Hd, 1, 3);
     pcgCFGEdge(Hd, 3, 5);

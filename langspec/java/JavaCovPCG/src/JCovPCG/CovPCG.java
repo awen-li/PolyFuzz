@@ -205,6 +205,10 @@ public class CovPCG extends BodyTransformer
 		{
 			SaIR += "CMP:";
 		}
+        else
+        {
+            SaIR += ":";
+        }
 		
 		List<ValueBox> DefValues =  CurSt.getDefBoxes();
 		if (DefValues.size() != 0)
@@ -282,16 +286,14 @@ public class CovPCG extends BodyTransformer
 			Block CurB= wfQueue.get(0);
 			wfQueue.remove(0);
 			
+			int CurBId = Block2ID.get(CurB);
+			
 			/* for each block, translate the statement to SA-IR */
 			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
 			for (Unit CurUnit : CurB)
 			{
-				if (CurUnit.hashCode() == 0)
-				{
-					System.out.println("\t Not code....statement ->  " + CurUnit.toString());
-					continue;
-				}
 				String SaIR = GetSaIR (StmtIDMap, CurUnit);
+				PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
 				System.out.println("\t statement ->  " + CurUnit.toString() + ", SA-IR: " + SaIR);
 			}
 			
@@ -299,7 +301,7 @@ public class CovPCG extends BodyTransformer
 			for (Block su: Succs)
 			{
 				wfQueue.add (su);
-				PCGuidance.pcgCFGEdge(CFGHd, Block2ID.get(CurB), Block2ID.get(su));
+				PCGuidance.pcgCFGEdge(CFGHd, CurBId, Block2ID.get(su));
 			}		
 		}	
 		PCGuidance.pcgBuild(CFGHd);

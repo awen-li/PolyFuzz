@@ -38,6 +38,22 @@ JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgCFGEdge (JNIEnv *env, jclass j
     return;
 }
 
+
+/*
+ * Class:     JCovPCG_PCGuidance
+ * Method:    pcgInsertIR
+ * Signature: (IILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_PCGuidance_pcgInsertIR (JNIEnv *env, jclass jc, jint Handle, jint BlockId, jstring SaIR)
+{
+    const char *ntSaIR = (*env)->GetStringUTFChars(env, SaIR, 0);
+    pcgInsertIR (Handle, BlockId, ntSaIR);
+    (*env)->ReleaseStringUTFChars(env, SaIR, ntSaIR);
+    
+    return;
+}
+
+
 /*
  * Class:     JCovPCG_PCGuidance
  * Method:    pcgBuild

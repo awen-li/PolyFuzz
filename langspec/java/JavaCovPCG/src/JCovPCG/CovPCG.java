@@ -81,7 +81,6 @@ public class CovPCG extends BodyTransformer
 	
 	private boolean IsInBlackList (String FuncName)
 	{
-	    System.out.println("@@@ IsInBlackList: " + FuncName);
 		if (BlackList.get(FuncName) == null)
 		{
 			return false;
@@ -292,9 +291,9 @@ public class CovPCG extends BodyTransformer
 			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
 			for (Unit CurUnit : CurB)
 			{
+			    System.out.println("\t statement ->  " + CurUnit.toString());
 				String SaIR = GetSaIR (StmtIDMap, CurUnit);
 				PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
-				System.out.println("\t statement ->  " + CurUnit.toString() + ", SA-IR: " + SaIR);
 			}
 			
 			List<Block> Succs = CurB.getSuccs();
@@ -310,7 +309,7 @@ public class CovPCG extends BodyTransformer
 		Chain units = body.getUnits();
 		for (Block CurB : Block2ID.keySet())
 		{
-			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
+			System.out.println("@@@ Block -> " + Block2ID.get(CurB).toString());
 			Unit TailStmt = CurB.getTail();
 
 			int BID = Block2ID.get(CurB);

@@ -5,8 +5,6 @@
 #include "GraphViz.h"
 #include <algorithm>
 #include <vector>
-#include <string>
-#include <iostream>
 
 using namespace std;
 class CFGNode;
@@ -57,16 +55,11 @@ struct StmtIR
 
     inline void DecodeValue (string Value, ValueIR &VI)
     {
-        cout<<"DecodeValue -> "<<Value<<endl;
         size_t pos = Value.find("#");
         assert (pos != Value.npos && pos > 0);
 
-        VI.m_Name = Value.substr(0, pos);
-        cout<<"\t VI.m_Name = "<<VI.m_Name<<endl;
-        
-        string Type = Value.substr(pos+1, Value.size());
-        cout<<"\t VI.Type = "<<Type<<endl;
-        
+        VI.m_Name = Value.substr(0, pos);  
+        string Type = Value.substr(pos+1, Value.size());   
         if (Type == "i")
         {
             VI.m_Type = V_TYPE_INT;
@@ -127,7 +120,7 @@ struct StmtIR
 
     inline void ShowStmt ()
     {
-        printf ("[STMT]%s  --->Decode: [%u]", m_IRExpr.c_str (), m_StId);
+        printf ("\t\t[STMT]%s  --->Decode: [%u]", m_IRExpr.c_str (), m_StId);
         printf ("CMP:%u, ", m_CMP);
         printf ("Def: %s:%u, Uses: ", m_Def.m_Name.c_str(), m_Def.m_Type);
         if (m_Uses.size ())
@@ -158,6 +151,9 @@ public:
 class CFGNode : public GenericNode<CFGEdge> 
 {
 public:
+    typedef typename vector<StmtIR>::iterator st_iterator;
+    
+public:
     vector<StmtIR> m_Stmts;
 
     CFGNode(DWORD Id): GenericNode<CFGEdge>(Id) 
@@ -171,6 +167,16 @@ public:
         m_Stmts.push_back (SIR);
         return;
     }
+
+    inline st_iterator begin ()
+    {
+        return m_Stmts.begin ();
+    }
+
+    inline st_iterator end ()
+    {
+        return m_Stmts.end ();
+    } 
 };
 
 
@@ -178,12 +184,17 @@ typedef set<CFGNode*> NodeSet;
 
 class CFGGraph : public GenericGraph<CFGNode, CFGEdge> 
 {
+public:
+    typedef set<ValueIR*> T_ValueSet;
+
 
 private:
     CFGNode *m_Entry;
     CFGNode *m_Exit;
     map <CFGNode*, NodeSet*> m_DomSet;
     map <CFGNode*, NodeSet*> m_PostDomSet;
+
+    map<StmtIR*, StmtIR*> BrDefStmt2PosStmt;
 
 private:
 
@@ -590,6 +601,42 @@ public:
             }
         }
         return true;
+    }
+
+    inline void CollectBrDefUse () 
+    {
+        T_ValueSet BrValueSet;
+
+        /* 1. get ALL branch variables in branch/switch instructions*/
+        for (auto It = begin (), End = end (); It != End; It++) 
+        {
+            CFGNode *CN = It->second;
+            for (auto SIt = CN->begin (), SEnd = CN->end(); SIt != SEnd; SIt++)
+            {
+                StmtIR *SIR = &(*SIt);
+                if (SIR->m_CMP && SIR->m_Uses.size () >= 2)
+                {
+                    BrValueSet.insert (&SIR->m_Uses[0]);
+                    BrValueSet.insert (&SIR->m_Uses[1]);
+                }
+            }
+        }
+
+        /* 2. get DEF of branch variables */
+        for (auto It = begin (), End = end (); It != End; It++) 
+        {
+            CFGNode *CN = It->second;
+            for (auto SIt = CN->begin (), SEnd = CN->end(); SIt != SEnd; SIt++)
+            {
+                StmtIR *SIR = &(*SIt);
+                if (SIR->m_Def.m_Type == V_TYPE_NONE)
+                {
+                    continue;
+                }
+            }
+        }
+
+        return;
     }
 };
 

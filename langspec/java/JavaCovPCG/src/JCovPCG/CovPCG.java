@@ -339,6 +339,21 @@ public class CovPCG extends BodyTransformer
 			System.out.println("\tInstrument before statement -> " + InstrmedStmt.toString());
 		}
 		
+		/* start to instrument with SAI */
+		int[] AllSAIStmtIDs = PCGuidance.pcgGetAllSAIStmtIDs(CFGHd);
+		for (int ix = 0, Size= AllSAIStmtIDs.length; ix < Size; ix++)
+		{
+		    int StmtID = AllSAIStmtIDs [ix];
+		    Unit InstrmedStmt = ID2StmtMap.get(StmtID);
+		    assert (InstrmedStmt != null);
+		    
+		    /* instrument before the tail statement */
+			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(StmtID)));
+			units.insertAfter(dynStmt, InstrmedStmt);
+		    
+		    System.out.println("\tInstrument SAI statement -> " + InstrmedStmt.toString());
+		}
+		
 		PCGuidance.pcgCFGDel(CFGHd);
         System.out.println("@@@ instrumenting method : " + CurMethod.getSignature() + " done!!!");
 	}

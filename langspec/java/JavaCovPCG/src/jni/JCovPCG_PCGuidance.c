@@ -75,6 +75,16 @@ JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented (JNIEnv *
     return pcgNeedInstrumented (Handle, Id);
 }
 
+/*
+ * Class:     JCovPCG_PCGuidance
+ * Method:    pcgGetPCGStmtID
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgGetPCGStmtID (JNIEnv *env, jclass jc, jint Handle, jint Id)
+{
+    return 0;
+}
+
 
 /*
  * Class:     JCovPCG_PCGuidance

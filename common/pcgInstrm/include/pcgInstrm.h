@@ -14,6 +14,7 @@ void pcgInsertIR (unsigned Handle, unsigned BlockId, const char* SaIR);
 void pcgBuild (unsigned Handle);
 
 bool pcgNeedInstrumented (unsigned Handle, unsigned Node);
+unsigned pcgGetPCGStmtID (unsigned Handle, unsigned Id);
 
 bool pcgIsDominated (unsigned Handle, unsigned SNode, unsigned ENode);
 bool pcgIsPostDominated (unsigned Handle, unsigned SNode, unsigned ENode);

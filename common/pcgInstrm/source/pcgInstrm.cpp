@@ -142,6 +142,16 @@ bool pcgNeedInstrumented (unsigned Handle, unsigned Id)
 }
 
 
+unsigned pcgGetPCGStmtID (unsigned Handle, unsigned Id)
+{
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+    
+    CFGNode *Cn = Cfg->GetGNode(Id);
+
+    return Cn->GetPCGStmtID ();
+}
+
 
 #ifdef __cplusplus
 }

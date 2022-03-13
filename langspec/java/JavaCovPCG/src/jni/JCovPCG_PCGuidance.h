@@ -57,6 +57,14 @@ JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented
 
 /*
  * Class:     JCovPCG_PCGuidance
+ * Method:    pcgGetPCGStmtID
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgGetPCGStmtID
+  (JNIEnv *, jclass, jint, jint);
+
+/*
+ * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsDominated
  * Signature: (III)Z
  */

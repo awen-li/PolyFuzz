@@ -174,7 +174,8 @@ public:
     
 public:
     vector<StmtIR> m_Stmts;
-    set <StmtIR *> m_BrDefStmts;
+    vector<StmtIR*> m_BrDefStmts;
+    set<StmtIR*> m_InstrmedSet;
 
     CFGNode(DWORD Id): GenericNode<CFGEdge>(Id) 
     {
@@ -196,7 +197,20 @@ public:
     inline st_iterator end ()
     {
         return m_Stmts.end ();
-    } 
+    }
+
+    inline unsigned GetPCGStmtID ()
+    {
+        if (m_BrDefStmts.size () == 0)
+        {
+            return 0;
+        }
+
+        StmtIR *SIR = m_BrDefStmts[0];
+        m_InstrmedSet.insert (SIR);
+
+        return SIR->m_StId;
+    }
 };
 
 

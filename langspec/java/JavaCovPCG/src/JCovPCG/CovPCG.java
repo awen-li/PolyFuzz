@@ -65,13 +65,14 @@ public class CovPCG extends BodyTransformer
         BlackList.put("static void <clinit>()", 1);
 	}
 	
-	private int GetStmtID (Map<Stmt, Integer> StmtIDMap, Stmt CurSt)
+	private int GetStmtID (Map<Stmt, Integer> StmtIDMap, Map<Integer, Stmt> ID2StmpMap, Stmt CurSt)
 	{
 		int StID = 0;
 		if (!StmtIDMap.containsKey (CurSt))
 		{
-			StID = StmtIDMap.size();
+			StID = StmtIDMap.size() + 1;
 			StmtIDMap.put(CurSt, StID);
+			ID2StmpMap.put(StID, CurSt);
 		}
 		else
 		{
@@ -196,7 +197,7 @@ public class CovPCG extends BodyTransformer
 	 *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
 	 *  other statement: 
 	 * */
-	private String GetSaIR (Map<Stmt, Integer> StmtIDMap, Unit CurUnit)
+	private String GetSaIR (Map<Stmt, Integer> Stmt2IDMap, Map<Integer, Stmt> ID2StmpMap, Unit CurUnit)
 	{
 		String SaIR = "";
 		Stmt CurSt = (Stmt)CurUnit;
@@ -242,7 +243,7 @@ public class CovPCG extends BodyTransformer
 			return "";
 		}
 		
-		int StID = GetStmtID (StmtIDMap, CurSt);
+		int StID = GetStmtID (Stmt2IDMap, ID2StmpMap, CurSt);
 		return  Integer.toString(StID) + ":" + SaIR;
 	}
 	
@@ -250,8 +251,9 @@ public class CovPCG extends BodyTransformer
 	@Override
 	protected void internalTransform(Body body, String phaseName, Map<String, String> options) {
 		
-		Map<Block, Integer> Block2ID = new HashMap<>();
-		Map<Stmt, Integer> StmtIDMap = new HashMap<>();
+		Map<Block, Integer> Block2ID  = new HashMap<>();
+		Map<Stmt, Integer> Stmt2IDMap = new HashMap<>();
+		Map<Integer, Stmt> ID2StmtMap = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
 		System.out.println("@@@ instrumenting method : " + CurMethod.getSignature());
@@ -297,7 +299,7 @@ public class CovPCG extends BodyTransformer
 			for (Unit CurUnit : CurB)
 			{
 			    System.out.println("\t statement ->  " + CurUnit.toString());
-				String SaIR = GetSaIR (StmtIDMap, CurUnit);
+				String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
 				PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
 			}
 			
@@ -315,7 +317,7 @@ public class CovPCG extends BodyTransformer
 		for (Block CurB : Block2ID.keySet())
 		{
 			System.out.println("@@@ Block -> " + Block2ID.get(CurB).toString());
-			Unit TailStmt = CurB.getTail();
+			Unit InstrmedStmt = CurB.getTail();
 
 			int BID = Block2ID.get(CurB);
 			if (PCGuidance.pcgNeedInstrumented(CFGHd, BID) == false)
@@ -323,11 +325,18 @@ public class CovPCG extends BodyTransformer
 				continue;
 			}
 			
+			int StmtID = PCGuidance.pcgGetPCGStmtID(CFGHd, BID);
+			if (StmtID != 0)
+			{
+				InstrmedStmt = ID2StmtMap.get(StmtID);
+				assert (InstrmedStmt != null);
+			}
+			
 			/* instrument before the tail statement */
 			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
-			units.insertBefore(dynStmt, TailStmt);
+			units.insertBefore(dynStmt, InstrmedStmt);
 			
-			System.out.println("\tInstrument before statement -> " + TailStmt.toString());
+			System.out.println("\tInstrument before statement -> " + InstrmedStmt.toString());
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);

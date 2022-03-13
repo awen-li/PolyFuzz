@@ -5,13 +5,24 @@ public class Test1 {
 	
 	private static int Add (int Val1, int Val2)
 	{
-		if (Val2 > 8)
+		switch (Val2)
 		{
-		    return (Val1 + Val2);
-		}
-		else
-		{
-			return (Val1 - Val2);
+			case 0:
+			case 1:
+			case 2:
+			{
+				return (Val1 + Val2);
+			}
+			case 3:
+			case 6:
+			case 9:
+			{
+				return (Val1 + Val2 + 3);
+			}
+			default:
+			{
+				return (Val1 - Val2);
+			}
 		}
 	}
 

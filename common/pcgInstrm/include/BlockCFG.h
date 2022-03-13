@@ -16,6 +16,14 @@ enum
     V_TYPE_NONE=255,
 };
 
+enum
+{
+    STMT_OTHER=0,
+    STMT_CMP=1,
+    STMT_SWITCH=2,
+};
+
+
 struct ValueIR
 {
     DWORD m_Type;
@@ -44,12 +52,12 @@ struct StmtIR
         m_IRExpr = IRExpr;
 
         Decode(IRExpr);
-        ShowStmt ();
+        //ShowStmt ();
     }
 
     /* SA-IR
      * Type: i: integer, o: other 
-     *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
+     *  compare statement: ID:CMP|SWITCH:DEF#T:USE1#T:USE2#T:...:USEN#T
      *  other statement: 
      * */
 
@@ -94,7 +102,18 @@ struct StmtIR
                     }
                     case 1:
                     {
-                        m_CMP = (DWORD) (Temp == "CMP");
+                        if (Temp == "CMP")
+                        {
+                            m_CMP = STMT_CMP;
+                        }
+                        else if (Temp == "SWITCH")
+                        {
+                            m_CMP = STMT_SWITCH;
+                        }
+                        else
+                        {
+                            m_CMP = STMT_OTHER;
+                        }
                         break;
                     }
                     case 2:
@@ -155,6 +174,7 @@ public:
     
 public:
     vector<StmtIR> m_Stmts;
+    set <StmtIR *> m_BrDefStmts;
 
     CFGNode(DWORD Id): GenericNode<CFGEdge>(Id) 
     {
@@ -185,7 +205,7 @@ typedef set<CFGNode*> NodeSet;
 class CFGGraph : public GenericGraph<CFGNode, CFGEdge> 
 {
 public:
-    typedef set<ValueIR*> T_ValueSet;
+    typedef set<string> T_ValueSet;
 
 
 private:
@@ -512,6 +532,8 @@ public:
         DEBUG ("@@@ Start ComputePostDom...\r\n");
         ComputePostDom ();
 
+        CollectBrDefUse ();
+
         return;
     }
 
@@ -606,6 +628,7 @@ public:
     inline void CollectBrDefUse () 
     {
         T_ValueSet BrValueSet;
+        printf ("begin ============      CollectBrDefUse     ============ \r\n");
 
         /* 1. get ALL branch variables in branch/switch instructions*/
         for (auto It = begin (), End = end (); It != End; It++) 
@@ -614,10 +637,14 @@ public:
             for (auto SIt = CN->begin (), SEnd = CN->end(); SIt != SEnd; SIt++)
             {
                 StmtIR *SIR = &(*SIt);
-                if (SIR->m_CMP && SIR->m_Uses.size () >= 2)
+                if (SIR->m_CMP == STMT_CMP)
                 {
-                    BrValueSet.insert (&SIR->m_Uses[0]);
-                    BrValueSet.insert (&SIR->m_Uses[1]);
+                    BrValueSet.insert (SIR->m_Uses[0].m_Name);
+                    BrValueSet.insert (SIR->m_Uses[1].m_Name);
+                }
+                else if (SIR->m_CMP == STMT_SWITCH)
+                {
+                    BrValueSet.insert (SIR->m_Uses[0].m_Name);
                 }
             }
         }
@@ -628,14 +655,27 @@ public:
             CFGNode *CN = It->second;
             for (auto SIt = CN->begin (), SEnd = CN->end(); SIt != SEnd; SIt++)
             {
-                StmtIR *SIR = &(*SIt);
-                if (SIR->m_Def.m_Type == V_TYPE_NONE)
+                StmtIR *SIR = &(*SIt);                
+                if (SIR->m_Def.m_Type == V_TYPE_NONE ||
+                    SIR->m_Def.m_Type == V_TYPE_OTHER)
                 {
                     continue;
                 }
+
+                auto DefIt = BrValueSet.find (SIR->m_Def.m_Name);
+                if (DefIt == BrValueSet.end ())
+                {
+                    continue;
+                }
+
+                CN->m_BrDefStmts.insert (SIR);
+
+                printf ("@@@ Get BrDef: ");
+                SIR->ShowStmt();
             }
         }
 
+        printf ("end ============      CollectBrDefUse     ============ \r\n");
         return;
     }
 };

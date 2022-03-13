@@ -29,6 +29,7 @@ import soot.jimple.NeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
+import soot.jimple.SwitchStmt;
 import soot.util.Chain;
 
 
@@ -203,6 +204,10 @@ public class CovPCG extends BodyTransformer
 		if(CurSt instanceof IfStmt)
 		{
 			SaIR += "CMP:";
+		}
+		else if(CurSt instanceof SwitchStmt)
+		{
+			SaIR += "SWITCH:";
 		}
         else
         {

@@ -147,7 +147,6 @@ static inline void TracingDefUse (const char* VarName, PyObject *VarAddr, ObjVal
     Esize = EncodeEvent(Eh, Esize, ET_VALNAME, strlen(VarName), (BYTE*)VarName);
     Esize = EncodeEvent(Eh, Esize, ET_VALADDR, sizeof (char*), (BYTE*)VarAddr);
     Esize = EncodeEvent(Eh, Esize, ET_VALUE, sizeof (ObjValue), (BYTE*)VarValue);
-    DynTrace(Eh, Esize, TrcKey);
 
     return;
 }
@@ -367,14 +366,14 @@ static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf)
     PY_PRINT("InjectCov: [PreBB : CurBB]  = [%d : %d] \r\n", Rtf->m_PreBB, Rtf->m_CurBB);
     if (Rtf->m_PreBB == 0)
     {
-        DynTrace (NULL, 0, Rtf->m_CurBB);
+        DynTracePCG(Rtf->m_CurBB);
         return;
     }
     else
     {
         if (Rtf->m_PreBB != Rtf->m_CurBB)
         {
-            DynTrace (NULL, 0, Rtf->m_CurBB);
+            DynTracePCG (Rtf->m_CurBB);
             return;
         }
     }  

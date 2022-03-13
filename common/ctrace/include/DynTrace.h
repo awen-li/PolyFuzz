@@ -18,7 +18,16 @@ extern "C"{
 
 int  DynTraceInit (unsigned BBs);
 void DynTraceExit ();
-void DynTrace (EHANDLE Eh, unsigned Length, unsigned Tk);
+
+void DynTrace (EHANDLE Eh, unsigned Length, unsigned BlkId);
+
+void DynTracePCG (unsigned BlkId);
+
+void DynTraceD8 (unsigned BlkId, unsigned Key, unsigned char Value);
+void DynTraceD16 (unsigned BlkId, unsigned Key, unsigned short Value);
+void DynTraceD32 (unsigned BlkId, unsigned Key, unsigned Value);
+void DynTraceD64 (unsigned BlkId, unsigned Key, unsigned long Value);
+
 
 
 #ifdef __cplusplus

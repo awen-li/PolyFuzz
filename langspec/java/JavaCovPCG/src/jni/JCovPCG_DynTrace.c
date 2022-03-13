@@ -15,7 +15,7 @@ extern "C" {
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace (JNIEnv *env, jobject jobj, jint guard)
 {
     unsigned TrcKey = guard;
-    DynTrace (NULL, 0, TrcKey);
+    DynTracePCG (TrcKey);
     return;
 }
 

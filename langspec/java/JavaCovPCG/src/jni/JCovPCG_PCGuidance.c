@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdlib.h>
 #include "pcgInstrm.h"
 #include "JCovPCG_PCGuidance.h"
 
@@ -82,7 +83,30 @@ JNIEXPORT jboolean JNICALL Java_JCovPCG_PCGuidance_pcgNeedInstrumented (JNIEnv *
  */
 JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgGetPCGStmtID (JNIEnv *env, jclass jc, jint Handle, jint Id)
 {
-    return 0;
+    return pcgGetPCGStmtID(Handle, Id);
+}
+
+/*
+ * Class:     JCovPCG_PCGuidance
+ * Method:    pcgGetAllSAIStmtIDs
+ * Signature: (I)[I
+ */
+JNIEXPORT jintArray JNICALL Java_JCovPCG_PCGuidance_pcgGetAllSAIStmtIDs (JNIEnv *env, jclass jc, jint Handle)
+{
+    unsigned *AllStmtIDs = NULL;
+    unsigned StmtIDNum = pcgGetAllSAIStmtIDs (Handle, &AllStmtIDs);
+    
+    jintArray jarr = (*env)->NewIntArray(env, StmtIDNum);
+    jint *arr = (*env)->GetIntArrayElements(env, jarr, NULL);
+
+    for (unsigned ix = 0; ix < StmtIDNum; ix++)
+    {
+        arr [ix] = AllStmtIDs[ix];
+    }
+    
+    free (AllStmtIDs);
+    (*env)->ReleaseIntArrayElements(env, jarr, arr, 0);
+    return jarr;
 }
 
 

@@ -15,6 +15,8 @@ void pcgBuild (unsigned Handle);
 
 bool pcgNeedInstrumented (unsigned Handle, unsigned Node);
 unsigned pcgGetPCGStmtID (unsigned Handle, unsigned Id);
+unsigned pcgGetAllSAIStmtIDs (unsigned Handle, unsigned** SAIStmtIDs);
+
 
 bool pcgIsDominated (unsigned Handle, unsigned SNode, unsigned ENode);
 bool pcgIsPostDominated (unsigned Handle, unsigned SNode, unsigned ENode);

@@ -153,6 +153,16 @@ unsigned pcgGetPCGStmtID (unsigned Handle, unsigned Id)
 }
 
 
+unsigned pcgGetAllSAIStmtIDs (unsigned Handle, unsigned** SAIStmtIDs)
+{
+    CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
+    assert (Cfg != NULL);
+
+    return Cfg->GetAllSAIStmts(SAIStmtIDs);
+}
+
+
+
 #ifdef __cplusplus
 }
 #endif

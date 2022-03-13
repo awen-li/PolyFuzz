@@ -10,6 +10,7 @@ public class PCGuidance {
 	public native static void pcgBuild (int Handle);
     public native static boolean pcgNeedInstrumented (int Handle, int Bid);
     public native static int pcgGetPCGStmtID (int Handle, int Bid);
+    public native static int[] pcgGetAllSAIStmtIDs(int Handle);
 	public native static boolean pcgIsDominated (int Handle, int Did, int id); /* Did dominate id ? */
 	public native static boolean pcgIsPostDominated (int Handle, int Did, int id); /* Did post-dominate id ? */
 

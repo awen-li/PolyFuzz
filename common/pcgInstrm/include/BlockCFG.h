@@ -211,6 +211,19 @@ public:
 
         return SIR->m_StId;
     }
+
+    inline unsigned IsInstrumented (StmtIR *SIR)
+    {
+        auto It = m_InstrmedSet.find (SIR);
+        if (It == m_InstrmedSet.end ())
+        {
+            return 0;
+        }
+        else
+        {
+            return 1;
+        }
+    }
 };
 
 
@@ -682,7 +695,7 @@ public:
                     continue;
                 }
 
-                CN->m_BrDefStmts.insert (SIR);
+                CN->m_BrDefStmts.push_back (SIR);
 
                 printf ("@@@ Get BrDef: ");
                 SIR->ShowStmt();
@@ -691,6 +704,38 @@ public:
 
         printf ("end ============      CollectBrDefUse     ============ \r\n");
         return;
+    }
+
+
+    inline unsigned GetAllSAIStmts (unsigned** SAIStmtIDs)
+    {
+        vector<unsigned> VecSAIStmt;
+        for (auto It = begin (), End = end (); It != End; It++) 
+        {
+            CFGNode *CN = It->second;
+            for (auto SIt = CN->m_BrDefStmts.begin (), SEnd = CN->m_BrDefStmts.end (); SIt != SEnd; SIt++)
+            {
+                StmtIR *SIR = *SIt;
+                if (CN->IsInstrumented(SIR))
+                {
+                    continue;
+                }
+
+                VecSAIStmt.push_back (SIR->m_StId);
+            }
+        }
+
+        unsigned StmtNum = (unsigned)VecSAIStmt.size ();
+        unsigned *StmtIDs = (unsigned *)malloc (sizeof (unsigned) * StmtNum);
+        assert (StmtIDs != NULL);
+
+        for (unsigned ix = 0; ix < StmtNum; ix++)
+        {
+            StmtIDs [ix] = VecSAIStmt[ix];
+        }
+        
+        *SAIStmtIDs = StmtIDs;
+        return StmtNum;
     }
 };
 

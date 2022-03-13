@@ -65,6 +65,14 @@ JNIEXPORT jint JNICALL Java_JCovPCG_PCGuidance_pcgGetPCGStmtID
 
 /*
  * Class:     JCovPCG_PCGuidance
+ * Method:    pcgGetAllSAIStmtIDs
+ * Signature: (I)[I
+ */
+JNIEXPORT jintArray JNICALL Java_JCovPCG_PCGuidance_pcgGetAllSAIStmtIDs
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     JCovPCG_PCGuidance
  * Method:    pcgIsDominated
  * Signature: (III)Z
  */

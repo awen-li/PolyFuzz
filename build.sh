@@ -36,3 +36,4 @@ cd $BASE_DIR/langspec/python
 # 5 tools
 cd $BASE_DIR/tool/BBstat
 make clean && make
+cp $BASE_DIR/tool/delshm.sh /usr/bin/

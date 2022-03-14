@@ -71,6 +71,7 @@ static inline void DynTraceToQueue (unsigned Key, unsigned ValLength, unsigned l
     }
 
     QN->IsReady = 1;
+    printf ("[DynTraceToQueue][Key:%u]Type:%u, Length:%u, Value:%lu\r\n", Key, OV->Type, OV->Length, OV->Value);
     return;
 }
 

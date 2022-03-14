@@ -315,7 +315,7 @@ public class CovPCG extends BodyTransformer
 			Chain units = body.getUnits();
 			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceInit.makeRef(), IntConstant.v(StartBID)));
 			Block Hb = Heads.get(0);
-			units.insertBefore(dynStmt, Hb.getTail());
+			units.insertBefore(dynStmt, Hb.getHead());
 		}
 		
 		/* insert exit function */

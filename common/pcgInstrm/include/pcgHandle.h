@@ -6,11 +6,13 @@ using namespace std;
 
 struct PCGHandle
 {
+    unsigned m_HandleNo;
     map <DWORD, CFGGraph*> m_ID2BCFG;
     mutex_lock_t m_hLock;
 
     PCGHandle ()
     {
+        m_HandleNo = 1;
         mutex_lock_init(&m_hLock);
     }
 
@@ -40,7 +42,7 @@ struct PCGHandle
         assert (BlockCFG != NULL);
 
         mutex_lock(&m_hLock);
-        ID = m_ID2BCFG.size () + 1;
+        ID = m_HandleNo++;
         m_ID2BCFG [ID] = BlockCFG;
         mutex_unlock(&m_hLock);
 

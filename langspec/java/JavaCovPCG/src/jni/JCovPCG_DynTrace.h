@@ -13,7 +13,39 @@ extern "C" {
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD8
+ * Signature: (IIC)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD8
+  (JNIEnv *, jclass, jint, jint, jchar);
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD16
+ * Signature: (IIS)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD16
+  (JNIEnv *, jclass, jint, jint, jshort);
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD32
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD32
+  (JNIEnv *, jclass, jint, jint, jint);
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD64
+ * Signature: (IIJ)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD64
+  (JNIEnv *, jclass, jint, jint, jlong);
 
 /*
  * Class:     JCovPCG_DynTrace
@@ -21,7 +53,7 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     JCovPCG_DynTrace
@@ -29,7 +61,7 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit
-  (JNIEnv *, jobject, jint);
+  (JNIEnv *, jclass, jint);
 
 #ifdef __cplusplus
 }

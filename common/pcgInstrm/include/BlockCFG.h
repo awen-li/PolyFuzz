@@ -655,7 +655,6 @@ public:
     inline void CollectBrDefUse () 
     {
         T_ValueSet BrValueSet;
-        printf ("begin ============      CollectBrDefUse     ============ \r\n");
 
         /* 1. get ALL branch variables in branch/switch instructions*/
         for (auto It = begin (), End = end (); It != End; It++) 
@@ -702,7 +701,6 @@ public:
             }
         }
 
-        printf ("end ============      CollectBrDefUse     ============ \r\n");
         return;
     }
 

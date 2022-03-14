@@ -12,10 +12,53 @@ extern "C" {
  * Method:    JvTrace
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace (JNIEnv *env, jobject jobj, jint guard)
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace (JNIEnv *env, jclass jc, jint BlockID)
 {
-    unsigned TrcKey = guard;
-    DynTracePCG (TrcKey);
+    DynTracePCG (BlockID);
+    return;
+}
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD8
+ * Signature: (IIC)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD8 (JNIEnv *env, jclass jc, jint BlockID, jint ValKey, jchar Value)
+{
+    DynTraceD8(BlockID, ValKey, Value);
+    return;
+}
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD16
+ * Signature: (IIS)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD16 (JNIEnv *env, jclass jc, jint BlockID, jint ValKey, jshort Value)
+{
+    DynTraceD16(BlockID, ValKey, Value);
+    return;
+}
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD32
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD32 (JNIEnv *env, jclass jc, jint BlockID, jint ValKey, jint Value)
+{
+    DynTraceD32(BlockID, ValKey, Value);
+    return;
+}
+
+/*
+ * Class:     JCovPCG_DynTrace
+ * Method:    JvTraceD64
+ * Signature: (IIJ)V
+ */
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceD64 (JNIEnv *env, jclass jc, jint BlockID, jint ValKey, jlong Value)
+{
+    DynTraceD64(BlockID, ValKey, Value);
     return;
 }
 
@@ -25,7 +68,7 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTrace (JNIEnv *env, jobject jobj,
  * Method:    JvTraceInit
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit (JNIEnv *env, jobject jobj, jint blockNum)
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit (JNIEnv *env, jclass jc, jint blockNum)
 {
     unsigned BBs = blockNum;
     DynTraceInit (BBs);
@@ -37,7 +80,7 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit (JNIEnv *env, jobject j
 * Method:    JvTraceDeInit
 * Signature: (I)V
 */
-JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit (JNIEnv *env, jobject jobj, jint exitCode)
+JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit (JNIEnv *env, jclass jc, jint exitCode)
 {
     /* exit anyway */
     exit (exitCode);

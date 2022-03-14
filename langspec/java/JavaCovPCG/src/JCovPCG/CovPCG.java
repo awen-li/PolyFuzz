@@ -38,8 +38,12 @@ public class CovPCG extends BodyTransformer
 	/* internal counter fields */
 	static SootClass DynTrace = Scene.v().loadClassAndSupport("JCovPCG.DynTrace");
 	
-	static SootMethod JvTrace = DynTrace.getMethodByName("JvTrace");
-	static SootMethod JvTraceInit = DynTrace.getMethodByName("JvTraceInit");
+	static SootMethod JvTrace       = DynTrace.getMethodByName("JvTrace");
+	static SootMethod JvTraceD8     = DynTrace.getMethodByName("JvTraceD8");
+	static SootMethod JvTraceD16    = DynTrace.getMethodByName("JvTraceD16");
+	static SootMethod JvTraceD32    = DynTrace.getMethodByName("JvTraceD32");
+	static SootMethod JvTraceD64    = DynTrace.getMethodByName("JvTraceD64");
+	static SootMethod JvTraceInit   = DynTrace.getMethodByName("JvTraceInit");
 	static SootMethod JvTraceDeInit = DynTrace.getMethodByName("JvTraceDeInit");
 	
 	static int StartBID = 0;
@@ -191,6 +195,44 @@ public class CovPCG extends BodyTransformer
 		return;
 	}
 	
+	private void InstrumentSAI (Chain units, int BlockID, Unit SAISt)
+	{
+		List<ValueBox> DefValues =  SAISt.getDefBoxes();
+		if (DefValues.size() == 0)
+		{
+			return;
+		}
+		
+		Stmt dynStmt = null;
+		Value Def = DefValues.get(0).getValue();
+		
+		Value BID = IntConstant.v(BlockID);
+		Value ValueKey = IntConstant.v(Def.hashCode());		
+		if (Def.getType() instanceof soot.ByteType)
+		{
+			dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceD8.makeRef(), BID, ValueKey, Def));
+		}
+		else if (Def.getType() instanceof soot.ShortType)
+		{
+			dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceD16.makeRef(), BID, ValueKey, Def));
+		}
+		else if (Def.getType() instanceof soot.IntType)
+		{
+			dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceD32.makeRef(), BID, ValueKey, Def));
+		}
+		else if (Def.getType() instanceof soot.LongType)
+		{
+			dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceD64.makeRef(), BID, ValueKey, Def));
+		}
+		else
+		{
+			return;
+		}
+			
+	    units.insertAfter(dynStmt, SAISt);	    
+	    System.out.println("\tInstrument SAI statement -> " + dynStmt.toString());	
+	}
+	
 	
 	/* SA-IR
 	 * Type: i: integer, o: other 
@@ -295,7 +337,7 @@ public class CovPCG extends BodyTransformer
 			int CurBId = Block2ID.get(CurB);
 			
 			/* for each block, translate the statement to SA-IR */
-			System.out.println("### Block -> " + Block2ID.get(CurB).toString());
+			System.out.println("### Block -> " + CurBId);
 			for (Unit CurUnit : CurB)
 			{
 			    System.out.println("\t statement ->  " + CurUnit.toString());
@@ -328,15 +370,22 @@ public class CovPCG extends BodyTransformer
 			int StmtID = PCGuidance.pcgGetPCGStmtID(CFGHd, BID);
 			if (StmtID != 0)
 			{
+				if (ID2StmtMap.containsKey(StmtID) == false)
+				{
+					System.out.println("\t[PCG]Not contains key -> " + StmtID);
+					continue;
+				}
+				
 				InstrmedStmt = ID2StmtMap.get(StmtID);
-				assert (InstrmedStmt != null);
+				InstrumentSAI (units, BID, InstrmedStmt);
 			}
-			
-			/* instrument before the tail statement */
-			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
-			units.insertBefore(dynStmt, InstrmedStmt);
-			
-			System.out.println("\tInstrument before statement -> " + InstrmedStmt.toString());
+			else
+			{
+				/* instrument before the tail statement */
+				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
+				units.insertBefore(dynStmt, InstrmedStmt);
+				System.out.println("\tInstrument before statement -> " + InstrmedStmt.toString());
+			}			
 		}
 		
 		/* start to instrument with SAI */
@@ -344,14 +393,14 @@ public class CovPCG extends BodyTransformer
 		for (int ix = 0, Size= AllSAIStmtIDs.length; ix < Size; ix++)
 		{
 		    int StmtID = AllSAIStmtIDs [ix];
+		    if (ID2StmtMap.containsKey(StmtID) == false)
+		    {
+		    	System.out.println("\t[SAI]Not contains key -> " + StmtID);
+		    	continue;
+		    }
+
 		    Unit InstrmedStmt = ID2StmtMap.get(StmtID);
-		    assert (InstrmedStmt != null);
-		    
-		    /* instrument before the tail statement */
-			Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(StmtID)));
-			units.insertAfter(dynStmt, InstrmedStmt);
-		    
-		    System.out.println("\tInstrument SAI statement -> " + InstrmedStmt.toString());
+		    InstrumentSAI (units, 0, InstrmedStmt);
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);

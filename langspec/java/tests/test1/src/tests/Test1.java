@@ -11,7 +11,14 @@ public class Test1 {
 			case 1:
 			case 2:
 			{
-				return (Val1 + Val2);
+				switch (Val1)
+				{
+					case 100: return (Val1 + Val2 + 5);
+					case 1000: return (Val1 + Val2 + 30);
+					case 10000: return (Val1 + Val2 + 200);
+					case 100000: return (Val1 + Val2 + 6000);
+					default: return (Val1 + Val2); 
+				} 		
 			}
 			case 3:
 			case 6:

@@ -143,7 +143,7 @@ public class CovPCG extends BodyTransformer
 			if (IsExcepProc (stmt))
 			{
 				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(100)));
-		    	units.insertBefore(dynStmt, stmt);
+		    	units.insertAfter(dynStmt, stmt);
 		    	System.out.println("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
 			}
 			else if (IsExitStmt (stmt, isMainMethod))

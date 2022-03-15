@@ -21,5 +21,5 @@ export AFL_DEBUG_CHILD=1
 #enable crash exit code 
 export AFL_CRASH_EXITCODE=100
 
-afl-fuzz -i in/ -o out -m none -d -- java -jar test2.jar @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- java -jar test2.jar @@
 

@@ -1,6 +1,9 @@
 
 package JCovPCG;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,18 +21,26 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Unit;
+import soot.UnitBox;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.ConditionExpr;
+import soot.jimple.Constant;
 import soot.jimple.EqExpr;
+import soot.jimple.GeExpr;
+import soot.jimple.GtExpr;
 import soot.jimple.IfStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
+import soot.jimple.LeExpr;
+import soot.jimple.LookupSwitchStmt;
+import soot.jimple.LtExpr;
 import soot.jimple.NeExpr;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.SwitchStmt;
+import soot.jimple.TableSwitchStmt;
 import soot.util.Chain;
 
 
@@ -48,6 +59,7 @@ public class CovPCG extends BodyTransformer
 	
 	static int StartBID = 0;
 	static Map<String, Integer> BlackList;
+	static String BranchVarFile = "branch_vars.bv";
 	
 	CovPCG (int StartBID)
 	{
@@ -181,17 +193,92 @@ public class CovPCG extends BodyTransformer
 		return Name;
 	}
 	
-	private void GenBranchVar (IfStmt CurSt)
+	private int GetCeCode (ConditionExpr CE)
 	{
-		ConditionExpr expr = (ConditionExpr) CurSt.getCondition();
-		boolean isTargetIf = false;
-		if (((expr instanceof EqExpr) || (expr instanceof NeExpr))) 
+		if (CE instanceof EqExpr) return 32;
+	    if (CE instanceof NeExpr) return 33;
+		if (CE instanceof GtExpr) return 34;
+		if (CE instanceof LtExpr) return 36;
+		if (CE instanceof GeExpr) return 35;
+		if (CE instanceof LeExpr) return 37;
+		return 0;
+	}
+	
+	/* Key:CMP:Predict:Value ------   1574118200:CMP:36:3 */
+	private boolean GenIfStmtBv (IfStmt CurSt) throws IOException
+	{
+		ConditionExpr CE = (ConditionExpr) CurSt.getCondition();
+		
+		Value Op1 = CE.getOp1();
+		Value Op2 = CE.getOp2();
+		if (!(Op1.getType() instanceof soot.IntegerType) ||
+			!(Op2.getType() instanceof soot.IntegerType))
 		{
-			if (expr.getOp1() instanceof Local && expr.getOp2() instanceof Local) {
-				isTargetIf = true;
-			}
+			return false;
 		}
 		
+		int Key;
+		String Value;
+		if (Op1 instanceof Constant) 
+		{
+			Key   = Op2.hashCode();
+			Value = Op1.toString();	
+		}
+		else if (Op2 instanceof Constant)
+		{
+			Key   = Op1.hashCode();
+			Value = Op2.toString();
+		}
+		else
+		{
+			return false;
+		}
+		
+		int Predict = GetCeCode (CE);
+		if (Predict == 0) return false;
+				
+		BufferedWriter out = new BufferedWriter(new FileWriter(BranchVarFile, true));
+        out.write(Integer.toString(Key) + ":CMP:" + Integer.toString(Predict) + ":" + Value + "\n");
+        out.close();
+		
+		return true;
+	}
+	
+	private void GenSwitchStmtBv (Stmt CurSt) throws IOException
+	{
+		if (CurSt instanceof TableSwitchStmt)
+		{
+			System.out.println("@@@ TableSwitchStmt\r\n");
+			TableSwitchStmt Tss = (TableSwitchStmt) CurSt;
+			
+			int Key = Tss.getKey().hashCode();		
+			int LowIndex  = Tss.getLowIndex();
+			int HighIndex = Tss.getHighIndex();
+			
+			BufferedWriter out = new BufferedWriter(new FileWriter(BranchVarFile, true));
+			while (LowIndex <= HighIndex)
+			{
+		        out.write(Integer.toString(Key) + ":SWITCH:" + Integer.toString(255) + ":" + Integer.toString(LowIndex) + "\n");
+		        LowIndex++;	
+			}
+			out.close();
+		}
+		else if (CurSt instanceof LookupSwitchStmt)
+		{
+			System.out.println("@@@ LookupSwitchStmt\r\n");
+			LookupSwitchStmt Lss = (LookupSwitchStmt)CurSt;
+			
+			int Key = Lss.getKey().hashCode();
+			List<IntConstant> LIC = Lss.getLookupValues();
+			BufferedWriter out = new BufferedWriter(new FileWriter(BranchVarFile, true));
+			for (IntConstant IC : LIC)
+			{
+				out.write(Integer.toString(Key) + ":SWITCH:" + Integer.toString(255) + ":" + IC.toString() + "\n");
+			}
+			out.close();
+		}
+		
+		 
 		return;
 	}
 	
@@ -239,17 +326,18 @@ public class CovPCG extends BodyTransformer
 	 *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
 	 *  other statement: 
 	 * */
-	private String GetSaIR (Map<Stmt, Integer> Stmt2IDMap, Map<Integer, Stmt> ID2StmpMap, Unit CurUnit)
+	private String GetSaIR (Map<Stmt, Integer> Stmt2IDMap, Map<Integer, Stmt> ID2StmpMap, Unit CurUnit) throws IOException
 	{
 		String SaIR = "";
 		Stmt CurSt = (Stmt)CurUnit;
 		
-		if(CurSt instanceof IfStmt)
+		if((CurSt instanceof IfStmt) && GenIfStmtBv ((IfStmt) CurSt) == true)
 		{
 			SaIR += "CMP:";
 		}
 		else if(CurSt instanceof SwitchStmt)
 		{
+			GenSwitchStmtBv (CurSt);	
 			SaIR += "SWITCH:";
 		}
         else
@@ -341,8 +429,13 @@ public class CovPCG extends BodyTransformer
 			for (Unit CurUnit : CurB)
 			{
 			    System.out.println("\t statement ->  " + CurUnit.toString());
-				String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
-				PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
+				try {
+					String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
+					PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 			List<Block> Succs = CurB.getSuccs();

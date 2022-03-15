@@ -151,211 +151,34 @@ static inline void TracingDefUse (const char* VarName, PyObject *VarAddr, ObjVal
     return;
 }
 
-static inline void InjectOpCode (PyFrameObject *frame, PRT_function* Rtf)
+static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
 {
-    PyCodeObject *f_code  = frame->f_code;
-    
-    unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
-    unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
+    if (what != PyTrace_OPCODE)
+    {
+        return;
+    }
+    frame->f_trace_opcodes = true;
 
+    PyCodeObject *f_code  = frame->f_code;    
+    unsigned opcode = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti];
+    if (opcode != COMPARE_OP || frame->f_stacktop - frame->f_valuestack < 2)
+    {
+        return;
+    }
+    
+    unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
     if (!HAS_ARG(opcode))
     {
         return;
     }
 
-    PY_PRINT("\t > OPCODE[%d-%d]: %s \r\n", opcode, oparg, Op2Name(opcode).c_str());
-
-    set <string> *BVs = Rtf->m_BrVals;
-    PyObject *co_names = f_code->co_names;
-    PyObject *co_varnames = f_code->co_varnames;
-
-    PyObject *UseName = NULL;
-    PyObject *UseVal  = NULL;
-
     ObjValue OV = {0};
+    PyObject* left = frame->f_stacktop[-2];
+    PyObject* right = frame->f_stacktop[-1];
+    printf ("\t > left = %p, right = %p \r\n", left, right);
     
-    switch (opcode)
-    {
-        case COMPARE_OP:
-        {       
-            assert (frame->f_stacktop - frame->f_valuestack >= 2);
-    
-            PyObject* left = frame->f_stacktop[-2];
-            PyObject* right = frame->f_stacktop[-1];
-
-            PY_PRINT ("\t > left = %p, right = %p \r\n", left, right);
-            GetValue(left, &OV);
-            GetValue(right, &OV);
-            break;
-        }
-        case STORE_FAST:
-        {
-            /* STORE_FAST namei -> pops the stack and stores into co_names[namei] */
-            assert (frame->f_stacktop - frame->f_valuestack >= 1);
-
-            UseName = PyTuple_GET_ITEM (co_varnames, oparg);
-            const char* StrUseName = PyUnicode_AsUTF8(UseName);
-            if (BVs->find (StrUseName) != BVs->end ())
-            {
-                UseVal  = frame->f_stacktop[-1];
-                PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);           
-                GetValue(UseVal, &OV);
-
-                TracingDefUse (StrUseName, UseVal, &OV, Rtf->m_CurBB);                
-            }
-            break;
-        }
-        case STORE_NAME:
-        {
-            /* STORE_NAME namei -> pops the stack and stores into co_names[namei] */
-            assert (frame->f_stacktop - frame->f_valuestack >= 1);
-
-            UseName = PyTuple_GET_ITEM (co_names, oparg);
-            const char* StrUseName = PyUnicode_AsUTF8(UseName);
-            if (BVs->find (StrUseName) != BVs->end ())
-            {
-                UseVal  = frame->f_stacktop[-1];
-                PY_PRINT ("\t > Name = %s, Ov = %p \r\n", StrUseName, UseVal);
-                GetValue(UseVal, &OV);
-
-                TracingDefUse (StrUseName, UseVal, &OV, Rtf->m_CurBB); 
-            }
-            break;
-        }
-        case STORE_GLOBAL:
-        {
-            /* STORE_GLOBAL namei -> pops the stack and stores into co_names[namei] */
-            assert (frame->f_stacktop - frame->f_valuestack >= 1);
-
-            UseName = PyTuple_GET_ITEM (co_names, oparg);
-            const char* StrUseName = PyUnicode_AsUTF8(UseName);
-            if (BVs->find (StrUseName) != BVs->end ())
-            {
-                UseVal  = frame->f_stacktop[-1];
-                GetValue(UseVal, &OV);
-
-                TracingDefUse (StrUseName, UseVal, &OV, Rtf->m_CurBB); 
-            }
-            break;
-        }
-        case STORE_DEREF:
-        {
-            cout<<"Unsupported Opcode!!!!\r\n";
-            assert (0);
-            break;
-        }
-        case LOAD_FAST:
-        {
-            /* LOAD_FAST valnum -> push co_varnames[valnum] (frame->f_localsplus[oparg]) onto stack */
-            UseName = PyTuple_GET_ITEM (co_varnames, oparg);
-            UseVal  = frame->f_localsplus[oparg];
-            PY_PRINT ("\t > Name = %s, Ov = %p \r\n", PyUnicode_AsUTF8(UseName), UseVal);
-            GetValue(UseVal, &OV);
-            break;
-        }
-        case LOAD_NAME:
-        {
-            /* LOAD_NAME namei -> push co_names[namei] onto stack */
-            UseName = PyTuple_GET_ITEM (co_names, oparg);
-            PY_PRINT ("\t > Name = %s \r\n", PyUnicode_AsUTF8(UseName));
-            if (PyDict_CheckExact(frame->f_locals)) 
-            {
-                UseVal  = PyDict_GetItemWithError(frame->f_locals, UseName);
-            }
-            else
-            {
-                UseVal = PyObject_GetItem(frame->f_locals, UseName);
-            }
-
-            if (UseVal != NULL) 
-            {
-                GetValue(UseVal, &OV);
-            }
-            
-            break;
-        }
-        case LOAD_GLOBAL:
-        {
-            /* LOAD_GLOBAL namei -> push co_names[namei] onto stack */
-            //UseName = PyTuple_GET_ITEM (co_names, oparg);
-            /* pass the global variables */            
-            break;
-        }
-        case LOAD_DEREF:
-        {
-            //cout<<"Unsupported Opcode!!!!\r\n";
-            //assert (0);
-            break;
-        }
-        case CALL_FUNCTION:
-        {
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-
-    return;
-}
-
-
-static inline void TraceStatm(PyFrameObject *frame, int what, PRT_function* Rtf)
-{
-    // enable PyTrace_OPCODE
-    frame->f_trace_opcodes = true;     
-    //ShowVariables (co_varnames);
-
-    switch(what)
-    {
-        case PyTrace_LINE:
-        {
-            PY_PRINT("PyTrace_LINE:%d\n", what);
-            break;
-        }
-        case PyTrace_CALL:
-        {
-            PY_PRINT("PyTrace_CALL:%d, frame->f_localsplus = %p\n", what, frame->f_localsplus);
-            break;
-        }
-        case PyTrace_EXCEPTION:
-        {
-            PY_PRINT("PyTrace_EXCEPTION:%d\n", what);
-            break;
-        }
-        case PyTrace_RETURN:
-        {
-            PY_PRINT("PyTrace_RETURN:%d\n", what);
-            break;
-        }
-        case PyTrace_OPCODE:
-        {
-            PY_PRINT("PyTrace_OPCODE:%d\n", what);
-            InjectOpCode (frame, Rtf);
-            break;
-        }
-        case PyTrace_C_CALL:
-        {
-            PY_PRINT("PyTrace_C_CALL:%d\n", what);
-            break;
-        }
-        case PyTrace_C_EXCEPTION:
-        {
-            PY_PRINT("PyTrace_C_EXCEPTION:%d\n", what);
-            break;
-        }
-        case PyTrace_C_RETURN:
-        {
-            PY_PRINT("PyTrace_C_RETURN:%d\n", what);
-            break;
-        }
-        default:
-        {
-            PY_PRINT("default: %d\n", what);
-            break;
-        }
-    }
+    GetValue(left, &OV);
+    GetValue(right, &OV);
 
     return;
 }
@@ -409,7 +232,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
               FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVals->size(), Rtf);
 
 #ifdef _PROB_DATA_
-    TraceStatm (frame, what, Rtf);
+    TraceSAI (frame, what, Rtf);
 #endif
 
     InjectCov (frame, Rtf);

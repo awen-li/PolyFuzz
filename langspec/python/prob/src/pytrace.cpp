@@ -40,11 +40,7 @@ static inline void GetValue (PyObject *Var, ObjValue *OV)
 {
     if (PyLong_Check (Var))
     {
-        OV->Type   = VT_LONG;
-        OV->Attr   = 0;
-        OV->Length = sizeof(OV->Value);
-        OV->Value  = PyLong_AsLong(Var);
-        PY_PRINT ("\t > [Size:%u] [T: LONG, A:%u L: %u, V:%lx] \r\n", OV->Length, OV->Attr, OV->Length, OV->Value);
+        
     }
     else if (PyUnicode_Check (Var))
     {
@@ -151,12 +147,8 @@ static inline void TracingDefUse (const char* VarName, PyObject *VarAddr, ObjVal
     return;
 }
 
-static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
+static inline void TraceOpCode(PyFrameObject *frame, int what, PRT_function* Rtf)
 {
-    if (what != PyTrace_OPCODE)
-    {
-        return;
-    }
     frame->f_trace_opcodes = true;
 
     PyCodeObject *f_code  = frame->f_code;    
@@ -172,13 +164,49 @@ static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
         return;
     }
 
+    PyObject* LOp = frame->f_stacktop[-2];
+    PyObject* ROp = frame->f_stacktop[-1];
+    if (!PyLong_Check (LOp) || !PyLong_Check (ROp))
+    {
+        return;
+    }
+
     ObjValue OV = {0};
-    PyObject* left = frame->f_stacktop[-2];
-    PyObject* right = frame->f_stacktop[-1];
-    printf ("\t > left = %p, right = %p \r\n", left, right);
-    
-    GetValue(left, &OV);
-    GetValue(right, &OV);
+    OV.Type   = VT_LONG;
+    OV.Attr   = 0;
+    OV.Length = sizeof(OV.Value);
+    OV.Value  = PyLong_AsLong(LOp);
+    PY_PRINT ("\t[TraceOpCode] > [Size:%u] [T: LONG, A:%u L: %u, V:%lx] \r\n", OV.Length, OV.Attr, OV.Length, OV.Value);
+
+    return;
+}
+
+
+static inline void TraceLine(PyFrameObject *frame, int what, PRT_function* Rtf)
+{
+    frame->f_trace_lines = true;
+    printf ("\t[TraceLine][File:%u]Line:%u \r\n", Rtf->m_Idx, frame->f_lineno);
+}
+
+static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
+{
+    switch (what)
+    {
+        case PyTrace_OPCODE:
+        {
+            TraceOpCode (frame, what, Rtf);
+            break;
+        }
+        case PyTrace_LINE:
+        {
+            TraceLine (frame, what, Rtf);
+            break;
+        }
+        default:
+        {
+            return;
+        }
+    }
 
     return;
 }

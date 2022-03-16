@@ -41,6 +41,9 @@ class AstPySum(NodeVisitor):
         self.CurLine = 0
         self.BranchNum = 0
 
+        self.BrOps = None
+        self.BrCmptors = None
+
     def InsertBB (self, BB):
         if self.CurFunc == None:
             return
@@ -77,9 +80,49 @@ class AstPySum(NodeVisitor):
             #FullName = ClfName + "." + Stmt.name
             return FuncDef (ClfName, Stmt.name, Fid, Stmt.lineno)
 
+    def GetOpCode (self, Op):
+        if isinstance (Op, Eq):
+            return 32
+        elif isinstance (Op, NotEq):
+            return 33
+        elif isinstance (Op, Lt):
+            return 36
+        elif isinstance (Op, LtE):
+            return 37
+        elif isinstance (Op, Gt):
+            return 34
+        elif isinstance (Op, GtE):
+            return 35
+        elif isinstance (Op, Is):
+            return 32
+        elif isinstance (Op, IsNot):
+            return 33
+        elif isinstance (Op, In):
+            return 32
+        elif isinstance (Op, NotIn):
+            return 33
+        else:
+            return 0
+
+    # Key:CMP:PREDICT:Value
+    def GenBrVars (self, Var):
+        if self.BrOps == None or self.BrCmptors == None:
+            return
+
+        Predict = self.GetOpCode (self.BrOps[0]);
+        if Predict == 0:
+            return
+        
+        Key = id(Var)
+        f = open("branch_vars.bv", "w")
+        f.write("111")
+        f.close()
+        
+
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None: 
             self.CurFunc.AddBrVal (node.id)
+            self.GenBrVars (node.id)
             print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id)
         return node.id
 
@@ -152,17 +195,35 @@ class AstPySum(NodeVisitor):
         for s in node.finalbody:
             self.visit(s)
 
+    def HasConstInt (self, Cmptors):
+        for Cmp in Cmptors:
+            if not isinstance (Cmp, Constant):
+                continue
+            if not isinstance (Cmp.value, int):
+                continue
+            return True
+        return False
+
+    def ParseBranch (self, Test):
+        if self.HasConstInt (Test.comparators) == False:
+            return
+
+        self.IfTest = True
+        
+        self.BrOps  = Test.ops
+        self.BrCmptors = Test.comparators  
+        self.BranchNum += 1
+        self.visit(Test)
+        
+        self.IfTest = False
+
     def visit_if(self, node):
-        #print (ast.dump (node))
+        print (ast.dump (node))
         print ("#line-no if: %d" %node.lineno)
         self.InsertBB (node.lineno)
         
         # check test
-        Test = node.test
-        self.IfTest = True
-        self.BranchNum += 1
-        self.visit(Test)
-        self.IfTest = False
+        self.ParseBranch (node.test);
 
         # continue to body
         for s in node.body:

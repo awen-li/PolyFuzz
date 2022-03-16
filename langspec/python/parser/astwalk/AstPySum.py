@@ -12,21 +12,26 @@ class FuncDef ():
         self.Sline = 0
         self.Eline = 0
         self.Name  = FName
-        self.BrVal = []
+        self.BrVal = {}
 
         self.BBNo  = []
         if SNo != None:
             self.BBNo.append (str(SNo))
 
-    def AddBrVal (self, Val):
+    def AddBrVar (self, Val):
         if Val == 'self':
             return
-        self.BrVal.append (Val)
+        self.BrVal[Val] = id (Val) & 0xFFFFFFFF
+
+    def GetBrVar (self):
+        BrVars = ""
+        for Key, Value in self.BrVal.items ():
+            BrVars += str (Key) + ":" + str (Value) + " "
+        return BrVars
 
     def AddBB (self, BBno):
         if len (self.BBNo) > 0 and int (self.BBNo[-1]) == BBno:
-            return
-        
+            return        
         self.BBNo.append (str(BBno))
         
     def View (self):
@@ -124,7 +129,7 @@ class AstPySum(NodeVisitor):
 
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None: 
-            self.CurFunc.AddBrVal (node.id)
+            self.CurFunc.AddBrVar (node.id)
             self.GenBrVars (node.id)
             print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id + ", addr: " + str (id(node.id) & 0xFFFFFFFF))
         return node.id

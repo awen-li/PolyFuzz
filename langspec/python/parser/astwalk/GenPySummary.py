@@ -72,14 +72,14 @@ def GenPySummary (PyDir, ExpList=None):
                 FileId += 1
 
                 for FuncName, Def in FuncDef.items ():
-                    BrVals = list(set (Def.BrVal))
+                    BrVals = Def.GetBrVar ()
                     
                     FuncNode = _AddChildNode (doc, FileNode, "function")
                     FuncNode.setAttribute ("class", Def.Cls)
                     FuncNode.setAttribute ("name",  Def.Name)
                     FuncNode.setAttribute ("sline", str(Def.Sline))
                     FuncNode.setAttribute ("eline", str(Def.Eline))
-                    FuncNode.setAttribute ("brval", " ".join(BrVals))
+                    FuncNode.setAttribute ("brval", BrVals)
                     FuncNode.setAttribute ("bbs", " ".join(Def.BBNo))
 
                     BranchNum += len (Def.BBNo) + 1

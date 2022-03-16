@@ -5,6 +5,12 @@ import re
 import ast
 from ast import *
 
+class BrVar ():
+    def __init__(self, Name, Key, LineNo):
+        self.Name = Name
+        self.Key  = Key
+        self.LineNo = LineNo
+
 class FuncDef ():
     def __init__(self, Cls, FName, Fid, SNo):
         self.Cls   = Cls
@@ -18,15 +24,15 @@ class FuncDef ():
         if SNo != None:
             self.BBNo.append (str(SNo))
 
-    def AddBrVar (self, Val):
+    def AddBrVar (self, Val, LineNo):
         if Val == 'self':
             return
-        self.BrVal[Val] = id (Val) & 0xFFFFFFFF
+        self.BrVal[Val] = BrVar (Val, id (Val) & 0xFFFFFFFF, LineNo)
 
     def GetBrVar (self):
         BrVars = ""
-        for Key, Value in self.BrVal.items ():
-            BrVars += str (Key) + ":" + str (Value) + " "
+        for Name, Bv in self.BrVal.items ():
+            BrVars += str (Bv.LineNo) + ":" + str (Bv.Name) + ":" + str (Bv.Key) + " "
         return BrVars
 
     def AddBB (self, BBno):
@@ -47,6 +53,7 @@ class AstPySum(NodeVisitor):
         self.BranchNum = 0
 
         self.BrOps = None
+        self.LineNo = None
         self.BrCmptors = None
 
     def InsertBB (self, BB):
@@ -129,9 +136,9 @@ class AstPySum(NodeVisitor):
 
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None: 
-            self.CurFunc.AddBrVar (node.id)
+            self.CurFunc.AddBrVar (node.id, self.LineNo)
             self.GenBrVars (node.id)
-            print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id + ", addr: " + str (id(node.id) & 0xFFFFFFFF))
+            print ("====>[%s] Add BrVar: %s-%s-%u "  %(self.CurFunc.Name, node.id, str (id(node.id) & 0xFFFFFFFF), self.LineNo))
         return node.id
 
     
@@ -212,14 +219,15 @@ class AstPySum(NodeVisitor):
             return True
         return False
 
-    def ParseBranch (self, Test):
+    def ParseBranch (self, Test, LineNo):
         if self.HasConstInt (Test.comparators) == False:
             return
 
         self.IfTest = True
         
         self.BrOps  = Test.ops
-        self.BrCmptors = Test.comparators  
+        self.BrCmptors = Test.comparators
+        self.LineNo = LineNo
         self.BranchNum += 1
         self.visit(Test)
         
@@ -231,7 +239,7 @@ class AstPySum(NodeVisitor):
         self.InsertBB (node.lineno)
         
         # check test
-        self.ParseBranch (node.test);
+        self.ParseBranch (node.test, node.lineno);
 
         # continue to body
         for s in node.body:

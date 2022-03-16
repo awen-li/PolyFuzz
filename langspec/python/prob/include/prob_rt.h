@@ -17,20 +17,20 @@ struct PRT_function
     int m_CovSize;
     
     vector<int> *m_BBs;
-    unordered_map<string, string> *m_BrVals;
+    unordered_map<unsigned, BVar*> *m_BrVars;
     
     int *m_ScancovGen;
 
     int m_PreBB;
     int m_CurBB;
 
-    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, unordered_map<string, string> *BrVals)
+    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, unordered_map<unsigned, BVar*> *BrVals)
     {
         assert (BBs != NULL);
         
         m_Idx = Idx;
         m_BBs = BBs;
-        m_BrVals = BrVals;
+        m_BrVars = BrVals;
         
         m_SBB = BBs->front ();
         m_EBB = BBs->back ();
@@ -54,6 +54,19 @@ struct PRT_function
         {
             delete m_ScancovGen;
             m_ScancovGen = NULL;
+        }
+    }
+
+    BVar* RetrivBrVarKey (unsigned LineNo)
+    {
+        auto It = m_BrVars->find (LineNo);
+        if (It == m_BrVars->end ())
+        {
+            return NULL;
+        }
+        else
+        {
+            return It->second;
         }
     }
 

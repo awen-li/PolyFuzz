@@ -13,6 +13,20 @@ namespace pyprob {
 
 using namespace std;
 
+struct BVar
+{
+    unsigned m_LineNo;
+    unsigned m_Key;
+    string m_Name;
+
+    BVar (unsigned LineNo, string BrVarName, unsigned BrVarKey)
+    {
+        m_LineNo = LineNo;
+        m_Key    = BrVarKey;
+        m_Name   = BrVarName;
+    }
+};
+
 struct BV_function
 {
     unsigned m_Idx;
@@ -21,7 +35,7 @@ struct BV_function
     unsigned m_ELine;
     
     string m_FuncName;
-    unordered_map<string, string> m_BrVals;
+    unordered_map<unsigned, BVar*> m_BrVals;
     vector<int> m_BBs;
 
     BV_function (string FuncName, unsigned Idx, unsigned SLine, unsigned ELine)
@@ -36,9 +50,17 @@ struct BV_function
         m_BBs.clear ();
     }
 
-    inline void InsertBv (string BrVarName, string BrValKey)
+    ~BV_function ()
     {
-        m_BrVals[BrVarName] = BrValKey;
+        for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
+        {
+            delete It->second;
+        }
+    }
+
+    inline void InsertBv (unsigned LineNo, string BrVarName, unsigned BrVarKey)
+    {
+        m_BrVals[LineNo] = new BVar (LineNo, BrVarName, BrVarKey);
         return;
     }
 
@@ -53,7 +75,8 @@ struct BV_function
         printf("@@@ %s -> #BrVars: ", m_FuncName.c_str());
         for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
         {
-            printf ("%s:%s ", (It->first).c_str(), (It->second).c_str());
+            BVar *BV = It->second;
+            printf ("%u:%s:%u", It->first, BV->m_Name.c_str(), BV->m_Key);
         }
 
         printf(", #BBs: ");

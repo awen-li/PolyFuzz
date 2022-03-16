@@ -14,17 +14,23 @@ void BV_set::DecodeBrVars (BV_function *BVfunc, char *BrVars)
     char *Val = strtok (BrVars, " ");
     while(Val != NULL) 
     {
-        char *Spl = strchr (Val, ':');
-        if (Spl == NULL)
+        char *Name = strchr (Val, ':');
+        if (Name == NULL)
         {
             break;
         }
-        *Spl = 0;
+        *Name = 0;Name++;
+
+        string LineNo (Val);
+
+        char *Key = strchr (Name, ':');
+        assert (Key != NULL);
+        *Key = 0; Key++;   
+        string VarName (Name);
         
-        string VarName (Val);
-        string VarKey (Spl+1);
+        string VarKey (Key);
         
-        BVfunc->InsertBv(VarName, VarKey);
+        BVfunc->InsertBv((unsigned)stol(LineNo), VarName, (unsigned)stol(VarKey));
         
         Val = strtok(NULL, " ");
     }

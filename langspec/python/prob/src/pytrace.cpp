@@ -5,6 +5,17 @@
 #include <cstddef>
 #include <set>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+PyObject *PyEval_GetLocals(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 namespace pyprob {
 
@@ -70,12 +81,81 @@ static inline void TraceOpCode(PyFrameObject *frame, int what, PRT_function* Rtf
     return;
 }
 
+static inline const char* PyTypeInfo (PyObject *PyObj)
+{
+    PyTypeObject* type = PyObj->ob_type;
+    return type->tp_name;
+}
+
+
+static inline PyObject* GetVarObj (PyFrameObject *frame, string VarName)
+{
+    PyObject *co_names    = frame->f_code->co_names;
+    PyObject *co_varnames = frame->f_code->co_varnames;
+
+    int VarNum = PyTuple_GET_SIZE(co_varnames);
+    if (VarNum != 0)
+    {
+        for (int i = 0; i < VarNum; i++)
+        {
+            PyObject *ObjVname = PyTuple_GET_ITEM(co_varnames, i);
+            if (PyUnicode_AsUTF8(ObjVname) == VarName)
+            {
+                return ObjVname;
+            }
+        }
+    }
+
+    VarNum = PyTuple_GET_SIZE(co_names);
+    if (VarNum != 0)
+    {
+        for (int i = 0; i < VarNum; i++)
+        {
+            PyObject *ObjVname = PyTuple_GET_ITEM(co_names, i);
+            if (PyUnicode_AsUTF8(ObjVname) == VarName)
+            {
+                return ObjVname;
+            }
+        }
+    }
+
+    return NULL;
+}
 
 static inline void TraceLine(PyFrameObject *frame, int what, PRT_function* Rtf)
 {
     frame->f_trace_lines = true;
-    printf ("\t[TraceLine][File:%u]Line:%u \r\n", Rtf->m_Idx, frame->f_lineno);
+
+    BVar *BV = Rtf->RetrivBrVarKey(frame->f_lineno);
+    if (BV == NULL)
+    {
+        return;
+    }
+
+    PyObject *f_locals = PyEval_GetLocals ();
+    if (!PyDict_Check (f_locals))
+    {
+        return;
+    }
+    
+    PyObject *VarName = GetVarObj (frame, BV->m_Name);
+    if (VarName == NULL)
+    {
+        return;
+    }
+
+    PyObject *ObjBrVar = PyDict_GetItemWithError(f_locals, VarName);
+    if (ObjBrVar == NULL)
+    {
+        return;
+    }
+
+    unsigned Value = PyLong_AsLong(ObjBrVar);
+    DynTraceD32 (0, BV->m_Key, Value);
+    PY_PRINT ("\t@@@ [TraceLine][File:%u]Line:%u, Var:%s:%u:%u\r\n", Rtf->m_Idx, frame->f_lineno, BV->m_Name.c_str(), BV->m_Key, Value);
+    return;
 }
+
 
 static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
 {
@@ -146,7 +226,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     /* init runtime for current function */
     PRT_function* Rtf = __Prt.GetRtf (FIdx, frame->f_lineno);
     PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVals->size(), Rtf);
+              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVars->size(), Rtf);
 
 #ifdef _PROB_DATA_
     TraceSAI (frame, what, Rtf);

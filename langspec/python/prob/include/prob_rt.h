@@ -17,14 +17,14 @@ struct PRT_function
     int m_CovSize;
     
     vector<int> *m_BBs;
-    set<string> *m_BrVals;
+    unordered_map<string, string> *m_BrVals;
     
     int *m_ScancovGen;
 
     int m_PreBB;
     int m_CurBB;
 
-    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, set<string> *BrVals)
+    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, unordered_map<string, string> *BrVals)
     {
         assert (BBs != NULL);
         

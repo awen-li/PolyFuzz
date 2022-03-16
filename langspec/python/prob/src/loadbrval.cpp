@@ -8,6 +8,31 @@ namespace pyprob {
 
 using namespace std;
 
+/* brval="addvar:4137755248 " */
+void BV_set::DecodeBrVars (BV_function *BVfunc, char *BrVars)
+{
+    char *Val = strtok (BrVars, " ");
+    while(Val != NULL) 
+    {
+        char *Spl = strchr (Val, ':');
+        if (Spl == NULL)
+        {
+            break;
+        }
+        *Spl = 0;
+        
+        string VarName (Val);
+        string VarKey (Spl+1);
+        
+        BVfunc->InsertBv(VarName, VarKey);
+        
+        Val = strtok(NULL, " ");
+    }
+
+    return;
+}
+
+
 /*
 <branch_variables>
   <file name="DemoAdd.py">
@@ -78,12 +103,7 @@ void BV_set::LoadPySummary(string PySummary)
             assert (BVfunc != NULL);
 
             /* branch variables */
-            const char *Val = strtok ((char *)ValList, " ");
-            while(Val != NULL) 
-            {
-                BVfunc->InsertBv(Val);   
-                Val = strtok(NULL, " ");
-            }
+            DecodeBrVars (BVfunc, (char *)ValList);
 
             /* bbs */
             const char *Bb = strtok ((char *)BBList, " ");
@@ -93,7 +113,7 @@ void BV_set::LoadPySummary(string PySummary)
                 Bb = strtok(NULL, " ");
             }
             
-            //BVfunc->View();
+            BVfunc->View();
 
             /* next function node */
             Function = mxmlFindElement(Function, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);

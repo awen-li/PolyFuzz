@@ -21,7 +21,7 @@ struct BV_function
     unsigned m_ELine;
     
     string m_FuncName;
-    set<string> m_BrVals;
+    unordered_map<string, string> m_BrVals;
     vector<int> m_BBs;
 
     BV_function (string FuncName, unsigned Idx, unsigned SLine, unsigned ELine)
@@ -36,9 +36,9 @@ struct BV_function
         m_BBs.clear ();
     }
 
-    inline void InsertBv (string BrVal)
+    inline void InsertBv (string BrVarName, string BrValKey)
     {
-        m_BrVals.insert (BrVal);
+        m_BrVals[BrVarName] = BrValKey;
         return;
     }
 
@@ -50,10 +50,10 @@ struct BV_function
 
     inline void View ()
     {        
-        printf("@@@ %s -> #BVs: ", m_FuncName.c_str());
+        printf("@@@ %s -> #BrVars: ", m_FuncName.c_str());
         for (auto It = m_BrVals.begin (); It != m_BrVals.end (); It++)
         {
-            printf ("%s ", (*It).c_str());
+            printf ("%s:%s ", (It->first).c_str(), (It->second).c_str());
         }
 
         printf(", #BBs: ");
@@ -191,6 +191,7 @@ struct BV_set
         return m_Fname2BVfile.end ();
     }
 
+    void DecodeBrVars (BV_function *BVfunc,       char *BrVars);
     void LoadPySummary(string BrValXml);
     int GetFIdx (string File, string Func, unsigned LineNo);
 };

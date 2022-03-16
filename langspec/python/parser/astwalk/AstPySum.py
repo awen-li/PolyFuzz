@@ -223,20 +223,23 @@ class AstPySum(NodeVisitor):
         self.IfTest = True
         
         if isinstance (Test, Compare):
-            if self.HasConstInt (Test.comparators) == False:
-                return
-            self.BrOps  = Test.ops
-            self.BrCmptors = Test.comparators
-            self.LineNo = LineNo  
-            self.visit(Test)
+            if self.HasConstInt (Test.comparators) == True:
+                self.BrOps  = Test.ops
+                self.BrCmptors = Test.comparators
+                self.LineNo = LineNo  
+                self.visit(Test)
         elif isinstance (Test, BoolOp):
             for cmp in Test.values:
+                if not isinstance (cmp, Compare):
+                    continue
                 if self.HasConstInt (cmp.comparators) == False:
                     continue
                 self.BrOps  = cmp.ops
                 self.BrCmptors = cmp.comparators
                 self.LineNo = LineNo  
                 self.visit(cmp)
+        elif isinstance (Test, BinOp):
+            pass
         else:
             print ("!!!!!!Unsupport Branch Type!!!");
             print (ast.dump (Test))     
@@ -245,7 +248,7 @@ class AstPySum(NodeVisitor):
         self.IfTest = False
 
     def visit_if(self, node):
-        print (ast.dump (node))
+        #print (ast.dump (node))
         print ("#line-no if: %d" %node.lineno)
         self.InsertBB (node.lineno)
         

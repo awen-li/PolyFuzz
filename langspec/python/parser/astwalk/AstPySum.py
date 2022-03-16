@@ -220,17 +220,28 @@ class AstPySum(NodeVisitor):
         return False
 
     def ParseBranch (self, Test, LineNo):
-        if self.HasConstInt (Test.comparators) == False:
-            return
-
         self.IfTest = True
         
-        self.BrOps  = Test.ops
-        self.BrCmptors = Test.comparators
-        self.LineNo = LineNo
+        if isinstance (Test, Compare):
+            if self.HasConstInt (Test.comparators) == False:
+                return
+            self.BrOps  = Test.ops
+            self.BrCmptors = Test.comparators
+            self.LineNo = LineNo  
+            self.visit(Test)
+        elif isinstance (Test, BoolOp):
+            for cmp in Test.values:
+                if self.HasConstInt (cmp.comparators) == False:
+                    continue
+                self.BrOps  = cmp.ops
+                self.BrCmptors = cmp.comparators
+                self.LineNo = LineNo  
+                self.visit(cmp)
+        else:
+            print ("!!!!!!Unsupport Branch Type!!!");
+            print (ast.dump (Test))     
+            
         self.BranchNum += 1
-        self.visit(Test)
-        
         self.IfTest = False
 
     def visit_if(self, node):

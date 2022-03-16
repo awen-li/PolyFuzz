@@ -112,18 +112,21 @@ class AstPySum(NodeVisitor):
         Predict = self.GetOpCode (self.BrOps[0]);
         if Predict == 0:
             return
-        
-        Key = id(Var)
-        f = open("branch_vars.bv", "w")
-        f.write("111")
-        f.close()
+
+        BVF = open("branch_vars.bv", "a")
+        Key = id(Var) & 0xFFFFFFFF
+        for Cmp in self.BrCmptors:
+            if not isinstance (Cmp, Constant) or not isinstance (Cmp.value, int):
+                continue
+            BVF.write(str(Key) + ":CMP:" + str(Predict) + ":" + str(Cmp.value) + "\n")
+        BVF.close()
         
 
     def visit_name (self, node):
         if self.IfTest == True and self.CurFunc != None: 
             self.CurFunc.AddBrVal (node.id)
             self.GenBrVars (node.id)
-            print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id)
+            print ("====> visit variable name: " + self.CurFunc.Name + " --- " + node.id + ", addr: " + str (id(node.id) & 0xFFFFFFFF))
         return node.id
 
     

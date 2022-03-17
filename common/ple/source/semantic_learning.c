@@ -24,7 +24,7 @@ void* FuzzingProc (void *Para)
     snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
     printf ("CMD: %s \r\n", Cmd);
     int Ret = system (Cmd);
-    assert (Ret > 0);
+    assert (Ret >= 0);
     
     return NULL;
 }
@@ -381,7 +381,27 @@ static inline VOID IncLearnStat (PilotData *PD, DWORD BrNum)
     } 
 }
 
-static inline VOID ShowLearnStat (PilotData *PD)
+
+static inline BOOL IsInLearnStat (PilotData *PD, DWORD OFF)
+{
+    DWORD LearnIndex = OFF/LEARN_BLOCK_SIZE;
+    if (LearnIndex >= LEARN_BLOCK_NUM)
+    {
+        LearnIndex = LEARN_BLOCK_NUM-1;
+    }
+
+    if (PD->LearnStat [LearnIndex] == 0)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
+}
+
+
+static inline VOID GetLearnStat (PilotData *PD)
 {
     printf ("******************************  ShowLearnStat  ******************************\r\n");
     for (DWORD ix = 0; ix < LEARN_BLOCK_NUM; ix++)
@@ -891,7 +911,7 @@ void* TrainingThread (void *Para)
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     int Ret = system (Cmd);
-    assert (Ret > 0);
+    assert (Ret >= 0);
 
     RenderThrRes (Td);
 }
@@ -963,6 +983,12 @@ static inline VOID LearningMain (PilotData *PD)
         while (SbHdr != NULL)
         {
             SeedBlock *SdBlk = (SeedBlock*)SbHdr->Data;
+            if (IsInLearnStat (PD, SdBlk->SIndex) == FALSE)
+            {
+                SdBlkNo++;
+                SbHdr = SbHdr->Nxt;
+                continue;
+            }
 
             snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", SdName, SdBlk->Length);
             MakeDir (ALignDir);
@@ -1331,7 +1357,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
                 DEBUG ("[PilotMode][ITE] send PL_MSG_ITR_END...\r\n");
                         
-                ShowLearnStat (PD);
+                GetLearnStat (PD);
                         
                 /* change to SRV_S_SEEDSEND, wait for next seed */
                 PD->SrvState = SRV_S_SEEDSEND;

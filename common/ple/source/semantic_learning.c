@@ -3,6 +3,7 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <signal.h>
 #include "db.h"
 #include "Queue.h"
 #include "ctrace/Event.h"
@@ -22,7 +23,8 @@ void* FuzzingProc (void *Para)
 
     snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
     printf ("CMD: %s \r\n", Cmd);
-    system (Cmd);
+    int Ret = system (Cmd);
+    assert (Ret > 0);
     
     return NULL;
 }
@@ -888,7 +890,8 @@ void* TrainingThread (void *Para)
         snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.35", Td->BvDir, Td->TrainFile);
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
-    system (Cmd);
+    int Ret = system (Cmd);
+    assert (Ret > 0);
 
     RenderThrRes (Td);
 }
@@ -1062,6 +1065,27 @@ static inline VOID DeShm ()
 }
 
 
+
+VOID PLDeInit (PLServer *plSrv)
+{
+    DelQueue ();
+    close (plSrv->SkInfo.SockFd);
+    DelDb();
+
+    return;
+}
+
+static VOID SigHandle(int sig)
+{
+    PLServer *plSrv = &g_plSrv;
+
+    printf ("[SigHandle] exit......\r\n");
+    ShowQueue(10);
+    PLDeInit(plSrv);
+    return;
+}
+
+
 VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
     DeShm ();
@@ -1131,18 +1155,11 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     mutex_lock_init(&plSrv->FlSdLock);
     plSrv->FLSdList = NULL;
 
-    return;
-}
-
-
-VOID PLDeInit (PLServer *plSrv)
-{
-    DelQueue ();
-    close (plSrv->SkInfo.SockFd);
-    DelDb();
+    signal(SIGINT, SigHandle);
 
     return;
 }
+
 
 static inline MsgHdr* FormatMsg (SocketInfo *SkInfo, DWORD MsgType)
 {

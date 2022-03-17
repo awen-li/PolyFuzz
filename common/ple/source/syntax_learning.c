@@ -117,11 +117,13 @@ static inline VOID RunPilotFuzzing (BYTE* DriverDir)
 {
     BYTE Cmd[1024];
     DWORD StartBB = 0;
+    int Ret = 0;
 
     FILE *pf = fopen ("INTERAL_LOC", "r");
     if (pf != NULL)
     {
-        fscanf (pf, "%u", &StartBB);
+        Ret = fscanf (pf, "%u", &StartBB);
+        assert (Ret != 0);
         fclose (pf);
     }
 
@@ -136,7 +138,8 @@ static inline VOID RunPilotFuzzing (BYTE* DriverDir)
     }
 
     printf ("CMD: %s \r\n", Cmd);
-    system (Cmd);
+    Ret = system (Cmd);
+    assert (Ret >= 0);
     return;
 }
 
@@ -169,9 +172,10 @@ static inline SeedPat* LoadSp (BYTE *Spath, Seed *S)
     DWORD SeedLen  = 0;
     DWORD CharSize = 0;
 
-    fread (&SeedLen, 1, sizeof (DWORD), FS);
-    assert (SeedLen == S->SeedLen);
-    fread (&CharSize, 1, sizeof (DWORD), FS);
+    int Ret = fread (&SeedLen, 1, sizeof (DWORD), FS);
+    assert (Ret > 0 && SeedLen == S->SeedLen);
+    Ret = fread (&CharSize, 1, sizeof (DWORD), FS);
+    assert (Ret > 0);
 
     SeedPat *SP = (SeedPat*) malloc (sizeof (SeedPat) + 
                                      sizeof (CharPat)*SeedLen +
@@ -192,13 +196,15 @@ static inline SeedPat* LoadSp (BYTE *Spath, Seed *S)
         CP = SP->CharList + Pos;
         CP->CharNum = 0;
         
-        fread (&CP->CharNum, 1, sizeof (DWORD), FS);
+        int Ret = fread (&CP->CharNum, 1, sizeof (DWORD), FS);
+        assert (Ret > 0);
         if (CP->CharNum != 0)
         {
             CP->CharVal = CharValBuf;
             CharValBuf += CP->CharNum;
 
-            fread (CP->CharVal, 1, CP->CharNum, FS);
+            Ret = fread (CP->CharVal, 1, CP->CharNum, FS);
+            assert (Ret > 0);
         }
 
         //printf ("\t==> Pos = %u, CP->CharNum = %u \r\n", Pos, CP->CharNum);
@@ -789,7 +795,8 @@ BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr)
     BYTE* Buf = (BYTE*) malloc (BufLen);
     assert (Buf != NULL);
 
-    fread (Buf, 1, ST.st_size, FS);
+    int RdSize = fread (Buf, 1, ST.st_size, FS);
+    assert (RdSize != 0);
     Buf[ST.st_size] = 0;
     
     fclose (FS);

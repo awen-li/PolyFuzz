@@ -384,6 +384,11 @@ static inline VOID IncLearnStat (PilotData *PD, DWORD BrNum)
 
 static inline BOOL IsInLearnStat (PilotData *PD, DWORD OFF)
 {
+    if (PD->LsValidNum == 0)
+    {
+        return TRUE;
+    }
+    
     DWORD LearnIndex = OFF/LEARN_BLOCK_SIZE;
     if (LearnIndex >= LEARN_BLOCK_NUM)
     {
@@ -408,6 +413,7 @@ static inline VOID LoadBlockStat (PilotData *PD)
     if (pf == NULL)
     {
         memset (PD->LearnStat, 0, sizeof (PD->LearnStat));
+        PD->LsValidNum = 0;
         return;
     }
 
@@ -416,16 +422,19 @@ static inline VOID LoadBlockStat (PilotData *PD)
     assert (Buf != NULL);
 
     printf ("******************************  LoadBlockStat  ******************************\r\n");
+    PD->LsValidNum = 0;
     DWORD Index = 0;
     Buf = strtok (ReadBuf, ",");
     while(Buf != NULL) 
     {
-        PD->LearnStat [Index] = (DWORD)atoi (Buf);
-        if (PD->LearnStat [Index] != 0)
+        DWORD BrStat = (DWORD)atoi (Buf);
+        if (BrStat != 0)
         {
             DWORD Start = Index * LEARN_BLOCK_SIZE;
             DWORD End   = Start + LEARN_BLOCK_SIZE;
-            printf ("\t[%-2u -> %-2u]: %u \r\n", Start, End, PD->LearnStat [Index]);
+            printf ("\t[%-2u -> %-2u]: %u \r\n", Start, End, BrStat);
+            PD->LearnStat [Index] = 1;
+            PD->LsValidNum++;
         }
         
         Buf = strtok(NULL, ",");
@@ -453,6 +462,7 @@ static inline VOID DumpBlockStat (PilotData *PD)
 static inline VOID GetLearnStat (PilotData *PD)
 {
     printf ("******************************  ShowLearnStat  ******************************\r\n");
+    PD->LsValidNum = 0;
     for (DWORD ix = 0; ix < LEARN_BLOCK_NUM; ix++)
     {
         DWORD Stat  = PD->LearnStat [ix];
@@ -471,6 +481,7 @@ static inline VOID GetLearnStat (PilotData *PD)
         {
             printf ("\t[%-2u -> +++]: %u \r\n", Start, Stat);
         }
+        PD->LsValidNum++;
     }
     printf ("*****************************************************************************\r\n");
 
@@ -495,7 +506,7 @@ void* DECollect (void *Para)
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
         {
-            if (QN && (time (NULL) - QN->TimeStamp >= 3))
+            if (QN && (time (NULL) - QN->TimeStamp >= 1))
             {
                 OutQueue (QN);
             }
@@ -770,6 +781,15 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
 }
 
 
+static inline BYTE* GenSeedDir (DWORD CurAlign)
+{
+    static BYTE SeedDir[256];
+    snprintf (SeedDir, sizeof (SeedDir), "%s/Align%u", GEN_SEED, CurAlign);
+    MakeDir(SeedDir);
+    return SeedDir;
+}
+
+
 static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
 {
     for (DWORD Ei = 0; Ei < BsHeader->ValueNum ; Ei++)
@@ -779,10 +799,15 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
         {
             PD->GenSeedNum++;
 
+            BYTE *SeedDir = GenSeedDir (PD->CurAlign);
             snprintf (PD->NewSeedPath, sizeof (PD->NewSeedPath), "%s/%s_%u-%u", 
-                      GEN_SEED, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum);
+                      SeedDir, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum);
             FILE *SF = fopen (PD->NewSeedPath, "w");
-            assert (SF != NULL);
+            if (SF == NULL)
+            {
+                printf ("@@@ Warning: [Align%u]create seed file fail, GenSeedNum = %u\r\n", PD->CurAlign, PD->GenSeedNum);
+                return;
+            }
             
             DEBUG ("@@@ [%s]SEED: ", PD->NewSeedPath);
             for (DWORD si = 0; si < BlkNum; si++)
@@ -804,7 +829,7 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
                     }
                     case 4:
                     {
-                        DWORD Val = (DWORD)CurSeed[si];
+                        SDWORD Val = (SDWORD)CurSeed[si];
                         fwrite (&Val, sizeof (Val), 1, SF);
                         break;
                     }
@@ -854,7 +879,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             BsList->ValueList = NULL;
             BsList->ValueCap = BsList->ValueNum = 0;
 
-            if (OFF < PLOP->TryLength)
+            if (OFF < PLOP->TryLength && IsInLearnStat(PD, OFF) == TRUE)
             {     
                 snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", PD->CurSeedName, Align, OFF, Align);
                 ReadBsList (BlkDir, BsList);
@@ -1100,6 +1125,7 @@ static inline VOID LearningMain (PilotData *PD)
 
         WaitForTraining ();
 
+        printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] start  GenAllSeeds...\r\n", Index, SdName, Sd->SeedLen);
         MakeDir(GEN_SEED);
         GenAllSeeds (PD, Sd);
         ListDel(&Sd->SdBlkList, NULL);
@@ -1404,7 +1430,13 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                             
                     OFF = 0;
                     while (OFF < TryLength)
-                    {               
+                    {
+                        if (IsInLearnStat (PD, OFF) == FALSE)
+                        {
+                            OFF += MsgItr->Length;
+                            continue;
+                        }
+                        
                         MsgItr->SIndex = OFF;
                         MsgSend->MsgLen  = sizeof (MsgHdr) + sizeof (MsgIB);
                                 
@@ -1539,7 +1571,7 @@ void* DEMonitor (void *Para)
         QNode *QN = FrontQueue ();
         if (QN == NULL || QN->IsReady == FALSE)
         {
-            if (QN && (time (NULL) - QN->TimeStamp >= 3))
+            if (QN && (time (NULL) - QN->TimeStamp >= 1))
             {
                 OutQueue (QN);
             }

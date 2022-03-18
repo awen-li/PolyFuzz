@@ -87,7 +87,6 @@ class BrVSet ():
             elif Pred in [34, 38]:
                 ValueList.append (Value + 1)
                 ValueList.append (Value + random.randint(2, 200))
-                ValueList.append (Value + random.randint(2, 200))
             elif Pred in [35, 39]:
                 ValueList.append (Value)
                 ValueList.append (Value + random.randint(2, 200))
@@ -378,7 +377,9 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
     Command  = "find " + Directory + " -name branch_vars.bv"
     ALLFiles = os.popen(Command).read()
     PathList = list (ALLFiles.split ('\n'))
-    print ("Get PathList: " + str (PathList))
+    if PathList[0] == '':
+        print ("Warning: get no branch_vars.bv, Directory = ....." + Directory)
+        return
     BVS = BrVSet (PathList)
     
     #print ("@@@ MainSVR is" + str (MainSvr))
@@ -394,6 +395,8 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
     with open(InputFile+".bs", 'w', encoding='latin1') as BSF:
         for val in BlkSeedValues:
             Value = int (val)
+            if (Value & 0xFFFFFFFF00000000) != 0:
+                continue
             if BsValue.get (Value) != None:
                 continue
             BsValue [Value] = 1

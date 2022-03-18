@@ -197,6 +197,7 @@ typedef struct PilotData
     BYTE NewSeedPath[FZ_SEED_NAME_LEN];
 
     DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
+    DWORD LsValidNum;
 
     List *FlSdList;
 }PilotData;

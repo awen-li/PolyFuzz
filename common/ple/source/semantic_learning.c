@@ -428,7 +428,8 @@ static inline VOID LoadBlockStat (PilotData *PD)
             printf ("\t[%-2u -> %-2u]: %u \r\n", Start, End, PD->LearnStat [Index]);
         }
         
-        Buf = strtok(NULL, " ");
+        Buf = strtok(NULL, ",");
+        Index++;
     }
     printf ("*****************************************************************************\r\n");
     return;
@@ -632,6 +633,8 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     {
         return NULL;
     }
+
+    MakeDir (BlkDir);
 
     /* FILE NAME */
     snprintf (VarFile, sizeof (VarFile), "%s/Var-%u.csv", BlkDir, VarKey);
@@ -984,11 +987,11 @@ void* TrainingThread (void *Para)
     ThrData *Td = (ThrData *)Para;
     if (Td->BvDir == NULL)
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.35", Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.3", Td->TrainFile);
     }
     else
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.35", Td->BvDir, Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.3", Td->BvDir, Td->TrainFile);
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     int Ret = system (Cmd);
@@ -1075,7 +1078,6 @@ static inline VOID LearningMain (PilotData *PD)
             MakeDir (ALignDir);
             
             snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", SdName, SdBlk->Length, SdBlk->SIndex, SdBlk->Length);
-            MakeDir (BlkDir);
             DEBUG ("\t@@@ [%u]%s\r\n", SdBlkNo, BlkDir);
 
             for (DWORD KeyId = 1; KeyId <= VarKeyNum; KeyId++)

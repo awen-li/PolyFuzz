@@ -6,6 +6,7 @@ import time
 import pandas as pd
 import numpy as np
 from sklearn.svm import SVR
+import random
 
 
 InitTicks = time.time()
@@ -80,20 +81,22 @@ class BrVSet ():
             if Pred == 32:
                ValueList.append (Value)
             elif Pred == 33:
-               ValueList.append (Value+1)
-               ValueList.append (Value-1)
+               ValueList.append (Value + 1)
+               ValueList.append (Value + random.randint(2, 200))
+               ValueList.append (Value/2)
             elif Pred in [34, 38]:
-                ValueList.append (Value+1)
-                ValueList.append (Value+2)
+                ValueList.append (Value + 1)
+                ValueList.append (Value + random.randint(2, 200))
+                ValueList.append (Value + random.randint(2, 200))
             elif Pred in [35, 39]:
                 ValueList.append (Value)
-                ValueList.append (Value+2)
+                ValueList.append (Value + random.randint(2, 200))
             elif Pred in [36, 40]:
-                ValueList.append (Value-1)
-                ValueList.append (Value-2)
+                ValueList.append (Value - 1)
+                ValueList.append (Value/2)
             elif Pred in [37, 41]:
                 ValueList.append (Value)
-                ValueList.append (Value-1)
+                ValueList.append (Value/2)
             elif Pred == 255:
                 ValueList.append (Value)
 
@@ -142,8 +145,8 @@ def Load (InputFile):
 
 class RegrBase (metaclass=abc.ABCMeta):
 
-    CList     = [0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 1, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
-    EpsnList  = [0.01, 0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0]
+    CList     = [1, 0.01, 0.1, 0.3, 0.5, 0.7, 0.9, 5, 10, 20, 50, 100, 500, 1000, 2000, 5000]
+    EpsnList  = [0.1, 0.01, 0.05, 0.3, 0.5, 0.7, 0.9, 1.0, 1.1, 1.2, 1.5, 2.0, 3.0, 5.0]
     Coef0List = [0, 0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     
     def __init__ (self, Kernal):
@@ -350,7 +353,7 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
     SvrPoly   = PolyReg ("Polynomial")
     SvrLinear = LinearReg ("Linear")
     
-    SVRs = [SvrRbf, SvrPoly, SvrLinear]
+    SVRs = [SvrLinear, SvrPoly, SvrRbf]
     MainSvr = None
     Distance = 1
     for svr in SVRs:
@@ -358,6 +361,8 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
         if CurDis < Distance:
             Distance = CurDis
             MainSvr  = svr
+            if Distance <= DisThreshold:
+                break
     print ("@@@ [%s]MinDistance is: %.2f" %(str (MainSvr), Distance))
 
     if Plot == True:
@@ -368,14 +373,13 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
         return
 
     # load all files of branch_vars.cv
-    BVS = None
-    if Directory != None:
-        ALLFiles = os.popen("find ./ -name branch_vars.bv").read()
-        PathList = list (ALLFiles.split ('\n'))
-        print ("Get PathList: " + str (PathList))
-        BVS = BrVSet (PathList)
-    else:
-        BVS = BrVSet ()
+    if Directory == None:
+        Directory = "./"
+    Command  = "find " + Directory + " -name branch_vars.bv"
+    ALLFiles = os.popen(Command).read()
+    PathList = list (ALLFiles.split ('\n'))
+    print ("Get PathList: " + str (PathList))
+    BVS = BrVSet (PathList)
     
     #print ("@@@ MainSVR is" + str (MainSvr))
     BlkSeedValues = []   
@@ -386,9 +390,14 @@ def RegMain (InputFile, DisThreshold=0.1, Directory=None, IsPlot=False):
         BlkSeedValues += CurPreds
         #print ("BrKey: %s, Predicts: %s" % (str(BrKey), str(CurPreds)))
 
+    BsValue = {}
     with open(InputFile+".bs", 'w', encoding='latin1') as BSF:
         for val in BlkSeedValues:
-            BSF.write (str(val) + "\n")
+            Value = int (val)
+            if BsValue.get (Value) != None:
+                continue
+            BsValue [Value] = 1
+            BSF.write (str(Value) + "\n")
             
     
 def InitArgument (parser):

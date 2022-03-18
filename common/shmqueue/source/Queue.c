@@ -39,7 +39,7 @@ typedef struct _Queue_
 /////////////////////////////////////////////////////////////////////////
 // Default parameters
 /////////////////////////////////////////////////////////////////////////
-#define DEFAULT_QUEUE_SIZE     (128 * 1024)
+#define DEFAULT_QUEUE_SIZE     (4096 * 1024)
 #define DEFAULT_SHARE_KEY      ("0xC3B3C5D0")
 #define Q_2_NODELIST(Q)        (QNode *)(Q + 1)
 
@@ -290,7 +290,8 @@ void ShowQueue (unsigned Num)
     }
 
     process_lock(&Q->QLock);
-    printf ("[QUEUE]HIndex: %u, TIndex:%u [MaxNodeNum: %u/%u]\r\n", Q->Hindex, Q->Tindex, Q->MaxNodeNum, Q->NodeNum);
+    printf ("[QUEUE]HIndex: %u, TIndex:%u, Size = %u [MaxNodeNum: %u/%u]\r\n",
+            Q->Hindex, Q->Tindex, ((Q->Tindex + Q->NodeNum) - Q->Hindex)% Q->NodeNum, Q->MaxNodeNum, Q->NodeNum);
     unsigned Size = ((Q->Tindex + Q->NodeNum) - Q->Hindex)% Q->NodeNum;
     for (unsigned ix = 0; ix < Size; ix++)
     {

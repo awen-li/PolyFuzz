@@ -1,3 +1,4 @@
+#include "Queue.h"
 #include "pl_learning.h"
 
 static inline VOID  PLEmain (BYTE *SeedDir, BYTE * DriverDir, PLOption *PLOP)
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
     PLOP.TryLength  = LEARN_BLOCK_SIZE * (LEARN_BLOCK_NUM);
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:q")) > 0) 
     {
         switch (Opt) 
         {
@@ -82,6 +83,12 @@ int main(int argc, char *argv[])
             {
                 PLOP.TryLength   = (DWORD)atoi(optarg);
                 break;
+            }
+            case 'q':
+            {
+                InitQueue(MEMMOD_SHARE);
+                ShowQueue(10);
+                return 0;                
             }
             default:
             {

@@ -21,9 +21,10 @@
 
 #define FZ_SEED_NAME_LEN     (512)
 #define MAX_THREAD_NUM       (128)
-#define LEARN_BLOCK_SIZE     (64)
-#define LEARN_BLOCK_NUM      (128)
+#define LEARN_BLOCK_SIZE     (32)
+#define LEARN_BLOCK_NUM      (256)
 #define GEN_SEED             ("gen_seeds")
+#define BLOCK_STAT           ("BLOCK_STAT.st")
 
 typedef enum
 {

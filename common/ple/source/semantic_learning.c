@@ -401,6 +401,54 @@ static inline BOOL IsInLearnStat (PilotData *PD, DWORD OFF)
 }
 
 
+
+static inline VOID LoadBlockStat (PilotData *PD)
+{
+    FILE *pf = fopen (BLOCK_STAT, "r");
+    if (pf == NULL)
+    {
+        memset (PD->LearnStat, 0, sizeof (PD->LearnStat));
+        return;
+    }
+
+    BYTE ReadBuf[2048];
+    char *Buf = fgets (ReadBuf, sizeof (ReadBuf), pf);
+    assert (Buf != NULL);
+
+    printf ("******************************  LoadBlockStat  ******************************\r\n");
+    DWORD Index = 0;
+    Buf = strtok (ReadBuf, ",");
+    while(Buf != NULL) 
+    {
+        PD->LearnStat [Index] = (DWORD)atoi (Buf);
+        if (PD->LearnStat [Index] != 0)
+        {
+            DWORD Start = Index * LEARN_BLOCK_SIZE;
+            DWORD End   = Start + LEARN_BLOCK_SIZE;
+            printf ("\t[%-2u -> %-2u]: %u \r\n", Start, End, PD->LearnStat [Index]);
+        }
+        
+        Buf = strtok(NULL, " ");
+    }
+    printf ("*****************************************************************************\r\n");
+    return;
+}
+
+
+static inline VOID DumpBlockStat (PilotData *PD)
+{
+    FILE *pf = fopen (BLOCK_STAT, "w");
+    assert (pf != NULL);
+    
+    for (DWORD ix = 0; ix < LEARN_BLOCK_NUM; ix++)
+    {
+        fprintf (pf, "%u,", PD->LearnStat [ix]);
+    }
+    fclose (pf);
+    
+    return;
+}
+
 static inline VOID GetLearnStat (PilotData *PD)
 {
     printf ("******************************  ShowLearnStat  ******************************\r\n");
@@ -424,6 +472,9 @@ static inline VOID GetLearnStat (PilotData *PD)
         }
     }
     printf ("*****************************************************************************\r\n");
+
+    DumpBlockStat (PD);
+    return;
 }
 
 
@@ -531,6 +582,31 @@ static inline VOID MakeDir (BYTE *DirPath)
 }
 
 
+static inline BOOL CheckVariant (BrVariable *BrVal)
+{   
+    DWORD SameNum = 0;
+    DWORD PreVal  = -1u;
+    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    {
+         DWORD CurVal = BrVal->Value[Index];
+         if (PreVal == CurVal)
+         {
+            SameNum++;
+         }
+
+         PreVal = CurVal;
+    }
+
+    if (SameNum >= FZ_SAMPLE_NUM/4)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return TRUE;
+    }
+}
+
 static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
 {
     static BYTE VarFile[128];
@@ -550,7 +626,12 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
         DEBUG ("Query fail -> [BrVariable]: %s \r\n", SKey);
         return NULL;
     }
+    
     BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
+    if (CheckVariant (BrVal) == FALSE)
+    {
+        return NULL;
+    }
 
     /* FILE NAME */
     snprintf (VarFile, sizeof (VarFile), "%s/Var-%u.csv", BlkDir, VarKey);
@@ -594,7 +675,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
         }  
     }
     fclose (F);
-    
+
     return VarFile;    
 }
 
@@ -1094,6 +1175,7 @@ static inline VOID DeShm ()
 
 VOID PLDeInit (PLServer *plSrv)
 {
+    DumpBlockStat (&plSrv->PD);
     DelQueue ();
     close (plSrv->SkInfo.SockFd);
     DelDb();
@@ -1158,6 +1240,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     PD->SrvState   = SRV_S_STARTUP;
     PD->DHL        = &plSrv->DHL;
     PD->PLOP       = &plSrv->PLOP;
+    LoadBlockStat (PD);
 
     /* init standard data */
     StanddData *SD = &plSrv->SD;
@@ -1219,6 +1302,7 @@ void* LearningMainThread (void *Para)
     
     LearningMain (PD);
     ListDel(PD->FlSdList, NULL);
+    ResetTable(PD->DHL->DBBrVariableHandle);
 
     /* send a msg to inform FUZZER that new seed ready */
     if (PD->GenSeedNum != 0)

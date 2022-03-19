@@ -23,7 +23,7 @@
 #define MAX_THREAD_NUM       (128)
 #define LEARN_BLOCK_SIZE     (32)
 #define LEARN_BLOCK_NUM      (256)
-#define GEN_SEED_UNIT        (1024)
+#define GEN_SEED_UNIT        (8192)
 #define GEN_SEED_MAXNUM      (1024 * GEN_SEED_UNIT)
 
 #define GEN_SEED             ("gen_seeds")
@@ -206,6 +206,7 @@ typedef struct PilotData
     DWORD CurAlign;
     BYTE NewSeedPath[FZ_SEED_NAME_LEN];
 
+    DWORD AvgSamplingNum;
     DWORD GenSeedNum;
     DWORD GenSeedNumUnit;
     mutex_lock_t GenSeedLock;

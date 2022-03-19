@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <signal.h>
+#include <math.h>
 #include "db.h"
 #include "Queue.h"
 #include "ctrace/Event.h"
@@ -899,10 +900,26 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
     {
         return;
     }
-    
-    for (DWORD Ei = 0; Ei < BsHeader->ValueNum ; Ei++)
+
+    DWORD SampleNum = BsHeader->ValueNum;
+    if (PD->AvgSamplingNum != 0 && SampleNum > PD->AvgSamplingNum)
     {
-        CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
+        SampleNum = PD->AvgSamplingNum;
+    }
+    
+    for (DWORD Ei = 0; Ei < SampleNum; Ei++)
+    {
+        if (SampleNum == PD->AvgSamplingNum)
+        {
+            /* random sampling */
+            DWORD SmpIndex = random ()%BsHeader->ValueNum;
+            CurSeed[CurBlkNo] = BsHeader->ValueList[SmpIndex];
+        }
+        else
+        {
+            CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
+        }
+        
         if (CurBlkNo+1 == BlkNum)
         {
             BYTE *SeedDir = GenSeedDir (PD->CurAlign);
@@ -961,6 +978,32 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
     }
 }
 
+
+static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, DWORD ValidSANum)
+{
+	PD->AvgSamplingNum = 0;
+	
+    ULONG SeedNum = 1;
+    for (DWORD ix = 0; ix < SANum; ix++)
+    {
+        assert (SAList[ix].ValueNum != 0);
+        SeedNum *= SAList[ix].ValueNum;
+    }
+    
+    if (SeedNum <= GEN_SEED_MAXNUM)
+    {
+        return;
+    }
+
+    DWORD AvgSample = (DWORD)(pow (GEN_SEED_MAXNUM, 1.0/ValidSANum) + 1);
+    if (AvgSample <= 1) AvgSample = 2;
+
+    PD->AvgSamplingNum = AvgSample;
+    printf ("[ComputeBudget][Block:%u/%u]Theoretical SeedNum = %lu, AVG-sampling: %u \r\n", ValidSANum, SANum, SeedNum, AvgSample);
+
+    return;    
+}
+
 static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
 {
     BYTE BlkDir[256];
@@ -973,7 +1016,8 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
         DWORD Align = PLOP->SeedBlock[LIndex];
         snprintf (ALignDir, sizeof (ALignDir), "%s/Align%u", PD->CurSeedName, Align);
 
-        DWORD BlkNum  = 0;
+        DWORD BlkNum = 0;
+        DWORD ValidBlkNum = 0;
         BsValue *SAList = (BsValue *) malloc (sizeof (BsValue) * (Sd->SeedLen/Align + 1));
         assert (SAList != NULL);
 
@@ -1003,6 +1047,10 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
                 memcpy (BsList->ValueList, Sd->SeedCtx+OFF, Align);
                 BsList->ValueNum++;
             }
+            else
+            {
+                ValidBlkNum++;
+            }
         }
 
         if (LearnFailNum == Sd->SeedLen/Align)
@@ -1014,6 +1062,9 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             ULONG *CurSeed = (ULONG *) malloc (BlkNum * sizeof (ULONG));
             assert (CurSeed != NULL);
             memset (CurSeed, 0, BlkNum * sizeof (ULONG));
+
+            /* It is impossible to gen all seeds, we need a random sampling */
+            ComputeBudget (PD, SAList, BlkNum, ValidBlkNum);
 
             PD->CurAlign = Align;
             GenSeed (PD, SAList, BlkNum, 0, CurSeed);
@@ -1376,6 +1427,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     
     PD->GenSeedNum = 0;
     PD->GenSeedNumUnit = 0;
+    PD->AvgSamplingNum = 0;
     mutex_lock_init(&PD->GenSeedLock);
 
     /* init standard data */

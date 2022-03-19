@@ -6496,6 +6496,56 @@ abandon_entry:
     return ret_val;
 }
 
+
+void read_seed_fuzz(afl_state_t *afl, u8 *dir) 
+{
+    struct dirent **nl;
+    s32             nl_cnt;
+    u32             i;
+
+    nl_cnt = scandir(dir, &nl, NULL, alphasort);
+    assert (nl_cnt >= 0);
+    ACTF("Scanning %s, get seeds: %u", dir, nl_cnt);
+
+    /* for these seed, we only consider the PC */
+    setenv("AFL_TRACE_DU_SHUTDOWN", "1", 1);
+
+    i = nl_cnt;
+    do {
+        --i;
+
+        if (nl[i]->d_name[0] == '.') {
+            free(nl[i]);
+            continue;            
+        }
+        u8 *seed = alloc_printf("%s/%s", dir, nl[i]->d_name);
+
+        struct stat st;
+        if (lstat(seed, &st) || access(seed, R_OK)) {
+            PFATAL("Unable to access '%s'", seed);
+        }
+        u32 Len = (u32)st.st_size;
+
+        u8 *buf = afl_realloc((void **)&afl->testcase_buf, Len);
+        if (unlikely(!buf)) {
+            PFATAL("Unable to malloc '%s' with len %u", seed, Len);
+        }
+
+        int fd = open(seed, O_RDONLY);
+        if (unlikely(fd < 0)) { PFATAL("Unable to open '%s'", seed); }
+        ck_read(fd, buf, Len, seed);
+        close(fd);
+        remove (seed);
+
+        common_fuzz_stuff(afl, buf, Len);
+    } while (i > 0);
+
+    free(nl);
+    unsetenv ("AFL_TRACE_DU_SHUTDOWN");
+    return;
+}
+
+
 u8 fuzz_one_standard(afl_state_t *afl)
 {
     MsgHdr *msg_header;
@@ -6541,13 +6591,17 @@ u8 fuzz_one_standard(afl_state_t *afl)
             break;
         }
         case PL_MSG_GEN_SEED:
+        case PL_MSG_GEN_SEED_DONE:
         {
             CLEAR_SCRING;
             
             char *seed_dir = (char *)(msg_header + 1);      
             //OKF ("[fuzz_one_standard] recv PL_MSG_GEN_SEED: %s, queued_paths:%u", seed_dir, afl->queued_paths);
-            read_testcases(afl, seed_dir);
+            read_seed_fuzz(afl, seed_dir);
             //OKF ("[fuzz_one_standard] finish READING new seeds, queued_paths:%u", afl->queued_paths);
+
+            msg_header = format_msg (msg_header->MsgType);
+            pl_send ((char*)msg_header, msg_header->MsgLen);
             break;
         }
         default:

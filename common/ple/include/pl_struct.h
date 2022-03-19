@@ -23,6 +23,9 @@
 #define MAX_THREAD_NUM       (128)
 #define LEARN_BLOCK_SIZE     (32)
 #define LEARN_BLOCK_NUM      (256)
+#define GEN_SEED_UNIT        (1024)
+#define GEN_SEED_MAXNUM      (1024 * GEN_SEED_UNIT)
+
 #define GEN_SEED             ("gen_seeds")
 #define BLOCK_STAT           ("BLOCK_STAT.st")
 
@@ -178,6 +181,14 @@ typedef enum
     RUNMOD_NUM=RUNMOD_STANDD,
 }RUNMOD;
 
+
+typedef enum
+{
+    PILOT_ST_IDLE = 0,
+    PILOT_ST_LEARNING = 1,
+    PILOT_ST_SEEDING = 2,
+}PILOT_ST;
+
 typedef struct PilotData
 {
     DWORD PilotStatus;
@@ -193,8 +204,11 @@ typedef struct PilotData
     
     BYTE* CurSeedName;
     DWORD CurAlign;
-    DWORD GenSeedNum;    
     BYTE NewSeedPath[FZ_SEED_NAME_LEN];
+
+    DWORD GenSeedNum;
+    DWORD GenSeedNumUnit;
+    mutex_lock_t GenSeedLock;
 
     DWORD LearnStat[LEARN_BLOCK_NUM]; /* support size 64 * LEARN_BLOCK_NUM */
     DWORD LsValidNum;

@@ -19,6 +19,7 @@ typedef enum
     PL_MSG_FZ_FIN,
     PL_MSG_EMPTY,
     PL_MSG_GEN_SEED,
+    PL_MSG_GEN_SEED_DONE,
 }MSG_TYPE;
 
 typedef struct MsgHdr

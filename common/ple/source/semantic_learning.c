@@ -580,6 +580,16 @@ static inline pthread_t CollectBrVariables (PilotData *PD)
     return Tid;
 }
 
+static inline MsgHdr* FormatMsg (SocketInfo *SkInfo, DWORD MsgType)
+{
+    MsgHdr *MsgH;
+    
+    MsgH = (MsgHdr *)SkInfo->SrvSendBuf;
+    MsgH->MsgType = MsgType;
+    MsgH->MsgLen  = sizeof (MsgHdr);
+
+    return MsgH;
+}
 
 static inline VOID MakeDir (BYTE *DirPath)
 {
@@ -789,19 +799,115 @@ static inline BYTE* GenSeedDir (DWORD CurAlign)
     return SeedDir;
 }
 
+static inline DWORD ReadGenSeedUnit (PilotData *PD)
+{
+    DWORD GenSeedUnit;
+
+    mutex_lock (&PD->GenSeedLock);
+    GenSeedUnit = PD->GenSeedNumUnit;
+    mutex_unlock (&PD->GenSeedLock);
+
+    return GenSeedUnit;
+}
+
+static inline VOID ResetGenSeedUnit (PilotData *PD)
+{
+    mutex_lock (&PD->GenSeedLock);
+    PD->GenSeedNumUnit = 0;
+    mutex_unlock (&PD->GenSeedLock);
+    return;
+}
+
+
+static inline VOID SendSeedsForFuzzing ()
+{
+    PLServer *plSrv = &g_plSrv;
+    PilotData *PD = &plSrv->PD;
+
+    MsgHdr *MsgSend;
+    unsigned MsgType = PL_MSG_GEN_SEED;
+    if (PD->GenSeedNum < GEN_SEED_MAXNUM)
+    {
+        MsgSend  = FormatMsg(&plSrv->SkInfo, MsgType);
+        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED:%u.\r\n", PD->GenSeedNum/GEN_SEED_UNIT);
+    }
+    else
+    {
+        MsgType  = PL_MSG_GEN_SEED_DONE;
+        MsgSend  = FormatMsg(&plSrv->SkInfo, MsgType);
+        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED_DONE:%u.\r\n", PD->GenSeedNum/GEN_SEED_UNIT);
+    }
+    BYTE *GenSeedDir = (BYTE*)(MsgSend+1);
+    MsgSend->MsgLen += sprintf (GenSeedDir, "%s/%s/Align%u", get_current_dir_name (), GEN_SEED, PD->CurAlign);
+    Send(&plSrv->SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+
+    MsgHdr *MsgRev = (MsgHdr *) Recv(&plSrv->SkInfo);
+    assert (MsgRev->MsgType == MsgType);
+
+    ResetGenSeedUnit (PD);
+    PD->PilotStatus = PILOT_ST_LEARNING;
+
+    return;    
+}
+
+static inline VOID WaitFuzzingOnFly (PilotData *PD, DWORD IsEnd)
+{  
+    DWORD GenSeedUnit = ReadGenSeedUnit (PD);
+    if (IsEnd == FALSE)
+    {
+        if (GenSeedUnit == GEN_SEED_UNIT)
+        {
+            PD->PilotStatus = PILOT_ST_SEEDING;
+            PD->GenSeedNum += GEN_SEED_UNIT;
+            while (TRUE)
+            {
+                GenSeedUnit = ReadGenSeedUnit (PD);
+                if (GenSeedUnit == 0)
+                {
+                    break;
+                }
+                
+                sleep (1);
+            }        
+        }
+    }
+    else
+    {
+        if (PD->GenSeedNumUnit > 0)
+        {
+            PD->PilotStatus = PILOT_ST_SEEDING;
+            PD->GenSeedNum += PD->GenSeedNumUnit;
+            while (TRUE)
+            {
+                GenSeedUnit = ReadGenSeedUnit (PD);
+                if (GenSeedUnit == 0)
+                {
+                    break;
+                }
+                
+                sleep (1);
+            }  
+        }
+    }
+
+    return;
+}
 
 static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
 {
+    if (PD->GenSeedNum >= GEN_SEED_MAXNUM)
+    {
+        return;
+    }
+    
     for (DWORD Ei = 0; Ei < BsHeader->ValueNum ; Ei++)
     {
         CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
         if (CurBlkNo+1 == BlkNum)
         {
-            PD->GenSeedNum++;
-
             BYTE *SeedDir = GenSeedDir (PD->CurAlign);
             snprintf (PD->NewSeedPath, sizeof (PD->NewSeedPath), "%s/%s_%u-%u", 
-                      SeedDir, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum);
+                      SeedDir, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum + PD->GenSeedNumUnit);
             FILE *SF = fopen (PD->NewSeedPath, "w");
             if (SF == NULL)
             {
@@ -809,10 +915,8 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
                 return;
             }
             
-            DEBUG ("@@@ [%s]SEED: ", PD->NewSeedPath);
             for (DWORD si = 0; si < BlkNum; si++)
             {
-                DEBUG ("%lu ", CurSeed[si]);
                 switch (PD->CurAlign)
                 {
                     case 1:
@@ -845,9 +949,10 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
                     }
                 }
             }
-            DEBUG ("\r\n");
-
             fclose (SF);
+
+            PD->GenSeedNumUnit++;
+            WaitFuzzingOnFly (PD, FALSE);
         }
         else
         {      
@@ -1264,11 +1369,14 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 
     /* init pilot data */
     PilotData *PD = &plSrv->PD;
-    PD->GenSeedNum = 0;
     PD->SrvState   = SRV_S_STARTUP;
     PD->DHL        = &plSrv->DHL;
     PD->PLOP       = &plSrv->PLOP;
     LoadBlockStat (PD);
+    
+    PD->GenSeedNum = 0;
+    PD->GenSeedNumUnit = 0;
+    mutex_lock_init(&PD->GenSeedLock);
 
     /* init standard data */
     StanddData *SD = &plSrv->SD;
@@ -1298,17 +1406,6 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 }
 
 
-static inline MsgHdr* FormatMsg (SocketInfo *SkInfo, DWORD MsgType)
-{
-    MsgHdr *MsgH;
-    
-    MsgH = (MsgHdr *)SkInfo->SrvSendBuf;
-    MsgH->MsgType = MsgType;
-    MsgH->MsgLen  = sizeof (MsgHdr);
-
-    return MsgH;
-}
-
 static inline VOID SwitchMode (RUNMOD RunMode)
 {
     PLServer *plSrv = &g_plSrv;
@@ -1331,23 +1428,10 @@ void* LearningMainThread (void *Para)
     LearningMain (PD);
     ListDel(PD->FlSdList, NULL);
     ResetTable(PD->DHL->DBBrVariableHandle);
-
-    /* send a msg to inform FUZZER that new seed ready */
-    if (PD->GenSeedNum != 0)
-    {
-        BYTE SrvSendBuf[SRV_BUF_LEN];
-        MsgHdr *MsgSend  = (MsgHdr *)SrvSendBuf;
-        MsgSend->MsgType = PL_MSG_GEN_SEED;
-        MsgSend->MsgLen  = sizeof (MsgHdr);
-        
-        BYTE *GenSeedDir = (BYTE*)(MsgSend+1);
-        MsgSend->MsgLen += sprintf (GenSeedDir, "%s/%s", get_current_dir_name (), GEN_SEED);
-        Send(&g_plSrv.SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-        DEBUG ("[LearningMainThread] send PL_MSG_GEN_SEED.\r\n");
-    }
     
     PD->FlSdList = NULL;
-    PD->PilotStatus = FALSE;
+    WaitFuzzingOnFly (PD, TRUE);
+    PD->PilotStatus = PILOT_ST_IDLE;
     
     return NULL;
 }
@@ -1489,7 +1573,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
 
                 /* start a thread for trainning */
                 pthread_t Tid = 0;
-                PD->PilotStatus = TRUE; /* set the PILOT as busy: not switch to PILOT until free (FALSE) */
+                PD->PilotStatus = PILOT_ST_LEARNING; /* set the PILOT as busy: not switch to PILOT until free (FALSE) */
                 int Ret = pthread_create(&Tid, NULL, LearningMainThread, PD);
                 if (Ret != 0)
                 {
@@ -1650,6 +1734,12 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
                 DEBUG ("[StandardMode] recv PL_MSG_EMPTY..\r\n");
                 break;
             }
+            case PL_MSG_GEN_SEED:
+            case PL_MSG_GEN_SEED_DONE:
+            {
+                DEBUG ("[StandardMode] recv PL_MSG_GEN_SEED..\r\n");
+                break;
+            }
             default:
             {
                 assert (0);
@@ -1658,7 +1748,8 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
 
         /* check for-learn seed list */
         DWORD SeedNum = HasSeedToLearn ();
-        if (SeedNum != 0 && GetPilotStatus () == FALSE)
+        DWORD PilotSt = GetPilotStatus ();
+        if (SeedNum != 0 &&  PilotSt == PILOT_ST_IDLE)
         {
             /* inform fuzzer to switch mode */
             MsgSend = FormatMsg(SkInfo, PL_MSG_SWMODE);
@@ -1684,9 +1775,27 @@ static inline DWORD StandardMode (StanddData *SD, SocketInfo *SkInfo)
         }
         else
         {
-            MsgSend = FormatMsg(SkInfo, MsgRev->MsgType);
-            Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-            DEBUG ("[StandardMode] send PL_MSG_SEED[2] PL_MSG_EMPTY[8]: %u ..\r\n", MsgRev->MsgType);
+            switch (PilotSt)
+            {
+                case PILOT_ST_IDLE:
+                case PILOT_ST_LEARNING:
+                {
+                    MsgSend = FormatMsg(SkInfo, MsgRev->MsgType);
+                    Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
+                    DEBUG ("[StandardMode] send PL_MSG_SEED[2] PL_MSG_EMPTY[8]: %u ..\r\n", MsgRev->MsgType);
+                    break;
+                }
+                case PILOT_ST_SEEDING:
+                {
+                    SendSeedsForFuzzing ();
+                    break;
+                }
+                default:
+                {
+                    assert (0);
+                }
+            }
+
         }        
     }
     

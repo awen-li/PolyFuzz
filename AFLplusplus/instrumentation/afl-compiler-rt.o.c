@@ -1428,8 +1428,14 @@ void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
 }
 
 
+static u32 trace_shutdown = 0;
 static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLength, uint64_t Value)
 {
+    if (trace_shutdown == 1)
+    {
+        return;
+    }
+    
     QNode* QN;
     while ((QN  = InQueue ()) == NULL);
     
@@ -1577,6 +1583,11 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
     AFL_DEBUG_SHOW("Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n", __afl_final_loc);
 
     __afl_shm_init ();
+
+    if (getenv ("AFL_TRACE_DU_SHUTDOWN") != NULL)
+    {
+        trace_shutdown = 1;
+    }
 
     return;
 }

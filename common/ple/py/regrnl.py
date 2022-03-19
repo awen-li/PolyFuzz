@@ -179,7 +179,7 @@ class RbfReg (RegrBase):
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
                 #for gamma in RegrBase.GammaList:
-                if FitFailNum >= 3:
+                if FitFailNum >= 1:
                     break
                     
                 Model    = SVR(kernel="rbf", C=C, epsilon=epsilon, max_iter=50000000)
@@ -217,7 +217,7 @@ class PolyReg (RegrBase):
         Distance = 1
         for Coef0 in RegrBase.Coef0List:
             for epsilon in RegrBase.EpsnList:
-                if FitFailNum >= 3:
+                if FitFailNum >= 1:
                     break
                 #print ("PolyReg -> Coef0 = %f, epsilon = %f\r\n " %(Coef0, epsilon))
                 Model    = SVR(kernel="poly", epsilon=epsilon, coef0=Coef0, max_iter=50000000)
@@ -253,7 +253,7 @@ class LinearReg (RegrBase):
         Distance = 1
         for C in RegrBase.CList:
             for epsilon in RegrBase.EpsnList:
-                if FitFailNum >= 3:
+                if FitFailNum >= 1:
                     break
                 
                 Model    = SVR(kernel="linear", C=C, epsilon=epsilon, max_iter=50000000)

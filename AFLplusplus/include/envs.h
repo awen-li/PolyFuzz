@@ -210,6 +210,7 @@ static char *afl_environment_variables[] = {
     "AFL_START_BB",
     "AFL_THRESHOL_PATHLEN",
     "AFL_PL_SOCKET_PORT",
+    "AFL_TRACE_DU_SHUTDOWN",
     NULL
 
 };

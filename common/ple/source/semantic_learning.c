@@ -704,7 +704,36 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     return VarFile;    
 }
 
-static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
+static inline DWORD IsValueValie (DWORD Value, DWORD Align)
+{
+    switch (Align)
+    {
+        case 1:
+        {
+            if ((Value & 0xFFFFFF00) == 0)
+            {
+                return TRUE;
+            }
+            break;
+        }
+        case 2:
+        {
+            if ((Value & 0xFFFF0000) == 0)
+            {
+                return TRUE;
+            }
+            break;
+        }
+        default:
+        {
+            return  TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
 {
     DIR *Dir;
     struct dirent *SD;
@@ -755,8 +784,13 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList)
         {
             if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
             {
-                DWORD i;
                 DWORD Val = strtol(BSValStr, NULL, 10);
+                if (IsValueValie (Val, Align) == FALSE)
+                {
+                    continue;
+                }
+
+                DWORD i;
                 for (i = 0; i < BsList->ValueNum; i++)
                 {
                     if (BsList->ValueList[i] == Val)
@@ -830,13 +864,13 @@ static inline VOID SendSeedsForFuzzing ()
     if (PD->GenSeedNum < GEN_SEED_MAXNUM)
     {
         MsgSend  = FormatMsg(&plSrv->SkInfo, MsgType);
-        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED:%u.\r\n", PD->GenSeedNum/GEN_SEED_UNIT);
+        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED[Align%u]:%u.\r\n", PD->CurAlign, PD->GenSeedNum/GEN_SEED_UNIT);
     }
     else
     {
         MsgType  = PL_MSG_GEN_SEED_DONE;
         MsgSend  = FormatMsg(&plSrv->SkInfo, MsgType);
-        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED_DONE:%u.\r\n", PD->GenSeedNum/GEN_SEED_UNIT);
+        printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED_DONE[Align%u]:%u.\r\n", PD->CurAlign, PD->GenSeedNum/GEN_SEED_UNIT);
     }
     BYTE *GenSeedDir = (BYTE*)(MsgSend+1);
     MsgSend->MsgLen += sprintf (GenSeedDir, "%s/%s/Align%u", get_current_dir_name (), GEN_SEED, PD->CurAlign);
@@ -1031,7 +1065,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             if (OFF < PLOP->TryLength && IsInLearnStat(PD, OFF) == TRUE)
             {     
                 snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", PD->CurSeedName, Align, OFF, Align);
-                ReadBsList (BlkDir, BsList);
+                ReadBsList (BlkDir, BsList, Align);
                 DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
             }
 

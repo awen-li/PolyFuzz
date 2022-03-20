@@ -24,7 +24,7 @@
 #define LEARN_BLOCK_SIZE     (32)
 #define LEARN_BLOCK_NUM      (256)
 #define GEN_SEED_UNIT        (8192)
-#define GEN_SEED_MAXNUM      (1024 * GEN_SEED_UNIT)
+#define GEN_SEED_MAXNUM      (128 * GEN_SEED_UNIT)
 
 #define GEN_SEED             ("gen_seeds")
 #define BLOCK_STAT           ("BLOCK_STAT.st")

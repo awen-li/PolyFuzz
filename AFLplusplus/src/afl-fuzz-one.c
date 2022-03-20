@@ -6502,7 +6502,8 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
     struct dirent **nl;
     s32             nl_cnt;
     u32             i;
-
+    struct stat st;
+    
     nl_cnt = scandir(dir, &nl, NULL, alphasort);
     assert (nl_cnt >= 0);
     ACTF("Scanning %s, get seeds: %u", dir, nl_cnt);
@@ -6510,6 +6511,7 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
     /* for these seed, we only consider the PC */
     setenv("AFL_TRACE_DU_SHUTDOWN", "1", 1);
 
+    u32 random_saved = random () % nl_cnt;
     i = nl_cnt;
     do {
         --i;
@@ -6520,12 +6522,11 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
         }
         u8 *seed = alloc_printf("%s/%s", dir, nl[i]->d_name);
 
-        struct stat st;
         if (lstat(seed, &st) || access(seed, R_OK)) {
             PFATAL("Unable to access '%s'", seed);
         }
+        
         u32 Len = (u32)st.st_size;
-
         u8 *buf = afl_realloc((void **)&afl->testcase_buf, Len);
         if (unlikely(!buf)) {
             PFATAL("Unable to malloc '%s' with len %u", seed, Len);
@@ -6535,9 +6536,21 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
         if (unlikely(fd < 0)) { PFATAL("Unable to open '%s'", seed); }
         ck_read(fd, buf, Len, seed);
         close(fd);
-        remove (seed);
 
+        if (i != random_saved) {
+            remove (seed);
+        }
+        else {
+            char *cur_dir = get_current_dir_name ();
+            u8 *target = alloc_printf("%s/in/%s", cur_dir, nl[i]->d_name);
+            rename (seed, target);
+            add_to_queue(afl, target, st.st_size >= MAX_FILE ? MAX_FILE : st.st_size, 1);
+        }
+        
         common_fuzz_stuff(afl, buf, Len);
+        free (nl[i]);
+        ck_free(seed);
+          
     } while (i > 0);
 
     free(nl);

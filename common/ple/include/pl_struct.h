@@ -208,6 +208,7 @@ typedef struct PilotData
 
     DWORD AvgSamplingNum;
     DWORD GenSeedNum;
+    DWORD GenSeedNumBlock;
     DWORD GenSeedNumUnit;
     mutex_lock_t GenSeedLock;
 

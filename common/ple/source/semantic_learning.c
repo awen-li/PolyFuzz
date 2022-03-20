@@ -861,7 +861,7 @@ static inline VOID SendSeedsForFuzzing ()
 
     MsgHdr *MsgSend;
     unsigned MsgType = PL_MSG_GEN_SEED;
-    if (PD->GenSeedNum < GEN_SEED_MAXNUM)
+    if (PD->GenSeedNumBlock < GEN_SEED_MAXNUM)
     {
         MsgSend  = FormatMsg(&plSrv->SkInfo, MsgType);
         printf ("[SendSeedsForFuzzing] send PL_MSG_GEN_SEED[Align%u]:%u.\r\n", PD->CurAlign, PD->GenSeedNum/GEN_SEED_UNIT);
@@ -912,6 +912,7 @@ static inline VOID WaitFuzzingOnFly (PilotData *PD, DWORD IsEnd)
         {
             PD->PilotStatus = PILOT_ST_SEEDING;
             PD->GenSeedNum += PD->GenSeedNumUnit;
+            PD->GenSeedNumBlock += GEN_SEED_MAXNUM;
             while (TRUE)
             {
                 GenSeedUnit = ReadGenSeedUnit (PD);
@@ -930,7 +931,7 @@ static inline VOID WaitFuzzingOnFly (PilotData *PD, DWORD IsEnd)
 
 static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
 {
-    if (PD->GenSeedNum >= GEN_SEED_MAXNUM)
+    if (PD->GenSeedNumBlock >= GEN_SEED_MAXNUM)
     {
         return;
     }
@@ -1003,6 +1004,7 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
             fclose (SF);
 
             PD->GenSeedNumUnit++;
+            PD->GenSeedNumBlock++;
             WaitFuzzingOnFly (PD, FALSE);
         }
         else
@@ -1101,6 +1103,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             ComputeBudget (PD, SAList, BlkNum, ValidBlkNum);
 
             PD->CurAlign = Align;
+            PD->GenSeedNumBlock = 0;
             GenSeed (PD, SAList, BlkNum, 0, CurSeed);
             free (CurSeed);
         }

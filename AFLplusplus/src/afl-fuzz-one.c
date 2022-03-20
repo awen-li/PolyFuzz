@@ -6541,8 +6541,7 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
             remove (seed);
         }
         else {
-            char *cur_dir = get_current_dir_name ();
-            u8 *target = alloc_printf("%s/in/%s", cur_dir, nl[i]->d_name);
+            u8 *target = alloc_printf("in/%s", nl[i]->d_name);
             rename (seed, target);
             add_to_queue(afl, target, st.st_size >= MAX_FILE ? MAX_FILE : st.st_size, 1);
         }

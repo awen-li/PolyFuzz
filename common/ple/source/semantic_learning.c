@@ -136,16 +136,16 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     static BYTE SdName[FZ_SEED_NAME_LEN];
     memset (SdName, 0, sizeof (SdName));
 
-    BYTE* ID = strstr (SeedPath, "id:");
+    BYTE* ID = strstr (SeedPath, "id");
     assert (ID != NULL);
     strncpy (SdName, ID, 9);
     SdName[2] = '-';
     SdName[9] = '-';
 
-    BYTE* ORG = strstr (SeedPath, "orig:");
+    BYTE* ORG = strstr (SeedPath, "orig");
     if (ORG == NULL)
     {
-        ORG = strstr (SeedPath, "src:");
+        ORG = strstr (SeedPath, "src");
         assert (ORG != NULL);
         strncpy (SdName+10, ORG, 10);
         SdName[13] = '-';
@@ -1320,7 +1320,9 @@ static inline VOID LearningMain (PilotData *PD)
 
         printf ("[LearningMain]SEED[ID-%u]%s-[length-%u] start  GenAllSeeds...\r\n", Index, SdName, Sd->SeedLen);
         MakeDir(GEN_SEED);
-        GenAllSeeds (PD, Sd);
+        GenAllSeeds (PD, Sd);       
+        WaitFuzzingOnFly (PD, TRUE);
+
         ListDel(&Sd->SdBlkList, NULL);
         Sd->LearnStatus = LS_DONE;
     }
@@ -1408,7 +1410,7 @@ static VOID SigHandle(int sig)
 {
     PLServer *plSrv = &g_plSrv;
 
-    printf ("[SigHandle] exit......\r\n");
+    printf ("[SigHandle] exit, get %u seeds generated....\r\n", plSrv->PD.GenSeedNum);
     ShowQueue(10);
     PLDeInit(plSrv);
     return;
@@ -1519,7 +1521,6 @@ void* LearningMainThread (void *Para)
     ResetTable(PD->DHL->DBBrVariableHandle);
     
     PD->FlSdList = NULL;
-    WaitFuzzingOnFly (PD, TRUE);
     PD->PilotStatus = PILOT_ST_IDLE;
     
     return NULL;
@@ -1549,6 +1550,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
         return FALSE;
     }
 
+    DWORD SeedNo  = 0;
     DWORD IsExit  = FALSE;
     while (!IsExit)
     {
@@ -1574,10 +1576,12 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 
                 MsgSend->MsgLen += sizeof (MsgSeed) + MsgSd->SeedLength;
                 Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
-                printf ("[PilotMode] send PL_MSG_SEED: [%u]%s[LENGTH:%u]\r\n", CurSeed->SeedKey, CurSeed->SName, CurSeed->SeedLen);
+                printf ("[PilotMode][%u/%u] send PL_MSG_SEED: [%u]%s[LENGTH:%u]\r\n", 
+                        SeedNo, FlSdList->NodeNum, CurSeed->SeedKey, CurSeed->SName, CurSeed->SeedLen);
                         
                 PD->SrvState = SRV_S_ITB;
                 LNSeed = LNSeed->Nxt;
+                SeedNo++;
                 break;
             }
             case SRV_S_ITB:

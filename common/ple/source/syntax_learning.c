@@ -775,7 +775,11 @@ BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr)
     struct stat ST;
 
     SDWORD S = stat(SeedFile, &ST);
-    assert (S != -1);
+    if (S < 0)
+    {
+        printf ("[ReadFile] %s stat fail.... \r\n", SeedFile);
+        assert (S != -1);
+    }
 
     FILE *FS = NULL;
     if (SeedAttr & SEED_BINARY)

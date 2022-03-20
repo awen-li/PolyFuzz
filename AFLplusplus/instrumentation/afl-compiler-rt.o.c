@@ -1521,6 +1521,11 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
     _is_sancov = 1;
 
+    if (getenv ("AFL_TRACE_DU_SHUTDOWN") != NULL)
+    {
+        trace_shutdown = 1;
+    }
+
     AFL_DEBUG_SHOW("Running __sanitizer_cov_trace_pc_guard_init: %p-%p (%lu edges), external_loc=%u "
                    "after_fs=%u\n",
                    start, stop, (unsigned long)(stop - start), __afl_external_loc,
@@ -1583,11 +1588,7 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
     AFL_DEBUG_SHOW("Done __sanitizer_cov_trace_pc_guard_init: __afl_final_loc = %u\n", __afl_final_loc);
 
     __afl_shm_init ();
-
-    if (getenv ("AFL_TRACE_DU_SHUTDOWN") != NULL)
-    {
-        trace_shutdown = 1;
-    }
+    
 
     return;
 }

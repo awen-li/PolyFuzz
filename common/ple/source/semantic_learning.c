@@ -100,14 +100,14 @@ VOID InitDbTable (PLServer *plSrv)
     DHL->DBBrVarKeyHandle   = DB_TYPE_BR_VARIABLE_KEY;
 
     DHL->DBCacheBrVarKeyHandle = DB_TYPE_BR_VARIABLE_KEY_CACHE;
-    DHL->DBCacheBrVarHandle =  DB_TYPE_BR_VAR_CHACHE;
+    DHL->DBCacheBrVariableHandle =  DB_TYPE_BR_VAR_CHACHE;
 
     InitDb(NULL);
     
     Ret = DbCreateTable(DHL->DBSeedHandle, 8*1024, sizeof (Seed), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(DHL->DBSeedBlockHandle, 128*1024, sizeof (SeedBlock), 48);
+    Ret = DbCreateTable(DHL->DBSeedBlockHandle, 64*1024, sizeof (SeedBlock), 64);
     assert (Ret != R_FAIL);
 
     Ret = DbCreateTable(DHL->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 64);
@@ -116,16 +116,16 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(DHL->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(DHL->DBCacheBrVarKeyHandle, 128*1024, sizeof (BrVariable), 48);
+    Ret = DbCreateTable(DHL->DBCacheBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
     
-    Ret = DbCreateTable(DHL->DBCacheBrVarHandle, 8*1024, sizeof (BrVariable), 64);
+    Ret = DbCreateTable(DHL->DBCacheBrVariableHandle, 8*1024, sizeof (BrVariable), 64);
     assert (Ret != R_FAIL);
 
     printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",
             TableSize (DHL->DBSeedHandle), TableSize (DHL->DBSeedBlockHandle),
             TableSize (DHL->DBBrVariableHandle), TableSize (DHL->DBBrVarKeyHandle), 
-            TableSize (DHL->DBCacheBrVarKeyHandle), TableSize (DHL->DBCacheBrVarHandle));
+            TableSize (DHL->DBCacheBrVarKeyHandle), TableSize (DHL->DBCacheBrVariableHandle));
     return;
 }
 
@@ -312,7 +312,7 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
     SeedBlock* SBlk = PD->CurSdBlk;
     BYTE* SdName = GetSeedName (SBlk->Sd->SName);
 
-    Req.dwDataType = PD->DHL->DBCacheBrVarHandle;
+    Req.dwDataType = PD->DHL->DBCacheBrVariableHandle;
     Req.dwKeyLen   = snprintf (SKey, sizeof (SKey), "%s-%u-%u-%x", SdName, SBlk->SIndex, SBlk->Length, Key);
     Req.pKeyCtx    = SKey;
 
@@ -496,71 +496,79 @@ void* DECollect (void *Para)
     PilotData *PD   = (PilotData*)Para;
     DbHandle *DHL = PD->DHL;
 
-    DWORD QSize = QueueSize ();
-    DEBUG ("[DECollect] entry with QUEUE size: %u.....\r\n", QSize);
-    
-    DWORD QItr  = 0;
-    DWORD BrKeyNum = 0;
-    DWORD ProccEvent = 0;
-    while (PD->FzExit == FALSE || QSize != 0)
+    while (PD->PilotStatus == PILOT_ST_CLOOECTING)
     {
-        QNode *QN = FrontQueue ();
-        if (QN == NULL || QN->IsReady == FALSE)
+        sem_wait(&PD->CollectStartSem);
+        
+        DWORD QSize = QueueSize ();
+        DEBUG ("[DECollect] entry with QUEUE size: %u.....\r\n", QSize);
+        
+        DWORD QItr  = 0;
+        DWORD BrKeyNum = 0;
+        DWORD ProccEvent = 0;
+        while (PD->FzExit == FALSE || QSize != 0)
         {
-            if (QN && (time (NULL) - QN->TimeStamp >= 1))
+            QNode *QN = FrontQueue ();
+            if (QN == NULL || QN->IsReady == FALSE)
             {
-                OutQueue (QN);
+                if (QN && (time (NULL) - QN->TimeStamp >= 1))
+                {
+                    OutQueue (QN);
+                }
+                QSize = QueueSize ();  
+                continue;
             }
-            QSize = QueueSize ();  
-            continue;
-        }
 
-        if (QN->TrcKey == TARGET_EXIT_KEY)
+            if (QN->TrcKey == TARGET_EXIT_KEY)
+            {
+                QItr ++;
+                assert (QItr <= FZ_SAMPLE_NUM);
+                DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x, Where:%u, target exit.... \r\n", 
+                        QItr, QSize, QN->TrcKey, ((ExitInfo*)(QN->Buf))->Where);
+            }
+            else
+            {
+                ObjValue *OV = (ObjValue *)QN->Buf;
+
+                BrKeyNum += AddBrVarKey (PD->DHL->DBCacheBrVarKeyHandle, QN->TrcKey);
+
+                CacheBrVar (PD, QN->TrcKey, OV, QItr);
+                DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
+                        QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
+            }
+
+            ProccEvent++;
+            OutQueue (QN);
+            QSize = QueueSize ();
+            
+        }   
+        DEBUG ("DECollect loop over.....[%u] EVENT processed\r\n", ProccEvent);
+
+        if (BrKeyNum == 0)
         {
-            QItr ++;
-            assert (QItr <= FZ_SAMPLE_NUM);
-            DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x, Where:%u, target exit.... \r\n", 
-                    QItr, QSize, QN->TrcKey, ((ExitInfo*)(QN->Buf))->Where);
+            SeedBlock* SBlk = PD->CurSdBlk;
+            DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
+                   GetSeedName (SBlk->Sd->SName),
+                   SBlk->SIndex, SBlk->Length);
+            ResetTable (DHL->DBCacheBrVariableHandle);
         }
         else
         {
-            ObjValue *OV = (ObjValue *)QN->Buf;
+            CopyTable (DHL->DBBrVariableHandle, DHL->DBCacheBrVariableHandle);
+            printf ("\t@@@DECollect --- New BR found [to %u]. [Table%u] DataNum = %u after copy [Table%u][%u]! ---> Reset CacheBr to ",
+                    QueryDataNum(DHL->DBCacheBrVarKeyHandle),
+                    DHL->DBBrVariableHandle, QueryDataNum(DHL->DBBrVariableHandle),
+                    DHL->DBCacheBrVariableHandle, QueryDataNum(DHL->DBCacheBrVariableHandle));
+            
+            ResetTable (DHL->DBCacheBrVariableHandle);
+            printf ("[%u] \r\n", TableSize(DHL->DBCacheBrVariableHandle));
 
-            BrKeyNum += AddBrVarKey (PD->DHL->DBCacheBrVarKeyHandle, QN->TrcKey);
-
-            CacheBrVar (PD, QN->TrcKey, OV, QItr);
-            DEBUG ("[%u][QSize-%u]QUEUE: KEY:%u - [type:%u, length:%u]Value:%lu \r\n", 
-                    QItr , QSize, QN->TrcKey, (DWORD)OV->Type, (DWORD)OV->Length, OV->Value);
+            IncLearnStat (PD, BrKeyNum);
         }
 
-        ProccEvent++;
-        OutQueue (QN);
-        QSize = QueueSize ();
-        
-    }   
-    DEBUG ("DECollect loop over.....[%u] EVENT processed\r\n", ProccEvent);
-
-    if (BrKeyNum == 0)
-    {
-        SeedBlock* SBlk = PD->CurSdBlk;
-        DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
-               GetSeedName (SBlk->Sd->SName),
-               SBlk->SIndex, SBlk->Length);
-        ResetTable (DHL->DBCacheBrVarHandle);
+        sem_post(&PD->CollectEndSem);
     }
-    else
-    {
-        CopyTable (DHL->DBBrVariableHandle, DHL->DBCacheBrVarHandle);
-        printf ("\t@@@DECollect --- New BR found [to %u]. [Table%u] DataNum = %u after copy [Table%u][%u]! ---> Reset CacheBr to ",
-                QueryDataNum(DHL->DBCacheBrVarKeyHandle),
-                DHL->DBBrVariableHandle, QueryDataNum(DHL->DBBrVariableHandle),
-                DHL->DBCacheBrVarHandle, QueryDataNum(DHL->DBCacheBrVarHandle));
-        
-        ResetTable (DHL->DBCacheBrVarHandle);
-        printf ("[%u] \r\n", TableSize(DHL->DBCacheBrVarHandle));
-
-        IncLearnStat (PD, BrKeyNum);
-    }
+    
     pthread_exit ((void*)0);
 }
 
@@ -1413,12 +1421,16 @@ static VOID SigHandle(int sig)
     printf ("[SigHandle] exit, get %u seeds generated....\r\n", plSrv->PD.GenSeedNum);
     ShowQueue(10);
     PLDeInit(plSrv);
+    sem_destroy(&plSrv->PD.CollectStartSem);
+    sem_destroy(&plSrv->PD.CollectEndSem);
     return;
 }
 
 
 VOID PLInit (PLServer *plSrv, PLOption *PLOP)
 {
+    DWORD Ret;
+    
     DeShm ();
     memcpy (&plSrv->PLOP, PLOP, sizeof (PLOption));
 
@@ -1469,6 +1481,10 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     PD->AvgSamplingNum = 0;
     mutex_lock_init(&PD->GenSeedLock);
 
+    Ret = sem_init(&PD->CollectStartSem, 0, 0);
+    Ret|= sem_init(&PD->CollectEndSem, 0, 0);
+    assert (Ret == 0);
+
     /* init standard data */
     StanddData *SD = &plSrv->SD;
     SD->SrvState   = SRV_S_STARTUP;
@@ -1476,7 +1492,7 @@ VOID PLInit (PLServer *plSrv, PLOption *PLOP)
     SD->PLOP       = &plSrv->PLOP;
     
     /* init msg server */
-    DWORD Ret = SrvInit (&plSrv->SkInfo);
+    Ret = SrvInit (&plSrv->SkInfo);
     assert (Ret == R_SUCCESS);
 
     /* init DB */
@@ -1549,6 +1565,10 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
         printf ("[PilotMode] Warning: entry pilot-mode with no seeds for learning.\r\n");
         return FALSE;
     }
+
+    /* create data collection thread */
+    PD->PilotStatus = PILOT_ST_CLOOECTING;
+    pthread_t CollectThrId = CollectBrVariables (PD);
 
     DWORD SeedNo  = 0;
     DWORD IsExit  = FALSE;
@@ -1624,7 +1644,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
         
                         /* before the fuzzing iteration, start the thread for collecting the branch variables */
                         PD->FzExit = FALSE;
-                        pthread_t CbvThrId = CollectBrVariables (PD);
+                        sem_post(&PD->CollectStartSem);
         
                         /* inform the fuzzer */
                         Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
@@ -1635,11 +1655,9 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                         assert (MsgRecv->MsgType == PL_MSG_ITR_BEGIN);
                         DEBUG ("[PilotMode][ITB-RECV] recv PL_MSG_ITR_BEGIN done[MSG-LEN:%u]: OFF:%u[SEED-LEN:%u][Sample:%u]\r\n", 
                                 MsgSend->MsgLen, OFF, TryLength, MsgItr->SampleNum);
+
                         PD->FzExit = TRUE;
-        
-                        VOID *TRet = NULL;
-                        pthread_join (CbvThrId, &TRet);
-                                
+                        sem_wait(&PD->CollectEndSem);                      
                     }
                 }
                         
@@ -1663,10 +1681,18 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 MsgSend = FormatMsg(SkInfo, PL_MSG_FZ_FIN);
                 Send (SkInfo, (BYTE*)MsgSend, MsgSend->MsgLen);
                 printf ("[PilotMode][FIN] send PL_MSG_FZ_FIN...\r\n");
+  
+                /* set the PILOT as busy: not switch to PILOT until free (FALSE) */
+                PD->PilotStatus = PILOT_ST_LEARNING; 
+
+                /* wait the collection thread to exit */
+                VOID *TRet = NULL;
+                sem_post(&PD->CollectStartSem);
+                sem_wait(&PD->CollectEndSem);
+                pthread_join (CollectThrId, &TRet);
 
                 /* start a thread for trainning */
                 pthread_t Tid = 0;
-                PD->PilotStatus = PILOT_ST_LEARNING; /* set the PILOT as busy: not switch to PILOT until free (FALSE) */
                 int Ret = pthread_create(&Tid, NULL, LearningMainThread, PD);
                 if (Ret != 0)
                 {

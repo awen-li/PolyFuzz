@@ -13,6 +13,7 @@
 #include <sys/socket.h>   
 #include <netinet/in.h>   
 #include <unistd.h>
+#include <semaphore.h>
 #include "pl_message.h"
 
 #define FZ_SAMPLE_NUM        (32)
@@ -24,7 +25,7 @@
 #define LEARN_BLOCK_SIZE     (32)
 #define LEARN_BLOCK_NUM      (256)
 #define GEN_SEED_UNIT        (8192)
-#define GEN_SEED_MAXNUM      (64 * GEN_SEED_UNIT)
+#define GEN_SEED_MAXNUM      (32 * GEN_SEED_UNIT)
 
 #define GEN_SEED             ("gen_seeds")
 #define BLOCK_STAT           ("BLOCK_STAT.st")
@@ -170,7 +171,7 @@ typedef struct DB_HANDLE
     DWORD DBBrVarKeyHandle;
 
     DWORD DBCacheBrVarKeyHandle;
-    DWORD DBCacheBrVarHandle;
+    DWORD DBCacheBrVariableHandle;
 }DbHandle;
 
 typedef enum
@@ -184,14 +185,17 @@ typedef enum
 
 typedef enum
 {
-    PILOT_ST_IDLE = 0,
-    PILOT_ST_LEARNING = 1,
-    PILOT_ST_SEEDING = 2,
+    PILOT_ST_IDLE       = 0,
+    PILOT_ST_CLOOECTING = 1,
+    PILOT_ST_LEARNING   = 2,
+    PILOT_ST_SEEDING    = 3,
 }PILOT_ST;
 
 typedef struct PilotData
 {
     DWORD PilotStatus;
+    sem_t CollectStartSem;
+    sem_t CollectEndSem;
     
     DWORD SrvState;
     DWORD FzExit;

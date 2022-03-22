@@ -309,6 +309,11 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
     DWORD Ret;
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
+    if (QItr >= FZ_SAMPLE_NUM)
+    {
+        return;
+    }
+
     SeedBlock* SBlk = PD->CurSdBlk;
     BYTE* SdName = GetSeedName (SBlk->Sd->SName);
 
@@ -522,7 +527,12 @@ void* DECollect (void *Para)
             if (QN->TrcKey == TARGET_EXIT_KEY)
             {
                 QItr ++;
-                assert (QItr <= FZ_SAMPLE_NUM);
+                if (QItr > FZ_SAMPLE_NUM)
+                {
+                    /* this is an abnormal, but we can not break directly 
+                       to make sure the queue be emptied*/
+                    ;
+                }
                 DEBUG ("##### [%u][QSize-%u]QUEUE: KEY:%x, Where:%u, target exit.... \r\n", 
                         QItr, QSize, QN->TrcKey, ((ExitInfo*)(QN->Buf))->Where);
             }

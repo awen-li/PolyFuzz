@@ -6511,10 +6511,22 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
     /* for these seed, we only consider the PC */
     setenv("AFL_TRACE_DU_SHUTDOWN", "1", 1);
 
-    u32 random_saved = random () % nl_cnt;
+    /* select random seeds to save */
+    u32 seed_nos[SAVE_SEED_PER_UNIT] = {-1};
+    u32 unit_size = nl_cnt/SAVE_SEED_PER_UNIT;
+    if (nl_cnt > 0) {
+        for (u32 ix = 0; ix < SAVE_SEED_PER_UNIT; ix++)
+        {
+            seed_nos [ix] = ix*unit_size + random () % unit_size;
+        }
+    }
+
+
+    u32 random_saved;
     i = nl_cnt;
     do {
         --i;
+        random_saved = -1;
 
         if (nl[i]->d_name[0] == '.') {
             free(nl[i]);
@@ -6536,6 +6548,14 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
         if (unlikely(fd < 0)) { PFATAL("Unable to open '%s'", seed); }
         ck_read(fd, buf, Len, seed);
         close(fd);
+
+        for (u32 ix = 0; ix < SAVE_SEED_PER_UNIT; ix++)
+        {
+            if (seed_nos[ix] == i) {
+                random_saved = i;
+                break;
+            }
+        }
 
         if (i != random_saved) {
             remove (seed);

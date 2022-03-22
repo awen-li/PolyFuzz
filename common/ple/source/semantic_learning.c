@@ -1036,6 +1036,7 @@ static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, D
     
     if (SeedNum <= GEN_SEED_MAXNUM)
     {
+        printf ("[ComputeBudget][Block:%u/%u]Total SeedNum = %lu\r\n", ValidSANum, SANum, SeedNum);
         return;
     }
 

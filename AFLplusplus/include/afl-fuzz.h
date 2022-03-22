@@ -834,7 +834,7 @@ typedef struct afl_state {
 #define SRV_BUF_LEN               (1024)
 #define AFL_PL_SOCKET_PORT        ("9999")
 #define SEED_PROC_UNIT            (8192)
-#define SAVE_SEED_PER_UNIT        (4)
+#define SAVE_SEED_PER_UNIT        (2)
 
 
 typedef enum

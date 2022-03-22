@@ -1100,7 +1100,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
 
         if (LearnFailNum == Sd->SeedLen/Align)
         {
-            printf ("@@@GenAllSeeds [%s]blocknum:%u, learning fails...!\r\n", PD->CurSeedName, Sd->SeedLen/Align);        
+            printf ("@@@GenAllSeeds [%s]Align:%u, blocknum:%u, learning fails...!\r\n", PD->CurSeedName, Align, Sd->SeedLen/Align);        
         }
         else
         {

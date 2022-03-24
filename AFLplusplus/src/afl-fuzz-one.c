@@ -5849,6 +5849,300 @@ static inline u32 gen_random_item (afl_state_t *afl,
     return len;
 }
 
+
+
+static inline u32 havoc_mutate (afl_state_t *afl, u8 **cur_out_buf, u32 out_len) {
+
+    u8 *out_buf = *cur_out_buf;
+    u32 r_max, r;
+
+#define MAX_HAVOC_ENTRY 59                                      /* 55 to 60 */
+
+    r_max = (MAX_HAVOC_ENTRY + 1) + (afl->extras_cnt ? 4 : 0) + (afl->a_extras_cnt ? 4 : 0);
+
+/* We essentially just do several thousand runs (depending on perf_score)
+   where we take the input file and make random stacked tweaks. */
+#define FLIP_BIT(_ar, _b)                       \
+              do {                                      \
+                                                        \
+                u8 *_arf = (u8 *)(_ar);                 \
+                u32 _bf = (_b);                         \
+                _arf[(_bf) >> 3] ^= (128 >> ((_bf)&7));\
+                                                        \
+              } while (0)
+   
+    u32 use_stacking = 1 << (1 + rand_below(afl, afl->havoc_stack_pow2));
+    afl->stage_cur_val = use_stacking;
+    for (u32 i = 0; i < use_stacking; ++i) {
+    
+        switch ((r = rand_below(afl, r_max))) {
+    
+            case 0 ... 3: {
+    
+                /* Flip a single bit somewhere. Spooky! */
+                FLIP_BIT(out_buf, rand_below(afl, out_len << 3));
+                break;
+            }
+    
+            case 4 ... 7: {
+    
+                /* Set byte to interesting value. */
+                out_buf[rand_below(afl, out_len)] = interesting_8[rand_below(afl, sizeof(interesting_8))];
+                break;
+            }
+    
+            case 8 ... 9: {
+    
+                /* Set word to interesting value, randomly choosing endian. */
+                if (out_len < 2) { break; }
+                *(u16 *)(out_buf + rand_below(afl, out_len - 1)) = interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)];
+                break;
+            }
+    
+            case 10 ... 11: {
+    
+                /* Set word to interesting value, randomly choosing endian. */
+                if (out_len < 2) { break; }
+                *(u16 *)(out_buf + rand_below(afl, out_len - 1)) = SWAP16(interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)]);
+                break;
+            }
+    
+            case 12 ... 13: {
+    
+                /* Set dword to interesting value, randomly choosing endian. */
+                if (out_len < 4) { break; }
+                *(u32 *)(out_buf + rand_below(afl, out_len - 3)) = interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)];
+                break;
+            }
+    
+            case 14 ... 15: {
+    
+                /* Set dword to interesting value, randomly choosing endian. */
+                if (out_len < 4) { break; }
+                *(u32 *)(out_buf + rand_below(afl, out_len - 3)) = SWAP32(interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)]);
+                break;
+            }
+    
+            case 16 ... 19: {
+    
+                /* Randomly subtract from byte. */
+                out_buf[rand_below(afl, out_len)] -= 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 20 ... 23: {
+    
+                /* Randomly add to byte. */
+                out_buf[rand_below(afl, out_len)] += 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 24 ... 25: {
+                    
+                /* Randomly subtract from word, little endian. */
+                if (out_len < 2) { break; }
+                u32 pos = rand_below(afl, out_len - 1);
+                *(u16 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 26 ... 27: {
+    
+                /* Randomly subtract from word, big endian. */
+                if (out_len < 2) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 1);
+                u16 num = 1 + rand_below(afl, ARITH_MAX);
+                *(u16 *)(out_buf + pos) =
+                SWAP16(SWAP16(*(u16 *)(out_buf + pos)) - num);
+                break;
+            }
+    
+            case 28 ... 29: {
+    
+                /* Randomly add to word, little endian. */
+                if (out_len < 2) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 1);
+                *(u16 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 30 ... 31: {
+    
+                /* Randomly add to word, big endian. */
+                if (out_len < 2) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 1);
+                u16 num = 1 + rand_below(afl, ARITH_MAX);
+                *(u16 *)(out_buf + pos) =
+                SWAP16(SWAP16(*(u16 *)(out_buf + pos)) + num);
+                break;
+            }
+    
+            case 32 ... 33: {
+    
+                /* Randomly subtract from dword, little endian. */
+                if (out_len < 4) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 3);
+                *(u32 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 34 ... 35: {
+    
+                /* Randomly subtract from dword, big endian. */
+                if (out_len < 4) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 3);
+                u32 num = 1 + rand_below(afl, ARITH_MAX);
+    
+                *(u32 *)(out_buf + pos) =
+                SWAP32(SWAP32(*(u32 *)(out_buf + pos)) - num);
+                break;
+            }
+    
+            case 36 ... 37: {
+    
+                /* Randomly add to dword, little endian. */
+                if (out_len < 4) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 3);
+                *(u32 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
+                break;
+            }
+    
+            case 38 ... 39: {
+    
+                /* Randomly add to dword, big endian. */
+                if (out_len < 4) { break; }
+    
+                u32 pos = rand_below(afl, out_len - 3);
+                u32 num = 1 + rand_below(afl, ARITH_MAX);
+                *(u32 *)(out_buf + pos) =
+                SWAP32(SWAP32(*(u32 *)(out_buf + pos)) + num);
+                break;
+            }
+    
+            case 40 ... 43: {
+    
+                /* Just set a random byte to a random value. Because,
+                   why not. We use XOR with 1-255 to eliminate the possibility of a no-op. */
+                out_buf[rand_below(afl, out_len)] ^= 1 + rand_below(afl, 255);
+                break;
+            }
+    
+            case 44 ... 46: {
+    
+                if (out_len + HAVOC_BLK_XL < MAX_FILE) {
+    
+                       /* Clone bytes. */
+                       u32 clone_len = choose_block_len(afl, out_len);
+                       u32 clone_from = rand_below(afl, out_len - clone_len + 1);
+                       u32 clone_to = rand_below(afl, out_len);
+    
+                       u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), out_len + clone_len);
+                       if (unlikely(!new_buf)) { PFATAL("alloc"); }
+    
+                       /* Head */
+                       memcpy(new_buf, out_buf, clone_to);
+    
+                       /* Inserted part */
+                       memcpy(new_buf + clone_to, out_buf + clone_from, clone_len);
+    
+                       /* Tail */
+                       memcpy(new_buf + clone_to + clone_len, out_buf + clone_to, out_len - clone_to);
+    
+                       out_buf = new_buf;
+                       afl_swap_bufs(AFL_BUF_PARAM(out), AFL_BUF_PARAM(out_scratch));
+                       out_len += clone_len;
+                 }
+                 break;
+            }
+    
+            case 47: {
+    
+                 if (out_len + HAVOC_BLK_XL < MAX_FILE) {
+    
+                        /* Insert a block of constant bytes (25%). */
+                        u32 clone_len = choose_block_len(afl, HAVOC_BLK_XL);
+                        u32 clone_to = rand_below(afl, out_len);
+    
+                        u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), out_len + clone_len);
+                        if (unlikely(!new_buf)) { PFATAL("alloc"); }
+    
+                        /* Head */
+                        memcpy(new_buf, out_buf, clone_to);
+    
+                        /* Inserted part */
+                        memset(new_buf + clone_to,
+                                   rand_below(afl, 2) ? rand_below(afl, 256):out_buf[rand_below(afl, out_len)], clone_len);
+    
+                        /* Tail */
+                        memcpy(new_buf + clone_to + clone_len, out_buf + clone_to, out_len - clone_to);
+    
+                        out_buf = new_buf;
+                        afl_swap_bufs(AFL_BUF_PARAM(out), AFL_BUF_PARAM(out_scratch));
+                        out_len += clone_len;
+                }
+    
+                break;
+            }
+    
+            case 48 ... 50: {
+    
+                /* Overwrite bytes with a randomly selected chunk bytes. */
+                 if (out_len < 2) { break; }
+    
+                 u32 copy_len = choose_block_len(afl, out_len - 1);
+                 u32 copy_from = rand_below(afl, out_len - copy_len + 1);
+                 u32 copy_to = rand_below(afl, out_len - copy_len + 1);
+    
+                 if (likely(copy_from != copy_to)) {
+                    memmove(out_buf + copy_to, out_buf + copy_from, copy_len);
+                 }
+                break;
+            }
+    
+            case 51: {
+    
+                /* Overwrite bytes with fixed bytes. */
+                if (out_len < 2) { break; }
+    
+                u32 copy_len = choose_block_len(afl, out_len - 1);
+                u32 copy_to = rand_below(afl, out_len - copy_len + 1);
+                memset(out_buf + copy_to,
+                       rand_below(afl, 2) ? rand_below(afl, 256):out_buf[rand_below(afl, out_len)], copy_len);
+                break;
+            }
+    
+            // increase from 4 up to 8?
+            case 52 ... MAX_HAVOC_ENTRY: {
+    
+                /* Delete bytes. We're making this a bit more likely
+                           than insertion (the next option) in hopes of keeping files reasonably small. */
+                if (out_len < 2) { break; }
+    
+                /* Don't delete too much. */
+                u32 del_len = choose_block_len(afl, out_len - 1);
+                u32 del_from = rand_below(afl, out_len - del_len + 1);
+                memmove(out_buf + del_from, out_buf + del_from + del_len, out_len - del_from - del_len);
+                out_len -= del_len;
+                break;
+            }
+    
+            default: 
+                break;
+        }
+    
+    }
+
+    *cur_out_buf = out_buf;
+    return out_len;
+}
+
+
 /* PL-based fuzzing  */
 u8 pl_offical_fuzzing(afl_state_t *afl) {
     u8 ret_val = 1, doing_det = 0;
@@ -6105,291 +6399,9 @@ havoc_stage:
     path_queued = afl->queued_paths;
     cross_paths = afl->stmpt.cross_paths;
 
-    /* We essentially just do several thousand runs (depending on perf_score)
-       where we take the input file and make random stacked tweaks. */
-#define FLIP_BIT(_ar, _b)                       \
-          do {                                      \
-                                                    \
-            u8 *_arf = (u8 *)(_ar);                 \
-            u32 _bf = (_b);                         \
-            _arf[(_bf) >> 3] ^= (128 >> ((_bf)&7));\
-                                                    \
-          } while (0)
-
-#define MAX_HAVOC_ENTRY 59                                      /* 55 to 60 */
-
-    u32 r_max, r;
-    r_max = (MAX_HAVOC_ENTRY + 1) + (afl->extras_cnt ? 4 : 0) + (afl->a_extras_cnt ? 4 : 0);
-
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
 
-        u32 use_stacking = 1 << (1 + rand_below(afl, afl->havoc_stack_pow2));
-        afl->stage_cur_val = use_stacking;
-        for (u32 i = 0; i < use_stacking; ++i) {
-
-            switch ((r = rand_below(afl, r_max))) {
-
-                case 0 ... 3: {
-
-                    /* Flip a single bit somewhere. Spooky! */
-                    FLIP_BIT(out_buf, rand_below(afl, temp_len << 3));
-                    break;
-                }
-
-                case 4 ... 7: {
-
-                    /* Set byte to interesting value. */
-                    out_buf[rand_below(afl, temp_len)] = interesting_8[rand_below(afl, sizeof(interesting_8))];
-                    break;
-                }
-
-                case 8 ... 9: {
-
-                    /* Set word to interesting value, randomly choosing endian. */
-                    if (temp_len < 2) { break; }
-                    *(u16 *)(out_buf + rand_below(afl, temp_len - 1)) = interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)];
-                    break;
-                }
-
-                case 10 ... 11: {
-
-                    /* Set word to interesting value, randomly choosing endian. */
-                    if (temp_len < 2) { break; }
-                    *(u16 *)(out_buf + rand_below(afl, temp_len - 1)) = SWAP16(interesting_16[rand_below(afl, sizeof(interesting_16) >> 1)]);
-                    break;
-                }
-
-                case 12 ... 13: {
-
-                    /* Set dword to interesting value, randomly choosing endian. */
-                    if (temp_len < 4) { break; }
-                    *(u32 *)(out_buf + rand_below(afl, temp_len - 3)) = interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)];
-                    break;
-                }
-
-                case 14 ... 15: {
-
-                    /* Set dword to interesting value, randomly choosing endian. */
-                    if (temp_len < 4) { break; }
-                    *(u32 *)(out_buf + rand_below(afl, temp_len - 3)) = SWAP32(interesting_32[rand_below(afl, sizeof(interesting_32) >> 2)]);
-                    break;
-                }
-
-                case 16 ... 19: {
-
-                    /* Randomly subtract from byte. */
-                    out_buf[rand_below(afl, temp_len)] -= 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 20 ... 23: {
-
-                    /* Randomly add to byte. */
-                    out_buf[rand_below(afl, temp_len)] += 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 24 ... 25: {
-                
-                    /* Randomly subtract from word, little endian. */
-                    if (temp_len < 2) { break; }
-                    u32 pos = rand_below(afl, temp_len - 1);
-                    *(u16 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 26 ... 27: {
-
-                    /* Randomly subtract from word, big endian. */
-                    if (temp_len < 2) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 1);
-                    u16 num = 1 + rand_below(afl, ARITH_MAX);
-                    *(u16 *)(out_buf + pos) =
-                    SWAP16(SWAP16(*(u16 *)(out_buf + pos)) - num);
-                    break;
-                }
-
-                case 28 ... 29: {
-
-                    /* Randomly add to word, little endian. */
-                    if (temp_len < 2) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 1);
-                    *(u16 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 30 ... 31: {
-
-                    /* Randomly add to word, big endian. */
-                    if (temp_len < 2) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 1);
-                    u16 num = 1 + rand_below(afl, ARITH_MAX);
-                    *(u16 *)(out_buf + pos) =
-                    SWAP16(SWAP16(*(u16 *)(out_buf + pos)) + num);
-                    break;
-                }
-
-                case 32 ... 33: {
-
-                    /* Randomly subtract from dword, little endian. */
-                    if (temp_len < 4) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 3);
-                    *(u32 *)(out_buf + pos) -= 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 34 ... 35: {
-
-                    /* Randomly subtract from dword, big endian. */
-                    if (temp_len < 4) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 3);
-                    u32 num = 1 + rand_below(afl, ARITH_MAX);
-
-                    *(u32 *)(out_buf + pos) =
-                    SWAP32(SWAP32(*(u32 *)(out_buf + pos)) - num);
-                    break;
-                }
-
-                case 36 ... 37: {
-
-                    /* Randomly add to dword, little endian. */
-                    if (temp_len < 4) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 3);
-                    *(u32 *)(out_buf + pos) += 1 + rand_below(afl, ARITH_MAX);
-                    break;
-                }
-
-                case 38 ... 39: {
-
-                    /* Randomly add to dword, big endian. */
-                    if (temp_len < 4) { break; }
-
-                    u32 pos = rand_below(afl, temp_len - 3);
-                    u32 num = 1 + rand_below(afl, ARITH_MAX);
-                    *(u32 *)(out_buf + pos) =
-                    SWAP32(SWAP32(*(u32 *)(out_buf + pos)) + num);
-                    break;
-                }
-
-                case 40 ... 43: {
-
-                    /* Just set a random byte to a random value. Because,
-                        why not. We use XOR with 1-255 to eliminate the
-                        possibility of a no-op. */
-                    out_buf[rand_below(afl, temp_len)] ^= 1 + rand_below(afl, 255);
-                    break;
-                }
-
-                case 44 ... 46: {
-
-                    if (temp_len + HAVOC_BLK_XL < MAX_FILE) {
-
-                        /* Clone bytes. */
-                        u32 clone_len = choose_block_len(afl, temp_len);
-                        u32 clone_from = rand_below(afl, temp_len - clone_len + 1);
-                        u32 clone_to = rand_below(afl, temp_len);
-
-                        u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), temp_len + clone_len);
-                        if (unlikely(!new_buf)) { PFATAL("alloc"); }
-
-                        /* Head */
-                        memcpy(new_buf, out_buf, clone_to);
-
-                        /* Inserted part */
-                        memcpy(new_buf + clone_to, out_buf + clone_from, clone_len);
-
-                        /* Tail */
-                        memcpy(new_buf + clone_to + clone_len, out_buf + clone_to, temp_len - clone_to);
-
-                        out_buf = new_buf;
-                        afl_swap_bufs(AFL_BUF_PARAM(out), AFL_BUF_PARAM(out_scratch));
-                        temp_len += clone_len;
-                    }
-                    break;
-                }
-
-                case 47: {
-
-                    if (temp_len + HAVOC_BLK_XL < MAX_FILE) {
-
-                        /* Insert a block of constant bytes (25%). */
-                        u32 clone_len = choose_block_len(afl, HAVOC_BLK_XL);
-                        u32 clone_to = rand_below(afl, temp_len);
-
-                        u8 *new_buf = afl_realloc(AFL_BUF_PARAM(out_scratch), temp_len + clone_len);
-                        if (unlikely(!new_buf)) { PFATAL("alloc"); }
-
-                        /* Head */
-                        memcpy(new_buf, out_buf, clone_to);
-
-                        /* Inserted part */
-                        memset(new_buf + clone_to,
-                               rand_below(afl, 2) ? rand_below(afl, 256):out_buf[rand_below(afl, temp_len)], clone_len);
-
-                        /* Tail */
-                        memcpy(new_buf + clone_to + clone_len, out_buf + clone_to, temp_len - clone_to);
-
-                        out_buf = new_buf;
-                        afl_swap_bufs(AFL_BUF_PARAM(out), AFL_BUF_PARAM(out_scratch));
-                        temp_len += clone_len;
-                    }
-
-                    break;
-                }
-
-                case 48 ... 50: {
-
-                    /* Overwrite bytes with a randomly selected chunk bytes. */
-                     if (temp_len < 2) { break; }
-
-                     u32 copy_len = choose_block_len(afl, temp_len - 1);
-                     u32 copy_from = rand_below(afl, temp_len - copy_len + 1);
-                     u32 copy_to = rand_below(afl, temp_len - copy_len + 1);
-
-                     if (likely(copy_from != copy_to)) {
-                        memmove(out_buf + copy_to, out_buf + copy_from, copy_len);
-                     }
-                    break;
-                }
-
-                case 51: {
-
-                    /* Overwrite bytes with fixed bytes. */
-                    if (temp_len < 2) { break; }
-
-                    u32 copy_len = choose_block_len(afl, temp_len - 1);
-                    u32 copy_to = rand_below(afl, temp_len - copy_len + 1);
-                    memset(out_buf + copy_to,
-                           rand_below(afl, 2) ? rand_below(afl, 256):out_buf[rand_below(afl, temp_len)], copy_len);
-                    break;
-                }
-
-                // increase from 4 up to 8?
-                case 52 ... MAX_HAVOC_ENTRY: {
-
-                    /* Delete bytes. We're making this a bit more likely
-                       than insertion (the next option) in hopes of keeping files reasonably small. */
-                    if (temp_len < 2) { break; }
-
-                    /* Don't delete too much. */
-                    u32 del_len = choose_block_len(afl, temp_len - 1);
-                    u32 del_from = rand_below(afl, temp_len - del_len + 1);
-                    memmove(out_buf + del_from, out_buf + del_from + del_len, temp_len - del_from - del_len);
-                    temp_len -= del_len;
-                    break;
-                }
-
-                default: 
-                    break;
-            }
-
-        }
+        temp_len = havoc_mutate (afl, &out_buf, temp_len);
 
         if (common_fuzz_stuff(afl, out_buf, temp_len)) { goto abandon_entry; }
 
@@ -6497,6 +6509,41 @@ abandon_entry:
 }
 
 
+
+static inline void havoc_fuzzing(afl_state_t *afl, u32 stages, u8 *in_buf, u32 len) {
+
+    u8 *out_buf;
+    u32 temp_len;
+
+    out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+    assert (out_buf != NULL);
+    memcpy(out_buf, in_buf, len);
+    temp_len = len;
+
+    afl->stage_name  = "onfly_havoc";
+    afl->stage_short = "onfly_havoc";
+    afl->stage_max   =  stages;
+
+    common_fuzz_stuff(afl, out_buf, temp_len);
+    for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
+
+        temp_len = havoc_mutate (afl, &out_buf, temp_len);
+
+        common_fuzz_stuff(afl, out_buf, temp_len);
+
+        /* out_buf might have been mangled a bit, so let's restore it to its original size and shape. */
+        out_buf = afl_realloc(AFL_BUF_PARAM(out), len);
+        if (unlikely(!out_buf)) { PFATAL("alloc"); }
+        
+        temp_len = len;
+        memcpy(out_buf, in_buf, len);
+    }
+ 
+    return;
+}
+
+
+
 void read_seed_fuzz(afl_state_t *afl, u8 *dir) 
 {
     struct dirent **nl;
@@ -6517,10 +6564,10 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
     if (nl_cnt > 0) {
         for (u32 ix = 0; ix < SAVE_SEED_PER_UNIT; ix++)
         {
-            seed_nos [ix] = ix*unit_size + random () % unit_size;
+            (void)unit_size;
+            //seed_nos [ix] = ix*unit_size + random () % unit_size;
         }
     }
-
 
     u32 random_saved;
     i = nl_cnt;
@@ -6538,15 +6585,15 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
             PFATAL("Unable to access '%s'", seed);
         }
         
-        u32 Len = (u32)st.st_size;
-        u8 *buf = afl_realloc((void **)&afl->testcase_buf, Len);
+        u32 len = (u32)st.st_size;
+        u8 *buf = afl_realloc((void **)&afl->testcase_buf, len);
         if (unlikely(!buf)) {
-            PFATAL("Unable to malloc '%s' with len %u", seed, Len);
+            PFATAL("Unable to malloc '%s' with len %u", seed, len);
         }
 
         int fd = open(seed, O_RDONLY);
         if (unlikely(fd < 0)) { PFATAL("Unable to open '%s'", seed); }
-        ck_read(fd, buf, Len, seed);
+        ck_read(fd, buf, len, seed);
         close(fd);
 
         for (u32 ix = 0; ix < SAVE_SEED_PER_UNIT; ix++)
@@ -6566,7 +6613,7 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
             add_to_queue(afl, target, st.st_size >= MAX_FILE ? MAX_FILE : st.st_size, 1);
         }
         
-        common_fuzz_stuff(afl, buf, Len);
+        havoc_fuzzing(afl, 5, buf, len);
         free (nl[i]);
         ck_free(seed);
           

@@ -43,7 +43,7 @@ void log_perf_periodic(int signum)
 
     if (first_crt != 0)
     {
-        fprintf (Pef, "time,paths,blocks,crashes\n");
+        fprintf (Pef, "time,paths,blocks,crashes # real-map-size:%u\n", afl_ref->fsrv.real_map_size);
     }
 
     u32 block_num = 0;

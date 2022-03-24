@@ -1136,8 +1136,9 @@ static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, D
 
                 SeedNum *= SAList[ix].VarWeight;
             }
+            VarNum  += SAList[ix].VarNum;
         }
-        printf ("[ComputeBudget-SP_VARNUM][Block:%u/%u]SeedNum = %lu, Diff = %u\r\n", ValidSANum, SANum, SeedNum, Diff);
+        printf ("[ComputeBudget-SP_VARNUM][Block:%u/%u]SeedNum = %lu, VarNum = %u, Diff = %u\r\n", ValidSANum, SANum, SeedNum, VarNum, Diff);
     }
 
     return;    
@@ -1309,11 +1310,11 @@ void* TrainingThread (void *Para)
     ThrData *Td = (ThrData *)Para;
     if (Td->BvDir == NULL)
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.4", Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.5", Td->TrainFile);
     }
     else
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.4", Td->BvDir, Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.5", Td->BvDir, Td->TrainFile);
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     int Ret = system (Cmd);
@@ -1502,6 +1503,11 @@ static inline VOID DeShm ()
 
 VOID PLDeInit (PLServer *plSrv)
 {
+    printf ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  PLDeInit  @@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n");
+    printf ("Generate total seeds: %u \r\n", plSrv->PD.GenSeedNum);
+    printf ("Touched total branch variables: %u \r\n", QueryDataNum (DB_TYPE_BR_VARIABLE_KEY_CACHE));
+    printf ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n\r\n");
+    
     DumpBlockStat (&plSrv->PD);
     DelQueue ();
     close (plSrv->SkInfo.SockFd);
@@ -1514,7 +1520,7 @@ static VOID SigHandle(int sig)
 {
     PLServer *plSrv = &g_plSrv;
 
-    printf ("[SigHandle] exit, get %u seeds generated....\r\n", plSrv->PD.GenSeedNum);
+    printf ("[SigHandle] exit...........\r\n");
     ShowQueue(10);
     PLDeInit(plSrv);
     sem_destroy(&plSrv->PD.CollectStartSem);

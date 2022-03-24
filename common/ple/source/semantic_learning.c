@@ -1092,35 +1092,52 @@ static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, D
         if (AvgSample <= 1) AvgSample = 2;
 
         PD->AvgSamplingNum = AvgSample;
-        printf ("[ComputeBudget][Block:%u/%u]Theoretical SeedNum = %lu, AVG-sampling: %u, VarNum = %u\r\n", 
+        printf ("[ComputeBudget-SP_AVERAGE][Block:%u/%u]Theoretical SeedNum = %lu, AVG-sampling: %u, VarNum = %u\r\n", 
                 ValidSANum, SANum, SeedNum, AvgSample, VarNum);
     }
     else
     {
         assert (PD->PLOP->SamplePolicy == SP_VARNUM);
         DWORD Diff = 0;
+        ULONG SdCombo;
         do
         {
+            SdCombo = 1;
             for (DWORD ix = 0; ix < SANum; ix++)
             {
                 if (SAList[ix].VarNum != 0)
                 {
                     SeedNum *= (SAList[ix].VarNum + Diff);
                 }
+                SdCombo *= SAList[ix].ValueNum;
+            }
+
+            if (SdCombo < GEN_SEED_MAXNUM || SeedNum >= GEN_SEED_MAXNUM)
+            {
+                break;
             }
             
             Diff++;
-        }while (SeedNum < GEN_SEED_MAXNUM);
-        
+        }while (TRUE);
+
+        SeedNum = 1;
         for (DWORD ix = 0; ix < SANum; ix++)
         {
             if (SAList[ix].VarNum != 0)
             {
-                SAList[ix].VarWeight = SAList[ix].VarNum + Diff;
-                printf ("[ComputeBudget][Block:%u/%u][%u]VarNum = %u, VarWeight = %u\r\n", 
-                         ValidSANum, SANum, ix, SAList[ix].VarNum, SAList[ix].VarWeight);
+                if (SdCombo < GEN_SEED_MAXNUM)
+                {
+                    SAList[ix].VarWeight = SAList[ix].ValueNum;
+                }
+                else
+                {
+                    SAList[ix].VarWeight = SAList[ix].VarNum + Diff;
+                }
+
+                SeedNum *= SAList[ix].VarWeight;
             }
         }
+        printf ("[ComputeBudget-SP_VARNUM][Block:%u/%u]SeedNum = %lu, Diff = %u\r\n", ValidSANum, SANum, SeedNum, Diff);
     }
 
     return;    

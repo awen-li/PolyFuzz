@@ -32,11 +32,12 @@ int main(int argc, char *argv[])
     PLOption PLOP   = {0};
 
     /* default */
-    PLOP.LnThrNum   = 1;
-    PLOP.SdPattBits = 4;
+    PLOP.LnThrNum   = 4;
+    PLOP.SdPattBits = 124;
     PLOP.SdType     = SEED_BINARY;
     PLOP.BvDir      = NULL;
     PLOP.TryLength  = LEARN_BLOCK_SIZE * (LEARN_BLOCK_NUM);
+    PLOP.SamplePolicy = SP_VARNUM;
     
     SDWORD Opt = 0;
     while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:q")) > 0) 

@@ -114,6 +114,8 @@ typedef struct BsValue
     DWORD *ValueList;
     DWORD ValueNum;
     DWORD ValueCap;
+    DWORD VarNum;
+    DWORD VarWeight;
 }BsValue;
 
 
@@ -126,6 +128,11 @@ typedef enum
     SRV_S_FIN
 }SRV_STATE;
 
+typedef enum
+{
+    SP_AVERAGE = 0,
+    SP_VARNUM  = 1,
+}SP_TYPE;
 
 typedef struct PLOption
 {
@@ -137,6 +144,8 @@ typedef struct PLOption
 
     DWORD SeedBlock[8];
     DWORD SeedBlockNum;
+
+    DWORD SamplePolicy;
 }PLOption;
 
 typedef struct ThrData

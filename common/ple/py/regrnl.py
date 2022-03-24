@@ -424,7 +424,7 @@ def main():
         parser.error('filename is missing: required with the main options')
 
     if opts.distance is None:
-        opts.distance = 0.1
+        opts.distance = 0.4
 
     RegMain (opts.filename, DisThreshold=opts.distance, Directory=opts.bvdir, IsPlot=opts.plot)
 

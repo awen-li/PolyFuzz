@@ -751,6 +751,15 @@ static inline DWORD IsValueValie (DWORD Value, DWORD Align)
     return FALSE;
 }
 
+
+int CmpBrValue (const void *a, const void *b) 
+{
+    int V1 = *(int *)a;
+    int V2 = *(int *)b;
+    return (V1 - V2);
+}
+
+
 static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
 {
     DIR *Dir;
@@ -786,6 +795,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
     BsList->ValueList = (DWORD *)malloc (BaseNum * sizeof (DWORD));
     BsList->ValueCap  = BaseNum;
     BsList->ValueNum  = 0;
+    BsList->VarNum    = FList->NodeNum;
     assert (BsList->ValueList != NULL);
 
     LNode *LN = FList->Header;
@@ -837,6 +847,11 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
         }
 
         LN = LN->Nxt;
+    }
+
+    if (BsList->ValueNum != 0)
+    {
+        qsort (BsList->ValueList, BsList->ValueNum, sizeof(DWORD), CmpBrValue);
     }
 
     ListDel(FList, free);
@@ -947,6 +962,62 @@ static inline VOID WaitFuzzingOnFly (PilotData *PD, DWORD IsEnd)
     return;
 }
 
+
+static inline VOID WriteSeed (PilotData *PD, DWORD BlkNum, ULONG *CurSeed)
+{
+    BYTE *SeedDir = GenSeedDir (PD->CurAlign);
+    snprintf (PD->NewSeedPath, sizeof (PD->NewSeedPath), "%s/%s_%u-%u", 
+              SeedDir, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum + PD->GenSeedNumUnit);
+    FILE *SF = fopen (PD->NewSeedPath, "w");
+    if (SF == NULL)
+    {
+        printf ("@@@ Warning: [Align%u]create seed file fail, GenSeedNum = %u\r\n", PD->CurAlign, PD->GenSeedNum);
+        return;
+    }
+                
+    for (DWORD si = 0; si < BlkNum; si++)
+    {
+        switch (PD->CurAlign)
+        {
+            case 1:
+            {
+                BYTE Val = (BYTE)CurSeed[si];
+                fwrite (&Val, sizeof (Val), 1, SF);
+                break;
+            }
+            case 2:
+            {
+                WORD Val = (WORD)CurSeed[si];
+                fwrite (&Val, sizeof (Val), 1, SF);
+                break;
+            }
+            case 4:
+            {
+                SDWORD Val = (SDWORD)CurSeed[si];
+                fwrite (&Val, sizeof (Val), 1, SF);
+                break;
+            }
+            case 8:
+            {
+                ULONG Val = (ULONG)CurSeed[si];
+                fwrite (&Val, sizeof (Val), 1, SF);
+                break;
+            }
+            default:
+            {
+                assert (0);
+            }
+        }
+    }
+    
+    fclose (SF);    
+    PD->GenSeedNumUnit++;
+    PD->GenSeedNumBlock++;
+    WaitFuzzingOnFly (PD, FALSE);
+
+    return;
+}
+
 static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
 {
     if (PD->GenSeedNumBlock >= GEN_SEED_MAXNUM)
@@ -955,75 +1026,37 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
     }
 
     DWORD SampleNum = BsHeader->ValueNum;
-    if (PD->AvgSamplingNum != 0 && SampleNum > PD->AvgSamplingNum)
+    if (PD->PLOP->SamplePolicy == SP_AVERAGE)
     {
-        SampleNum = PD->AvgSamplingNum;
+        if (PD->AvgSamplingNum != 0 && SampleNum > PD->AvgSamplingNum)
+        {
+            SampleNum = PD->AvgSamplingNum;
+        }
     }
-    
+    else
+    {
+        assert (PD->PLOP->SamplePolicy == SP_VARNUM);
+        SampleNum = BsHeader->VarWeight;
+        if (SampleNum > BsHeader->ValueNum)
+        {
+            SampleNum = BsHeader->ValueNum;
+        }
+        SampleNum = (SampleNum == 0)?1:SampleNum;
+    }  
+
+    DWORD SpUnit = BsHeader->ValueNum/SampleNum;
+    SpUnit = (SpUnit == 0)?1:SpUnit;
+
+    //printf ("[GenSeed]CurBlkNo:%u, SpUnit = %u \r\n", CurBlkNo, SpUnit);
     for (DWORD Ei = 0; Ei < SampleNum; Ei++)
     {
-        if (SampleNum == PD->AvgSamplingNum)
-        {
-            /* random sampling */
-            DWORD SmpIndex = random ()%BsHeader->ValueNum;
-            CurSeed[CurBlkNo] = BsHeader->ValueList[SmpIndex];
-        }
-        else
-        {
-            CurSeed[CurBlkNo] = BsHeader->ValueList[Ei];
-        }
+        /* random sampling */
+        DWORD SmpIndex = Ei*SpUnit +  random ()%SpUnit;            
+        CurSeed[CurBlkNo] = BsHeader->ValueList[SmpIndex];
         
         if (CurBlkNo+1 == BlkNum)
         {
-            BYTE *SeedDir = GenSeedDir (PD->CurAlign);
-            snprintf (PD->NewSeedPath, sizeof (PD->NewSeedPath), "%s/%s_%u-%u", 
-                      SeedDir, PD->CurSeedName, PD->CurAlign, PD->GenSeedNum + PD->GenSeedNumUnit);
-            FILE *SF = fopen (PD->NewSeedPath, "w");
-            if (SF == NULL)
-            {
-                printf ("@@@ Warning: [Align%u]create seed file fail, GenSeedNum = %u\r\n", PD->CurAlign, PD->GenSeedNum);
-                return;
-            }
-            
-            for (DWORD si = 0; si < BlkNum; si++)
-            {
-                switch (PD->CurAlign)
-                {
-                    case 1:
-                    {
-                        BYTE Val = (BYTE)CurSeed[si];
-                        fwrite (&Val, sizeof (Val), 1, SF);
-                        break;
-                    }
-                    case 2:
-                    {
-                        WORD Val = (WORD)CurSeed[si];
-                        fwrite (&Val, sizeof (Val), 1, SF);
-                        break;
-                    }
-                    case 4:
-                    {
-                        SDWORD Val = (SDWORD)CurSeed[si];
-                        fwrite (&Val, sizeof (Val), 1, SF);
-                        break;
-                    }
-                    case 8:
-                    {
-                        ULONG Val = (ULONG)CurSeed[si];
-                        fwrite (&Val, sizeof (Val), 1, SF);
-                        break;
-                    }
-                    default:
-                    {
-                        assert (0);
-                    }
-                }
-            }
-            fclose (SF);
-
-            PD->GenSeedNumUnit++;
-            PD->GenSeedNumBlock++;
-            WaitFuzzingOnFly (PD, FALSE);
+            WriteSeed (PD, BlkNum, CurSeed);
         }
         else
         {      
@@ -1035,26 +1068,60 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
 
 static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, DWORD ValidSANum)
 {
-	PD->AvgSamplingNum = 0;
-	
+    PD->AvgSamplingNum = 0;
+
+    DWORD VarNum  = 0;
     ULONG SeedNum = 1;
-    for (DWORD ix = 0; ix < SANum; ix++)
+
+    if (PD->PLOP->SamplePolicy == SP_AVERAGE)
     {
-        assert (SAList[ix].ValueNum != 0);
-        SeedNum *= SAList[ix].ValueNum;
-    }
+        for (DWORD ix = 0; ix < SANum; ix++)
+        {
+            assert (SAList[ix].ValueNum != 0);
+            SeedNum *= SAList[ix].ValueNum;
+            VarNum  += SAList[ix].VarNum;
+        }
+        
+        if (SeedNum <= GEN_SEED_MAXNUM)
+        {
+            printf ("[ComputeBudget][Block:%u/%u]Total SeedNum = %lu, VarNum = %u\r\n", ValidSANum, SANum, SeedNum, VarNum);
+            return;
+        }
     
-    if (SeedNum <= GEN_SEED_MAXNUM)
-    {
-        printf ("[ComputeBudget][Block:%u/%u]Total SeedNum = %lu\r\n", ValidSANum, SANum, SeedNum);
-        return;
+        DWORD AvgSample = (DWORD)(pow (GEN_SEED_MAXNUM, 1.0/ValidSANum) + 1);
+        if (AvgSample <= 1) AvgSample = 2;
+
+        PD->AvgSamplingNum = AvgSample;
+        printf ("[ComputeBudget][Block:%u/%u]Theoretical SeedNum = %lu, AVG-sampling: %u, VarNum = %u\r\n", 
+                ValidSANum, SANum, SeedNum, AvgSample, VarNum);
     }
-
-    DWORD AvgSample = (DWORD)(pow (GEN_SEED_MAXNUM, 1.0/ValidSANum) + 1);
-    if (AvgSample <= 1) AvgSample = 2;
-
-    PD->AvgSamplingNum = AvgSample;
-    printf ("[ComputeBudget][Block:%u/%u]Theoretical SeedNum = %lu, AVG-sampling: %u \r\n", ValidSANum, SANum, SeedNum, AvgSample);
+    else
+    {
+        assert (PD->PLOP->SamplePolicy == SP_VARNUM);
+        DWORD Diff = 0;
+        do
+        {
+            for (DWORD ix = 0; ix < SANum; ix++)
+            {
+                if (SAList[ix].VarNum != 0)
+                {
+                    SeedNum *= (SAList[ix].VarNum + Diff);
+                }
+            }
+            
+            Diff++;
+        }while (SeedNum < GEN_SEED_MAXNUM);
+        
+        for (DWORD ix = 0; ix < SANum; ix++)
+        {
+            if (SAList[ix].VarNum != 0)
+            {
+                SAList[ix].VarWeight = SAList[ix].VarNum + Diff;
+                printf ("[ComputeBudget][Block:%u/%u][%u]VarNum = %u, VarWeight = %u\r\n", 
+                         ValidSANum, SANum, ix, SAList[ix].VarNum, SAList[ix].VarWeight);
+            }
+        }
+    }
 
     return;    
 }
@@ -1082,6 +1149,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             BsValue *BsList = &SAList [BlkNum++];
             BsList->ValueList = NULL;
             BsList->ValueCap = BsList->ValueNum = 0;
+            BsList->VarNum   = BsList->VarWeight= 0;
 
             if (OFF < PLOP->TryLength && IsInLearnStat(PD, OFF) == TRUE)
             {     
@@ -1224,11 +1292,11 @@ void* TrainingThread (void *Para)
     ThrData *Td = (ThrData *)Para;
     if (Td->BvDir == NULL)
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.3", Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl %s -d 0.4", Td->TrainFile);
     }
     else
     {
-        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.3", Td->BvDir, Td->TrainFile);
+        snprintf (Cmd, sizeof (Cmd), "python -m regrnl -B %s %s -d 0.4", Td->BvDir, Td->TrainFile);
     }
     DEBUG ("TrainingThread -> %s \r\n", Cmd);
     int Ret = system (Cmd);

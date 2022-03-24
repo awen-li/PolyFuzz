@@ -47,10 +47,10 @@ void log_perf_periodic(int signum)
     }
 
     u32 block_num = 0;
-    u8 *tb = afl_ref->fsrv.trace_bits;
-    for (u32 ix = afl_ref->fsrv.map_size; ix > 1; ix--)
+    u8 *tb = afl_ref->virgin_bits;
+    for (u32 ix = afl_ref->fsrv.real_map_size; ix > 1; ix--)
     {
-        block_num += (u32) (tb[ix-1] != 0);
+        block_num += (u32) (tb[ix-1] != 0xff);
     }
 
     fprintf (Pef, "%lu,%u,%u,%u\n", time (NULL), afl_ref->queued_paths, block_num, (u32)afl_ref->total_crashes);

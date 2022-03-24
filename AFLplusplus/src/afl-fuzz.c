@@ -502,6 +502,8 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
     pd->fz_state = FZ_S_STARTUP;
     pd->seed_id  = 0;
 
+    log_perf_init (afl);
+
     hand_shake (pl_srv);
     OKF ("pl_init success..");
     return;

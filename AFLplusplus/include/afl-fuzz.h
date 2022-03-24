@@ -880,6 +880,7 @@ void switch_fz_mode (u32 run_mode);
 MsgHdr* format_msg (u32 msg_type);
 void pl_send (char *msg, unsigned msg_len);
 char* pl_recv ();
+void log_perf_init (afl_state_t *afl);
 
 
 typedef struct pl_srv

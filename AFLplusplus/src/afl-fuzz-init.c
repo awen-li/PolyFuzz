@@ -27,6 +27,49 @@
 #include <limits.h>
 #include "cmplog.h"
 
+
+#define PERF_PERIODIC_FILE   "perf_periodic.txt"
+static afl_state_t *afl_ref = NULL;
+void log_perf_periodic(int signum)
+{
+    (void)signum;
+    assert (afl_ref != NULL);
+
+    struct stat st;
+    int first_crt = lstat(PERF_PERIODIC_FILE, &st);
+    
+    FILE *Pef = fopen (PERF_PERIODIC_FILE, "a");
+    assert (Pef != NULL);
+
+    if (first_crt != 0)
+    {
+        fprintf (Pef, "time,paths,blocks,crashes\n");
+    }
+
+    u32 block_num = 0;
+    u8 *tb = afl_ref->fsrv.trace_bits;
+    for (u32 ix = afl_ref->fsrv.map_size; ix > 1; ix--)
+    {
+        block_num += (u32) (tb[ix-1] != 0);
+    }
+
+    fprintf (Pef, "%lu,%u,%u,%u\n", time (NULL), afl_ref->queued_paths, block_num, (u32)afl_ref->total_crashes);
+    fclose (Pef);
+
+    alarm(1800);
+    return;
+}
+
+void log_perf_init (afl_state_t *afl)
+{
+    rename (PERF_PERIODIC_FILE, "backup_"PERF_PERIODIC_FILE);
+    
+    afl_ref = afl;
+    signal(SIGALRM, log_perf_periodic);
+    alarm(30);
+    return;
+}
+
 #ifdef HAVE_AFFINITY
 
 /* bind process to a specific cpu. Returns 0 on failure. */

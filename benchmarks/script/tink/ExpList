@@ -1,0 +1,13 @@
+external/zlib
+external/com_google_protobuf
+external/com_google_absl
+external/boringssl
+external/aws_cpp_sdk
+external/curl
+external/com_github_grpc_grpc
+external/aws_c_common
+bazel-out/k8-opt
+external/com_googlesource_code_re2/re2
+external/aws_checksums
+external/com_github_cares_cares
+external/upb

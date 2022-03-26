@@ -47,6 +47,8 @@
 #include "config.h"
 #include "debug.h"
 #include "afl-llvm-common.h"
+#include <stdio.h>
+#include <vector>
 
 
 #define DB_PRINT(format, ...) if (debug) printf("@@@ Wen -> " format, ##__VA_ARGS__)
@@ -709,7 +711,6 @@ private:
     }
 
     bool IsInjectByInst;
-    bool IsBrDefUse;
     
     std::string     getSectionName(const std::string &Section) const;
     std::string     getSectionStart(const std::string &Section) const;
@@ -760,11 +761,50 @@ public:
                                                       ): ModulePass(ID), Options(Options) {
 
         initializeModuleSanitizerCoverageLegacyPassPass(*PassRegistry::getPassRegistry());
+        LoadModuleIgnored ();
+    }
 
+    void LoadModuleIgnored ()
+    {
+        FILE *F = fopen ("/tmp/ExpList", "r");
+        if (F == NULL)
+        {
+            return;
+        }
+
+        char BUF[256];
+        while (!feof (F))
+        {   
+            if (fgets (BUF, sizeof (BUF), F)) {
+                u32 len = (u32)strlen (BUF);
+                if (len < 2) continue;
+
+                if (BUF[len-2] == '\r') BUF[len-2] = 0;
+                if (BUF[len-1] == '\n') BUF[len-1] = 0;
+                ModuleIgnored.push_back (string(BUF));
+            }
+        }
+        fclose (F);
+        
+    }
+
+    int IsModuleIgnored (Module *M)
+    {
+        const char *MdName = M->getName().data ();
+        for (auto It = ModuleIgnored.begin (), End = ModuleIgnored.end (); It != End; It++)
+        {
+            string Exp = *It;
+            if  (strstr (MdName, Exp.c_str()) != NULL)
+                return 1;
+        }
+
+        return 0;
     }
 
     bool runOnModule(Module &M) override {
         DB_PRINT ("@@@ <Wen> ======================== runOnModule -> %s ======================== \r\n", M.getName().data());
+        if (IsModuleIgnored (&M)) return false;
+        
         ModuleSanitizerCoverage ModuleSancov(Options
 #if LLVM_MAJOR > 10
                                              ,
@@ -805,6 +845,8 @@ private:
 
     std::unique_ptr<SpecialCaseList> Allowlist;
     std::unique_ptr<SpecialCaseList> Blocklist;
+
+    vector <string> ModuleIgnored;
 
 };
 
@@ -955,8 +997,6 @@ bool ModuleSanitizerCoverage::instrumentModule(Module &M, DomTreeCallback DTCall
     LLVMContext &Ctx = M.getContext();
     
     IsInjectByInst = (bool)(getenv ("AFL_INJECT_BY_INST") != NULL);
-    IsBrDefUse     = true;
-
     AFLMapPtr = new GlobalVariable(M, PointerType::get(Int8Ty, 0), false,
                                    GlobalValue::ExternalLinkage, 0, "__afl_area_ptr");
     One = ConstantInt::get(IntegerType::getInt8Ty(Ctx), 1);

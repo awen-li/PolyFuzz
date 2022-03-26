@@ -40,8 +40,10 @@ fi
 
 
 # 1. compile the C unit
-cd $ROOT
-compile
+cp ExpList /tmp/ExpList
+cd $ROOT && compile
+
+exit 0
 
 # 2. summarize the Python unit
 PyDir=$target/python/tink

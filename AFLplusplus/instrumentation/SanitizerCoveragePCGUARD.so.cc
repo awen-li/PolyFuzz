@@ -175,6 +175,18 @@ public:
 
     }
 
+    inline void DumpInst (Instruction *Inst)
+    {
+        string InstStr;
+        raw_string_ostream(InstStr) << *Inst;
+        FILE *f = fopen ("/tmp/ModuleDuCov.log", "a");
+        if (f != NULL)
+        {
+            fprintf (f, "%s\n", InstStr.c_str());
+            fclose (f);
+        }
+    }
+
     inline void InjectExit () {
         set<Instruction *> ExitInsts;
         
@@ -350,8 +362,8 @@ public:
         return;
     }
 
-    inline void CollectDus () {
-
+    inline void CollectDus () 
+    {
         T_InstSet BrInstSet;
         T_ValueSet BrValueSet;
 
@@ -481,8 +493,8 @@ public:
         fclose (SF);
     }
 
-    inline CallInst* InjectOne (IRBuilder<> &IRB, Value *Def, Value* GuardPtr=NULL) {
-
+    inline CallInst* InjectOne (IRBuilder<> &IRB, Value *Def, Value* GuardPtr=NULL) 
+    {
         uint64_t TypeSize = DL->getTypeStoreSizeInBits(Def->getType());
         auto It = SanCovTracePCGuardDuMap.find (TypeSize);
         if (It == SanCovTracePCGuardDuMap.end ())
@@ -495,12 +507,14 @@ public:
         FunctionCallee TraceFunc = It->second;
         Value *KeyVal = ConstantInt::get(Int32Ty, (unsigned)(unsigned long)Def, false);       
         auto ValTy = Type::getIntNTy(*C, TypeSize);
-        
+
         CallInst *Ci = IRB.CreateCall(TraceFunc, {GuardPtr, KeyVal, IRB.CreateIntCast(Def, ValTy, true)});
+        
         return Ci;
     }
 
-    inline void RunInject () {
+    inline void RunInject () 
+    {
         for (auto It = BrDefInst2PosInst.begin (); It != BrDefInst2PosInst.end (); It++) {
             Instruction *BrDefInst = It->first;
             Instruction *PosInst = It->second;
@@ -1546,9 +1560,15 @@ void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &F, ModuleDuCov &MD
         assert (InjectInst->getParent() == InjectDu->getParent());
 
         InjectInst = MDu.GetInstrmInst (InjectDu);
-        assert (InjectInst != NULL);
-        
-        MDu.SetInjected(InjectInst);
+        if (InjectInst != NULL)
+        {      
+            MDu.SetInjected(InjectInst);
+        }
+        else
+        {
+            InjectInst = &*IP;
+            InjectDu = NULL;
+        }
     }
 
     IRBuilder<> IRB(InjectInst);

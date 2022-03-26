@@ -804,7 +804,7 @@ public:
     bool runOnModule(Module &M) override {
         DB_PRINT ("@@@ <Wen> ======================== runOnModule -> %s ======================== \r\n", M.getName().data());
         if (IsModuleIgnored (&M)) return false;
-        
+        errs ()<<"@@@ <Wen> ======================== runOnModule ----> "<<M.getName().data()<<"\r\n";
         ModuleSanitizerCoverage ModuleSancov(Options
 #if LLVM_MAJOR > 10
                                              ,

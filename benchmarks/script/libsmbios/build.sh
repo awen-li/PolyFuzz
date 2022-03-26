@@ -4,6 +4,28 @@ export ROOT=`cd ../../ && pwd`
 export target=libsmbios
 export drivers=$ROOT/script/$target/drivers
 
+function dependency ()
+{
+	pip install astunparse
+	apt-get update
+	apt-get install autopoint
+	apt-get install libxml2-dev
+	apt-get install gettext
+}
+
+PythonInstallPath ()
+{
+	PyBin=`which python`
+	IsAnaconda=`echo $PyBin | grep anaconda`
+	
+	PyVersion=`python -c 'import platform; major, minor, patch = platform.python_version_tuple(); print(str(major)+"."+str(minor))'`
+	if [ ! -n "$IsAnaconda" ]; then
+	    echo "/usr/lib/python$PyVersion"
+	else
+	    echo "/root/anaconda3/lib/python$PyVersion"
+	fi
+}
+
 function compile ()
 {
 	if [ ! -d "$ROOT/$target" ]; then
@@ -20,8 +42,9 @@ function compile ()
 	
 	# install python
 	if [ -n "$CONDA_PYTHON_EXE" ]; then
-		cp /usr/local/lib/python3.9/site-packages/libsmbios_c -rf /root/anaconda3/lib/python3.9/site-packages/
-		rm -rf /usr/local/lib/python3.9/site-packages/libsmbios_c
+		smb_dir=`find /usr/local/lib/python* -name "libsmbios_c"`
+		cp $smb_dir -rf $(PythonInstallPath)/site-packages/
+		rm -rf $smb_dir
 	fi
 	
 	popd

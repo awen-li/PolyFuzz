@@ -34,7 +34,7 @@ ext_modules = [
             PybindHeader(),
         ],
         extra_compile_args=["-D_PROB_DATA_",
-                            "-D__DEBUG__"
+                            #"-D__DEBUG__"
                            ],
         extra_link_args=["-lmxml", "-lxFuzztrace"],
         language="c++"),

@@ -50,6 +50,11 @@ function compile ()
 	popd
 }
 
+Action=$1
+if [ "$Action" == "dep" ]; then
+	dependency
+fi
+
 # 1. compile the C unit
 cd $ROOT
 compile

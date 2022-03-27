@@ -4,6 +4,15 @@ export ROOT=`cd ../../ && pwd`
 export target=tink
 export drivers=$ROOT/script/$target/drivers
 
+function dependency ()
+{
+	apt install apt-transport-https curl gnupg
+	curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
+	mv bazel.gpg /etc/apt/trusted.gpg.d/
+	echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
+	apt update && apt install bazel-4.2.2
+}
+
 function compile ()
 {
 	if [ ! -d "$ROOT/$target" ]; then
@@ -38,12 +47,13 @@ if [ "$Action" == "test" ]; then
     exit 0
 fi
 
+if [ "$Action" == "dep" ]; then
+	dependency
+fi
 
 # 1. compile the C unit
 cp ExpList /tmp/ExpList
 cd $ROOT && compile
-
-exit 0
 
 # 2. summarize the Python unit
 PyDir=$target/python/tink

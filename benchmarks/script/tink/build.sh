@@ -15,9 +15,21 @@ function dependency ()
 
 function compile ()
 {
-	if [ ! -d "$ROOT/$target" ]; then
-		git clone https://github.com/google/tink.git
-	fi
+
+	if [ -d "$ROOT/$target" ]; then
+    	    rm -rf $ROOT/$target
+        fi
+    
+        if [ -f "/tmp/branch_vars.bv" ]; then
+    	    rm /tmp/branch_vars.bv
+    	    rm /tmp/cmp_statistic.info
+        fi
+  	
+  	touch /tmp/branch_vars.bv && chmod 777 /tmp/branch_vars.bv
+        touch /tmp/cmp_statistic.info && chmod 777 /tmp/cmp_statistic.info  
+        touch /tmp/gen_bv_tmp && chmod 777 /tmp/gen_bv_tmp
+	
+	git clone https://github.com/google/tink.git
 	
 	Protoc=`which protoc`
 	if [ ! -n "$Protoc" ]; then
@@ -31,11 +43,16 @@ function compile ()
 	export CC="afl-cc"
 	export CXX="afl-c++"
 	
-    bazel clean --expunge
-    cp $ROOT/script/$target/setup.py ./
+        bazel build ...
+        cp $ROOT/script/$target/setup.py ./
+        #pip3 install .
 	python setup.py install
 	
-	popd
+	cp /tmp/branch_vars.bv $ROOT/$target/
+	cp /tmp/cmp_statistic.info $ROOT/$target/
+	rm -f /tmp/gen_bv_tmp
+	
+	popd	
 }
 
 Action=$1

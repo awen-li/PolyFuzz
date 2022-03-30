@@ -290,7 +290,13 @@ public:
 
         if (debug)
             errs ()<<"DumpBrVals ----> Key="<<Key<<" -----> BrConst == "<<*Val<< "\r\n";
-        FILE *F = fopen ("branch_vars.bv", "a+");
+        FILE *F;
+        if (access ("/tmp/gen_bv_tmp", R_OK) == 0) {
+            F = fopen ("/tmp/branch_vars.bv", "a+");
+        }
+        else {
+            F = fopen ("branch_vars.bv", "a+");
+        }
         assert (F != NULL);
         fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, ConstVal);
         fclose (F);
@@ -484,8 +490,15 @@ public:
     }
 
     inline void DumpStatistic (T_InstSet *BrInstSet, Function *F)
-    {
-        FILE *SF = fopen ("cmp_statistic.info", "a+");
+    {   
+        FILE *SF;
+        
+        if (access ("/tmp/gen_bv_tmp", R_OK) == 0) {
+            SF = fopen ("/tmp/cmp_statistic.info", "a+");
+        }
+        else {
+            SF = fopen ("cmp_statistic.info", "a+");
+        }
         if (SF == NULL) return;
 
         fprintf (SF, "%s:%u:%u:%u:%u:%u:%u\n", 

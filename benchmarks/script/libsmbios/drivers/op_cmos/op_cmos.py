@@ -29,7 +29,6 @@ if __name__ == '__main__':
         int = ctypes.c_uint16(0)
         cmosObj.registerCallback(_test_cb, ctypes.pointer(int), None)
         
-        print ("Offset = %d" %Offset)
         for i in range(Offset):
             if i%4 != 0:
                 continue

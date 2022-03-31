@@ -119,7 +119,7 @@ void BV_set::LoadPySummary(string PySummary)
                 Bb = strtok(NULL, " ");
             }
             
-            BVfunc->View();
+            //BVfunc->View();
 
             /* next function node */
             Function = mxmlFindElement(Function, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);

@@ -1,4 +1,5 @@
 import sys
+import os
 import random
 import libsmbios_c.memory as Mem
 import pyprob
@@ -8,9 +9,8 @@ pyprob.Setup('py_summary.xml', 'setup_mem.py')
 pageunit = 4096
 
 def page_num (Tf):
-    Index = Tf.find ('-')
-    pn = int (Tf[Index+1:]) + 1
-    return pn
+    fsize = os.path.getsize(Tf)
+    return int (fsize/pageunit)
 
 if __name__ == '__main__':
     try:

@@ -55,16 +55,13 @@ if [ "$Action" == "dep" ]; then
 	dependency
 fi
 
-if [ "$1" == "build" ]; then
-    # 1. compile the C unit
-    cd $ROOT
-    compile
 
-    # 2. summarize the Python unit
-    PyDir=$target/src/python
-    python -m parser $PyDir
-    cp $PyDir/py_summary.xml $drivers/
-fi
+# 1. compile the C unit
+cd $ROOT
+compile
 
-cd $drivers/leak_mem
-ple -s ./tests -d . -B $ROOT/$target -p 124 -t 4
+# 2. summarize the Python unit
+PyDir=$target/src/python
+python -m parser $PyDir
+cp $PyDir/py_summary.xml $drivers/
+

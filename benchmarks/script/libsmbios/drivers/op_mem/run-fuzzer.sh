@@ -1,6 +1,6 @@
 export AFL_SKIP_BIN_CHECK=1
 
-if [ ! -f "./tests/test-10" ]; then
+if [ ! -f "./tests/test-1" ]; then
 	python gen_tests.py
 fi
 

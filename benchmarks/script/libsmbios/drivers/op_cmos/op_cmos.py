@@ -1,4 +1,5 @@
 import sys
+import os
 import libsmbios_c.cmos as Cmos
 import ctypes
 import pyprob
@@ -13,9 +14,8 @@ def _test_cb(cmosObj, do_update, userdata):
     return 1
 
 def page_num (Tf):
-    Index = Tf.find ('-')
-    pn = int (Tf[Index+1:]) + 1
-    return pn
+    fsize = os.path.getsize(Tf)
+    return int (fsize/pageunit)
 
 if __name__ == '__main__':
     try:

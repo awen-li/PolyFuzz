@@ -18,16 +18,16 @@ function compile ()
 
 	if [ -d "$ROOT/$target" ]; then
     	    rm -rf $ROOT/$target
-        fi
+	fi
     
-        if [ -f "/tmp/branch_vars.bv" ]; then
-    	    rm /tmp/branch_vars.bv
-    	    rm /tmp/cmp_statistic.info
-        fi
+	if [ -f "/tmp/branch_vars.bv" ]; then
+ 		rm /tmp/branch_vars.bv
+		rm /tmp/cmp_statistic.info
+	fi
   	
-  	touch /tmp/branch_vars.bv && chmod 777 /tmp/branch_vars.bv
-        touch /tmp/cmp_statistic.info && chmod 777 /tmp/cmp_statistic.info  
-        touch /tmp/gen_bv_tmp && chmod 777 /tmp/gen_bv_tmp
+	touch /tmp/branch_vars.bv && chmod 777 /tmp/branch_vars.bv
+	touch /tmp/cmp_statistic.info && chmod 777 /tmp/cmp_statistic.info  
+	touch /tmp/gen_bv_tmp && chmod 777 /tmp/gen_bv_tmp
 	
 	git clone https://github.com/google/tink.git
 	
@@ -43,9 +43,9 @@ function compile ()
 	export CC="afl-cc"
 	export CXX="afl-c++"
 	
-        bazel build ...
-        cp $ROOT/script/$target/setup.py ./
-        #pip3 install .
+	#bazel build ...
+	cp $ROOT/script/$target/setup.py ./
+	#pip3 install .
 	python setup.py install
 	
 	cp /tmp/branch_vars.bv $ROOT/$target/

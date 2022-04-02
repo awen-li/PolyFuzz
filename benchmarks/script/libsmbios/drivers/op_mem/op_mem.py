@@ -6,7 +6,7 @@ import pyprob
 
 pyprob.Setup('py_summary.xml', 'setup_mem.py')
 
-pageunit = 4096
+pageunit = 8192
 
 def page_num (Tf):
     fsize = os.path.getsize(Tf)
@@ -25,9 +25,9 @@ if __name__ == '__main__':
             memObj.write(chr(ord("a") + i).encode('utf-8'), i)
 
         for i in range(pagenum):
-            memObj.write(chr(ord("0") + i).encode('utf-8') * pageunit, Offset + (pageunit * i))
-            
-        memObj.search("abc".encode("utf-8"), 0, 4096, 1);
+            memObj.write(chr(ord("0") + i).encode('utf-8') * 128, pageunit * i)
+     
+        memObj.search("".encode("utf-8"), 0, 1024, 8);
         
         if pagenum > 2:  
             index = random.randint (1, pagenum-1)
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             memObj.read(offset, size)
         else:    
             offset = random.randint (0, pagenum) * pageunit
-            size = random.randint (0, pagenum) * pageunit
+            size = random.randint (0, pageunit)
             memObj.read(offset, size)
 
         del(memObj)

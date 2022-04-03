@@ -11,10 +11,11 @@ function compile ()
 
 	pushd $target
 	
+	rm -rf build
+	
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
-		
-	rm -rf build
+	cp -f $ROOT/script/$target/java.py $ROOT/$target/commands/
 	python setup.py install
 	
 	popd

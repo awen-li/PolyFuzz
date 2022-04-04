@@ -1,7 +1,7 @@
 
 
 export ROOT=`cd ../../ && pwd`
-export target=Pillow
+export target=bottleneck
 
 function compile ()
 {
@@ -9,14 +9,13 @@ function compile ()
 		rm -rf $ROOT/$target
 	fi
 	
-	git clone https://github.com/python-pillow/Pillow.git
+	git clone https://github.com/pydata/bottleneck.git
 	
 	pushd $target
 	
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
-		
-	cp $ROOT/script/$target/setup.py ./ -f
+	
 	python setup.py install
 	
 	popd
@@ -27,6 +26,6 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/src/PIL
+PyDir=$target/bottleneck
 python -m parser $PyDir
 cp $PyDir/py_summary.xml $ROOT/script/$target/

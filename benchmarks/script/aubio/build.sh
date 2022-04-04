@@ -5,17 +5,17 @@ export target=aubio
 
 function compile ()
 {
-	if [ ! -d "$ROOT/$target" ]; then
-		git clone https://github.com/aubio/aubio.git
+	if [ -d "$ROOT/$target" ]; then
+		rm -rf $ROOT/$target
 	fi
-
+	
+	git clone https://github.com/aubio/aubio.git
+	
 	pushd $target
 	
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
-		
-	rm -rf build
-	#cp $ROOT/script/$target/setup.py ./ -f
+	
 	python setup.py install
 	
 	popd

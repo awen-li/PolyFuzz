@@ -1,0 +1,112 @@
+<?xml version="1.0" ?>
+<py_summary branchs="388">
+  <file name="_version.py" id="1">
+    <function class="" name="get_keywords" sline="21" eline="31" brval="" bbs="21"/>
+    <function class="" name="get_config" sline="38" eline="49" brval="" bbs="38"/>
+    <function class="" name="register_vcs_handler" sline="60" eline="0" brval="" bbs="60"/>
+    <function class="" name="decorate" sline="62" eline="67" brval="" bbs="62 64"/>
+    <function class="" name="run_command" sline="71" eline="111" brval="106:process:2580723568 " bbs="71 78 84 106 107"/>
+    <function class="" name="versions_from_parentdir" sline="114" eline="135" brval="" bbs="114 123 125 132"/>
+    <function class="" name="git_get_keywords" sline="139" eline="163" brval="" bbs="139 148 149 151 153 155 157 159"/>
+    <function class="" name="git_versions_from_keywords" sline="167" eline="227" brval="" bbs="167 169 172 185 186 194 203 205 207 209 214 216 223"/>
+    <function class="" name="git_pieces_from_vcs" sline="231" eline="354" brval="283:rc:2582418864 " bbs="231 239 244 245 257 261 273 277 283 288 293 295 299 310 315 318 326 327 343 344 345"/>
+    <function class="" name="plus_or_dot" sline="357" eline="361" brval="" bbs="357 359"/>
+    <function class="" name="render_pep440" sline="364" eline="386" brval="" bbs="364 373 375 378 382 384"/>
+    <function class="" name="render_pep440_branch" sline="389" eline="416" brval="" bbs="389 398 400 401 405 409 410 412 414"/>
+    <function class="" name="pep440_split_post" sline="419" eline="426" brval="" bbs="419"/>
+    <function class="" name="render_pep440_pre" sline="429" eline="450" brval="" bbs="429 435 436 440 443 446 449"/>
+    <function class="" name="render_pep440_post" sline="453" eline="477" brval="" bbs="453 463 465 467 473 474 476"/>
+    <function class="" name="render_pep440_post_branch" sline="480" eline="506" brval="" bbs="480 488 490 492 496 500 501 503 504"/>
+    <function class="" name="render_pep440_old" sline="509" eline="528" brval="" bbs="509 517 519 521 525 526"/>
+    <function class="" name="render_git_describe" sline="531" eline="548" brval="" bbs="531 539 541 545 546"/>
+    <function class="" name="render_git_describe_long" sline="551" eline="568" brval="" bbs="551 560 565 566"/>
+    <function class="" name="render" sline="571" eline="604" brval="" bbs="571 573 580 583 585 587 589 591 593 595 597 600"/>
+    <function class="" name="get_versions" sline="607" eline="650" brval="" bbs="607 628 643"/>
+  </file>
+  <file name="__init__.py" id="2"/>
+  <file name="bench.py" id="3">
+    <function class="" name="bench" sline="8" eline="77" brval="" bbs="8 46 48 59 60 63 73"/>
+    <function class="" name="timer" sline="80" eline="89" brval="" bbs="80 82 84"/>
+    <function class="" name="getarray" sline="92" eline="98" brval="" bbs="92 94"/>
+    <function class="" name="benchsuite" sline="101" eline="0" brval="" bbs="101"/>
+    <function class="" name="getsetups" sline="105" eline="123" brval="" bbs="105 112"/>
+  </file>
+  <file name="bench_detailed.py" id="4">
+    <function class="" name="bench_detailed" sline="8" eline="58" brval="44:fraction_nan:2577605040 " bbs="8 28 32 35 44 47 55"/>
+    <function class="" name="timer" sline="61" eline="68" brval="" bbs="61 62"/>
+    <function class="" name="benchsuite" sline="71" eline="123" brval="" bbs="71 93 95 97 99 101 104 110 112"/>
+    <function class="" name="get_instructions" sline="126" eline="182" brval="" bbs="126"/>
+  </file>
+  <file name="__init__.py" id="5"/>
+  <file name="autotimeit.py" id="6">
+    <function class="" name="autotimeit" sline="4" eline="8" brval="" bbs="4"/>
+    <function class="" name="autoscaler" sline="11" eline="18" brval="" bbs="11 13 15"/>
+  </file>
+  <file name="reduce.py" id="7">
+    <function class="" name="nanargmin" sline="22" eline="26" brval="" bbs="22"/>
+    <function class="" name="nanargmax" sline="29" eline="33" brval="" bbs="29"/>
+    <function class="" name="nanvar" sline="36" eline="40" brval="" bbs="36"/>
+    <function class="" name="nanstd" sline="43" eline="47" brval="" bbs="43"/>
+    <function class="" name="nanmin" sline="50" eline="54" brval="" bbs="50"/>
+    <function class="" name="nanmax" sline="57" eline="61" brval="" bbs="57"/>
+    <function class="" name="median" sline="64" eline="68" brval="" bbs="64"/>
+    <function class="" name="nanmedian" sline="71" eline="75" brval="" bbs="71"/>
+    <function class="" name="ss" sline="78" eline="82" brval="" bbs="78"/>
+    <function class="" name="anynan" sline="85" eline="87" brval="" bbs="85"/>
+    <function class="" name="allnan" sline="90" eline="92" brval="" bbs="90"/>
+  </file>
+  <file name="move.py" id="8">
+    <function class="" name="move_sum" sline="22" eline="24" brval="" bbs="22"/>
+    <function class="" name="move_mean" sline="27" eline="29" brval="" bbs="27"/>
+    <function class="" name="move_std" sline="32" eline="34" brval="" bbs="32"/>
+    <function class="" name="move_var" sline="37" eline="39" brval="" bbs="37"/>
+    <function class="" name="move_min" sline="42" eline="44" brval="" bbs="42"/>
+    <function class="" name="move_max" sline="47" eline="49" brval="" bbs="47"/>
+    <function class="" name="move_argmin" sline="52" eline="0" brval="" bbs="52"/>
+    <function class="" name="argmin" sline="55" eline="73" brval="" bbs="55"/>
+    <function class="" name="move_argmax" sline="78" eline="0" brval="" bbs="78"/>
+    <function class="" name="argmax" sline="81" eline="99" brval="" bbs="81"/>
+    <function class="" name="move_median" sline="104" eline="106" brval="" bbs="104"/>
+    <function class="" name="move_rank" sline="109" eline="111" brval="" bbs="109"/>
+    <function class="" name="move_func" sline="117" eline="152" brval="127:mc:2577899248 129:a:2602325744 133:window:2577897264 " bbs="117 120 123 124 127 129 131 133 135 137 140 145"/>
+    <function class="" name="_mask" sline="155" eline="171" brval="" bbs="155"/>
+    <function class="" name="lastrank" sline="177" eline="262" brval="232:a:2602325744 238:r:2602763120 254:ndim:2603408304 255:n:2602707056 " bbs="177 232 238 254 255 257 260 261"/>
+  </file>
+  <file name="nonreduce_axis.py" id="9">
+    <function class="" name="rankdata" sline="7" eline="9" brval="" bbs="7"/>
+    <function class="" name="nanrankdata" sline="12" eline="14" brval="" bbs="12"/>
+    <function class="" name="_rank" sline="17" eline="28" brval="22:a:2602325744 " bbs="17 19 22 25 26"/>
+    <function class="" name="_nanrankdata_1d" sline="31" eline="36" brval="" bbs="31"/>
+    <function class="" name="push" sline="39" eline="69" brval="67:ndim:2603408304 " bbs="39 41 45 47 49 57 65 67"/>
+    <function class="" name="scipy_rankdata" sline="83" eline="165" brval="" bbs="83 135 145 152 158 161"/>
+  </file>
+  <file name="nonreduce.py" id="10">
+    <function class="" name="replace" sline="6" eline="22" brval="" bbs="6 8 10 11 14 16 18 21"/>
+  </file>
+  <file name="__init__.py" id="11"/>
+  <file name="bn_template.py" id="12">
+    <function class="" name="make_c_files" sline="8" eline="32" brval="" bbs="8 11 13 15 20 29"/>
+    <function class="" name="template" sline="35" eline="58" brval="" bbs="35 39 40 43 48 49"/>
+    <function class="" name="repeat_templating" sline="68" eline="79" brval="" bbs="68 70 72"/>
+    <function class="" name="expand_functions_repeat" sline="82" eline="88" brval="" bbs="82"/>
+    <function class="" name="repeat_info" sline="91" eline="95" brval="" bbs="91"/>
+    <function class="" name="expand_repeat" sline="98" eline="110" brval="" bbs="98 100 104 106"/>
+    <function class="" name="dtype_templating" sline="119" eline="130" brval="" bbs="119 121 123"/>
+    <function class="" name="expand_functions_dtype" sline="133" eline="139" brval="" bbs="133"/>
+    <function class="" name="dtype_info" sline="142" eline="148" brval="" bbs="142 145"/>
+    <function class="" name="expand_dtypes" sline="151" eline="162" brval="159:i:2603246896 " bbs="151 152 155 157 159"/>
+    <function class="" name="string_templating" sline="171" eline="181" brval="" bbs="171 173 175"/>
+    <function class="" name="quote_string" sline="184" eline="188" brval="" bbs="184 185"/>
+    <function class="" name="first_occurence" sline="194" eline="198" brval="" bbs="194 195 196"/>
+    <function class="" name="next_block" sline="201" eline="213" brval="" bbs="201 205 207 209 210"/>
+  </file>
+  <file name="bn_config.py" id="13">
+    <function class="" name="_get_compiler_list" sline="12" eline="25" brval="" bbs="12 23"/>
+    <function class="" name="is_gcc" sline="28" eline="29" brval="" bbs="28"/>
+    <function class="" name="is_clang" sline="32" eline="33" brval="" bbs="32"/>
+    <function class="" name="check_inline" sline="36" eline="64" brval="" bbs="36 59 61"/>
+    <function class="" name="check_gcc_function_attribute" sline="67" eline="92" brval="" bbs="67 70 72 75"/>
+    <function class="" name="create_config_h" sline="95" eline="122" brval="" bbs="95 99 107 108 111 116 119 122"/>
+  </file>
+  <file name="__init__.py" id="14"/>
+</py_summary>

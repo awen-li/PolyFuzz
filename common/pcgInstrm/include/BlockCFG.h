@@ -142,17 +142,17 @@ struct StmtIR
 
     inline void ShowStmt ()
     {
-        printf ("\t\t[STMT]%s  --->Decode: [%u]", m_IRExpr.c_str (), m_StId);
-        printf ("CMP:%u, ", m_CMP);
-        printf ("Def: %s:%u, Uses: ", m_Def.m_Name.c_str(), m_Def.m_Type);
+        DEBUG ("\t\t[STMT]%s  --->Decode: [%u]", m_IRExpr.c_str (), m_StId);
+        DEBUG ("CMP:%u, ", m_CMP);
+        DEBUG ("Def: %s:%u, Uses: ", m_Def.m_Name.c_str(), m_Def.m_Type);
         if (m_Uses.size ())
         {
             for (DWORD ix = 0; ix < m_Uses.size (); ix++)
             {
-                printf ("%s:%u  ", m_Uses[ix].m_Name.c_str(), m_Uses[ix].m_Type);
+                DEBUG ("%s:%u  ", m_Uses[ix].m_Name.c_str(), m_Uses[ix].m_Type);
             }
         }
-        printf ("\r\n");
+        DEBUG ("\r\n");
     }
 };
 
@@ -713,7 +713,7 @@ public:
 
                 CN->m_BrDefStmts.push_back (SIR);
 
-                printf ("@@@ Get BrDef: ");
+                DEBUG ("@@@ Get BrDef: ");
                 SIR->ShowStmt();
             }
         }

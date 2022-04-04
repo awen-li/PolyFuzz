@@ -161,13 +161,13 @@ public class CovPCG extends BodyTransformer
 			{
 				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(100)));
 		    	units.insertAfter(dynStmt, stmt);
-		    	System.out.println("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
+		    	Debug.DebugPrint ("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
 			}
 			else if (IsExitStmt (stmt, isMainMethod))
 		    {
 		    	Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(0)));
 		    	units.insertBefore(dynStmt, stmt);
-		    	System.out.println("\t### Instrument exit statement with exit-code 0 -> " + stmt.toString());
+		    	Debug.DebugPrint ("\t### Instrument exit statement with exit-code 0 -> " + stmt.toString());
 		    }
 		}	
 	}
@@ -258,7 +258,7 @@ public class CovPCG extends BodyTransformer
 	{
 		if (CurSt instanceof TableSwitchStmt)
 		{
-			System.out.println("@@@ TableSwitchStmt\r\n");
+			Debug.DebugPrint ("@@@ TableSwitchStmt\r\n");
 			TableSwitchStmt Tss = (TableSwitchStmt) CurSt;
 			
 			int Key = Tss.getKey().hashCode();		
@@ -275,7 +275,7 @@ public class CovPCG extends BodyTransformer
 		}
 		else if (CurSt instanceof LookupSwitchStmt)
 		{
-			System.out.println("@@@ LookupSwitchStmt\r\n");
+			Debug.DebugPrint ("@@@ LookupSwitchStmt\r\n");
 			LookupSwitchStmt Lss = (LookupSwitchStmt)CurSt;
 			
 			int Key = Lss.getKey().hashCode();
@@ -327,7 +327,7 @@ public class CovPCG extends BodyTransformer
 		}
 			
 	    units.insertAfter(dynStmt, SAISt);	    
-	    System.out.println("\tInstrument SAI statement -> " + dynStmt.toString());	
+	    Debug.DebugPrint ("\tInstrument SAI statement -> " + dynStmt.toString());	
 	}
 	
 	
@@ -397,11 +397,11 @@ public class CovPCG extends BodyTransformer
 		Map<Block, Integer> VisitedBb = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
-		System.out.println("@@@ instrumenting method : " + CurMethod.getSignature());
 		if (IsInBlackList (CurMethod.getDeclaration()))
 		{
 			return;
 		}
+		System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature());
 		
 		/* unit graph */
 		BlockGraph BG = new BriefBlockGraph(body);
@@ -437,12 +437,12 @@ public class CovPCG extends BodyTransformer
 			int CurBId = Block2ID.get(CurB);
 			
 			/* for each block, translate the statement to SA-IR */
-			System.out.println("[SA-IR] Block -> " + CurBId);
+			Debug.DebugPrint ("[SA-IR] Block -> " + CurBId);
 			for (Unit CurUnit : CurB)
 			{
 				try {
 					String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
-					System.out.println("\t statement ->  " + CurUnit.toString() + " -> SAIR: " + SaIR + "\r\n");
+					Debug.DebugPrint ("\t statement ->  " + CurUnit.toString() + " -> SAIR: " + SaIR + "\r\n");
 					PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -467,7 +467,7 @@ public class CovPCG extends BodyTransformer
 		Chain units = body.getUnits();
 		for (Block CurB : Block2ID.keySet())
 		{
-			System.out.println("[PCG]Block -> " + Block2ID.get(CurB).toString());
+			Debug.DebugPrint ("[PCG]Block -> " + Block2ID.get(CurB).toString());
 			Unit InstrmedStmt = CurB.getTail();
 
 			int BID = Block2ID.get(CurB);
@@ -481,7 +481,7 @@ public class CovPCG extends BodyTransformer
 			{
 				if (ID2StmtMap.containsKey(StmtID) == false)
 				{
-					System.out.println("\t[PCG]Not contains key -> " + StmtID);
+					Debug.DebugPrint ("\t[PCG]Not contains key -> " + StmtID);
 					continue;
 				}
 				
@@ -493,7 +493,7 @@ public class CovPCG extends BodyTransformer
 				/* instrument before the tail statement */
 				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTrace.makeRef(), IntConstant.v(BID)));
 				units.insertBefore(dynStmt, InstrmedStmt);
-				System.out.println("\tInstrument before statement -> " + InstrmedStmt.toString());
+				Debug.DebugPrint ("\tInstrument before statement -> " + InstrmedStmt.toString());
 			}			
 		}
 		
@@ -504,7 +504,7 @@ public class CovPCG extends BodyTransformer
 		    int StmtID = AllSAIStmtIDs [ix];
 		    if (ID2StmtMap.containsKey(StmtID) == false)
 		    {
-		    	System.out.println("\t[SAI]Not contains key -> " + StmtID);
+		    	Debug.DebugPrint ("\t[SAI]Not contains key -> " + StmtID);
 		    	continue;
 		    }
 
@@ -513,6 +513,6 @@ public class CovPCG extends BodyTransformer
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);
-        System.out.println("@@@ instrumenting method : " + CurMethod.getSignature() + " done!!!");
+		Debug.DebugPrint ("@@@ instrumenting method : " + CurMethod.getSignature() + " done!!!");
 	}
 }

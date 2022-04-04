@@ -41,6 +41,10 @@ private
 	    op.setRequired(false);
 	    Ops.addOption(op);
 	    
+	    op = new Option ("p", "print", false, "print debug info");
+	    op.setRequired(false);
+	    Ops.addOption(op);
+	    
 	    return;
 	}
     
@@ -145,6 +149,11 @@ private
 		if (Cmd.hasOption("j"))
 		{
 			PrintJimple = 1;
+		}
+		
+		if (Cmd.hasOption("p"))
+		{
+			Debug.SetDebug(true);
 		}
 			
 		SootMain SM = new SootMain (strDeps, targetPath, BlockId, PrintJimple);

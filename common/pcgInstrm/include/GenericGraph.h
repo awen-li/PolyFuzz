@@ -120,14 +120,10 @@ public:
     {
         for (auto In = InEdgeBegin (), End = InEdgeEnd (); In != End; In++)
         {
-            RmIncomingEdge(*In);      
+            EdgeTy *Eg = *In;
+            delete Eg;   
         }
-        m_InEdgeSet.clear();      
-        
-        for (auto In = OutEdgeBegin (), End = OutEdgeEnd (); In != End; In++)
-        {
-            RmOutgoingEdge(*In);      
-        }
+        m_InEdgeSet.clear();
         m_OutEdgeSet.clear();
     }
 

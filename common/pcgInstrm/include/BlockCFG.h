@@ -63,6 +63,7 @@ struct StmtIR
 
     inline void DecodeValue (string Value, ValueIR &VI)
     {
+        DEBUG ("[DecodeValue]Value = %s \r\n", Value.c_str ());
         size_t pos = Value.find("#");
         assert (pos != Value.npos && pos > 0);
 
@@ -86,6 +87,8 @@ struct StmtIR
     
     inline void Decode (string IRExpr)
     {
+        DEBUG ("[Decode]IRExpr = %s \r\n", IRExpr.c_str ());
+        
         DWORD IDX = 0;
         size_t pos = IRExpr.find(":");
         while(pos != IRExpr.npos)
@@ -493,7 +496,21 @@ private:
         }
 
         DWORD ExitNum = ExitSet.size ();
-        assert (ExitNum > 0 || "CFG input error, no exit node exists!!!\r\n");
+        if (ExitNum == 0)
+        {
+            /* loop existed */
+            for (auto It = begin(), End = end (); It != End; It++)
+            {
+                CFGNode *N = It->second;
+                if (N->GetIncomingEdgeNum() >= 2)
+                {
+                    ExitSet.insert (N);
+                }
+            }
+
+            ExitNum = ExitSet.size ();
+            assert (ExitNum > 0);
+        }
 
         if (ExitNum == 1)
         {

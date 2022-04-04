@@ -99,6 +99,11 @@ public class CovPCG extends BodyTransformer
 	
 	private boolean IsInBlackList (String FuncName)
 	{
+		if (FuncName.indexOf("<init>") != -1)
+		{
+			return true;
+		}
+		
 		if (BlackList.get(FuncName) == null)
 		{
 			return false;
@@ -184,6 +189,11 @@ public class CovPCG extends BodyTransformer
 	
 	private String ValueName (Value V)
 	{
+		if (V instanceof Constant) 
+		{
+			return "C";
+		}
+		
 		String Name = V.toString();
 		if (Name.indexOf(" ") != -1)
 		{
@@ -384,6 +394,7 @@ public class CovPCG extends BodyTransformer
 		Map<Block, Integer> Block2ID  = new HashMap<>();
 		Map<Stmt, Integer> Stmt2IDMap = new HashMap<>();
 		Map<Integer, Stmt> ID2StmtMap = new HashMap<>();
+		Map<Block, Integer> VisitedBb = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
 		System.out.println("@@@ instrumenting method : " + CurMethod.getSignature());
@@ -415,6 +426,7 @@ public class CovPCG extends BodyTransformer
 	    /* init CFG and compute dominance */	
 		List<Block> wfQueue = new ArrayList<Block>();	
 		wfQueue.add(Heads.get(0));
+		VisitedBb.put(Heads.get(0), 1);
 		
 		int CFGHd = PCGuidance.pcgCFGAlloct(Block2ID.get(Heads.get(0)));		
 		while (!wfQueue.isEmpty())
@@ -425,12 +437,12 @@ public class CovPCG extends BodyTransformer
 			int CurBId = Block2ID.get(CurB);
 			
 			/* for each block, translate the statement to SA-IR */
-			System.out.println("### Block -> " + CurBId);
+			System.out.println("[SA-IR] Block -> " + CurBId);
 			for (Unit CurUnit : CurB)
 			{
-			    System.out.println("\t statement ->  " + CurUnit.toString());
 				try {
 					String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
+					System.out.println("\t statement ->  " + CurUnit.toString() + " -> SAIR: " + SaIR + "\r\n");
 					PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -441,7 +453,11 @@ public class CovPCG extends BodyTransformer
 			List<Block> Succs = CurB.getSuccs();
 			for (Block su: Succs)
 			{
-				wfQueue.add (su);
+				if (VisitedBb.get(su) == null)
+				{
+					wfQueue.add (su);
+					VisitedBb.put (su, 1);
+				}
 				PCGuidance.pcgCFGEdge(CFGHd, CurBId, Block2ID.get(su));
 			}		
 		}	
@@ -451,7 +467,7 @@ public class CovPCG extends BodyTransformer
 		Chain units = body.getUnits();
 		for (Block CurB : Block2ID.keySet())
 		{
-			System.out.println("@@@ Block -> " + Block2ID.get(CurB).toString());
+			System.out.println("[PCG]Block -> " + Block2ID.get(CurB).toString());
 			Unit InstrmedStmt = CurB.getTail();
 
 			int BID = Block2ID.get(CurB);

@@ -1,13 +1,17 @@
 cd ../
 
 #build docker image
-python3 infra/helper.py build_image bleach
+python infra/helper.py build_image bleach
 
 #build fuzz targets
-python3 infra/helper.py build_fuzzers --sanitizer address bleach
+python infra/helper.py build_fuzzers --sanitizer address bleach
 
 cd projects/bleach/
 
+pip3 install atheris
+
 pip3 install hypothesis
 
-python3 sanitize_fuzzer.py
+nohup python -u sanitize_fuzzer.py > full.log 2>&1 &
+
+nohup python extract_log.py

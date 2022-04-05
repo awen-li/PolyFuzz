@@ -14,14 +14,18 @@ afl-system-config
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100
 
-export TINK_SRC_PATH=`cd ../../../../ && pwd`/tink
-
 cp ../../py_summary.xml ./
 if [ "$?" != "0" ]; then
 	echo "copy py_summary.xml fail, please check the configuration!!!!"
 	exit 0
 fi
 
+cp ../keyset.json ./
+if [ "$?" != "0" ]; then
+	echo "copy keyset.json fail, please check the configuration!!!!"
+	exit 0
+fi
+
 export AFL_MAP_SIZE=315000
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../jwt_json.py  @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../decrypt.py  @@
 

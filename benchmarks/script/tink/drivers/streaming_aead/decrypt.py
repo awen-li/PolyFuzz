@@ -27,7 +27,6 @@ def streaming_aead_decrypt (primitive, data):
 def load (file):
     with open(file, 'rb') as f:
         data = f.read()
-        print (len (data))
         return data
 
 if __name__ == '__main__':

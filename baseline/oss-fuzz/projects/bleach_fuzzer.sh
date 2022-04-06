@@ -14,4 +14,4 @@ pip3 install hypothesis
 
 nohup python -u sanitize_fuzzer.py > full.log 2>&1 &
 
-nohup python extract_log.py
+python extract_log.py

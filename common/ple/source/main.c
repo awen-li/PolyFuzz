@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     PLOP.SamplePolicy = SP_VARNUM;
     
     SDWORD Opt = 0;
-    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:q")) > 0) 
+    while ((Opt = getopt(argc, argv, "s:d:bp:t:B:l:qu:")) > 0) 
     {
         switch (Opt) 
         {
@@ -90,6 +90,12 @@ int main(int argc, char *argv[])
                 InitQueue(MEMMOD_SHARE);
                 ShowQueue(10);
                 return 0;                
+            }
+            case 'u':
+            {
+                /* udp server port */
+                WORD PortNo = (WORD) atoi(optarg);
+                SetSrvPort(PortNo);               
             }
             default:
             {

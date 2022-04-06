@@ -107,8 +107,8 @@ void InitQueue (MEMMOD MemMode)
 
     if (g_Queue != NULL)
     {
-        DEBUG ("@@@@@ Warning: Repeat comimg into InitQueue: %p-%u\r\n", g_Queue, g_SharedId);
-        exit (0);
+        DEBUG("@@@@@ Warning: Repeat comimg into InitQueue: %p-%u\r\n", g_Queue, g_SharedId);
+        return;
     }
 
     char *ShareMemKey = getenv(SHM_QUEUE_KEY);

@@ -14,27 +14,19 @@ static PLServer g_plSrv;
 
 extern char *get_current_dir_name(void);
 BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Thread for ALF++ fuzzing process
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-void* FuzzingProc (void *Para)
-{
-    BYTE* DriverDir = (BYTE *)Para;    
-    BYTE Cmd[1024];
 
-    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
-    printf ("CMD: %s \r\n", Cmd);
-    int Ret = system (Cmd);
-    assert (Ret >= 0);
-    
-    return NULL;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// ple SERVER setup
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define AFL_PL_SOCKET_PORT   ("9999")
+static WORD pleSrvPort = 9999;
+VOID SetSrvPort (WORD PortNo)
+{
+    pleSrvPort = PortNo;
+    printf ("[SetSrvPort]set server port: %u \r\n", pleSrvPort);
+}
+
 static inline DWORD SrvInit (SocketInfo *SkInfo)
 {
     SkInfo->SockFd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -49,7 +41,7 @@ static inline DWORD SrvInit (SocketInfo *SkInfo)
     
     memset(&addr_serv, 0, sizeof(struct sockaddr_in));
     addr_serv.sin_family = AF_INET;
-    addr_serv.sin_port   = htons((WORD)atoi(AFL_PL_SOCKET_PORT));
+    addr_serv.sin_port   = htons(pleSrvPort);
     addr_serv.sin_addr.s_addr = htonl(INADDR_ANY);
     len = sizeof(addr_serv);
     
@@ -59,7 +51,9 @@ static inline DWORD SrvInit (SocketInfo *SkInfo)
         return R_FAIL;
     }
 
-    setenv ("AFL_PL_SOCKET_PORT", AFL_PL_SOCKET_PORT, 1);
+    char PortNo[32];
+    snprintf (PortNo, sizeof (PortNo), "%u", pleSrvPort);
+    setenv ("AFL_PL_SOCKET_PORT", PortNo, 1);
     return R_SUCCESS;
 }
 
@@ -83,6 +77,22 @@ static inline VOID Send (SocketInfo *SkInfo, BYTE* Data, DWORD DataLen)
     assert (SendNum != 0);
 
     return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Thread for ALF++ fuzzing process
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* FuzzingProc (void *Para)
+{
+    BYTE* DriverDir = (BYTE *)Para;    
+    BYTE Cmd[1024];
+
+    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
+    printf ("CMD: %s \r\n", Cmd);
+    int Ret = system (Cmd);
+    assert (Ret >= 0);
+    
+    return NULL;
 }
 
 

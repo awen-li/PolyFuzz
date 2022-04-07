@@ -272,7 +272,7 @@ public:
         return It->second;
     }
 
-    inline void DumpBrVals (unsigned Key, char* Type, unsigned Predict, Value *Val)
+    inline u32 DumpBrVals (unsigned Key, char* Type, unsigned Predict, Value *Val)
     {
         unsigned long ConstVal = 0;
         if (ConstantInt* CI = dyn_cast<ConstantInt>(Val)) {
@@ -280,12 +280,11 @@ public:
         }
         else
         {
-            if (ConstantData *CD = dyn_cast<ConstantData>(Val))
-            {
+            if (ConstantData *CD = dyn_cast<ConstantData>(Val)) {
                 errs ()<<"Warning: Not IntConstant but ----> "<<*Val<<"\r\n";
             }
 
-            return;
+            return 0;
         }
 
         uint64_t TypeSize = DL->getTypeStoreSizeInBits(Val->getType());
@@ -311,15 +310,16 @@ public:
         }
         
         fclose (F);
+        return 1;
     }
 
-    inline void CmpProc (Value* BrVal, ICmpInst::Predicate pred, Value* CmpVal)
+    inline u32 CmpProc (Value* BrVal, ICmpInst::Predicate pred, Value* CmpVal)
     {
         uint64_t TypeSize = DL->getTypeStoreSizeInBits(CmpVal->getType());
         if (TypeSize > 64)
         {
             errs ()<<"@@@ Warning: Type size is over 64!!!  --->  "<<*CmpVal<<"\r\n";
-            return;
+            return 0;
         }
         
         unsigned Key = (unsigned)(unsigned long)BrVal;
@@ -342,7 +342,7 @@ public:
             case ICmpInst::FCMP_UNE:   /// = 14,  ///< 1 1 1 0    True if unordered or not equal
             case ICmpInst::FCMP_TRUE:  /// = 15, ///< 1 1 1 1    Always true (always folded)
             {
-                break;
+                return 0;
             }
             case ICmpInst::ICMP_EQ:    /// = 32,  ///< equal
             case ICmpInst::ICMP_NE:    /// = 33,  ///< not equal
@@ -355,12 +355,11 @@ public:
             case ICmpInst::ICMP_SLT:   /// = 40, ///< signed less than
             case ICmpInst::ICMP_SLE:   /// = 41, ///< signed less or equal
             {
-                DumpBrVals (Key, (char*)"CMP", pred, CmpVal);
-                break;
+                return DumpBrVals (Key, (char*)"CMP", pred, CmpVal);
             }
             default:
             {
-                return;
+                return 0;
             }
         }
     }
@@ -375,7 +374,7 @@ public:
         {
             Value *Use = St->getOperand(ix);
 
-            DumpBrVals (Key, (char*)"SWITCH", 255, Use);
+            (void)DumpBrVals (Key, (char*)"SWITCH", 255, Use);
             ix++;
         }      
         return;
@@ -430,11 +429,8 @@ public:
                     }
                     CmpWithIntConstNum++;
                     
-                    CmpProc (BrVar, CMP->getPredicate (), BrConst);
-                    if (DL->getTypeStoreSizeInBits(BrConst->getType()) == 64)
-                    {
-                        //DumpInst(Inst);
-                    }
+                    u32 IsDumped = CmpProc (BrVar, CMP->getPredicate (), BrConst);
+                    if (IsDumped == 0) continue;
                 }
                 else {
                     CmpWithNoConstNum++;

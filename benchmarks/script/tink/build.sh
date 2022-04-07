@@ -79,6 +79,8 @@ if [ ! -d "$drivers" ]; then
 	mkdir $drivers
 fi
 cp $PyDir/py_summary.xml $drivers/
+cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
+
 
 cd $ROOT/script/$target/
 python tink-test.py

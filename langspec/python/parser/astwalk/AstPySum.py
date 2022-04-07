@@ -130,6 +130,11 @@ class AstPySum(NodeVisitor):
         for Cmp in self.BrCmptors:
             if not isinstance (Cmp, Constant) or not isinstance (Cmp.value, int):
                 continue
+            Brvalue = Cmp.value
+            if Brvalue == True:
+                Brvalue = 1
+            if Brvalue == False:
+                Brvalue = 0
             BVF.write(str(Key) + ":CMP:" + str(Predict) + ":" + str(Cmp.value) + "\n")
         BVF.close()
         

@@ -3,7 +3,6 @@ external/boringssl
 bazel-out/k8-opt
 external/curl
 external/upb
-external/tink_cc
 external/com_google_protobuf
 external/com_google_absl
 external/com_github_grpc_grpc

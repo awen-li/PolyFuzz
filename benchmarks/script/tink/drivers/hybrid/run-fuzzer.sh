@@ -26,7 +26,7 @@ if [ "$?" != "0" ]; then
 	exit 0
 fi
 
-export AFL_PL_HAVOC_NUM=128
+export AFL_PL_HAVOC_NUM=512
 export AFL_MAP_SIZE=315000
 afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../decrypt.py  @@
 

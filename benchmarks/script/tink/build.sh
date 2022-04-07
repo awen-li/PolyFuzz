@@ -45,8 +45,8 @@ function compile ()
 	
 	#bazel build ...
 	cp $ROOT/script/$target/setup.py ./
-	#pip3 install .
-	python setup.py install
+	pip3 install .
+	#python setup.py install
 	
 	cp /tmp/branch_vars.bv $ROOT/$target/
 	cp /tmp/cmp_statistic.info $ROOT/$target/
@@ -73,6 +73,7 @@ cp ExpList /tmp/ExpList
 cd $ROOT && compile
 
 # 2. summarize the Python unit
+rm -rf branch_vars.bv
 PyDir=$target/python/tink
 python -m parser $PyDir
 if [ ! -d "$drivers" ]; then

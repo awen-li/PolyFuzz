@@ -2,10 +2,12 @@ import sys
 import tink
 from tink import aead
 from tink import cleartext_keyset_handle
+import pyprob
+
+pyprob.Setup('py_summary.xml', 'decrypt.py')
 
 associated_data = b"fuzz_association"
 aead.register ()
-
 
 def init_keyset (keyset_file):
     json_keyset = ''

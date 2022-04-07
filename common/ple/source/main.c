@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     /* default */
     PLOP.LnThrNum   = 4;
-    PLOP.SdPattBits = 124;
+    PLOP.SdPattBits = 1248;
     PLOP.SdType     = SEED_BINARY;
     PLOP.BvDir      = NULL;
     PLOP.TryLength  = LEARN_BLOCK_SIZE * (LEARN_BLOCK_NUM);

@@ -288,6 +288,8 @@ public:
             return;
         }
 
+        uint64_t TypeSize = DL->getTypeStoreSizeInBits(Val->getType());
+
         if (debug)
             errs ()<<"DumpBrVals ----> Key="<<Key<<" -----> BrConst == "<<*Val<< "\r\n";
         FILE *F;
@@ -298,7 +300,16 @@ public:
             F = fopen ("branch_vars.bv", "a+");
         }
         assert (F != NULL);
-        fprintf (F, "%u:%s:%u:%lu\r\n", Key, Type, Predict, ConstVal);
+
+        switch (TypeSize)
+        {
+            case 8: fprintf (F, "%u:%s:%u:%d\r\n", Key, Type, Predict, (char)ConstVal);break;
+            case 16:fprintf (F, "%u:%s:%u:%d\r\n", Key, Type, Predict, (short)ConstVal);break;
+            case 32:fprintf (F, "%u:%s:%u:%d\r\n", Key, Type, Predict, (int)ConstVal);break;
+            case 64:fprintf (F, "%u:%s:%u:%ld\r\n", Key, Type, Predict, (long)ConstVal);break;
+            default: break;
+        }
+        
         fclose (F);
     }
 
@@ -420,6 +431,10 @@ public:
                     CmpWithIntConstNum++;
                     
                     CmpProc (BrVar, CMP->getPredicate (), BrConst);
+                    if (DL->getTypeStoreSizeInBits(BrConst->getType()) == 64)
+                    {
+                        //DumpInst(Inst);
+                    }
                 }
                 else {
                     CmpWithNoConstNum++;

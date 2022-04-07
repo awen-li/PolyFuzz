@@ -146,7 +146,11 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     static BYTE SdName[FZ_SEED_NAME_LEN];
     memset (SdName, 0, sizeof (SdName));
 
-    BYTE* ID = strstr (SeedPath, "id");
+    BYTE* ID = strstr (SeedPath, "id:");
+    if (ID == NULL)
+    {
+        ID = strstr (SeedPath, "id-");
+    }
     assert (ID != NULL);
     strncpy (SdName, ID, 9);
     SdName[2] = '-';
@@ -634,12 +638,17 @@ static inline VOID MakeDir (BYTE *DirPath)
 
 
 static inline BOOL CheckVariant (BrVariable *BrVal)
-{   
+{  
+    if (BrVal->ValNum < 4)
+    {
+        return FALSE;
+    }
+    
     DWORD SameNum = 0;
     DWORD PreVal  = -1u;
-    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM && Index < BrVal->ValNum; Index++)
     {
-         DWORD CurVal = BrVal->Value[Index];
+         ULONG CurVal = BrVal->Value[Index];
          if (PreVal == CurVal)
          {
             SameNum++;
@@ -681,6 +690,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
     if (CheckVariant (BrVal) == FALSE)
     {
+        DEBUG ("[CheckVariant] false...\r\n");
         return NULL;
     }
 
@@ -688,6 +698,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
 
     /* FILE NAME */
     snprintf (VarFile, sizeof (VarFile), "%s/Var-%u.csv", BlkDir, VarKey);
+    DEBUG ("[GenAnalysicData]%s \r\n", VarFile);
     FILE *F = fopen (VarFile, "w");
     assert (F != NULL);
 
@@ -703,12 +714,12 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
         {
             case VT_CHAR:
             {
-                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (CHAR)BrVal->Value[Index]);
                 break;
             }
             case VT_WORD:
             {
-                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SWORD)BrVal->Value[Index]);
                 break;
             }
             case VT_DWORD:
@@ -732,7 +743,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     return VarFile;    
 }
 
-static inline DWORD IsValueValie (DWORD Value, DWORD Align)
+static inline DWORD IsValueValid (ULONG Value, DWORD Align)
 {
     switch (Align)
     {
@@ -747,6 +758,14 @@ static inline DWORD IsValueValie (DWORD Value, DWORD Align)
         case 2:
         {
             if ((Value & 0xFFFF0000) == 0)
+            {
+                return TRUE;
+            }
+            break;
+        }
+        case 4:
+        {
+            if ((Value & 0xFFFFFFFF00000000) == 0)
             {
                 return TRUE;
             }
@@ -802,7 +821,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
     }
 
     DWORD BaseNum = FList->NodeNum * 256;
-    BsList->ValueList = (DWORD *)malloc (BaseNum * sizeof (DWORD));
+    BsList->ValueList = (ULONG *)malloc (BaseNum * sizeof (ULONG));
     BsList->ValueCap  = BaseNum;
     BsList->ValueNum  = 0;
     BsList->VarNum    = FList->NodeNum;
@@ -822,8 +841,8 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
         {
             if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
             {
-                DWORD Val = strtol(BSValStr, NULL, 10);
-                if (IsValueValie (Val, Align) == FALSE)
+                ULONG Val = strtol(BSValStr, NULL, 10);
+                if (IsValueValid (Val, Align) == FALSE)
                 {
                     continue;
                 }
@@ -846,7 +865,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
                 {
                     DEBUG ("\t Realloc ValueList from %u to %u \r\n", BsList->ValueCap, BsList->ValueCap+BaseNum);
                     BsList->ValueCap  = BsList->ValueCap + BaseNum;
-                    BsList->ValueList = (DWORD *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (DWORD));
+                    BsList->ValueList = (ULONG *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (ULONG));
                     assert (BsList->ValueList != NULL);
                 }
 
@@ -861,7 +880,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
 
     if (BsList->ValueNum != 0)
     {
-        qsort (BsList->ValueList, BsList->ValueNum, sizeof(DWORD), CmpBrValue);
+        qsort (BsList->ValueList, BsList->ValueNum, sizeof(ULONG), CmpBrValue);
     }
 
     ListDel(FList, free);
@@ -1191,8 +1210,8 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             {
                 LearnFailNum++;
                     
-                BsList->ValueList = (DWORD *)malloc (sizeof (DWORD));
-                *(DWORD*)BsList->ValueList = 0;
+                BsList->ValueList = (ULONG *)malloc (sizeof (ULONG));
+                *(ULONG*)BsList->ValueList = 0;
                 BsList->ValueCap  = 1;
                 assert (BsList->ValueList != NULL);
                 memcpy (BsList->ValueList, Sd->SeedCtx+OFF, Align);
@@ -1456,7 +1475,7 @@ static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
     
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ()%256;
+        ULONG SbVal = random ()%1024;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)

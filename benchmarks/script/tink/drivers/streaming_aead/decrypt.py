@@ -3,6 +3,9 @@ import io
 import tink
 from tink import cleartext_keyset_handle
 from tink import streaming_aead
+import pyprob
+
+pyprob.Setup('py_summary.xml', 'decrypt.py')
 
 associated_data = b"fuzz_association"
 

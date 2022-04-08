@@ -3,6 +3,9 @@ import io
 import tink
 from tink import cleartext_keyset_handle
 from tink import mac
+import pyprob
+
+pyprob.Setup('py_summary.xml', 'decrypt.py')
 
 mac.register ()
 

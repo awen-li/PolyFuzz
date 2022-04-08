@@ -323,7 +323,7 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
     DWORD Ret;
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
-    if (QItr >= FZ_SAMPLE_NUM)
+    if (QItr >= PD->PLOP->SampleNum)
     {
         return;
     }
@@ -541,7 +541,7 @@ void* DECollect (void *Para)
             if (QN->TrcKey == TARGET_EXIT_KEY)
             {
                 QItr ++;
-                if (QItr > FZ_SAMPLE_NUM)
+                if (QItr > PD->PLOP->SampleNum)
                 {
                     /* this is an abnormal, but we can not break directly 
                        to make sure the queue be emptied*/
@@ -637,7 +637,7 @@ static inline VOID MakeDir (BYTE *DirPath)
 }
 
 
-static inline BOOL CheckVariant (BrVariable *BrVal)
+static inline BOOL CheckVariant (BrVariable *BrVal, DWORD SampleNum)
 {  
     if (BrVal->ValNum < 4)
     {
@@ -646,7 +646,7 @@ static inline BOOL CheckVariant (BrVariable *BrVal)
     
     DWORD SameNum = 0;
     DWORD PreVal  = -1u;
-    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM && Index < BrVal->ValNum; Index++)
+    for (DWORD Index = 0; Index < SampleNum && Index < BrVal->ValNum; Index++)
     {
          ULONG CurVal = BrVal->Value[Index];
          if (PreVal == CurVal)
@@ -657,7 +657,7 @@ static inline BOOL CheckVariant (BrVariable *BrVal)
          PreVal = CurVal;
     }
 
-    if (SameNum >= FZ_SAMPLE_NUM/4)
+    if (SameNum >= SampleNum/4)
     {
         return FALSE;
     }
@@ -688,7 +688,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     }
     
     BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
-    if (CheckVariant (BrVal) == FALSE)
+    if (CheckVariant (BrVal, PD->PLOP->SampleNum) == FALSE)
     {
         DEBUG ("[CheckVariant] false...\r\n");
         return NULL;
@@ -703,7 +703,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     assert (F != NULL);
 
     fprintf (F, "SDBLK-%u-%u,BrVar-%u\n", SdBlk->SIndex, SdBlk->Length, VarKey);
-    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    for (DWORD Index = 0; Index < PD->PLOP->SampleNum; Index++)
     {
         if (CheckBrVFalg(BrVal, Index) == FALSE)
         {
@@ -1467,6 +1467,7 @@ static inline VOID LearningMain (PilotData *PD)
 
 static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
 {
+    ULONG SbVal;
     SeedBlock* SBlk = AddSeedBlock (PD, CurSeed, MsgItr);
     assert (SBlk != NULL);
     SBlk->SIndex = MsgItr->SIndex;
@@ -1475,31 +1476,34 @@ static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
     
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ()%1024;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)
         {
             case 1:
             {
+                SbVal = random ()%256;
                 BYTE *ValHdr = (BYTE*) (MsgItr + 1);
                 ValHdr [Index] = (BYTE)SbVal;
                 break;
             }
             case 2:
             {
+                SbVal = random ()%256;
                 WORD *ValHdr = (WORD*) (MsgItr + 1);
                 ValHdr [Index] = (WORD)SbVal;
                 break;
             }
             case 4:
             {
+                SbVal = random ()%512;
                 DWORD *ValHdr = (DWORD*) (MsgItr + 1);
                 ValHdr [Index] = (DWORD)SbVal;
                 break;
             }
             case 8:
             {
+                SbVal = random ()%1024;
                 ULONG *ValHdr = (ULONG*) (MsgItr + 1);
                 ValHdr [Index] = (ULONG)SbVal;
                 break;
@@ -1742,7 +1746,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 
                 MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_BEGIN);
                 MsgIB *MsgItr = (MsgIB *) (MsgSend + 1);
-                MsgItr->SampleNum = FZ_SAMPLE_NUM;
+                MsgItr->SampleNum = PD->PLOP->SampleNum;
 
                 DWORD OFF = 0;
                 DWORD TryLength = (PLOP->TryLength < CurSeed->SeedLen) 

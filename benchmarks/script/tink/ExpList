@@ -12,3 +12,4 @@ external/aws_checksums
 external/aws_c_event_stream
 external/aws_c_common
 external/aws_cpp_sdk
+_test.cc

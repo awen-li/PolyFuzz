@@ -146,6 +146,7 @@ typedef struct PLOption
     DWORD SeedBlockNum;
 
     DWORD SamplePolicy;
+    DWORD SampleNum;
 }PLOption;
 
 typedef struct ThrData

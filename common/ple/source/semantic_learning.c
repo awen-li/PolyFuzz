@@ -512,8 +512,9 @@ static inline VOID GetLearnStat (PilotData *PD)
 
 void* DECollect (void *Para)
 {
-    PilotData *PD   = (PilotData*)Para;
-    DbHandle *DHL = PD->DHL;
+    PilotData *PD  = (PilotData*)Para;
+    DbHandle *DHL  = PD->DHL;
+    DWORD PreAlgin = 0;
 
     while (PD->PilotStatus == PILOT_ST_CLOOECTING)
     {
@@ -568,9 +569,9 @@ void* DECollect (void *Para)
         }   
         DEBUG ("DECollect loop over.....[%u] EVENT processed\r\n", ProccEvent);
 
-        if (BrKeyNum == 0)
-        {
-            SeedBlock* SBlk = PD->CurSdBlk;
+        SeedBlock* SBlk = PD->CurSdBlk;
+        if (BrKeyNum == 0 && SBlk->Length == PreAlgin)
+        {       
             DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
                    GetSeedName (SBlk->Sd->SName),
                    SBlk->SIndex, SBlk->Length);
@@ -589,7 +590,8 @@ void* DECollect (void *Para)
 
             IncLearnStat (PD, BrKeyNum);
         }
-
+        PreAlgin = SBlk->Length;
+        
         sem_post(&PD->CollectEndSem);
     }
     
@@ -1496,7 +1498,7 @@ static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
             }
             case 4:
             {
-                SbVal = random ()%512;
+                SbVal = random ()%256;
                 DWORD *ValHdr = (DWORD*) (MsgItr + 1);
                 ValHdr [Index] = (DWORD)SbVal;
                 break;

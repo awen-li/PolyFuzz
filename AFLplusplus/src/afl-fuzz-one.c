@@ -6510,7 +6510,7 @@ abandon_entry:
 
 
 
-static inline void havoc_fuzzing(afl_state_t *afl, u32 stages, u8 *in_buf, u32 len) {
+static inline void havoc_fuzzing(afl_state_t *afl, u8 *in_buf, u32 len) {
 
     u8 *out_buf;
     u32 temp_len;
@@ -6522,7 +6522,7 @@ static inline void havoc_fuzzing(afl_state_t *afl, u32 stages, u8 *in_buf, u32 l
 
     afl->stage_name  = "onfly_havoc";
     afl->stage_short = "onfly_havoc";
-    afl->stage_max   =  stages;
+    afl->stage_max   =  afl->pl_havoc_num;
 
     common_fuzz_stuff(afl, out_buf, temp_len);
     for (afl->stage_cur = 0; afl->stage_cur < afl->stage_max; ++afl->stage_cur) {
@@ -6613,7 +6613,7 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
             add_to_queue(afl, target, st.st_size >= MAX_FILE ? MAX_FILE : st.st_size, 1);
         }
         
-        havoc_fuzzing(afl, 5, buf, len);
+        havoc_fuzzing(afl, buf, len);
         free (nl[i]);
         ck_free(seed);
           

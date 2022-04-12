@@ -1,0 +1,15 @@
+{
+  "primaryKeyId": 1107851673,
+  "key": [
+    {
+      "keyData": {
+        "typeUrl": "type.googleapis.com/google.crypto.tink.Ed25519PrivateKey",
+        "value": "EiBbDfPbiC6JAP1cvFomQ5KQZ5idCmkdelDHrMkkAdglbxoiEiBcEddOGlZwJcbTMDGNhhTs4FPnXAVSYFU+1ddZ9wmJyQ==",
+        "keyMaterialType": "ASYMMETRIC_PRIVATE"
+      },
+      "status": "ENABLED",
+      "keyId": 1107851673,
+      "outputPrefixType": "TINK"
+    }
+  ]
+}

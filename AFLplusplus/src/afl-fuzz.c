@@ -478,6 +478,14 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
         WARNF("the env AFL_PL_SOCKET_PORT did not set, use default 9999....");
     }
 
+    afl->pl_havoc_num = 6;
+    char *havoc_num = getenv ("AFL_PL_HAVOC_NUM");
+    if (havoc_num != NULL)
+    {
+        u32 hnum = (u32) atoi(havoc_num);
+        if (hnum > afl->pl_havoc_num) afl->pl_havoc_num = hnum;
+    }
+
     memset(&pl_srv->addr_serv, 0, sizeof(pl_srv->addr_serv));  
     pl_srv->addr_serv.sin_family = AF_INET;  
     pl_srv->addr_serv.sin_addr.s_addr = inet_addr("127.0.0.1");  

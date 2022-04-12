@@ -16,7 +16,7 @@
 #include <semaphore.h>
 #include "pl_message.h"
 
-#define FZ_SAMPLE_NUM        (32)
+#define FZ_SAMPLE_NUM        (64)
 #define FZ_SAMPLE_BITNUM     (FZ_SAMPLE_NUM/8)
 
 
@@ -104,14 +104,14 @@ typedef struct BrVariable
     WORD ValIndex;
     BYTE Rev[6];
     
-    DWORD Value[FZ_SAMPLE_NUM];
+    ULONG Value[FZ_SAMPLE_NUM];
     BYTE  ValideTag[FZ_SAMPLE_BITNUM];
 }BrVariable;
 
 
 typedef struct BsValue
 {
-    DWORD *ValueList;
+    ULONG *ValueList;
     DWORD ValueNum;
     DWORD ValueCap;
     DWORD VarNum;
@@ -146,6 +146,7 @@ typedef struct PLOption
     DWORD SeedBlockNum;
 
     DWORD SamplePolicy;
+    DWORD SampleNum;
 }PLOption;
 
 typedef struct ThrData

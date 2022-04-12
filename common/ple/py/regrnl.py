@@ -80,24 +80,27 @@ class BrVSet ():
         else:
             if Pred == 32:
                ValueList.append (Value)
+               ValueList.append (Value - 1)
             elif Pred == 33:
                ValueList.append (Value + 1)
-               ValueList.append (Value + random.randint(2, 200))
-               ValueList.append (Value/2)
+               ValueList.append (Value - 1)
             elif Pred in [34, 38]:
                 ValueList.append (Value + 1)
-                ValueList.append (Value + random.randint(2, 200))
+                ValueList.append (Value - 1)
             elif Pred in [35, 39]:
                 ValueList.append (Value)
-                ValueList.append (Value + random.randint(2, 200))
+                ValueList.append (Value + 1)
+                ValueList.append (Value - 1)
             elif Pred in [36, 40]:
                 ValueList.append (Value - 1)
-                ValueList.append (Value/2)
+                ValueList.append (Value + 1)
             elif Pred in [37, 41]:
                 ValueList.append (Value)
-                ValueList.append (Value/2)
+                ValueList.append (Value - 1)
+                ValueList.append (Value + 1)
             elif Pred == 255:
                 ValueList.append (Value)
+                ValueList.append (Value + 1)
 
         return ValueList
                 

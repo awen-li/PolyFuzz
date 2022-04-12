@@ -9,6 +9,8 @@
 #define __PL_LEARNING_H__
 #include "pl_struct.h"
 
+VOID SetSrvPort (WORD PortNo);
+
 void SyntaxLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP);
 void SemanticLearning (BYTE* SeedDir, BYTE* DriverDir, PLOption *PLOP);
 

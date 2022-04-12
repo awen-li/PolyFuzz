@@ -67,7 +67,7 @@ void BV_set::LoadPySummary(string PySummary)
     mxml_node_t* bvNode = mxmlFindElement(tree, tree, "py_summary", NULL, NULL, MXML_DESCEND);
     if (bvNode == NULL)
     {
-        PY_PRINT("No tag branch_variables exist, load a right file?...");
+        fprintf(stderr, "No tag branch_variables exist, load a right file?...");
         exit (0);
     }
     const char *Branchs = mxmlElementGetAttr(bvNode, "branchs");

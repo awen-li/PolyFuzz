@@ -14,27 +14,19 @@ static PLServer g_plSrv;
 
 extern char *get_current_dir_name(void);
 BYTE* ReadFile (BYTE* SeedFile, DWORD *SeedLen, DWORD SeedAttr);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Thread for ALF++ fuzzing process
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-void* FuzzingProc (void *Para)
-{
-    BYTE* DriverDir = (BYTE *)Para;    
-    BYTE Cmd[1024];
 
-    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
-    printf ("CMD: %s \r\n", Cmd);
-    int Ret = system (Cmd);
-    assert (Ret >= 0);
-    
-    return NULL;
-}
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// ple SERVER setup
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define AFL_PL_SOCKET_PORT   ("9999")
+static WORD pleSrvPort = 9999;
+VOID SetSrvPort (WORD PortNo)
+{
+    pleSrvPort = PortNo;
+    printf ("[SetSrvPort]set server port: %u \r\n", pleSrvPort);
+}
+
 static inline DWORD SrvInit (SocketInfo *SkInfo)
 {
     SkInfo->SockFd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -49,7 +41,7 @@ static inline DWORD SrvInit (SocketInfo *SkInfo)
     
     memset(&addr_serv, 0, sizeof(struct sockaddr_in));
     addr_serv.sin_family = AF_INET;
-    addr_serv.sin_port   = htons((WORD)atoi(AFL_PL_SOCKET_PORT));
+    addr_serv.sin_port   = htons(pleSrvPort);
     addr_serv.sin_addr.s_addr = htonl(INADDR_ANY);
     len = sizeof(addr_serv);
     
@@ -59,7 +51,9 @@ static inline DWORD SrvInit (SocketInfo *SkInfo)
         return R_FAIL;
     }
 
-    setenv ("AFL_PL_SOCKET_PORT", AFL_PL_SOCKET_PORT, 1);
+    char PortNo[32];
+    snprintf (PortNo, sizeof (PortNo), "%u", pleSrvPort);
+    setenv ("AFL_PL_SOCKET_PORT", PortNo, 1);
     return R_SUCCESS;
 }
 
@@ -83,6 +77,22 @@ static inline VOID Send (SocketInfo *SkInfo, BYTE* Data, DWORD DataLen)
     assert (SendNum != 0);
 
     return;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Thread for ALF++ fuzzing process
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void* FuzzingProc (void *Para)
+{
+    BYTE* DriverDir = (BYTE *)Para;    
+    BYTE Cmd[1024];
+
+    snprintf (Cmd, sizeof (Cmd), "cd %s; ./run-fuzzer.sh -P 2", DriverDir);
+    printf ("CMD: %s \r\n", Cmd);
+    int Ret = system (Cmd);
+    assert (Ret >= 0);
+    
+    return NULL;
 }
 
 
@@ -136,7 +146,11 @@ static inline BYTE* GetSeedName (BYTE *SeedPath)
     static BYTE SdName[FZ_SEED_NAME_LEN];
     memset (SdName, 0, sizeof (SdName));
 
-    BYTE* ID = strstr (SeedPath, "id");
+    BYTE* ID = strstr (SeedPath, "id:");
+    if (ID == NULL)
+    {
+        ID = strstr (SeedPath, "id-");
+    }
     assert (ID != NULL);
     strncpy (SdName, ID, 9);
     SdName[2] = '-';
@@ -309,7 +323,7 @@ static inline VOID CacheBrVar (PilotData *PD, DWORD Key, ObjValue *Ov, DWORD QIt
     DWORD Ret;
     BYTE SKey [FZ_SEED_NAME_LEN+32] = {0};
 
-    if (QItr >= FZ_SAMPLE_NUM)
+    if (QItr >= PD->PLOP->SampleNum)
     {
         return;
     }
@@ -498,8 +512,9 @@ static inline VOID GetLearnStat (PilotData *PD)
 
 void* DECollect (void *Para)
 {
-    PilotData *PD   = (PilotData*)Para;
-    DbHandle *DHL = PD->DHL;
+    PilotData *PD  = (PilotData*)Para;
+    DbHandle *DHL  = PD->DHL;
+    DWORD PreAlgin = 0;
 
     while (PD->PilotStatus == PILOT_ST_CLOOECTING)
     {
@@ -527,7 +542,7 @@ void* DECollect (void *Para)
             if (QN->TrcKey == TARGET_EXIT_KEY)
             {
                 QItr ++;
-                if (QItr > FZ_SAMPLE_NUM)
+                if (QItr > PD->PLOP->SampleNum)
                 {
                     /* this is an abnormal, but we can not break directly 
                        to make sure the queue be emptied*/
@@ -554,9 +569,9 @@ void* DECollect (void *Para)
         }   
         DEBUG ("DECollect loop over.....[%u] EVENT processed\r\n", ProccEvent);
 
-        if (BrKeyNum == 0)
-        {
-            SeedBlock* SBlk = PD->CurSdBlk;
+        SeedBlock* SBlk = PD->CurSdBlk;
+        if (BrKeyNum == 0 && SBlk->Length == PreAlgin)
+        {       
             DEBUG ("\t@@@DECollect --- [%s][%u-%u]No new branch varables captured....\r\n", 
                    GetSeedName (SBlk->Sd->SName),
                    SBlk->SIndex, SBlk->Length);
@@ -575,7 +590,8 @@ void* DECollect (void *Para)
 
             IncLearnStat (PD, BrKeyNum);
         }
-
+        PreAlgin = SBlk->Length;
+        
         sem_post(&PD->CollectEndSem);
     }
     
@@ -623,13 +639,18 @@ static inline VOID MakeDir (BYTE *DirPath)
 }
 
 
-static inline BOOL CheckVariant (BrVariable *BrVal)
-{   
+static inline BOOL CheckVariant (BrVariable *BrVal, DWORD SampleNum)
+{  
+    if (BrVal->ValNum < 4)
+    {
+        return FALSE;
+    }
+    
     DWORD SameNum = 0;
     DWORD PreVal  = -1u;
-    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    for (DWORD Index = 0; Index < SampleNum && Index < BrVal->ValNum; Index++)
     {
-         DWORD CurVal = BrVal->Value[Index];
+         ULONG CurVal = BrVal->Value[Index];
          if (PreVal == CurVal)
          {
             SameNum++;
@@ -638,7 +659,7 @@ static inline BOOL CheckVariant (BrVariable *BrVal)
          PreVal = CurVal;
     }
 
-    if (SameNum >= FZ_SAMPLE_NUM/4)
+    if (SameNum >= SampleNum/4)
     {
         return FALSE;
     }
@@ -669,8 +690,9 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     }
     
     BrVariable *BrVal = (BrVariable*)Ack.pDataAddr;
-    if (CheckVariant (BrVal) == FALSE)
+    if (CheckVariant (BrVal, PD->PLOP->SampleNum) == FALSE)
     {
+        DEBUG ("[CheckVariant] false...\r\n");
         return NULL;
     }
 
@@ -678,11 +700,12 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
 
     /* FILE NAME */
     snprintf (VarFile, sizeof (VarFile), "%s/Var-%u.csv", BlkDir, VarKey);
+    DEBUG ("[GenAnalysicData]%s \r\n", VarFile);
     FILE *F = fopen (VarFile, "w");
     assert (F != NULL);
 
     fprintf (F, "SDBLK-%u-%u,BrVar-%u\n", SdBlk->SIndex, SdBlk->Length, VarKey);
-    for (DWORD Index = 0; Index < FZ_SAMPLE_NUM; Index++)
+    for (DWORD Index = 0; Index < PD->PLOP->SampleNum; Index++)
     {
         if (CheckBrVFalg(BrVal, Index) == FALSE)
         {
@@ -693,12 +716,12 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
         {
             case VT_CHAR:
             {
-                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (CHAR)BrVal->Value[Index]);
                 break;
             }
             case VT_WORD:
             {
-                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SDWORD)BrVal->Value[Index]);
+                fprintf (F, "%u,%d\n", (DWORD)SdBlk->Value[Index], (SWORD)BrVal->Value[Index]);
                 break;
             }
             case VT_DWORD:
@@ -722,7 +745,7 @@ static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdB
     return VarFile;    
 }
 
-static inline DWORD IsValueValie (DWORD Value, DWORD Align)
+static inline DWORD IsValueValid (ULONG Value, DWORD Align)
 {
     switch (Align)
     {
@@ -737,6 +760,14 @@ static inline DWORD IsValueValie (DWORD Value, DWORD Align)
         case 2:
         {
             if ((Value & 0xFFFF0000) == 0)
+            {
+                return TRUE;
+            }
+            break;
+        }
+        case 4:
+        {
+            if ((Value & 0xFFFFFFFF00000000) == 0)
             {
                 return TRUE;
             }
@@ -792,7 +823,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
     }
 
     DWORD BaseNum = FList->NodeNum * 256;
-    BsList->ValueList = (DWORD *)malloc (BaseNum * sizeof (DWORD));
+    BsList->ValueList = (ULONG *)malloc (BaseNum * sizeof (ULONG));
     BsList->ValueCap  = BaseNum;
     BsList->ValueNum  = 0;
     BsList->VarNum    = FList->NodeNum;
@@ -812,8 +843,8 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
         {
             if (fgets (BSValStr, sizeof (BSValStr), BSF) != NULL)
             {
-                DWORD Val = strtol(BSValStr, NULL, 10);
-                if (IsValueValie (Val, Align) == FALSE)
+                ULONG Val = strtol(BSValStr, NULL, 10);
+                if (IsValueValid (Val, Align) == FALSE)
                 {
                     continue;
                 }
@@ -836,7 +867,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
                 {
                     DEBUG ("\t Realloc ValueList from %u to %u \r\n", BsList->ValueCap, BsList->ValueCap+BaseNum);
                     BsList->ValueCap  = BsList->ValueCap + BaseNum;
-                    BsList->ValueList = (DWORD *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (DWORD));
+                    BsList->ValueList = (ULONG *)realloc (BsList->ValueList, BsList->ValueCap * sizeof (ULONG));
                     assert (BsList->ValueList != NULL);
                 }
 
@@ -851,7 +882,7 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
 
     if (BsList->ValueNum != 0)
     {
-        qsort (BsList->ValueList, BsList->ValueNum, sizeof(DWORD), CmpBrValue);
+        qsort (BsList->ValueList, BsList->ValueNum, sizeof(ULONG), CmpBrValue);
     }
 
     ListDel(FList, free);
@@ -1181,8 +1212,8 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             {
                 LearnFailNum++;
                     
-                BsList->ValueList = (DWORD *)malloc (sizeof (DWORD));
-                *(DWORD*)BsList->ValueList = 0;
+                BsList->ValueList = (ULONG *)malloc (sizeof (ULONG));
+                *(ULONG*)BsList->ValueList = 0;
                 BsList->ValueCap  = 1;
                 assert (BsList->ValueList != NULL);
                 memcpy (BsList->ValueList, Sd->SeedCtx+OFF, Align);
@@ -1438,6 +1469,7 @@ static inline VOID LearningMain (PilotData *PD)
 
 static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
 {
+    ULONG SbVal;
     SeedBlock* SBlk = AddSeedBlock (PD, CurSeed, MsgItr);
     assert (SBlk != NULL);
     SBlk->SIndex = MsgItr->SIndex;
@@ -1446,31 +1478,34 @@ static inline VOID GenSamplings (PilotData *PD, Seed* CurSeed, MsgIB *MsgItr)
     
     for (DWORD Index = 0; Index < MsgItr->SampleNum; Index++)
     {
-        ULONG SbVal = random ()%256;
         //DEBUG ("\t@@@@ [ple-sblk][%u]:%u\r\n", Index, (DWORD)SbVal);
                         
         switch (MsgItr->Length)
         {
             case 1:
             {
+                SbVal = random ()%256;
                 BYTE *ValHdr = (BYTE*) (MsgItr + 1);
                 ValHdr [Index] = (BYTE)SbVal;
                 break;
             }
             case 2:
             {
+                SbVal = random ()%256;
                 WORD *ValHdr = (WORD*) (MsgItr + 1);
                 ValHdr [Index] = (WORD)SbVal;
                 break;
             }
             case 4:
             {
+                SbVal = random ()%256;
                 DWORD *ValHdr = (DWORD*) (MsgItr + 1);
                 ValHdr [Index] = (DWORD)SbVal;
                 break;
             }
             case 8:
             {
+                SbVal = random ()%1024;
                 ULONG *ValHdr = (ULONG*) (MsgItr + 1);
                 ValHdr [Index] = (ULONG)SbVal;
                 break;
@@ -1713,7 +1748,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 
                 MsgSend = FormatMsg(SkInfo, PL_MSG_ITR_BEGIN);
                 MsgIB *MsgItr = (MsgIB *) (MsgSend + 1);
-                MsgItr->SampleNum = FZ_SAMPLE_NUM;
+                MsgItr->SampleNum = PD->PLOP->SampleNum;
 
                 DWORD OFF = 0;
                 DWORD TryLength = (PLOP->TryLength < CurSeed->SeedLen) 

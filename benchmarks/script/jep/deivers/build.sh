@@ -2,15 +2,20 @@
   
 Root=`pwd`
 
+
+export JavaCovPCG=/usr/lib/JavaCovPCG
+export Jep=/root/anaconda3/lib/python3.9/site-packages/jep
+
 function deplibs ()
 {
+    DEPLIBS=$JavaCovPCG/JavaCovPCG.jar:$Jep/jep-4.0.3.jar
+    
 	LIB_DIR=$1
 	if [ ! -d "$LIB_DIR" ]; then
-		echo ""
+		echo $DEPLIBS
 		return
 	fi
 	
-	DEPLIBS=""
 	ALL_LIBS=`find $LIB_DIR`
 	for lib in $ALL_LIBS
 	do

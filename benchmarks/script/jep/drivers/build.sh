@@ -64,7 +64,7 @@ function pack ()
 	
 	cd $JAVA_CLASS  
     jar -cvfm $Root/$TARGET/$TARGET.jar $Root/$TARGET/MANIFEST.MF *
-    sudo chmod a+x $Root/$TARGET/$TARGET.jar
+    chmod a+x $Root/$TARGET/$TARGET.jar
     cd -
 }
 

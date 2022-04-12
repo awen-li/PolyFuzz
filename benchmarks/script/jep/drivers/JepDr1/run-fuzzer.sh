@@ -1,8 +1,4 @@
 
-export JavaCovPCG=/usr/lib/JavaCovPCG
-export Jep=/root/anaconda3/lib/python3.9/site-packages/jep
-export LD_LIBRARY_PATH=$Jep 
-
 export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
@@ -23,5 +19,5 @@ afl-system-config
 export AFL_CRASH_EXITCODE=100
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -t 10000 -m none -d -- java -cp $JavaCovPCG/JavaCovPCG.jar:$Jep/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
+afl-fuzz $1 $2 -i in/ -o out -t 10000 -m none -d -- java -cp $JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
 

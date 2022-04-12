@@ -2,13 +2,20 @@
   
 Root=`pwd`
 
+if [ ! -n "$JavaCovPCG" ]; then
+	echo "set JavaCovPCG first!"
+	exit 0
+fi
 
-export JavaCovPCG=/usr/lib/JavaCovPCG
-export Jep=/root/anaconda3/lib/python3.9/site-packages/jep
+if [ ! -n "$JepPath" ]; then
+	echo "set JepPath first!"
+	exit 0
+fi
+
 
 function deplibs ()
 {
-    DEPLIBS=$JavaCovPCG/JavaCovPCG.jar:$Jep/jep-4.0.3.jar
+    DEPLIBS=$JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar
     
 	LIB_DIR=$1
 	if [ ! -d "$LIB_DIR" ]; then

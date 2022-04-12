@@ -1,6 +1,0 @@
---classpath
-bazel-out/k8-opt/bin/external/org_ow2_asm_asm/jar/_ijar/jar/jar/downloaded-ijar.jar
-bazel-out/k8-opt/bin/external/org_ow2_asm_asm_commons/jar/_ijar/jar/jar/downloaded-ijar.jar
-bazel-out/k8-opt/bin/external/org_ow2_asm_asm_tree/jar/_ijar/jar/jar/downloaded-ijar.jar
---reduce_classpath_mode
-JAVABUILDER_REDUCED

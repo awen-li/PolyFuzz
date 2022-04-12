@@ -1,4 +1,0 @@
---classpath
-bazel-out/k8-opt/bin/agent/_ijar/jazzer_api_compile_only/agent/jazzer_api_deploy-ijar.jar
---reduce_classpath_mode
-JAVABUILDER_REDUCED

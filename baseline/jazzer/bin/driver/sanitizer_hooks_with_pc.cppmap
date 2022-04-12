@@ -1,6 +1,0 @@
-module "//driver:sanitizer_hooks_with_pc" {
-  export *
-  textual header "../../../../driver/sanitizer_hooks_with_pc.h"
-  use "crosstool"
-}
-extern module "crosstool" "../../../../external/local_config_cc/module.modulemap"

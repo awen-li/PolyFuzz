@@ -1,0 +1,8 @@
+module "@fmeum_rules_jni//jni/internal:jni" {
+  export *
+  textual header "../../../../../../../bazel-out/k8-opt/bin/external/fmeum_rules_jni/jni/internal/jni.h"
+  use "@fmeum_rules_jni//jni/internal:jni_md"
+  use "crosstool"
+}
+extern module "@fmeum_rules_jni//jni/internal:jni_md" "../../../../../../../bazel-out/k8-opt/bin/external/fmeum_rules_jni/jni/internal/jni_md.cppmap"
+extern module "crosstool" "../../../../../../../external/local_config_cc/module.modulemap"

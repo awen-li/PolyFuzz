@@ -1,0 +1,36 @@
+--output
+bazel-out/k8-opt/bin/agent/jazzer_agent_unshaded_deploy.jar
+--compression
+--normalize
+--deploy_manifest_lines
+'Premain-Class: com.code_intelligence.jazzer.agent.Agent'
+'Can-Retransform-Classes: true'
+'Jazzer-Hook-Classes: com.code_intelligence.jazzer.sanitizers.Deserialization:com.code_intelligence.jazzer.sanitizers.ExpressionLanguageInjection:com.code_intelligence.jazzer.sanitizers.LdapInjection:com.code_intelligence.jazzer.sanitizers.NamingContextLookup:com.code_intelligence.jazzer.sanitizers.OsCommandInjection:com.code_intelligence.jazzer.sanitizers.ReflectiveCall:com.code_intelligence.jazzer.sanitizers.RegexInjection:com.code_intelligence.jazzer.sanitizers.RegexRoadblocks'
+--build_info_file
+bazel-out/k8-opt/include/build-info-redacted.properties
+--sources
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/agent/agent_lib.jar,//agent/src/main/java/com/code_intelligence/jazzer/agent:agent_lib
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/instrumentor/instrumentor.jar,//agent/src/main/java/com/code_intelligence/jazzer/instrumentor:instrumentor
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/runtime.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:runtime
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/libcoverage_map.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:coverage_map
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/libunsafe_provider.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:unsafe_provider
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/libfuzzed_data_provider.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:fuzzed_data_provider
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/api/libapi.jar,//agent/src/main/java/com/code_intelligence/jazzer/api:api
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/libtrace_data_flow_native_callbacks_remove_this_part_.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:trace_data_flow_native_callbacks_remove_this_part_
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/utils/utils.jar,//agent/src/main/java/com/code_intelligence/jazzer/utils:utils
+external/com_github_jetbrains_kotlin/lib/kotlin-stdlib.jar,@@com_github_jetbrains_kotlin//:lib/kotlin-stdlib.jar
+bazel-out/k8-opt/bin/external/fmeum_rules_jni/jni/tools/native_loader/libnative_loader.jar,@@fmeum_rules_jni//jni/tools/native_loader:native_loader
+bazel-out/k8-opt/bin/agent/src/main/native/com/code_intelligence/jazzer/runtime/libjazzer_fuzzer_callbacks.jar,//agent/src/main/native/com/code_intelligence/jazzer/runtime:jazzer_fuzzer_callbacks
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/libsignal_handler.jar,//agent/src/main/java/com/code_intelligence/jazzer/runtime:signal_handler
+bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/autofuzz/libautofuzz.jar,//agent/src/main/java/com/code_intelligence/jazzer/autofuzz:autofuzz
+bazel-out/k8-opt/bin/external/com_github_classgraph_classgraph/libclassgraph.jar,@@com_github_classgraph_classgraph//:classgraph
+bazel-out/k8-opt/bin/external/com_github_jhalterman_typetools/libtypetools.jar,@@com_github_jhalterman_typetools//:typetools
+external/com_github_jetbrains_kotlin/lib/kotlin-reflect.jar,@@com_github_jetbrains_kotlin//:lib/kotlin-reflect.jar
+bazel-out/k8-opt/bin/external/jazzer_jacoco/jacoco_internal_shaded.jar,@@jazzer_jacoco//:jacoco_internal_shaded
+external/org_ow2_asm_asm/jar/downloaded.jar,@@org_ow2_asm_asm//jar:downloaded.jar
+external/org_ow2_asm_asm_commons/jar/downloaded.jar,@@org_ow2_asm_asm_commons//jar:downloaded.jar
+external/org_ow2_asm_asm_tree/jar/downloaded.jar,@@org_ow2_asm_asm_tree//jar:downloaded.jar
+bazel-out/k8-opt/bin/sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers/sanitizers.jar,//sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers:sanitizers
+bazel-out/k8-opt/bin/sanitizers/src/main/java/jaz/libjaz.jar,//sanitizers/src/main/java/jaz:jaz
+bazel-out/k8-opt/bin/sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers/libregex_roadblocks.jar,//sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers:regex_roadblocks
+bazel-out/k8-opt/bin/sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers/utils/libreflection_utils.jar,//sanitizers/src/main/java/com/code_intelligence/jazzer/sanitizers/utils:reflection_utils

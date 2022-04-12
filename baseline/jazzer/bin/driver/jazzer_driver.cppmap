@@ -1,0 +1,9 @@
+module "//driver:jazzer_driver" {
+  export *
+  use "//driver:driver_lib_original_do_not_use_"
+  use "@bazel_tools//tools/cpp:malloc"
+  use "crosstool"
+}
+extern module "//driver:driver_lib_original_do_not_use_" "../../../../bazel-out/k8-opt-ST-4b9842ed36be/bin/driver/driver_lib_original_do_not_use_.cppmap"
+extern module "@bazel_tools//tools/cpp:malloc" "../../../../bazel-out/k8-opt/bin/external/bazel_tools/tools/cpp/malloc.cppmap"
+extern module "crosstool" "../../../../external/local_config_cc/module.modulemap"

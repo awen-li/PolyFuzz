@@ -1,0 +1,11 @@
+module "//agent/src/main/native/com/code_intelligence/jazzer/runtime:jazzer_fuzzer_callbacks_for_static_linking" {
+  export *
+  use "//agent/src/main/java/com/code_intelligence/jazzer/runtime:trace_data_flow_native_callbacks.hdrs"
+  use "@fmeum_rules_jni//jni/internal:jni"
+  use "//driver:sanitizer_hooks_with_pc"
+  use "crosstool"
+}
+extern module "//agent/src/main/java/com/code_intelligence/jazzer/runtime:trace_data_flow_native_callbacks.hdrs" "../../../../../../../../../../../bazel-out/k8-opt/bin/agent/src/main/java/com/code_intelligence/jazzer/runtime/trace_data_flow_native_callbacks.hdrs.cppmap"
+extern module "@fmeum_rules_jni//jni/internal:jni" "../../../../../../../../../../../bazel-out/k8-opt/bin/external/fmeum_rules_jni/jni/internal/jni.cppmap"
+extern module "//driver:sanitizer_hooks_with_pc" "../../../../../../../../../../../bazel-out/k8-opt/bin/driver/sanitizer_hooks_with_pc.cppmap"
+extern module "crosstool" "../../../../../../../../../../../external/local_config_cc/module.modulemap"

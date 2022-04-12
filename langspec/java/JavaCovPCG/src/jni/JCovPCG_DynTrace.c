@@ -82,6 +82,12 @@ JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceInit (JNIEnv *env, jclass jc
 */
 JNIEXPORT void JNICALL Java_JCovPCG_DynTrace_JvTraceDeInit (JNIEnv *env, jclass jc, jint exitCode)
 {
+    if (getenv ("AFL_DEBUG") != NULL && exitCode == 100)
+    {
+        printf ("Java_JCovPCG_DynTrace_JvTraceDeInit %u\r\n", exitCode);
+        return;
+    }
+    
     /* exit anyway */
     exit (exitCode);
 }

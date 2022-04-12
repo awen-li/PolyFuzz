@@ -1,6 +1,7 @@
 
 export JavaCovPCG=/usr/lib/JavaCovPCG
 export Jep=/root/anaconda3/lib/python3.9/site-packages/jep
+export LD_LIBRARY_PATH=$Jep 
 
 export AFL_SKIP_BIN_CHECK=1
 
@@ -10,6 +11,7 @@ if [ ! -d "fuzz" ]; then
 fi
 
 cp JepDr1.jar fuzz/
+cp subprocess fuzz/ -rf
 
 cd fuzz
 afl-system-config

@@ -277,8 +277,9 @@ class build_jar(Command):
         os.system ("mv ./build/java/jep ./build/java/jep_soot")
         os.system ("mkdir ./build/java/jep")
         os.system ("mv ./build/java/jep_soot ./build/java/jep/jep")
-        os.system ("java -jar JavaCovPCG.jar -t ./build/java/jep") 
-        os.system ("rm -rf ./build/java/jep")
+        os.system ("java -jar JavaCovPCG.jar -t ./build/java/jep")
+        os.system ("cp -rf ./build/java/jep/jep/* ./build/java/jep/") 
+        os.system ("rm -rf ./build/java/jep/jep")
         os.system ("cp -rf ./sootOutput/* ./build/java/")
         
         spawn([self.jar, '-cf', 'build/java/jep-{0}-sources.jar'.format(self.version), '-C', 'build/java/jep.src/main/java', 'jep'])

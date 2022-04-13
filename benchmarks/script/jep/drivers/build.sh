@@ -56,6 +56,17 @@ function compile()
     javac -d $JAVA_CLASS -encoding utf-8 -cp .:$DEPENDENT_LIBS -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
 }
 
+function instrument ()
+{
+	TARGET=$1
+	
+	cd $TARGET
+	cp /usr/lib/JavaCovPCG/* -rf ./	
+	java -jar JavaCovPCG.jar -d dep -t bin/
+	cp sootOutput/* -rf bin/
+	cd -
+}
+
 function pack ()
 {
 	TARGET=$1
@@ -83,6 +94,7 @@ do
     echo
     
     compile $JT
+    #instrument $JT
     pack $JT
 done
   

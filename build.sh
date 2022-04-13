@@ -38,10 +38,30 @@ cd $BASE_DIR/tool/BBstat
 make clean && make
 cp $BASE_DIR/tool/delshm.sh /usr/bin/
 cp $BASE_DIR/tool/PyVersion.sh /usr/bin/
+cd $BASE_DIR
 
 # init environment
-echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /root/.bashrc
-echo "export BENCH=/home/wen/xFuzz/benchmarks" >> /root/.bashrc
-echo "export JavaCovPCG=/usr/lib/JavaCovPCG" >> /root/.bashrc
-echo "export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep" >> /root/.bashrc
-echo "export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH" >> /root/.bashrc
+if [ ! -n "$JAVA_HOME" ]; then
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+	echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /root/.bashrc
+fi
+
+if [ ! -n "$BENCH" ]; then
+    export BENCH=$BASE_DIR/benchmarks
+	echo "export BENCH=$BASE_DIR/benchmarks" >> /root/.bashrc
+fi
+
+if [ ! -n "$JavaCovPCG" ]; then
+    export JavaCovPCG=/usr/lib/JavaCovPCG
+	echo "export JavaCovPCG=/usr/lib/JavaCovPCG" >> /root/.bashrc
+fi
+
+if [ ! -n "$JepPath" ]; then
+    export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep
+	echo "export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep" >> /root/.bashrc
+fi
+
+if [ ! -n "$LD_LIBRARY_PATH" ]; then
+	echo "export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH" >> /root/.bashrc
+	export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH
+fi

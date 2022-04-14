@@ -1510,6 +1510,14 @@ void __sanitizer_cov_trace_pc_guard_target_exit () {
 }
 
 
+static inline void DumpInteralLoc (int IntLoc)
+{
+    FILE *F = fopen ("INTERAL_LOC", "w");
+    assert (F != NULL);
+    fprintf (F, "%u", IntLoc);
+    fclose (F);
+}
+
 
 /* Init callback. Populates instrumentation IDs. Note that we're using
    ID of 0 as a special value to indicate non-instrumented bits. That may
@@ -1589,7 +1597,7 @@ void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
 
     __afl_shm_init ();
     
-
+    DumpInteralLoc (__afl_final_loc+1);
     return;
 }
 

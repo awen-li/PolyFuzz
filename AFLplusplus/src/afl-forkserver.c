@@ -418,7 +418,7 @@ void afl_fsrv_start(afl_forkserver_t *fsrv, char **argv,
   if (!fsrv->fsrv_pid) {
 
     /* CHILD PROCESS */
-    DEBUG_PRINT("FORK server chikd process.....\r\n");
+    DEBUG_PRINT("FORK server child process.....\r\n");
 
     // enable terminating on sigpipe in the childs
     struct sigaction sa;

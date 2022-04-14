@@ -123,15 +123,6 @@ void DynTraceD64 (unsigned BlkId, unsigned Key, unsigned long Value)
     return;
 }
 
-
-static inline void DumpInteralLoc (int IntLoc)
-{
-    FILE *F = fopen ("INTERAL_LOC", "w");
-    assert (F != NULL);
-    fprintf (F, "%u", IntLoc);
-    fclose (F);
-}
-
 int DynTraceInit (unsigned BBs)
 {
     /* set external language BBs */
@@ -143,7 +134,6 @@ int DynTraceInit (unsigned BBs)
     afl_area_ptr = __afl_get_area_ptr ();
 
     int IntLoc =  __afl_get_interal_loc ();
-    DumpInteralLoc (IntLoc);
 
     /* init event queue */ 
     InitQueue(MEMMOD_SHARE);

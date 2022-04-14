@@ -28,6 +28,6 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/src/main/python
-python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+#PyDir=$target/src/main/python
+#python -m parser $PyDir
+#cp $PyDir/py_summary.xml $ROOT/script/$target/

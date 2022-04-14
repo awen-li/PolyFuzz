@@ -14,7 +14,7 @@ afl-system-config
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100
 
-cp ../../py_summary.xml ./
+cp ../../../py_summary.xml ./
 if [ "$?" != "0" ]; then
 	echo "copy py_summary.xml fail, please check the configuration!!!!"
 	exit 0

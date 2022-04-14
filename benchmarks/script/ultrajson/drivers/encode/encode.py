@@ -17,4 +17,6 @@ if __name__ == '__main__':
     InputData = eval (LoadInput (sys.argv[1]))
     enc = ujson.encode(InputData)
     dec = ujson.decode(enc)
+    enc = ujson.dumps (InputData)
+    dec = ujson.loads(enc)
     print (dec)

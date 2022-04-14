@@ -671,7 +671,7 @@ static inline BOOL CheckVariant (BrVariable *BrVal, DWORD SampleNum)
 
 static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
 {
-    static BYTE VarFile[128];
+    static BYTE VarFile[512];
     DbReq Req;
     DbAck Ack;
     DWORD Ret;
@@ -795,8 +795,8 @@ static inline VOID ReadBsList (BYTE* BsDir, BsValue *BsList, DWORD Align)
 {
     DIR *Dir;
     struct dirent *SD;
-    BYTE BSfPath[256];
-    BYTE BSValStr[64];
+    BYTE BSfPath[1024];
+    BYTE BSValStr[128];
 
     Dir = opendir((const char*)BsDir);
     if (Dir == NULL)
@@ -1390,8 +1390,8 @@ static inline List* GetAndResetFLSeedList ()
 
 static inline VOID LearningMain (PilotData *PD)
 {
-    BYTE BlkDir[256];
-    BYTE ALignDir[256];
+    BYTE BlkDir[1024];
+    BYTE ALignDir[1024];
 
     DbHandle *DHL = PD->DHL;
     DWORD SeedBlkNum = QueryDataNum (DHL->DBSeedBlockHandle);

@@ -1,8 +1,9 @@
 import sys
+import random
 import numpy as np
     
 R_types = ["int32", "int64", "float32", "float64"]
-R_shaps = [(10 ** 3,), (10 ** 24,), (10 ** 3, 10 ** 3), [(10 ** 7, 10 ** 24)], [(10 ** 7, 10 ** 14, 10 ** 28)]]
+R_shaps = [(10 ** 3,), (10 ** 1, 10 ** 3), (10 ** 1, 10 ** 2, 10 ** 1)]
 R_order = ["C", "F"]
 
 RAND_ARRAY_CACHE = {}
@@ -32,5 +33,15 @@ def get_cached_rand_array(shape, dtype, order):
 
 if __name__ == '__main__':
 	
-    ary = get_cached_rand_array ((10 ** 3,), "int32", "C")
-    print (ary)
+    testDir = sys.argv[1]
+    CaseNum = int (sys.argv[2])
+    
+    for i in range (0, CaseNum):
+        T = R_types [random.randint (0, len(R_types)-1)]
+        S = R_shaps [random.randint (0, len(R_shaps)-1)]
+        O = R_order [random.randint (0, len(R_order)-1)]
+        ary = get_cached_rand_array (S, T, O)
+        
+        FileName = testDir + "/test-" + str(i)
+        with open(FileName, 'w') as Fw:
+            Fw.write (str(ary))

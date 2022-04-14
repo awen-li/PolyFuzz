@@ -301,8 +301,8 @@ static inline SeedPat* PatSelection ()
     while (Hdr != NULL)
     {
         SeedPat *SP  = (SeedPat*)Hdr->Data;
-        strncat (BestSP->StruPattern, "|", sizeof (BestSP->StruPattern));
-        strncat (BestSP->StruPattern, SP->StruPattern, sizeof (BestSP->StruPattern));
+        strncat (BestSP->StruPattern, "|", sizeof (BestSP->StruPattern)-1);
+        strncat (BestSP->StruPattern, SP->StruPattern, sizeof (BestSP->StruPattern)-1);
 
         Hdr = Hdr->Nxt;
     }

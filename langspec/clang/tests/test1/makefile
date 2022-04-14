@@ -27,3 +27,4 @@ $(OBJ_PATH)/%.o: $(SOURCE_PATH)/%.c
 
 clean:
 	rm -rf $(OBJ_PATH) $(TARGET)
+	rm branch_vars.bv cmp_statistic.info 

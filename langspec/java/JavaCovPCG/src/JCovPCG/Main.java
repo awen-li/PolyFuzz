@@ -87,7 +87,7 @@ private
 				String line = "";
 				while ((line = BR.readLine()) != null)
 				{
-					results += line + ";";
+					results += line + ":";
 				}
 			}
 			else

@@ -15,9 +15,9 @@ function compile ()
 	
 	rm -rf build
 	
-	export CC="afl-cc -lxFuzztrace"
-	export CXX="afl-c++"
+	export CC="afl-cc"
 	cp -f $ROOT/script/$target/java.py $ROOT/$target/commands/
+	cp -f $ROOT/script/$target/setup.py $ROOT/$target/
 	python setup.py install
 	
 	popd
@@ -28,6 +28,6 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/src/main/python
-python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+#PyDir=$target/src/main/python
+#python -m parser $PyDir
+#cp $PyDir/py_summary.xml $ROOT/script/$target/

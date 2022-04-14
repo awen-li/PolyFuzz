@@ -16,7 +16,7 @@ function compile ()
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
 	
-	python setup.py install
+	pip install .
 	
 	popd
 }

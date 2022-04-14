@@ -671,7 +671,7 @@ static inline BOOL CheckVariant (BrVariable *BrVal, DWORD SampleNum)
 
 static inline BYTE* GenAnalysicData (PilotData *PD, BYTE *BlkDir, SeedBlock *SdBlk, DWORD VarKey)
 {
-    static BYTE VarFile[512];
+    static BYTE VarFile[1048];
     DbReq Req;
     DbAck Ack;
     DWORD Ret;

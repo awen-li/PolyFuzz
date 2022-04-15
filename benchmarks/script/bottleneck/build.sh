@@ -5,7 +5,8 @@ export target=bottleneck
 
 function dep ()
 {
-	conda install nomkl
+	pip uninstall numpy
+	pip install numpy
 }
 
 function compile ()

@@ -3,6 +3,11 @@
 export ROOT=`cd ../../ && pwd`
 export target=bottleneck
 
+function dep ()
+{
+	conda install nomkl
+}
+
 function compile ()
 {
 	if [ -d "$ROOT/$target" ]; then
@@ -16,7 +21,8 @@ function compile ()
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
 	
-	pip install .
+	#python setup.py install
+	pip3 install .
 	
 	popd
 }

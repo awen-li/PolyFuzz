@@ -14,11 +14,11 @@ function compile ()
 	pushd $target
 	
 	export CC="afl-cc -lxFuzztrace"
-	export CXX="afl-c++"
+	export CXX="afl-c++ -lxFuzztrace"
 		
 	cp $ROOT/script/$target/setup.py ./ -f
 	python setup.py install
-	
+
 	popd
 }
 

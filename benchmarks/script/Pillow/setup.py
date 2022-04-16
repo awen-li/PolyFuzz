@@ -52,8 +52,8 @@ if sys.platform == "win32" and sys.version_info >= (3, 11):
     )
 
 
-os.environ["CC"]  = "afl-cc"
-os.environ["CXX"] = "afl-c++"
+os.environ["CC"]  = "afl-cc -lxFuzztrace"
+os.environ["CXX"] = "afl-c++ -lxFuzztrace"
 
 _IMAGING = ("decode", "encode", "map", "display", "outline", "path")
 

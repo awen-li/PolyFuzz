@@ -28,16 +28,21 @@ def load (file):
         return data
 
 if __name__ == '__main__':
-    data = load (sys.argv[1])
+    try:
+        data = load (sys.argv[1])
     
-    raw_data = [b"",
-                b":KKllk???????????2222??????kjfj",
-                b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
-    private_keyset_handle, signature_primitive = init_keyset ('keyset.json')
+        raw_data = [b"",
+                    b":KKllk???????????2222??????kjfj",
+                    b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
+        private_keyset_handle, signature_primitive = init_keyset ('keyset.json')
     
-    for data in raw_data:
-        signer = private_keyset_handle.primitive(signature.PublicKeySign)
-        signature_data = signer.sign(data)
+        for data in raw_data:
+            signer = private_keyset_handle.primitive(signature.PublicKeySign)
+            signature_data = signer.sign(data)
     
-        signature_primitive.verify (signature_data, data)
+            signature_primitive.verify (signature_data, data)
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    
+
 

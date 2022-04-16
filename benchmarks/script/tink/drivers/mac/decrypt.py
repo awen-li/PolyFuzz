@@ -30,11 +30,15 @@ def load (file):
         return data
 
 if __name__ == '__main__':
-    data = load (sys.argv[1])
-    raw_data = [b"",
-                b":KKllk???????????2222??????kjfj",
-                b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
-    mac_primitive = init_keyset ('keyset.json')
-    for data in raw_data:
-        mac_decrypt (mac_primitive, data)
+    try:
+        data = load (sys.argv[1])
+        raw_data = [b"",
+                    b":KKllk???????????2222??????kjfj",
+                    b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
+        mac_primitive = init_keyset ('keyset.json')
+        for data in raw_data:
+            mac_decrypt (mac_primitive, data)
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    
 

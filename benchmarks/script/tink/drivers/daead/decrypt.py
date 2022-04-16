@@ -31,8 +31,12 @@ def load (file):
         return data
 
 if __name__ == '__main__':
-    data = load (sys.argv[1])
+    try:
+        data = load (sys.argv[1])
     
-    daead_primitive = init_keyset ('keyset.json')
-    daead_decrypt (daead_primitive, data)
+        daead_primitive = init_keyset ('keyset.json')
+        daead_decrypt (daead_primitive, data)
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    
 

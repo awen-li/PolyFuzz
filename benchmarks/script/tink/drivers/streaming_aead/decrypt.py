@@ -33,8 +33,12 @@ def load (file):
         return data
 
 if __name__ == '__main__':
-    data = load (sys.argv[1])
+    try:
+        data = load (sys.argv[1])
     
-    streaming_aead_primitive = init_keyset ('keyset.json')
-    streaming_aead_decrypt (streaming_aead_primitive, data)
+        streaming_aead_primitive = init_keyset ('keyset.json')
+        streaming_aead_decrypt (streaming_aead_primitive, data)
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    
 

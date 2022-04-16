@@ -14,9 +14,12 @@ def LoadInput (TxtFile):
     return Content
 
 if __name__ == '__main__':
-    InputData = eval (LoadInput (sys.argv[1]))
-    enc = ujson.encode(InputData)
-    dec = ujson.decode(enc)
-    enc = ujson.dumps (InputData)
-    dec = ujson.loads(enc)
-    print (dec)
+    try:
+        InputData = eval (LoadInput (sys.argv[1]))
+        enc = ujson.encode(InputData)
+        dec = ujson.decode(enc)
+        enc = ujson.dumps (InputData)
+        dec = ujson.loads(enc)
+    except Exception as e:
+        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    

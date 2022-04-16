@@ -2,11 +2,11 @@ export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
    mkdir -p fuzz/in
-   cp ./tests/* fuzz/in/
+   cp -rf tests/* fuzz/in/
 fi
 
 cd fuzz
-afl-system-config
+#afl-system-config
 
 #enable debug for child process
 #export AFL_DEBUG_CHILD=1

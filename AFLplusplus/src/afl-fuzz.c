@@ -513,6 +513,9 @@ static void pl_init (pl_srv_t *pl_srv, afl_state_t *afl)
     log_perf_init (afl);
 
     hand_shake (pl_srv);
+
+    unsetenv ("AFL_TRACE_DU_SHUTDOWN");
+    
     OKF ("pl_init success..");
     return;
 }
@@ -1632,6 +1635,9 @@ int main(int argc, char **argv_orig, char **envp) {
             FATAL("[-P]pf_fuzzing_type: PL_SYNTAX_FZ=1, PL_SEMANTIC_FZ=2, "
                   "please select a correct value!");
         }
+
+        /* shutdown the DU tracing initially */
+        setenv ("AFL_TRACE_DU_SHUTDOWN", "1", 1);
         
         afl->threshold_pathlen = 1;
         u8 *ts_len = getenv ("AFL_THRESHOL_PATHLEN");

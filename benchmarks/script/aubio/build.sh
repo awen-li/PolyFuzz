@@ -3,6 +3,11 @@
 export ROOT=`cd ../../ && pwd`
 export target=aubio
 
+function deps ()
+{
+    apt-get install ffmpeg 
+}
+
 function compile ()
 {
 	if [ -d "$ROOT/$target" ]; then

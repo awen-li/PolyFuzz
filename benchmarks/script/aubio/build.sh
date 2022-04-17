@@ -16,8 +16,13 @@ function compile ()
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
 	
-	python setup.py install
+	export AFL_TRACE_DU_SHUTDOWN=1
+	make
+	cp build/src/libaubio* /usr/lib/
 	
+	#python setup.py install
+	pip install -v .
+	unset AFL_TRACE_DU_SHUTDOWN
 	popd
 }
 

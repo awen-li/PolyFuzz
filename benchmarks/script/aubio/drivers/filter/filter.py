@@ -2,7 +2,7 @@ import sys
 import pyprob
 import aubio
 
-pyprob.Setup('py_summary.xml', 'source.py')
+pyprob.Setup('py_summary.xml', 'filter.py')
 
 
 if __name__ == '__main__':

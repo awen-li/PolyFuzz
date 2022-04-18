@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<py_summary branchs="33">
+  <file name="__init__.py" id="1">
+    <function class="Curl" name="__init__" sline="37" eline="0" brval="" bbs="37"/>
+    <function class="" name="header_callback" sline="61" eline="62" brval="" bbs="61"/>
+    <function class="Curl" name="set_timeout" sline="65" eline="67" brval="" bbs="65"/>
+    <function class="Curl" name="set_url" sline="69" eline="72" brval="" bbs="69"/>
+    <function class="Curl" name="set_option" sline="74" eline="76" brval="" bbs="74"/>
+    <function class="Curl" name="set_verbosity" sline="78" eline="80" brval="" bbs="78"/>
+    <function class="Curl" name="get" sline="96" eline="101" brval="" bbs="96 98"/>
+    <function class="Curl" name="head" sline="103" eline="108" brval="" bbs="103 105"/>
+    <function class="Curl" name="post" sline="110" eline="114" brval="" bbs="110"/>
+    <function class="Curl" name="body" sline="116" eline="118" brval="" bbs="116"/>
+    <function class="Curl" name="header" sline="120" eline="122" brval="" bbs="120"/>
+    <function class="Curl" name="get_info" sline="124" eline="126" brval="" bbs="124"/>
+    <function class="Curl" name="info" sline="128" eline="163" brval="" bbs="128"/>
+    <function class="Curl" name="answered" sline="165" eline="167" brval="" bbs="165"/>
+    <function class="Curl" name="close" sline="169" eline="175" brval="" bbs="169 171"/>
+  </file>
+</py_summary>

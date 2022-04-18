@@ -29,8 +29,6 @@ R_order = ["C", "F"]
 RAND_ARRAY_CACHE = {}
 def get_cached_rand_array(shape, dtype, order):
     key = (shape, dtype, order)
-    print (key)
-    
     random_state = np.random.RandomState(1234)
     if "int" in shape:
         dtype_info = np.iinfo(dtype)

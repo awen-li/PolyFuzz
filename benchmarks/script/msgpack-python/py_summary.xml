@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<py_summary branchs="299">
+  <file name="ext.py" id="1">
+    <function class="Timestamp" name="__init__" sline="45" eline="67" brval="" bbs="45 58 60 62"/>
+    <function class="Timestamp" name="from_bytes" sline="91" eline="115" brval="" bbs="91 102 105 109 112"/>
+    <function class="Timestamp" name="to_bytes" sline="117" eline="136" brval="127:data64:1403313008 " bbs="117 125 127 132 135"/>
+    <function class="Timestamp" name="from_unix" sline="139" eline="147" brval="" bbs="139"/>
+    <function class="Timestamp" name="to_unix" sline="149" eline="155" brval="" bbs="149"/>
+    <function class="Timestamp" name="from_unix_nano" sline="158" eline="164" brval="" bbs="158"/>
+    <function class="Timestamp" name="to_unix_nano" sline="166" eline="172" brval="" bbs="166"/>
+    <function class="Timestamp" name="to_datetime" sline="174" eline="181" brval="" bbs="174"/>
+    <function class="Timestamp" name="from_datetime" sline="186" eline="193" brval="" bbs="186"/>
+  </file>
+  <file name="exceptions.py" id="2">
+    <function class="ExtraData" name="__init__" sline="37" eline="39" brval="" bbs="37"/>
+  </file>
+  <file name="__init__.py" id="3">
+    <function class="" name="pack" sline="22" eline="29" brval="" bbs="22"/>
+    <function class="" name="packb" sline="32" eline="38" brval="" bbs="32"/>
+    <function class="" name="unpack" sline="41" eline="49" brval="" bbs="41"/>
+  </file>
+  <file name="fallback.py" id="4">
+    <function class="" name="dict_iteritems" sline="11" eline="12" brval="" bbs="11"/>
+    <function class="" name="dict_iteritems" sline="19" eline="20" brval="" bbs="19"/>
+    <function class="" name="_is_recursionerror" sline="27" eline="31" brval="" bbs="27"/>
+    <function class="" name="_is_recursionerror" sline="36" eline="37" brval="" bbs="36"/>
+    <function class="StringIO" name="__init__" sline="52" eline="57" brval="" bbs="52 53 57"/>
+    <function class="StringIO" name="write" sline="59" eline="64" brval="" bbs="59 60 62"/>
+    <function class="StringIO" name="getvalue" sline="66" eline="67" brval="" bbs="66"/>
+    <function class="" name="_check_type_strict" sline="96" eline="100" brval="" bbs="96 97 100"/>
+    <function class="" name="_get_data_from_buffer" sline="103" eline="107" brval="105:view:1403651696 " bbs="103 105"/>
+    <function class="" name="unpackb" sline="110" eline="134" brval="" bbs="110 132"/>
+    <function class="" name="_unpack_from" sline="139" eline="141" brval="" bbs="139"/>
+    <function class="Unpacker" name="__init__" sline="275" eline="366" brval="" bbs="275 295 298 301 303 304 320 322 324 326 328 330 334 341 355 357 359 361 365"/>
+    <function class="Unpacker" name="feed" sline="368" eline="381" brval="" bbs="368 371 375"/>
+    <function class="Unpacker" name="_consume" sline="383" eline="386" brval="" bbs="383"/>
+    <function class="Unpacker" name="_got_extradata" sline="388" eline="389" brval="" bbs="388"/>
+    <function class="Unpacker" name="_get_extradata" sline="391" eline="392" brval="" bbs="391"/>
+    <function class="Unpacker" name="read_bytes" sline="394" eline="397" brval="" bbs="394"/>
+    <function class="Unpacker" name="_read" sline="399" eline="405" brval="" bbs="399"/>
+    <function class="Unpacker" name="_reserve" sline="407" eline="437" brval="411:remain_bytes:1403312560 " bbs="407 411 414 419 426 429 435"/>
+    <function class="Unpacker" name="_read_header" sline="439" eline="539" brval="530:b:1425158192 " bbs="439 446 448 450 453 456 459 463 466 468 470 472 474 477 480 482 485 490 493 496 499 501 503 510 513 516 518 521 526 530 535 538"/>
+    <function class="Unpacker" name="_unpack" sline="541" eline="616" brval="" bbs="541 544 545 548 549 553 554 555 560 562 566 567 568 573 579 580 582 586 589 592 594 595 598 600 602 603 605 607 609 612 614"/>
+    <function class="Unpacker" name="skip" sline="634" eline="636" brval="" bbs="634"/>
+    <function class="Unpacker" name="unpack" sline="638" eline="644" brval="" bbs="638"/>
+    <function class="Unpacker" name="read_array_header" sline="646" eline="649" brval="" bbs="646"/>
+    <function class="Unpacker" name="read_map_header" sline="651" eline="654" brval="" bbs="651"/>
+    <function class="Unpacker" name="tell" sline="656" eline="657" brval="" bbs="656"/>
+    <function class="Packer" name="__init__" sline="729" eline="751" brval="" bbs="729 744 748 749"/>
+    <function class="Packer" name="_pack" sline="753" eline="877" brval="767:nest_limit:1400413168 792:obj:1426004336 846:L:1425302896 " bbs="753 761 765 766 767 769 771 772 775 776 778 780 782 784 786 788 790 792 794 796 801 803 807 810 814 816 820 821 824 825 829 830 834 836 838 840 842 844 846 849 853 856 859 864 869 874"/>
+    <function class="Packer" name="pack" sline="879" eline="888" brval="" bbs="879 885"/>
+    <function class="Packer" name="pack_map_pairs" sline="890" eline="895" brval="" bbs="890 892"/>
+    <function class="Packer" name="pack_array_header" sline="897" eline="904" brval="" bbs="897 898 901"/>
+    <function class="Packer" name="pack_map_header" sline="906" eline="913" brval="" bbs="906 907 910"/>
+    <function class="Packer" name="pack_ext_type" sline="915" eline="942" brval="937:L:1425302896 " bbs="915 916 918 920 923 925 927 929 931 933 935 937 940"/>
+    <function class="Packer" name="_pack_array_header" sline="944" eline="951" brval="949:n:1425303792 " bbs="944 945 947 949"/>
+    <function class="Packer" name="_pack_map_header" sline="953" eline="960" brval="958:n:1425303792 " bbs="953 954 956 958"/>
+    <function class="Packer" name="_pack_map_pairs" sline="962" eline="966" brval="" bbs="962 964"/>
+    <function class="Packer" name="_pack_raw_header" sline="968" eline="978" brval="975:n:1425303792 " bbs="968 969 971 973 975 978"/>
+    <function class="Packer" name="_pack_bin_header" sline="980" eline="990" brval="987:n:1425303792 " bbs="980 981 983 985 987 990"/>
+    <function class="Packer" name="bytes" sline="992" eline="994" brval="" bbs="992"/>
+    <function class="Packer" name="reset" sline="996" eline="1001" brval="" bbs="996"/>
+    <function class="Packer" name="getbuffer" sline="1003" eline="1008" brval="" bbs="1003 1005 1008"/>
+  </file>
+</py_summary>

@@ -1,0 +1,73 @@
+<?xml version="1.0" ?>
+<py_summary branchs="372">
+  <file name="compat.py" id="1">
+    <function class="" name="b" sline="6" eline="7" brval="" bbs="6"/>
+    <function class="" name="b" sline="25" eline="26" brval="" bbs="25"/>
+  </file>
+  <file name="scanner.py" id="2">
+    <function class="" name="_import_c_make_scanner" sline="5" eline="8" brval="" bbs="5"/>
+    <function class="" name="py_make_scanner" sline="20" eline="0" brval="" bbs="20"/>
+    <function class="" name="_scan_once" sline="34" eline="70" brval="" bbs="34 41 43 46 48 50 52 56 58 61 63 65 67 70"/>
+    <function class="" name="scan_once" sline="72" eline="81" brval="73:idx:598150000 " bbs="72 73"/>
+  </file>
+  <file name="encoder.py" id="3">
+    <function class="" name="_import_speedups" sline="9" eline="12" brval="" bbs="9"/>
+    <function class="" name="encode_basestring" sline="38" eline="0" brval="" bbs="38 42 43 45 50 52 56 59"/>
+    <function class="" name="replace" sline="60" eline="61" brval="" bbs="60"/>
+    <function class="" name="py_encode_basestring_ascii" sline="65" eline="0" brval="" bbs="65 69 70 72 77 79 83 86"/>
+    <function class="" name="replace" sline="87" eline="90" brval="" bbs="87"/>
+    <function class="JSONEncoder" name="__init__" sline="141" eline="252" brval="" bbs="141 243 246 248 250"/>
+    <function class="JSONEncoder" name="default" sline="254" eline="272" brval="" bbs="254"/>
+    <function class="JSONEncoder" name="encode" sline="275" eline="302" brval="" bbs="275 284 286 288 289 292 297 299 302"/>
+    <function class="JSONEncoder" name="iterencode" sline="304" eline="0" brval="" bbs="304 314 317 318 321 322"/>
+    <function class="" name="_encoder" sline="323" eline="326" brval="" bbs="323 324"/>
+    <function class="" name="floatstr" sline="328" eline="353" brval="" bbs="328 334 336 338 341 344 346 348"/>
+    <function class="JSONEncoderForHTML" name="encode" sline="397" eline="404" brval="" bbs="397 401 404"/>
+    <function class="JSONEncoderForHTML" name="iterencode" sline="406" eline="417" brval="" bbs="406 408 413"/>
+    <function class="" name="_make_iterencode" sline="420" eline="0" brval="" bbs="420 441 443 445 448"/>
+    <function class="" name="_encode_int" sline="453" eline="469" brval="" bbs="453 459 462"/>
+    <function class="" name="_iterencode_list" sline="471" eline="545" brval="505:value:618319280 " bbs="471 472 475 477 481 487 488 490 491 494 495 497 499 501 503 505 507 509 511 514 515 516 518 521 522 524 528 530 533 534 536 540 543 544"/>
+    <function class="" name="_stringify_key" sline="547" eline="572" brval="556:key:618060784 " bbs="547 548 550 552 554 556 558 560 561 565 567 570"/>
+    <function class="" name="_iterencode_dict" sline="574" eline="665" brval="630:value:618319280 " bbs="574 575 578 580 584 590 591 593 596 597 599 600 602 607 608 609 611 614 617 620 622 624 626 628 630 632 634 636 639 640 642 645 646 648 652 654 657 658 660 664"/>
+    <function class="" name="_iterencode" sline="667" eline="728" brval="678:o:617799024 " bbs="667 668 670 672 674 676 678 680 682 685 686 687 689 690 693 694 696 698 700 701 703 704 706 709 716 719 721 724 725 727"/>
+  </file>
+  <file name="decoder.py" id="4">
+    <function class="" name="_import_c_scanstring" sline="10" eline="13" brval="" bbs="10"/>
+    <function class="" name="_floatconstants" sline="24" eline="31" brval="" bbs="24 25 29 30"/>
+    <function class="" name="py_scanstring" sline="49" eline="133" brval="116:_maxunicode:592335216 116:uni:592335664 126:uni2:592335920 " bbs="49 60 65 67 73 74 79 81 82 86 87 94 103 104 105 106 108 112 116 121 126 130"/>
+    <function class="" name="JSONObject" sline="142" eline="234" brval="" bbs="142 147 155 156 160 161 165 168 173 179 181 187 189 199 206 208 213 216 223 228 232"/>
+    <function class="" name="JSONArray" sline="236" eline="270" brval="" bbs="236 240 244 246 249 253 257 259 263 265"/>
+    <function class="JSONDecoder" name="__init__" sline="302" eline="361" brval="" bbs="302 348"/>
+    <function class="JSONDecoder" name="decode" sline="363" eline="374" brval="" bbs="363 368 372"/>
+    <function class="JSONDecoder" name="raw_decode" sline="376" eline="400" brval="387:idx:598150000 398:ord0:592337904 " bbs="376 387 391 394 396 398"/>
+  </file>
+  <file name="ordered_dict.py" id="5">
+    <function class="OrderedDict" name="__init__" sline="10" eline="17" brval="" bbs="10 11"/>
+    <function class="OrderedDict" name="clear" sline="19" eline="23" brval="" bbs="19"/>
+    <function class="OrderedDict" name="popitem" sline="52" eline="57" brval="" bbs="52 53"/>
+    <function class="OrderedDict" name="keys" sline="69" eline="70" brval="" bbs="69"/>
+    <function class="OrderedDict" name="copy" sline="86" eline="87" brval="" bbs="86"/>
+    <function class="OrderedDict" name="fromkeys" sline="90" eline="94" brval="" bbs="90 92"/>
+  </file>
+  <file name="raw_json.py" id="6">
+    <function class="RawJSON" name="__init__" sline="8" eline="9" brval="" bbs="8"/>
+  </file>
+  <file name="tool.py" id="7">
+    <function class="" name="main" sline="17" eline="38" brval="" bbs="17 18 21 24 28"/>
+  </file>
+  <file name="__init__.py" id="8">
+    <function class="" name="_import_OrderedDict" sline="136" eline="139" brval="" bbs="136"/>
+    <function class="" name="_import_c_make_encoder" sline="145" eline="148" brval="" bbs="145"/>
+    <function class="" name="dump" sline="172" eline="291" brval="" bbs="172 260 272 274 290"/>
+    <function class="" name="dumps" sline="294" eline="398" brval="" bbs="294 385 396"/>
+    <function class="" name="load" sline="419" eline="467" brval="" bbs="419"/>
+    <function class="" name="loads" sline="474" eline="542" brval="" bbs="474 521 526 528 530 532 534 536 538 539"/>
+    <function class="" name="_toggle_speedups" sline="545" eline="569" brval="" bbs="545 550 557 558 559 560"/>
+    <function class="" name="simple_first" sline="580" eline="584" brval="" bbs="580"/>
+  </file>
+  <file name="errors.py" id="9">
+    <function class="" name="linecol" sline="6" eline="12" brval="8:lineno:618334256 " bbs="6 8 11"/>
+    <function class="" name="errmsg" sline="15" eline="23" brval="" bbs="15 18"/>
+    <function class="JSONDecodeError" name="__init__" sline="40" eline="50" brval="" bbs="40 47 50"/>
+  </file>
+</py_summary>

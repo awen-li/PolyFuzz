@@ -9,7 +9,7 @@ static inline unsigned GetExtLoc ()
 {
     unsigned ExtLocNum = 0;
     
-    FILE *F = fopen ("EXTERNAL_LOC", "w");
+    FILE *F = fopen ("EXTERNAL_LOC", "r");
     if (F == NULL)
     {
         printf ("[javawrapper]Please provide the file EXTERNAL_LOC.... \r\n");
@@ -22,7 +22,7 @@ static inline unsigned GetExtLoc ()
         printf ("[javawrapper] read EXTERNAL_LOC fail\r\n");
         exit (0);
     }
-    printf ("[javawrapper] Get EXTERNAL_LOC = %u \r\n", ExtLocNum);
+    //printf ("[javawrapper] Get EXTERNAL_LOC = %u \r\n", ExtLocNum);
 
     fclose (F);
     return ExtLocNum;

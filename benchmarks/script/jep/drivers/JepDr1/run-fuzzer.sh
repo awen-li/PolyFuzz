@@ -10,7 +10,7 @@ cp JepDr1.jar fuzz/
 cp subprocess fuzz/ -rf
 
 cd fuzz
-afl-system-config
+#afl-system-config
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
@@ -22,6 +22,12 @@ export AFL_CRASH_EXITCODE=100
 cp ../../../EXTERNAL_LOC ./
 if [ "$?" != "0" ]; then
 	echo "copy EXTERNAL_LOC fail, please check the configuration!!!!"
+	exit 0
+fi
+
+cp ../subprocess -rf ./
+if [ "$?" != "0" ]; then
+	echo "copy subprocess fail, please check the configuration!!!!"
 	exit 0
 fi
 

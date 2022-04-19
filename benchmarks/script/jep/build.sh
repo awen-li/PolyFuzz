@@ -16,9 +16,12 @@ function compile ()
 	rm -rf build
 	
 	export CC="afl-cc"
-	cp -f $ROOT/script/$target/java.py $ROOT/$target/commands/
-	cp -f $ROOT/script/$target/setup.py $ROOT/$target/
+	cp -f $ROOT/script/$target/java.py     $ROOT/$target/commands/
+	cp -f $ROOT/script/$target/setup.py    $ROOT/$target/
+	cp -f $ROOT/script/$target/INTERAL_LOC $ROOT/$target/
 	python setup.py install
+	
+	cp $ROOT/$target/EXTERNAL_LOC $ROOT/script/$target/
 	
 	popd
 }
@@ -27,7 +30,3 @@ function compile ()
 cd $ROOT
 compile
 
-# 2. summarize the Python unit
-#PyDir=$target/src/main/python
-#python -m parser $PyDir
-#cp $PyDir/py_summary.xml $ROOT/script/$target/

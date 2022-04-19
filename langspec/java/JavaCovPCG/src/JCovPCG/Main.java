@@ -121,6 +121,8 @@ private
 		{
 			BlockId = Integer.parseInt(extId);
 		}
+
+        System.out.println ("[initBlockId] BlockId = " + Integer.toString (BlockId));
 		
 		return BlockId;
 	}

@@ -114,13 +114,16 @@ public class CovPCG extends BodyTransformer
 		}
 	}
 	
-	private void InitBlockMap (Map<Block, Integer> Block2ID, List<Block> LB)
+	private int InitBlockMap (Map<Block, Integer> Block2ID, List<Block> LB)
 	{
+	    int GID = 0;
 		for (Block b:LB) 
 		{
-			int GID = GetGuaranteeID ();
+			GID = GetGuaranteeID ();
 			Block2ID.put(b, GID);
 		}
+
+        return GID;
 	}
 	
 	private boolean IsExitStmt (Stmt stmt, boolean isMainMethod)
@@ -401,7 +404,6 @@ public class CovPCG extends BodyTransformer
 		{
 			return;
 		}
-		System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature());
 		
 		/* unit graph */
 		BlockGraph BG = new BriefBlockGraph(body);
@@ -419,9 +421,9 @@ public class CovPCG extends BodyTransformer
 		
 		/* insert exit function */
 		InsertExitStmt (body, isMainMethod);
-		
+        
 		/* init block-id */
-		InitBlockMap (Block2ID, BG.getBlocks());
+		int MaxBID = InitBlockMap (Block2ID, BG.getBlocks());
 		
 	    /* init CFG and compute dominance */	
 		List<Block> wfQueue = new ArrayList<Block>();	
@@ -513,6 +515,6 @@ public class CovPCG extends BodyTransformer
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);
-		Debug.DebugPrint ("@@@ instrumenting method : " + CurMethod.getSignature() + " done!!!");
+        System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature() + ", BlockId to " + Integer.toString (MaxBID));
 	}
 }

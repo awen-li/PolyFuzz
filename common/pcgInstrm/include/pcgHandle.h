@@ -6,12 +6,14 @@ using namespace std;
 
 struct PCGHandle
 {
+    unsigned m_MaxBlockId;
     unsigned m_HandleNo;
     map <DWORD, CFGGraph*> m_ID2BCFG;
     mutex_lock_t m_hLock;
 
     PCGHandle ()
     {
+        m_MaxBlockId = 0;
         m_HandleNo = 1;
         mutex_lock_init(&m_hLock);
     }
@@ -58,8 +60,22 @@ struct PCGHandle
         if (It != m_ID2BCFG.end ())
         {
             Cfg = It->second;
+            unsigned MaxBID = Cfg->GetMaxNodeId();
+            if (MaxBID > m_MaxBlockId)
+            {
+                m_MaxBlockId = MaxBID;
+            }
+            
             m_ID2BCFG.erase (Handle);
         }
+
+        FILE *F = fopen ("EXTERNAL_LOC", "w");
+        if (F != NULL)
+        {
+            fprintf (F, "%u", m_MaxBlockId);
+            fclose (F);
+        }
+        
         mutex_unlock(&m_hLock);
 
         if (Cfg != NULL)

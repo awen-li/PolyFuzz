@@ -23,6 +23,8 @@ enum
     STMT_SWITCH=2,
 };
 
+#define DUMY_NODE_ID (16777215)
+
 
 struct ValueIR
 {
@@ -239,6 +241,8 @@ public:
 
 
 private:
+    unsigned m_MaxNodeId;
+    
     CFGNode *m_Entry;
     CFGNode *m_Exit;
     map <CFGNode*, NodeSet*> m_DomSet;
@@ -519,7 +523,7 @@ private:
         }
 
         DEBUG ("@@@ Total %u exits in CFG, construct dumy exit node....\r\n", ExitNum);
-        DWORD DumyExit = 16777215; /* large enough */
+        DWORD DumyExit = DUMY_NODE_ID; /* large enough */
         for (auto It = ExitSet.begin (), End = ExitSet.end (); It != End; It++)
         {
             CFGNode *S = *It;
@@ -541,6 +545,8 @@ private:
 public:
     CFGGraph(DWORD EntryId)
     {
+        m_MaxNodeId = 0;
+        
         m_Entry = GetCfgNode (EntryId);
         if (m_Entry == NULL)
         {
@@ -588,6 +594,9 @@ public:
 
     inline bool InsertEdge (DWORD SId, DWORD EId)
     {
+        if (SId != DUMY_NODE_ID && SId > m_MaxNodeId) m_MaxNodeId = SId;
+        if (EId != DUMY_NODE_ID && EId > m_MaxNodeId) m_MaxNodeId = EId;
+        
         CFGNode *S = GetCfgNode (SId);
         if (S == NULL)
         {
@@ -751,6 +760,11 @@ public:
         
         *SAIStmtIDs = StmtIDs;
         return StmtNum;
+    }
+
+    inline unsigned GetMaxNodeId ()
+    {
+        return m_MaxNodeId;
     }
 };
 

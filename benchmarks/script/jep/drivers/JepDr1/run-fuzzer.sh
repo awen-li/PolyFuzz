@@ -25,13 +25,6 @@ if [ "$?" != "0" ]; then
 	exit 0
 fi
 
-cp ../subprocess -rf ./
-if [ "$?" != "0" ]; then
-	echo "copy subprocess fail, please check the configuration!!!!"
-	exit 0
-fi
-
-
 export AFL_PL_HAVOC_NUM=512
 afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
 

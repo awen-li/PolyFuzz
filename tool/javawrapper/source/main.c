@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
     int cn = 1;
     while (argv[cn] != NULL)
     {
-        strncat (Cmd, argv[cn], sizeof (Cmd));
-        strncat (Cmd, " ", sizeof (Cmd));
+        strncat (Cmd, argv[cn], sizeof (Cmd)-1);
+        strncat (Cmd, " ", sizeof (Cmd)-1);
         cn++;
     }
 

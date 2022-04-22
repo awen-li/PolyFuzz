@@ -96,5 +96,4 @@ do
     pack $JT
 done
   
-
-exit 0  
+cd $Root 

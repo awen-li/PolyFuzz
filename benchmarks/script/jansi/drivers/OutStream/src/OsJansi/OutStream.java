@@ -24,17 +24,39 @@ import java.nio.file.Paths;
 
 public class OutStream 
 {
+/*
+        public static void WritOneCase (String Path, String Content)
+        {
+            try
+            {
+                Path p = Paths.get(Path);  
+                Files.write(p, Content.getBytes());
+            }
+            catch (IOException e) 
+    		{
+    			return;
+    		}
+        }
+
+        public static void WritCases ()
+        {
+            WritOneCase ("tests/test1", "\u001B[33mbanana_1  |\u001B[0m 19:59:14.353\u001B[0;38m [debug] A message\u001B[0m\n");
+            WritOneCase ("tests/test2", "\033]0;ひらがな\007");
+            WritOneCase ("tests/test3", "\033]0;un bon café\007");
+            WritOneCase ("tests/test4", "ESC[2DESC[2A;un bon café\007");
+            WritOneCase ("tests/test5", "@|bold Hello|@");
+            WritOneCase ("tests/test6", "\033]0@|324761238ciurhwqhekwc hfdkbosadfasdfasfasdfasdfasdfasdfsadfasdfsf214414';.,.//,,...!@#$%^^&*()_++~@$TERTEYYRTYRTYTTFGD^^&%%ld Hello|@");
+        }
+*/
+        
         public static void main(String[] args)
         {
             String InFile = args [0];
-            //String str = "\u001B[33mbanana_1  |\u001B[0m 19:59:14.353\u001B[0;38m [debug] A message\u001B[0m\n";
+
+            //WritCases ();
             
             try
-            {
-                //Path p = Paths.get("./test1");
-                //System.out.println(str.getBytes());
-                //Files.write(p, str.getBytes());
-                
+            {           
                 File FD = new File (InFile);
                 InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
                 BufferedReader BR    = new BufferedReader (RD);

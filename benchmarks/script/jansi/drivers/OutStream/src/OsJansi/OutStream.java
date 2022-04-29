@@ -10,23 +10,47 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+
+/*
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+*/
+
 
 public class OutStream 
 {
-        public static void canHandleSgrsWithMultipleOptions() throws IOException 
-        {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final AnsiOutputStream ansiOutput = new AnsiOutputStream(baos, null, AnsiMode.Strip, null, AnsiType.Emulation,
-                                                                     AnsiColors.TrueColor, Charset.forName("UTF-8"), null, null, false);
-            ansiOutput.write(("\u001B[33mbanana_1  |\u001B[0m 19:59:14.353\u001B[0;38m [debug] A message\u001B[0m\n").getBytes());
-            System.out.println(baos.toString());
-        }
-
         public static void main(String[] args)
         {
+            String InFile = args [0];
+            //String str = "\u001B[33mbanana_1  |\u001B[0m 19:59:14.353\u001B[0;38m [debug] A message\u001B[0m\n";
+            
             try
             {
-                canHandleSgrsWithMultipleOptions ();
+                //Path p = Paths.get("./test1");
+                //System.out.println(str.getBytes());
+                //Files.write(p, str.getBytes());
+                
+                File FD = new File (InFile);
+                InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
+                BufferedReader BR    = new BufferedReader (RD);
+
+                String line  = "";
+                String Input = "";
+                while ((line = BR.readLine()) != null)
+                {
+                    Input += line;
+                }
+
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                final AnsiOutputStream ansiOutput = new AnsiOutputStream(baos, null, AnsiMode.Strip, null, AnsiType.Emulation,
+                                                                     AnsiColors.TrueColor, Charset.forName("UTF-8"), null, null, false);
+                ansiOutput.write((Input).getBytes());
+                //System.out.println(baos.toString());
             }
             catch (IOException e) 
     		{

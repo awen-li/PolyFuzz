@@ -51,8 +51,12 @@ void DynTracePCG (unsigned BlkId)
 
 static inline void DynTraceToQueue (unsigned Key, unsigned ValLength, unsigned long Value)
 {
-    QNode* QN;
-    while ((QN  = InQueue ()) == NULL);
+    QNode* QN = InQueue ();
+    if (QN == NULL)
+    {
+        return;
+    }
+    //while ((QN  = InQueue ()) == NULL);
     
     QN->TrcKey = Key;
 

@@ -1436,8 +1436,12 @@ static inline void sanitizer_cov_trace_into_queue (uint32_t Key, uint32_t ValLen
         return;
     }
     
-    QNode* QN;
-    while ((QN  = InQueue ()) == NULL);
+    QNode* QN = InQueue ();
+    if (QN == NULL)
+    {
+        return;
+    }
+    //while ((QN  = InQueue ()) == NULL);
     
     QN->TrcKey = Key;
 

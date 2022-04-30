@@ -918,8 +918,12 @@ abort_trimming:
 
 static inline void insert_exit_event (afl_state_t *afl)
 {
-    QNode* QN;
-    while ((QN  = InQueue ()) == NULL);
+    QNode* QN = InQueue ();
+    if (QN == NULL)
+    {
+        return;
+    }
+    //while ((QN  = InQueue ()) == NULL);
     ExitInfo *ExtI = (ExitInfo *)QN->Buf;
     ExtI->SeedKey  = afl->current_entry;
     ExtI->Where = 1;

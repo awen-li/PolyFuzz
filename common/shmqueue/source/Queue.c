@@ -39,7 +39,7 @@ typedef struct _Queue_
 /////////////////////////////////////////////////////////////////////////
 // Default parameters
 /////////////////////////////////////////////////////////////////////////
-#define DEFAULT_QUEUE_SIZE     (4096 * 1024)
+#define DEFAULT_QUEUE_SIZE     (8192 * 1024)
 #define DEFAULT_SHARE_KEY      ("0xC3B3C5D0")
 #define Q_2_NODELIST(Q)        (QNode *)(Q + 1)
 

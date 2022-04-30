@@ -54,14 +54,26 @@ public class StringTe
                 File FD = new File (InFile);
                 InputStream insputStream = new FileInputStream(FD);
 
-                long length = FD.length();
-                byte[] bytes = new byte[(int) length];
+                int length = (int)FD.length();
+                byte[] bytes = new byte[length];
 
                 insputStream.read(bytes);
                 insputStream.close();
 
-                int x = bytes[0]<<8 | bytes[1];
-                int y = bytes[2]<<8 | bytes[3];
+                int x,y;
+                switch (length)
+                    {
+                        case 0:
+                        case 1:return;
+                        case 2:
+                        case 3:x = bytes[0]; y = bytes[1]; break;
+                        default:
+                            {
+                                x = bytes[0]<<8 | bytes[1];
+                                y = bytes[2]<<8 | bytes[3];
+                                break;
+                            }
+                    }
 
                 Ansi ansi = Ansi.ansi().cursor( x, y).reset();
             }

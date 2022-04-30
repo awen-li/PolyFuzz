@@ -15,16 +15,16 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 
-
+/*
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+*/
 
 
 public class Render 
 {
-
+/*
         public static void WritOneCase (String Path, String Content)
         {
             try
@@ -46,13 +46,13 @@ public class Render
             WritOneCase ("tests/test4", "@|bold,red foo bar baz|@ ick @|bold,red foo bar baz|@");
             WritOneCase ("tests/test5", "\033]0@|324761238ciurhwqhekwc hfdkbosadfasdfasfasdfasdfasdfasdfsadfasdfsf214414';.,.//,,...!@#$%^^&*()_++~@$TERTEYYRTYRTYTTFGD^^&%%ld Hello|@");
         }
-
+*/
         
         public static void main(String[] args)
         {
             String InFile = args [0];
 
-            WritCases ();
+            //WritCases ();
             
             try
             {           

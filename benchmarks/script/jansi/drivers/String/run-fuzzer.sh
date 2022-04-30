@@ -6,7 +6,7 @@ if [ ! -d "fuzz" ]; then
    cp ./tests/* fuzz/in/
 fi
 
-cp Render.jar fuzz/
+cp String.jar fuzz/
 
 cd fuzz
 #afl-system-config

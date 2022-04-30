@@ -2,12 +2,9 @@ package StringJansi;
 
 import org.fusesource.jansi.Ansi;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.io.File;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.FileInputStream;
 
 /*
@@ -16,16 +13,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 */
 
-
 public class StringTe 
 {
 /*
-        public static void WritOneCase (String Path, String Content)
+        public static void WritOneCase (String Path, byte[] Content)
         {
             try
             {
                 Path p = Paths.get(Path);  
-                Files.write(p, Content.getBytes());
+                Files.write(p, Content);
+                System.out.println (Content);
             }
             catch (IOException e) 
     		{
@@ -35,10 +32,14 @@ public class StringTe
 
         public static void WritCases ()
         {
-            int x = 3;
-            int y = 6;
-            int Value = x<<16|y;
-            WritOneCase ("tests/test1", Integer.toString (Value));
+            byte[] BytesInfo = new byte [6];
+            BytesInfo[0] = 0;
+            BytesInfo[1] = 3;
+            BytesInfo[2] = 0;
+            BytesInfo[3] = 6;
+            BytesInfo[4] = 0;
+            BytesInfo[5] = 0;
+            WritOneCase ("tests/test1", BytesInfo);
         }
 */
         
@@ -49,19 +50,20 @@ public class StringTe
             //WritCases ();
             
             try
-            {           
+            {
                 File FD = new File (InFile);
-                InputStreamReader RD = new InputStreamReader (new FileInputStream (FD));
-                BufferedReader BR    = new BufferedReader (RD);
+                InputStream insputStream = new FileInputStream(FD);
 
-                String line = BR.readLine();
-                byte[] BytesInfo = line.getBytes();
+                long length = FD.length();
+                byte[] bytes = new byte[(int) length];
 
-                int x = BytesInfo[1]<<8 | BytesInfo[0];
-                int y = BytesInfo[3]<<8 | BytesInfo[2];
+                insputStream.read(bytes);
+                insputStream.close();
+
+                int x = bytes[0]<<8 | bytes[1];
+                int y = bytes[2]<<8 | bytes[3];
 
                 Ansi ansi = Ansi.ansi().cursor( x, y).reset();
-                ansi.toString();
             }
             catch (IOException e) 
     		{

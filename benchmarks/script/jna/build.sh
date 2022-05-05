@@ -8,10 +8,18 @@ function instrument_java ()
 	inst_dir=$1
 	jar_name=$2
 	
+	if [ ! -d "$inst_dir" ]; then
+		mkdir $inst_dir
+		cd $inst_dir
+		jar -xvf ../$jar_name
+		cd --
+	fi
+	
 	pushd $inst_dir
 	
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t ./
-	cp sootOutput/* -rf ./
+	cp $ROOT/$target/INTERAL_LOC $inst_dir/
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t com/sun/jna
+	cp sootOutput/* -rf com/sun/jna/
 	rm -rf sootOutput
 
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
@@ -34,16 +42,18 @@ function compile ()
 	
 	# compile native
 	cp $ROOT/script/$target/Makefile $ROOT/$target/native/ -f
-    	cd native
-    	mvn package
-    	cd ..
+	cd native
+	mvn package
+	cd ..
     
-    	# compile java
-    	ant
+	# compile java
+	ant
 	
 	# instrument java
-	jar_dir=$ROOT/$target/target/classes
-	#instrument_java $jar_dir "jansi-2.4.1-SNAPSHOT.jar"
+	jar_dir=$ROOT/$target/build/jna-instm
+	cd build
+	instrument_java $jar_dir "jna.jar"
+	cd ..
 	
 	popd
 }

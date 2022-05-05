@@ -59,6 +59,7 @@ public class SootMain {
 		//Options.v().set_no_bodies_for_excluded(true);
 		
 		String sootClsPath = Scene.v().defaultClassPath();
+        sootClsPath += File.pathSeparator + ".";
 		
 		String CurPath = CurClassPath ();
 		sootClsPath += File.pathSeparator + CurPath;

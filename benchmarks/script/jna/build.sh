@@ -33,13 +33,13 @@ function compile ()
 	pushd $target
 	
 	# compile native
-	#cp $ROOT/script/$target/Makefile $ROOT/$target/ -f
-    cd native
-    mvn package
-    cd ..
+	cp $ROOT/script/$target/Makefile $ROOT/$target/native/ -f
+    	cd native
+    	mvn package
+    	cd ..
     
-    # compile java
-    ant
+    	# compile java
+    	ant
 	
 	# instrument java
 	jar_dir=$ROOT/$target/target/classes

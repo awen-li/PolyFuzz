@@ -80,7 +80,6 @@ function compile ()
 	pushd $target
 	
 	export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 
-	export CC="afl-cc"
 	cp $ROOT/script/$target/pom.xml $ROOT/$target/pljava-so/ -f
 	mvn clean install #-X 
 	

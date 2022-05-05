@@ -63,7 +63,7 @@ jniCppExtensions := Seq("c", "S")
 
 jniGccFlags ++= Seq(
   "-std=c99", "-Wundef", "-Wshadow", "-Wcast-align", "-Wstrict-prototypes", "-Wno-unused-variable",
-  "-Wpointer-arith", "-DZSTD_LEGACY_SUPPORT=4", "-DZSTD_MULTITHREAD=1", "-lpthread", "-flto", "-lxFuzztrace",
+  "-Wpointer-arith", "-DZSTD_LEGACY_SUPPORT=4", "-DZSTD_MULTITHREAD=1", "-lpthread", "-lxFuzztrace",
 )
 
 // compilation on Windows with MSYS/gcc needs extra flags in order

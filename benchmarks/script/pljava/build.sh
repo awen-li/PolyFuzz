@@ -8,6 +8,40 @@ function deps ()
 	apt-get install openjdk-11-jdk
 	apt-get install -y postgresql-server-dev-all
 	apt-get install -y libkrb5-dev
+	apt-get install libssl-dev
+}
+
+function instm_sub_jar ()
+{
+	sub_jar=$2
+	sub_dir=$1
+	mkdir $sub_dir
+	
+	cd $sub_dir
+	pwd
+	jar -xvf ../$sub_jar
+	
+	if [ -f "$ROOT/script/$target/EXTERNAL_LOC" ]; then
+	    cat $ROOT/script/$target/EXTERNAL_LOC > INTERAL_LOC
+	else
+		echo "5000" > INTERAL_LOC
+	fi
+
+	echo "../pljava-api-2-SNAPSHOT.jar" > deps
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t org/postgresql/pljava 
+	cp sootOutput/* -rf org/postgresql/pljava
+	rm -rf sootOutput
+	mv EXTERNAL_LOC $ROOT/script/$target/
+	
+	cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
+	rm branch_vars.bv
+	rm deps
+	
+	jar -cvfm $sub_jar META-INF/MANIFEST.MF *
+	chmod a+x $sub_jar
+	mv $sub_jar ../
+	
+	cd -
 }
 
 function instrument_java ()
@@ -17,31 +51,22 @@ function instrument_java ()
 	
 	if [ ! -d "$inst_dir" ]; then
 		mkdir $inst_dir
-		cd $inst_dir
-		jar -xvf ../$jar_name
-		cd --
 	fi
 	
-	pushd $inst_dir
-
-	echo "5000" > INTERAL_LOC
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t com/github/luben/zstd
-	cp sootOutput/* -rf com/github/luben/zstd/
-	rm -rf sootOutput
+	cd $inst_dir
+	jar -xvf ../$jar_name
 	
-	mv linux/amd64/branch_vars.bv $ROOT/$target/
-	mv linux/amd64/cmp_statistic.info $ROOT/$target/
-	mv EXTERNAL_LOC $ROOT/script/$target
-	cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
-	rm branch_vars.bv
-	rm INTERAL_LOC
+	# pljava/sharedir/pljava
+	instm_sub_jar $inst_dir/pljava/sharedir/pljava/pljava-instm     "pljava-2-SNAPSHOT.jar"
+	instm_sub_jar $inst_dir/pljava/sharedir/pljava/pljava-api-instm "pljava-api-2-SNAPSHOT.jar"
 	
-	cp $ROOT/script/$target/MANIFEST.MF ./META-INF/ -f
+	rm -rf $inst_dir/pljava/sharedir/pljava/pljava-instm
+	rm -rf $inst_dir/pljava/sharedir/pljava/pljava-api-instm
+	
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
-	cp $jar_name ../
-	
-	popd
+	mv $jar_name ../
+
 }
 
 function compile ()
@@ -55,13 +80,13 @@ function compile ()
 	pushd $target
 	
 	export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 
-	#export CC="afl-cc"
-	#cp $ROOT/script/$target/build.sbt $ROOT/$target/ -f
-	mvn  clean  install
+	export CC="afl-cc"
+	cp $ROOT/script/$target/pom.xml $ROOT/$target/pljava-so/ -f
+	mvn clean install #-X 
 	
-	jar_dir=$ROOT/$target/target/zstd-jni
-	cd target
-	#instrument_java $jar_dir "zstd-jni-1.5.2-2.jar"
+	jar_dir=$ROOT/$target/pljava-packaging/target/pljava-instm
+	cd pljava-packaging/target
+	instrument_java $jar_dir "pljava-pg10.jar"
 	cd ..
 	
 	popd

@@ -8,13 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export JANSI_PATH=$BENCH/jansi/target/jansi-2.4.1-SNAPSHOT.jar
-
-
-function deplibs ()
-{
-    apt install maven
-}
+export JNA_PATH=$BENCH/jna/build/jna.jar
   
 function compile()
 {
@@ -37,7 +31,7 @@ function compile()
     mkdir -p $JAVA_CLASS 
 
 	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
-    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$JANSI_PATH -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
+    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$JNA_PATH -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
 }
 
 function instrument ()

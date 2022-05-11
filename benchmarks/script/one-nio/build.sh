@@ -23,11 +23,17 @@ function instrument_java ()
 	
 	cd $inst_dir
 	jar -xvf ../$jar_name
+	
+	JAVA_8=`echo $JAVA_HOME | grep java-8`
+	if [ ! -n "$JAVA_8" ]; then
+		export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+		update-java-alternatives --set $JAVA_HOME
+	fi
 
 	echo "5000" > INTERAL_LOC
 	get_onenio_deps
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t one/nio
-	cp sootOutput/* -rf one/nio/
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t ./
+	cp sootOutput/* -rf ./
 	rm -rf sootOutput
 	
 	mv EXTERNAL_LOC $ROOT/script/$target

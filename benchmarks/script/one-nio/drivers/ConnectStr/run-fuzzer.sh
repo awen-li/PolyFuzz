@@ -6,7 +6,7 @@ if [ ! -d "fuzz" ]; then
    cp ./tests/* fuzz/in/
 fi
 
-export TARGET_JAR=LZ4One.jar
+export TARGET_JAR=ConnectStr.jar
 
 cp $TARGET_JAR fuzz/
 
@@ -28,5 +28,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $TARGET_JAR:$JavaCovPCG/JavaCovPCG.jar:$ONENIO_PATH LZ4Drv.LZ4Drv  @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $TARGET_JAR:$JavaCovPCG/JavaCovPCG.jar:$ONENIO_PATH ConnectStrDrv.ConnectStrDrv  @@
 

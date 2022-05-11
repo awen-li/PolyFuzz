@@ -36,7 +36,6 @@ function instrument_java ()
 	rm INTERAL_LOC
 	rm deps
 	
-	cp $ROOT/script/$target/MANIFEST.MF ./META-INF/ -f
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	cp $jar_name ../

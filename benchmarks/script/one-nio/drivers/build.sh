@@ -8,7 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export JANSI_PATH=$BENCH/jansi/target/jansi-2.4.1-SNAPSHOT.jar
+export ONENIO_PATH=$BENCH/one-nio/build/one-nio.jar
 
 
 function deplibs ()
@@ -37,7 +37,7 @@ function compile()
     mkdir -p $JAVA_CLASS 
 
 	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
-    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$JANSI_PATH -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
+    javac -d $JAVA_CLASS -encoding utf-8 -cp .:$ONENIO_PATH -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
 }
 
 function instrument ()

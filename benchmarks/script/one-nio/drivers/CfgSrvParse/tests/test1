@@ -1,0 +1,34 @@
+
+keepAlive: 120s
+maxWorkers: 1000
+queueTime: 50MS
+
+acceptors:
+ - port: 443
+   backlog: 10000
+   deferAccept: true
+   ssl:
+     applicationProtocols: http/1.1
+     protocols:            TLSv1+TLSv1.1+TLSv1.2
+     certFile:             /etc/ssl/my.crt
+     privateKeyFile:       /etc/ssl/my.key
+     timeout:              12H
+ - port: 8443
+   ssl: &id1
+     applicationProtocols:
+      - http/1.1
+      - http/2
+ - port: 9443
+   ssl: *id1
+ - port: 80
+   backlog: 10000 
+   deferAccept: false
+   recvBuf: 32k
+   sendBuf: 1M
+
+virtualHosts:
+  admin: admin.example.com
+  default: &id2 
+   -   example.com
+   - www.example.com  
+  invalid: *id2

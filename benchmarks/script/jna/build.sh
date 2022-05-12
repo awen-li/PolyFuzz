@@ -12,22 +12,21 @@ function instrument_java ()
 		mkdir $inst_dir
 		cd $inst_dir
 		jar -xvf ../$jar_name
-		cd --
+		cd -
 	fi
 	
-	pushd $inst_dir
+	cd $inst_dir
 	
 	cp $ROOT/$target/INTERAL_LOC $inst_dir/
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t com/sun/jna
-	cp sootOutput/* -rf com/sun/jna/
+
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t .
+	cp sootOutput/* -rf .
 	rm -rf sootOutput
 
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	cp $jar_name ../
 	mv EXTERNAL_LOC $ROOT/script/$target
-	
-	popd
 }
 
 function compile ()
@@ -37,25 +36,29 @@ function compile ()
 	fi
 	
 	git clone https://github.com/java-native-access/jna.git
+	
+	
+	JAVA_8=`echo $JAVA_HOME | grep java-8`
+	if [ ! -n "$JAVA_8" ]; then
+		export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+		update-java-alternatives --set java-1.8.0-openjdk-amd64
+	fi
 
-	pushd $target
+	cd $target
 	
 	# compile native
 	cp $ROOT/script/$target/Makefile $ROOT/$target/native/ -f
 	cd native
-	mvn package
+	ant
 	cd ..
     
 	# compile java
 	ant
 	
 	# instrument java
-	jar_dir=$ROOT/$target/build/jna-instm
+	jar_dir=$ROOT/$target/build/$target-instm
 	cd build
-	instrument_java $jar_dir "jna.jar"
-	cd ..
-	
-	popd
+	instrument_java $jar_dir "jna.jar" 
 }
 
 # 1. compile the C unit

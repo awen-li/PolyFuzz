@@ -18,7 +18,6 @@ function instm_sub_jar ()
 	mkdir $sub_dir
 	
 	cd $sub_dir
-	pwd
 	jar -xvf ../$sub_jar
 	
 	if [ -f "$ROOT/script/$target/EXTERNAL_LOC" ]; then
@@ -28,14 +27,17 @@ function instm_sub_jar ()
 	fi
 
 	echo "../pljava-api-2-SNAPSHOT.jar" > deps
+	mv module-info.class module-info
 	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t ./
 	cp sootOutput/* -rf ./
 	rm -rf sootOutput
 	mv EXTERNAL_LOC $ROOT/script/$target/
+	mv module-info module-info.class 
 	
 	cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
 	rm branch_vars.bv
 	rm deps
+	
 	
 	jar -cvfm $sub_jar META-INF/MANIFEST.MF *
 	chmod a+x $sub_jar
@@ -63,6 +65,7 @@ function instrument_java ()
 	rm -rf $inst_dir/pljava/sharedir/pljava/pljava-instm
 	rm -rf $inst_dir/pljava/sharedir/pljava/pljava-api-instm
 	
+	cd $inst_dir
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	mv $jar_name ../

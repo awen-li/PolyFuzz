@@ -1,4 +1,0 @@
-#!/bin/sh
-# LLVMFuzzerTestOneInput for fuzzer detection.
-this_dir=$(dirname "$0")
-LD_LIBRARY_PATH="/usr/lib/jvm/java-15-openjdk-amd64/lib/server":$this_dir $this_dir/jazzer_driver --agent_path=$this_dir/jazzer_agent_deploy.jar --cp=$this_dir/commons-compress.jar::$this_dir --target_class=CompressSevenZFuzzer --jvm_args="-Xmx2048m:-Djava.awt.headless=true" $@

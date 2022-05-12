@@ -49,6 +49,18 @@ java_fuzz_target_test(
 )
 
 java_fuzz_target_test(
+    name = "AutofuzzHookDependencies",
+    # The reproducer does not include the hook on OOM and thus throws a regular error.
+    expected_findings = ["java.lang.OutOfMemoryError"],
+    fuzzer_args = [
+        "--instrumentation_includes=java.util.regex.**",
+        "--autofuzz=java.util.regex.Pattern::compile",
+        "--autofuzz_ignore=java.lang.Exception",
+        "--keep_going=1",
+    ],
+)
+
+java_fuzz_target_test(
     name = "ForkModeFuzzer",
     size = "enormous",
     srcs = [
@@ -114,3 +126,39 @@ java_fuzz_target_test(
         ":autofuzz_inner_class_target",
     ],
 )
+
+# Regression test for https://github.com/CodeIntelligenceTesting/jazzer/issues/405.
+java_fuzz_target_test(
+    name = "MemoryLeakFuzzer",
+    timeout = "short",
+    srcs = ["src/test/java/com/example/MemoryLeakFuzzer.java"],
+    env = {
+        "JAVA_OPTS": "-Xmx800m",
+    },
+    expect_crash = False,
+    fuzzer_args = [
+        # Before the bug was fixed, either the GC overhead limit or the overall heap limit was
+        # reached by this target in this number of runs.
+        "-runs=1000000",
+        # Skip over the first and only exception to keep the fuzzer running until it hits the runs
+        # limit.
+        "--keep_going=2",
+    ],
+    target_class = "com.example.MemoryLeakFuzzer",
+)
+
+JAZZER_API_TEST_CASES = {
+    "default": [],
+    "nohooks": ["--nohooks"],
+}
+
+[
+    java_fuzz_target_test(
+        name = "JazzerApiFuzzer_" + case,
+        srcs = ["src/test/java/com/example/JazzerApiFuzzer.java"],
+        expected_findings = ["com.code_intelligence.jazzer.api.FuzzerSecurityIssueLow"],
+        fuzzer_args = args,
+        target_class = "com.example.JazzerApiFuzzer",
+    )
+    for case, args in JAZZER_API_TEST_CASES.items()
+]

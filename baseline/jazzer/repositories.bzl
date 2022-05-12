@@ -65,9 +65,9 @@ def jazzer_dependencies():
     maybe(
         http_archive,
         name = "com_github_johnynek_bazel_jar_jar",
-        sha256 = "44dbf93907c361594057bcf1205dab91e1169f3b7a89db8c778161459588b5d6",
-        strip_prefix = "bazel_jar_jar-commit-171f268569384c57c19474b04aebe574d85fde0d",
-        url = "https://github.com/CodeIntelligenceTesting/bazel_jar_jar/archive/refs/tags/commit-171f268569384c57c19474b04aebe574d85fde0d.tar.gz",
+        sha256 = "138a33a5c6ed9355e4411caa22f2fe45460b7e1e4468cbc29f7955367d7a001a",
+        strip_prefix = "bazel_jar_jar-commit-d97cfd22d47cba9a20708fa092f20348b72fb5ed",
+        url = "https://github.com/CodeIntelligenceTesting/bazel_jar_jar/archive/refs/tags/commit-d97cfd22d47cba9a20708fa092f20348b72fb5ed.tar.gz",
     )
 
     maybe(
@@ -91,9 +91,9 @@ def jazzer_dependencies():
     maybe(
         http_archive,
         name = "fmeum_rules_jni",
-        sha256 = "39902411424856ce51c0137665171a4d08f2b767d30978dbded29dd099319890",
-        strip_prefix = "rules_jni-0.4.2",
-        url = "https://github.com/fmeum/rules_jni/archive/refs/tags/v0.4.2.tar.gz",
+        sha256 = "45acc80812e0ecafc3f1b2f17efa6141d014aa2cf49c94a83252f570124d161a",
+        strip_prefix = "rules_jni-0.5.1",
+        url = "https://github.com/fmeum/rules_jni/archive/refs/tags/v0.5.1.tar.gz",
     )
 
     maybe(
@@ -136,9 +136,9 @@ def jazzer_dependencies():
             Label("//third_party:jacoco-make-probe-adapter-subclassable.patch"),
             Label("//third_party:jacoco-make-probe-inserter-subclassable.patch"),
         ],
-        sha256 = "65bfdf38047a3bbefc5f68b180ec4a933068a547d4f569578f3ce3f7355168ba",
-        strip_prefix = "jacoco-0.8.7-jazzer-1",
-        url = "https://github.com/CodeIntelligenceTesting/jacoco/archive/refs/tags/v0.8.7-jazzer+1.tar.gz",
+        sha256 = "c603cfcc5f3d95ecda46fb369dc54c82a453bb6b640a605c3970607d10896725",
+        strip_prefix = "jacoco-0.8.8",
+        url = "https://github.com/jacoco/jacoco/archive/refs/tags/v0.8.8.tar.gz",
     )
 
     maybe(

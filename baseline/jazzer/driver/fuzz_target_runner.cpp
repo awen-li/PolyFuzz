@@ -174,7 +174,7 @@ FuzzTargetRunner::FuzzTargetRunner(
   auto on_fuzz_target_ready = jvm.GetStaticMethodID(
       jazzer_, "onFuzzTargetReady", "(Ljava/lang/String;)V", true);
   jstring fuzz_target_class = env.NewStringUTF(FLAGS_target_class.c_str());
-  env.CallStaticObjectMethod(jazzer_, on_fuzz_target_ready, fuzz_target_class);
+  env.CallStaticVoidMethod(jazzer_, on_fuzz_target_ready, fuzz_target_class);
   if (env.ExceptionCheck()) {
     env.ExceptionDescribe();
     return;
@@ -233,8 +233,7 @@ FuzzTargetRunner::FuzzTargetRunner(
       jstring str = env.NewStringUTF(fuzz_target_args_tokens[i].c_str());
       env.SetObjectArrayElement(arg_array, i, str);
     }
-    env.CallStaticObjectMethod(jclass_, fuzzer_initialize_with_args_,
-                               arg_array);
+    env.CallStaticVoidMethod(jclass_, fuzzer_initialize_with_args_, arg_array);
   } else if (fuzzer_initialize_) {
     env.CallStaticVoidMethod(jclass_, fuzzer_initialize_);
   } else {
@@ -242,6 +241,7 @@ FuzzTargetRunner::FuzzTargetRunner(
   }
 
   if (jthrowable exception = env.ExceptionOccurred()) {
+    env.ExceptionClear();
     LOG(ERROR) << "== Java Exception in fuzzerInitialize: ";
     LOG(ERROR) << getStackTrace(exception);
     std::exit(1);
@@ -269,16 +269,18 @@ FuzzTargetRunner::FuzzTargetRunner(
 }
 
 FuzzTargetRunner::~FuzzTargetRunner() {
+  auto &env = jvm_.GetEnv();
   if (FLAGS_hooks && !FLAGS_coverage_report.empty()) {
-    CoverageTracker::ReportCoverage(jvm_.GetEnv(), FLAGS_coverage_report);
+    CoverageTracker::ReportCoverage(env, FLAGS_coverage_report);
   }
   if (FLAGS_hooks && !FLAGS_coverage_dump.empty()) {
-    CoverageTracker::DumpCoverage(jvm_.GetEnv(), FLAGS_coverage_dump);
+    CoverageTracker::DumpCoverage(env, FLAGS_coverage_dump);
   }
   if (fuzzer_tear_down_ != nullptr) {
     std::cerr << "calling fuzzer teardown function" << std::endl;
-    jvm_.GetEnv().CallStaticVoidMethod(jclass_, fuzzer_tear_down_);
-    if (jthrowable exception = jvm_.GetEnv().ExceptionOccurred()) {
+    env.CallStaticVoidMethod(jclass_, fuzzer_tear_down_);
+    if (jthrowable exception = env.ExceptionOccurred()) {
+      env.ExceptionClear();
       std::cerr << getStackTrace(exception) << std::endl;
       _Exit(1);
     }
@@ -357,9 +359,16 @@ jthrowable FuzzTargetRunner::GetFinding() const {
       reported_finding != nullptr) {
     env.DeleteLocalRef(unprocessed_finding);
     unprocessed_finding = reported_finding;
+    env.SetStaticObjectField(jazzer_, last_finding_, nullptr);
   }
   jthrowable processed_finding = preprocessException(unprocessed_finding);
-  env.DeleteLocalRef(unprocessed_finding);
+  // If preprocessException returns the same local reference that we passed to
+  // it, we must not decrease the reference count as the returned object will
+  // outlive this method. Otherwise, we have to delete it to prevent leaking the
+  // unprocessed exception.
+  if (processed_finding != unprocessed_finding) {
+    env.DeleteLocalRef(unprocessed_finding);
+  }
   return processed_finding;
 }
 
@@ -404,8 +413,8 @@ void FuzzTargetRunner::DumpReproducer(const uint8_t *data, std::size_t size) {
     const auto finding = GetFinding();
     if (finding == nullptr) {
       LOG(ERROR) << "Failed to reproduce crash when rerunning with recorder";
-      return;
     }
+    env.DeleteLocalRef(finding);
     base64_data = SerializeRecordingFuzzedDataProvider(jvm_, recorder);
   } else {
     absl::string_view data_str(reinterpret_cast<const char *>(data), size);

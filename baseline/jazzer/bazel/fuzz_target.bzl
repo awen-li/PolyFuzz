@@ -28,6 +28,7 @@ def java_fuzz_target_test(
         env = None,
         verify_crash_input = True,
         verify_crash_reproducer = True,
+        expect_crash = True,
         # Default is that the reproducer does not throw any exception.
         expected_findings = [],
         **kwargs):
@@ -74,6 +75,8 @@ def java_fuzz_target_test(
             # Use the same memory settings for reproducers as those suggested by Jazzer when
             # encountering an OutOfMemoryError.
             "-Xmx1620m",
+            # Ensure that reproducers can be compiled even if they contain UTF-8 characters.
+            "-Dfile.encoding=UTF-8",
         ],
         size = size or "enormous",
         timeout = timeout or "moderate",
@@ -83,6 +86,7 @@ def java_fuzz_target_test(
             "$(rootpath :%s_deploy.jar)" % target_name,
             str(verify_crash_input),
             str(verify_crash_reproducer),
+            str(expect_crash),
             # args are shell tokenized and thus quotes are required in the case where
             # expected_findings is empty.
             "'" + ",".join(expected_findings) + "'",

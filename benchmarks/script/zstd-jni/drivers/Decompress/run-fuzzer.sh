@@ -6,14 +6,16 @@ if [ ! -d "fuzz" ]; then
    cp ./tests/* fuzz/in/
 fi
 
-cp OutStream.jar fuzz/
+export TARGET_JAR=Decompress.jar
+
+cp $TARGET_JAR fuzz/
 
 cd fuzz
 #afl-system-config
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
-export JANSI_PATH=$BENCH/jansi/target/jansi-2.4.1-SNAPSHOT.jar
+export ZSRD_PATH=$BENCH/zstd-jni/target/zstd-jni-1.5.2-2.jar
 
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100
@@ -26,5 +28,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp OutStream.jar:$JavaCovPCG/JavaCovPCG.jar:$JANSI_PATH OsJansi.OutStream  @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $TARGET_JAR:$JavaCovPCG/JavaCovPCG.jar:$ZSRD_PATH DcmpZstd.DeCompress  @@
 

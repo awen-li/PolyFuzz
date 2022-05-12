@@ -18,8 +18,8 @@ function instrument_java ()
 	pushd $inst_dir
 
 	echo "5000" > INTERAL_LOC
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t com/github/luben/zstd
-	cp sootOutput/* -rf com/github/luben/zstd/
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t ./
+	cp sootOutput/* -rf ./
 	rm -rf sootOutput
 	
 	mv linux/amd64/branch_vars.bv $ROOT/$target/
@@ -46,6 +46,9 @@ function compile ()
 	git clone https://github.com/luben/zstd-jni.git
 
 	pushd $target
+	
+	export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+	update-java-alternatives --set java-1.8.0-openjdk-amd64
 	
 	export CC="afl-cc"
 	cp $ROOT/script/$target/build.sbt $ROOT/$target/ -f

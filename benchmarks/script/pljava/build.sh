@@ -28,8 +28,8 @@ function instm_sub_jar ()
 	fi
 
 	echo "../pljava-api-2-SNAPSHOT.jar" > deps
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t org/postgresql/pljava 
-	cp sootOutput/* -rf org/postgresql/pljava
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -d deps -t ./
+	cp sootOutput/* -rf ./
 	rm -rf sootOutput
 	mv EXTERNAL_LOC $ROOT/script/$target/
 	
@@ -79,7 +79,9 @@ function compile ()
 
 	pushd $target
 	
-	export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 
+	export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+	update-java-alternatives --set java-1.11.0-openjdk-amd64
+	 
 	cp $ROOT/script/$target/pom.xml $ROOT/$target/pljava-so/ -f
 	mvn clean install #-X 
 	

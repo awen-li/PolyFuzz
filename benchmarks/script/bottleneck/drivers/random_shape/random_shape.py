@@ -20,7 +20,7 @@ def LoadTest (FileName):
 
 if __name__ == '__main__':
     try:
-        WriteTest ("tests/test")
+        #WriteTest ("tests/test")
         
         Value  = bytearray (LoadTest (sys.argv[1]))
         Length = len (Value)

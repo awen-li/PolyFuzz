@@ -27,7 +27,7 @@ if __name__ == '__main__':
         if Length < 4:
             exit (0)
             
-        print (Length)
+        #print (Length)
         
         # 0b: dimenson
         d = Value[0]%8
@@ -35,7 +35,7 @@ if __name__ == '__main__':
             exit (0)
         if d > Length-1:
             d = Length-1
-        print (d)
+        #print (d)
          
         # 0-Length-1: shape value   
         Shape = []
@@ -45,7 +45,7 @@ if __name__ == '__main__':
                 Sval = 1
             Shape.append (Sval)
         
-        print (Shape)
+        #print (Shape)
         
         Ary = np.random.random(tuple (Shape))
         bn.nanmax(Ary)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         for i in range (1, d-1):
             R_Shape.append (i)
             
-        print (R_Shape)
+        #print (R_Shape)
         
         R_Ary = Ary.transpose(tuple(R_Shape))
         bn.nanmin(R_Ary)

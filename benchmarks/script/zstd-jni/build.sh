@@ -56,7 +56,8 @@ function compile ()
 	
 	jar_dir=$ROOT/$target/target/zstd-jni
 	cd target
-	jar_name=`basename `find ../../zstd-jni/target/ -name "*.jar"``
+	jar_name=`find ./ -name "*.jar"`
+	jar_name=`basename $jar_name`
 	instrument_java $jar_dir $jar_name
 	cd ..
 	

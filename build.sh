@@ -43,6 +43,8 @@ cp $BASE_DIR/tool/PyVersion.sh /usr/bin/
 cd $BASE_DIR
 
 # init environment
+export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
+
 if [ ! -n "$JAVA_HOME" ]; then
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 	echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /root/.bashrc

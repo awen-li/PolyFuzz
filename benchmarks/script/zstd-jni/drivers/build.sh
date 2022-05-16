@@ -8,7 +8,8 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export ZSTD_PATH=$BENCH/zstd-jni/target/zstd-jni-1.5.2-2.jar
+JAR_PATH=`ls $BENCH/zstd-jni/target/zstd-jni*.jar`
+export ZSTD_PATH=$JAR_PATH
 
 
 function deplibs ()

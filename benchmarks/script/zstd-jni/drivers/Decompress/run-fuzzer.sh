@@ -15,7 +15,9 @@ cd fuzz
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
-export ZSRD_PATH=$BENCH/zstd-jni/target/zstd-jni-1.5.2-2.jar
+
+JAR_PATH=`ls $BENCH/zstd-jni/target/zstd-jni*.jar`
+export ZSTD_PATH=$JAR_PATH
 
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100

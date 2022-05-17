@@ -1,4 +1,4 @@
-cd json-sanitizer/
+cd apache-commons/
 
 tar -zxvf jazzer_release.tar.gz
 

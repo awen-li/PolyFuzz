@@ -12,11 +12,12 @@ def LoadInput (FName):
 
 if __name__ == '__main__':
     try:
-        InputData = LoadInput (sys.argv[1])
-        
-        buf = bytearray(packb(InputData))
+        bytes = LoadInput (sys.argv[1])
+        to = [bytes, {"Tobj":[bytes]}]
+         
+        buf = bytearray(packb(to))
         unpackb(buf)
-        
+
     except Exception as e:
         print ("Exception --> ", end="")
         print (e)

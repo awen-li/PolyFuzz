@@ -6,7 +6,7 @@ if [ ! -d "fuzz" ]; then
 fi
 
 cd fuzz
-afl-system-config
+#afl-system-config
 
 #enable debug for child process
 #export AFL_DEBUG_CHILD=1
@@ -21,5 +21,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../decode.py  @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- python ../encode.py  @@
 

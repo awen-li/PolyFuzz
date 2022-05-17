@@ -3,7 +3,7 @@ import pyprob
 import simplejson as json
 
 
-pyprob.Setup('py_summary.xml', 'decode.py')
+pyprob.Setup('py_summary.xml', 'encode.py')
 
 def LoadInput (TxtFile):
     Content = ""

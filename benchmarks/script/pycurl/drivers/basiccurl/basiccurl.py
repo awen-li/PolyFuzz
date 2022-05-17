@@ -21,7 +21,7 @@ class TtCurl:
         if PY3:
             self.contents = self.contents.encode('ascii')
 
-    def body_callback(self, buf):
+    def write_callback(self, buf):
         self.contents = self.contents + buf
 
 
@@ -33,7 +33,7 @@ if __name__ == '__main__':
         Url = LoadInput (sys.argv[1])
         
         c.setopt(c.URL, Url)
-        c.setopt(c.WRITEFUNCTION, t.body_callback)
+        c.setopt(c.WRITEFUNCTION, t.write_callback)
         c.perform()
         c.close()
         

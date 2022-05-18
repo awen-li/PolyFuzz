@@ -6,5 +6,5 @@ git clone https://github.com/google/honggfuzz.git
 cd honggfuzz
 make
 make install
-cd..
+cd ..
 rm -rf honggfuzz

@@ -11,10 +11,14 @@ def LoadInput (FName):
     return Content
 
 if __name__ == '__main__':
-    try:
+    try: 
         bytes = LoadInput (sys.argv[1])
         to = [bytes, {"Tobj":[bytes]}]
-         
+        #print (to)
+        
+        for i in range (0, 508):
+            to = [packb(to)]
+   
         buf = bytearray(packb(to))
         unpackb(buf)
 

@@ -6,15 +6,12 @@ git clone https://github.com/google/honggfuzz.git
 cd honggfuzz
 make
 make install
-cd..
+cd ..
 rm -rf honggfuzz
 
-cd badcode/targets/
+cd terminal-emulators
 
-make
-
-cd ..
-
-nohup honggfuzz -n1 -u -i inputfiles -- targets/badcode1 ___FILE___  > full.log 2>&1 &
+nohup honggfuzz -z -P -i IN/ -E LD_PRELOAD=libclose.so -- xterm -e terminal-test > full.log 2>&1 &
 
 python extract_log.py
+

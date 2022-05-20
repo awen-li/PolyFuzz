@@ -1,0 +1,222 @@
+<?xml version="1.0" ?>
+<py_summary branchs="563">
+  <file name="demo_yin_compare.py" id="1">
+    <function class="" name="sqd_yin" sline="20" eline="30" brval="" bbs="20 27 28"/>
+    <function class="" name="sqd_yinfast" sline="32" eline="55" brval="" bbs="32 44"/>
+    <function class="" name="sqd_yintapered" sline="57" eline="67" brval="" bbs="57 64 65"/>
+    <function class="" name="sqd_yinfft" sline="69" eline="0" brval="" bbs="69"/>
+    <function class="" name="hanningz" sline="78" eline="79" brval="" bbs="78"/>
+    <function class="" name="cumdiff" sline="95" eline="106" brval="102:cumsum:4137776880 " bbs="95 100 102 105"/>
+    <function class="" name="compute_all" sline="108" eline="128" brval="" bbs="108"/>
+    <function class="" name="plot_all" sline="130" eline="149" brval="" bbs="130"/>
+  </file>
+  <file name="demo_mfcc.py" id="2"/>
+  <file name="demo_tempo.py" id="3"/>
+  <file name="demo_wav2midi.py" id="4">
+    <function class="" name="frames2tick" sline="49" eline="51" brval="" bbs="49"/>
+  </file>
+  <file name="demo_tempo_plot.py" id="5"/>
+  <file name="demo_tapthebeat.py" id="6">
+    <function class="" name="pyaudio_callback" sline="47" eline="56" brval="" bbs="47 50 54"/>
+  </file>
+  <file name="demo_slicing.py" id="7">
+    <function class="" name="new_sink_name" sline="18" eline="19" brval="" bbs="18"/>
+  </file>
+  <file name="demo_pitch.py" id="8">
+    <function class="" name="array_from_text_file" sline="66" eline="68" brval="" bbs="66"/>
+  </file>
+  <file name="demo_sink_create_woodblock.py" id="9"/>
+  <file name="demo_waveform_plot.py" id="10">
+    <function class="" name="get_waveform_plot" sline="7" eline="36" brval="18:samplerate:4137889840 " bbs="7 9 18 21 27"/>
+    <function class="" name="set_xlabels_sample2time" sline="38" eline="45" brval="40:latest_sample:4134935280 " bbs="38 40 44 45"/>
+  </file>
+  <file name="demo_pyaudio.py" id="11"/>
+  <file name="demo_source_simple.py" id="12"/>
+  <file name="demo_spectrogram.py" id="13">
+    <function class="" name="get_spectrogram" sline="8" eline="0" brval="14:samplerate:4137889840 " bbs="8 14 19 22"/>
+    <function class="" name="get_rounded_ticks" sline="36" eline="49" brval="" bbs="36"/>
+  </file>
+  <file name="demo_filter.py" id="14">
+    <function class="" name="apply_filter" sline="8" eline="39" brval="" bbs="8 21 31"/>
+  </file>
+  <file name="demo_onset_plot.py" id="15"/>
+  <file name="demo_bench_yin.py" id="16">
+    <function class="" name="sinewave" sline="14" eline="19" brval="" bbs="14 17"/>
+    <function class="" name="get_stats_for_pitch_method" sline="21" eline="39" brval="" bbs="21 26 32"/>
+  </file>
+  <file name="demo_onset.py" id="17"/>
+  <file name="demo_reading_speed.py" id="18">
+    <function class="" name="read_file_audioread" sline="34" eline="0" brval="" bbs="34"/>
+    <function class="" name="convert_buffer_to_float" sline="37" eline="44" brval="" bbs="37"/>
+    <function class="" name="load_file_librosa" sline="54" eline="58" brval="" bbs="54"/>
+    <function class="" name="load_file_scipy" sline="60" eline="65" brval="" bbs="60"/>
+    <function class="" name="load_file_scipy_mmap" sline="67" eline="71" brval="" bbs="67"/>
+    <function class="" name="read_file_pydub" sline="73" eline="77" brval="" bbs="73"/>
+    <function class="" name="load_file_pydub" sline="79" eline="84" brval="" bbs="79"/>
+    <function class="" name="read_file_aubio" sline="86" eline="94" brval="" bbs="86 90 93"/>
+    <function class="" name="load_file_aubio" sline="96" eline="108" brval="" bbs="96 101 105"/>
+    <function class="" name="test_speed" sline="110" eline="127" brval="" bbs="110 112"/>
+  </file>
+  <file name="demo_filterbank_triangle_bands.py" id="19"/>
+  <file name="demo_pitchshift.py" id="20"/>
+  <file name="demo_specdesc.py" id="21"/>
+  <file name="demo_filterbank_slaney.py" id="22"/>
+  <file name="demo_simple_robot_voice.py" id="23"/>
+  <file name="demo_simple_spectral_weighting.py" id="24">
+    <function class="" name="gauss" sline="8" eline="9" brval="" bbs="8"/>
+    <function class="" name="hanningz" sline="11" eline="12" brval="" bbs="11"/>
+  </file>
+  <file name="demo_pysoundcard_record.py" id="25">
+    <function class="" name="record_sink" sline="3" eline="26" brval="" bbs="3 17"/>
+  </file>
+  <file name="demo_sink.py" id="26"/>
+  <file name="demo_sink_multi.py" id="27"/>
+  <file name="demo_bpm_extract.py" id="28">
+    <function class="" name="get_file_bpm" sline="6" eline="0" brval="" bbs="6 11 15 16 19 22 25 27 29 31 42 45 51"/>
+    <function class="" name="beats_to_bpm" sline="54" eline="63" brval="" bbs="54 56 57 62 63"/>
+  </file>
+  <file name="demo_alsa.py" id="29"/>
+  <file name="demo_mel-energy.py" id="30"/>
+  <file name="demo_pysoundcard_play.py" id="31">
+    <function class="" name="play_source" sline="3" eline="20" brval="" bbs="3 16 19"/>
+  </file>
+  <file name="demo_timestretch.py" id="32"/>
+  <file name="demo_pitch_sinusoid.py" id="33">
+    <function class="" name="build_sinusoid" sline="6" eline="7" brval="" bbs="6"/>
+    <function class="" name="run_pitch" sline="9" eline="14" brval="" bbs="9 11"/>
+  </file>
+  <file name="demo_tss.py" id="34"/>
+  <file name="demo_miditofreq.py" id="35"/>
+  <file name="__init__.py" id="36"/>
+  <file name="demo_source.py" id="37"/>
+  <file name="demo_notes.py" id="38"/>
+  <file name="demo_filterbank.py" id="39"/>
+  <file name="demo_keyboard.py" id="40">
+    <function class="" name="get_keyboard_edges" sline="3" eline="25" brval="" bbs="3 14 15 17 19 20 22"/>
+    <function class="" name="create_keyboard_patches" sline="27" eline="56" brval="" bbs="27 34 39 48"/>
+  </file>
+  <file name="demo_timestretch_online.py" id="41"/>
+  <file name="gen_external.py" id="42">
+    <function class="" name="get_preprocessor" sline="53" eline="96" brval="" bbs="53 62 69 71 74 82 84 87 90 94"/>
+    <function class="" name="get_c_declarations" sline="99" eline="103" brval="" bbs="99"/>
+    <function class="" name="get_cpp_output" sline="106" eline="143" brval="" bbs="106 111 114 129 132 135 138 140"/>
+    <function class="" name="filter_cpp_output" sline="145" eline="169" brval="" bbs="145 151 152 154 157 161 165"/>
+    <function class="" name="get_cpp_objects_from_c_declarations" sline="172" eline="178" brval="" bbs="172 173"/>
+    <function class="" name="get_all_func_names_from_lib" sline="181" eline="200" brval="" bbs="181 185 186 188 189 191 195 198"/>
+    <function class="" name="generate_lib_from_c_declarations" sline="203" eline="244" brval="" bbs="203 212 214 223 225 227 229 231 233 235 237 239 243"/>
+    <function class="" name="print_c_declarations_results" sline="247" eline="264" brval="254:found:4158977776 " bbs="247 248 250 251 252 254 257 258 259 261 264"/>
+    <function class="" name="generate_external" sline="267" eline="341" brval="" bbs="267 268 270 280 323"/>
+  </file>
+  <file name="moresetuptools.py" id="43">
+    <function class="" name="add_packages" sline="10" eline="45" brval="" bbs="10 18 25 34 43"/>
+    <function class="" name="add_local_aubio_header" sline="47" eline="50" brval="" bbs="47"/>
+    <function class="" name="add_local_aubio_lib" sline="52" eline="56" brval="" bbs="52"/>
+    <function class="" name="add_local_aubio_sources" sline="58" eline="63" brval="" bbs="58"/>
+    <function class="" name="add_local_macros" sline="65" eline="74" brval="" bbs="65 66 69"/>
+    <function class="" name="add_external_deps" sline="76" eline="127" brval="87:usedouble:4135025648 " bbs="76 87 90 92 95 97 99 101 103 105 107 112 118 125"/>
+    <function class="" name="add_system_aubio" sline="129" eline="136" brval="" bbs="129 133 136"/>
+    <function class="" name="add_libav_on_win" sline="138" eline="142" brval="" bbs="138 141"/>
+    <function class="CleanGenerated" name="run" sline="145" eline="147" brval="" bbs="145 146"/>
+    <function class="build_ext" name="initialize_options" sline="157" eline="159" brval="" bbs="157"/>
+    <function class="build_ext" name="finalize_options" sline="161" eline="164" brval="" bbs="161 163"/>
+    <function class="build_ext" name="build_extension" sline="168" eline="197" brval="" bbs="168 169 172 176 178 182 186 188 192"/>
+  </file>
+  <file name="gen_code.py" id="44">
+    <function class="" name="get_name" sline="104" eline="108" brval="" bbs="104 107"/>
+    <function class="" name="get_return_type" sline="110" eline="115" brval="" bbs="110"/>
+    <function class="" name="split_type" sline="117" eline="135" brval="" bbs="117 125 129 132"/>
+    <function class="" name="get_params" sline="137" eline="146" brval="" bbs="137"/>
+    <function class="" name="get_input_params" sline="148" eline="150" brval="" bbs="148"/>
+    <function class="" name="get_output_params" sline="152" eline="154" brval="" bbs="152"/>
+    <function class="" name="get_params_types_names" sline="156" eline="164" brval="" bbs="156"/>
+    <function class="MappedObject" name="__init__" sline="168" eline="188" brval="" bbs="168 169 184"/>
+    <function class="MappedObject" name="gen_code" sline="193" eline="215" brval="" bbs="193 202"/>
+    <function class="MappedObject" name="gen_struct" sline="217" eline="234" brval="" bbs="217"/>
+    <function class="MappedObject" name="gen_doc" sline="236" eline="251" brval="" bbs="236 238"/>
+    <function class="MappedObject" name="gen_new" sline="253" eline="289" brval="" bbs="253 262 283"/>
+    <function class="MappedObject" name="check_valid" sline="291" eline="299" brval="" bbs="291 292 294 296 299"/>
+    <function class="MappedObject" name="check_valid_uint" sline="301" eline="303" brval="" bbs="301"/>
+    <function class="MappedObject" name="check_valid_char" sline="313" eline="315" brval="" bbs="313"/>
+    <function class="MappedObject" name="check_valid_smpl" sline="322" eline="324" brval="" bbs="322"/>
+    <function class="MappedObject" name="gen_init" sline="331" eline="366" brval="" bbs="331 353"/>
+    <function class="MappedObject" name="gen_memberdef" sline="368" eline="379" brval="" bbs="368 372"/>
+    <function class="MappedObject" name="gen_del" sline="381" eline="406" brval="" bbs="381 387 388 391"/>
+    <function class="MappedObject" name="gen_do" sline="408" eline="482" brval="" bbs="408 420 429 435 445 448 466 469 473"/>
+    <function class="MappedObject" name="gen_set" sline="484" eline="537" brval="" bbs="484 488 497 508"/>
+    <function class="MappedObject" name="gen_get" sline="539" eline="560" brval="" bbs="539 543"/>
+    <function class="MappedObject" name="gen_methodef" sline="562" eline="587" brval="" bbs="562 565 571 577"/>
+    <function class="MappedObject" name="gen_typeobject" sline="589" eline="590" brval="" bbs="589"/>
+  </file>
+  <file name="midiconv.py" id="45">
+    <function class="" name="note2midi" sline="18" eline="102" brval="100:midi:4135023408 " bbs="18 69 72 77 80 82 86 91 93 95 100"/>
+    <function class="" name="midi2note" sline="105" eline="143" brval="" bbs="105 136 138"/>
+    <function class="" name="freq2note" sline="146" eline="167" brval="" bbs="146"/>
+    <function class="" name="note2freq" sline="170" eline="191" brval="" bbs="170"/>
+  </file>
+  <file name="cmd.py" id="46">
+    <function class="" name="aubio_parser" sline="17" eline="39" brval="" bbs="17"/>
+    <function class="" name="parser_add_subcommand_help" sline="41" eline="43" brval="" bbs="41"/>
+    <function class="" name="parser_add_subcommand_onset" sline="47" eline="62" brval="" bbs="47"/>
+    <function class="" name="parser_add_subcommand_pitch" sline="64" eline="77" brval="" bbs="64"/>
+    <function class="" name="parser_add_subcommand_beat" sline="79" eline="87" brval="" bbs="79"/>
+    <function class="" name="parser_add_subcommand_tempo" sline="89" eline="97" brval="" bbs="89"/>
+    <function class="" name="parser_add_subcommand_notes" sline="99" eline="109" brval="" bbs="99"/>
+    <function class="" name="parser_add_subcommand_mfcc" sline="111" eline="119" brval="" bbs="111"/>
+    <function class="" name="parser_add_subcommand_melbands" sline="121" eline="129" brval="" bbs="121"/>
+    <function class="" name="parser_add_subcommand_quiet" sline="131" eline="140" brval="" bbs="131"/>
+    <function class="" name="parser_add_subcommand_cut" sline="142" eline="157" brval="" bbs="142"/>
+    <function class="AubioArgumentParser" name="add_input" sline="161" eline="166" brval="" bbs="161"/>
+    <function class="AubioArgumentParser" name="add_verbose_help" sline="171" eline="175" brval="" bbs="171"/>
+    <function class="AubioArgumentParser" name="add_buf_hop_size" sline="179" eline="181" brval="" bbs="179"/>
+    <function class="AubioArgumentParser" name="add_buf_size" sline="183" eline="184" brval="" bbs="183"/>
+    <function class="AubioArgumentParser" name="add_hop_size" sline="189" eline="190" brval="" bbs="189"/>
+    <function class="AubioArgumentParser" name="add_method" sline="195" eline="196" brval="" bbs="195"/>
+    <function class="AubioArgumentParser" name="add_threshold" sline="201" eline="202" brval="" bbs="201"/>
+    <function class="AubioArgumentParser" name="add_silence" sline="207" eline="208" brval="" bbs="207"/>
+    <function class="AubioArgumentParser" name="add_release_drop" sline="213" eline="214" brval="" bbs="213"/>
+    <function class="AubioArgumentParser" name="add_minioi" sline="219" eline="220" brval="" bbs="219"/>
+    <function class="AubioArgumentParser" name="add_pitch_unit" sline="225" eline="228" brval="" bbs="225"/>
+    <function class="AubioArgumentParser" name="add_time_format" sline="233" eline="236" brval="" bbs="233"/>
+    <function class="AubioArgumentParser" name="add_slicer_options" sline="242" eline="262" brval="" bbs="242"/>
+    <function class="" name="samples2seconds" sline="268" eline="269" brval="" bbs="268"/>
+    <function class="" name="samples2milliseconds" sline="271" eline="272" brval="" bbs="271"/>
+    <function class="" name="samples2samples" sline="274" eline="275" brval="" bbs="274"/>
+    <function class="" name="timefunc" sline="277" eline="285" brval="" bbs="277 278 280 282 285"/>
+    <function class="default_process" name="__init__" sline="290" eline="297" brval="293:args:4160518576 " bbs="290 291 293"/>
+    <function class="default_process" name="flush" sline="298" eline="300" brval="" bbs="298"/>
+    <function class="default_process" name="parse_options" sline="302" eline="305" brval="" bbs="302"/>
+    <function class="default_process" name="remap_pvoc_options" sline="307" eline="316" brval="" bbs="307 310 313"/>
+    <function class="process_onset" name="__init__" sline="320" eline="334" brval="" bbs="320 323 325 326 328 331 332"/>
+    <function class="process_onset" name="repr_res" sline="337" eline="340" brval="338:res:4159069488 " bbs="337 338"/>
+    <function class="process_pitch" name="__init__" sline="344" eline="353" brval="" bbs="344 347 349 351"/>
+    <function class="process_pitch" name="repr_res" sline="356" eline="358" brval="" bbs="356"/>
+    <function class="process_beat" name="__init__" sline="362" eline="365" brval="" bbs="362"/>
+    <function class="process_beat" name="repr_res" sline="368" eline="371" brval="369:res:4159069488 " bbs="368 369"/>
+    <function class="process_tempo" name="__init__" sline="374" eline="376" brval="" bbs="374"/>
+    <function class="process_tempo" name="repr_res" sline="377" eline="379" brval="378:res:4159069488 " bbs="377 378"/>
+    <function class="process_tempo" name="flush" sline="380" eline="391" brval="" bbs="380 382 385 386 387 390"/>
+    <function class="process_notes" name="__init__" sline="395" eline="402" brval="" bbs="395 398 400"/>
+    <function class="process_notes" name="repr_res" sline="405" eline="413" brval="409:res:4159069488 " bbs="405 406 409"/>
+    <function class="process_notes" name="flush" sline="414" eline="416" brval="" bbs="414"/>
+    <function class="process_mfcc" name="__init__" sline="419" eline="432" brval="" bbs="419"/>
+    <function class="process_mfcc" name="repr_res" sline="437" eline="440" brval="" bbs="437"/>
+    <function class="process_melbands" name="__init__" sline="443" eline="456" brval="" bbs="443"/>
+    <function class="process_melbands" name="repr_res" sline="460" eline="463" brval="" bbs="460"/>
+    <function class="process_quiet" name="__init__" sline="466" eline="474" brval="" bbs="466 472"/>
+    <function class="process_quiet" name="repr_res" sline="488" eline="496" brval="492:res:4159069488 " bbs="488 490 492 494"/>
+    <function class="process_cut" name="__init__" sline="499" eline="502" brval="" bbs="499"/>
+    <function class="process_cut" name="flush" sline="510" eline="519" brval="" bbs="510"/>
+    <function class="" name="_cut_slice" sline="521" eline="541" brval="524:nstamps:4134841136 " bbs="521 524 527 530 533 537"/>
+    <function class="" name="main" sline="547" eline="615" brval="549:sys:4160101104 611:args:4160518576 " bbs="547 549 560 562 566 567 570 572 576 579 580 584 596 602 607 611"/>
+  </file>
+  <file name="slicing.py" id="47">
+    <function class="" name="slice_source_at_stamps" sline="9" eline="0" brval="79:timestamps:4134840624 " bbs="9 76 79 81 84 85 87 90 95 96"/>
+    <function class="" name="_new_sink_name" sline="100" eline="103" brval="" bbs="100"/>
+  </file>
+  <file name="__init__.py" id="48"/>
+  <file name="cut.py" id="49">
+    <function class="" name="aubio_cut_parser" sline="10" eline="90" brval="" bbs="10"/>
+    <function class="" name="_cut_analyze" sline="93" eline="134" brval="103:samplerate:4134008112 " bbs="93 103 107 111 113 114 116 119 124 126 128 131"/>
+    <function class="" name="main" sline="136" eline="163" brval="" bbs="136 139 143 159"/>
+  </file>
+</py_summary>

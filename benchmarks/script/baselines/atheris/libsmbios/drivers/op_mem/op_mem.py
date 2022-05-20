@@ -1,21 +1,27 @@
 import sys
 import os
 import random
-import libsmbios_c.memory as Mem
-import pyprob
+import atheris
 
-pyprob.Setup('py_summary.xml', 'setup_mem.py')
+with atheris.instrument_imports():
+    import libsmbios_c.memory as Mem
 
 pageunit = 8192
 
-def page_num (Tf):
-    fsize = os.path.getsize(Tf)
-    return int (fsize/pageunit)
+seed_path = "seed.bin"    
+def WriteSeed (data):
+    F = open (seed_path, "wb")
+    F.write (data)
+    F.close ()
+    return seed_path
 
-if __name__ == '__main__':
+@atheris.instrument_func  
+def RunTest (data):
+    Tf = WriteSeed (data)
     try:
-        Tf = sys.argv[1]
-        pagenum = page_num (Tf)
+        pagenum = int (len (data)/pageunit)
+        if pagenum == 0:
+            return
         
         Tf = Tf.encode('utf-8')
         memObj = Mem.MemoryAccess(Mem.MEMORY_GET_NEW | Mem.MEMORY_UNIT_TEST_MODE, Tf)
@@ -50,4 +56,8 @@ if __name__ == '__main__':
     except Exception as e:
         print (e)
         pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)
+    atheris.Fuzz()
 

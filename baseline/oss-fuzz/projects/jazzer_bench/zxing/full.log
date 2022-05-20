@@ -1,0 +1,358 @@
+INFO: Loaded 122 hooks from com.code_intelligence.jazzer.runtime.TraceCmpHooks
+INFO: Loaded 4 hooks from com.code_intelligence.jazzer.runtime.TraceDivHooks
+INFO: Loaded 2 hooks from com.code_intelligence.jazzer.runtime.TraceIndirHooks
+INFO: Loaded 4 hooks from com.code_intelligence.jazzer.runtime.NativeLibHooks
+INFO: Loaded 8 hooks from com.code_intelligence.jazzer.sanitizers.Deserialization
+INFO: Loaded 3 hooks from com.code_intelligence.jazzer.sanitizers.ExpressionLanguageInjection
+INFO: Loaded 70 hooks from com.code_intelligence.jazzer.sanitizers.LdapInjection
+INFO: Loaded 50 hooks from com.code_intelligence.jazzer.sanitizers.NamingContextLookup
+INFO: Loaded 1 hooks from com.code_intelligence.jazzer.sanitizers.OsCommandInjection
+INFO: Loaded 33 hooks from com.code_intelligence.jazzer.sanitizers.ReflectiveCall
+INFO: Loaded 8 hooks from com.code_intelligence.jazzer.sanitizers.RegexInjection
+INFO: Loaded 16 hooks from com.code_intelligence.jazzer.sanitizers.RegexRoadblocks
+INFO: Instrumented java.util.regex.Pattern$BackRef with custom hooks only (took 28 ms, size +47%)
+INFO: Instrumented java.util.regex.Pattern$Branch with custom hooks only (took 21 ms, size +36%)
+INFO: Instrumented java.util.regex.Pattern$BranchConn with custom hooks only (took 14 ms, size +82%)
+INFO: Instrumented java.util.regex.Pattern$BnM with custom hooks only (took 20 ms, size +26%)
+INFO: Instrumented java.util.regex.Pattern$GroupCurly with custom hooks only (took 36 ms, size +45%)
+INFO: Instrumented java.util.regex.Pattern$Ques with custom hooks only (took 18 ms, size +120%)
+INFO: Instrumented java.util.regex.Matcher with custom hooks only (took 209 ms, size +6%)
+INFO: Instrumented java.util.regex.Pattern$Start with custom hooks only (took 15 ms, size +46%)
+INFO: Instrumented java.util.regex.Pattern$First with custom hooks only (took 16 ms, size +65%)
+INFO: Instrumented java.util.regex.Pattern$Slice with custom hooks only (took 10 ms, size +60%)
+INFO: Instrumented java.util.regex.Pattern$Curly with custom hooks only (took 33 ms, size +69%)
+INFO: Instrumented java.util.regex.Pattern$BmpCharProperty with custom hooks only (took 14 ms, size +53%)
+INFO: Instrumented java.util.regex.Pattern$CharProperty with custom hooks only (took 24 ms, size +38%)
+INFO: Instrumented java.util.regex.Pattern$GroupHead with custom hooks only (took 16 ms, size +81%)
+INFO: Instrumented java.util.regex.Pattern with custom hooks only (took 478 ms, size +3%)
+INFO: Instrumented com.google.zxing.MultiFormatReader (took 105 ms, size +35%)
+INFO: Instrumented com.google.zxing.Reader (took 1 ms, size +0%)
+INFO: Instrumented com.google.zxing.ReaderException (took 6 ms, size +13%)
+INFO: Instrumented com.google.zxing.NotFoundException (took 4 ms, size +36%)
+INFO: Instrumented com.google.zxing.BinaryBitmap (took 11 ms, size +12%)
+INFO: Instrumented com.google.zxing.Result (took 14 ms, size +12%)
+INFO: libFuzzer ignores flags that start with '--'
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 2658230672
+INFO: Loaded 1 modules   (512 inline 8-bit counters): 512 [0x7fff69fb0010, 0x7fff69fb0210), 
+INFO: Loaded 1 PC tables (512 PCs): 512 [0x10f6be0,0x10f8be0), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: A corpus is not provided, starting from an empty corpus
+#2	INITED cov: 1 ft: 1 corp: 1/1b exec/s: 0 rss: 560Mb
+INFO: Instrumented com.google.zxing.ChecksumException (took 6 ms, size +30%)
+INFO: Instrumented com.google.zxing.FormatException (took 5 ms, size +31%)
+INFO: Instrumented com.google.zxing.DecodeHintType (took 7 ms, size +10%)
+INFO: Instrumented com.google.zxing.oned.MultiFormatOneDReader (took 13 ms, size +37%)
+INFO: Instrumented com.google.zxing.oned.OneDReader (took 22 ms, size +29%)
+INFO: New number of coverage counters: 1024
+INFO: Instrumented com.google.zxing.oned.MultiFormatUPCEANReader (took 18 ms, size +29%)
+INFO: Instrumented com.google.zxing.oned.UPCEANReader (took 24 ms, size +21%)
+INFO: Instrumented com.google.zxing.oned.EAN13Reader (took 7 ms, size +19%)
+INFO: Instrumented com.google.zxing.oned.UPCEANExtensionSupport (took 3 ms, size +10%)
+INFO: Instrumented com.google.zxing.oned.UPCEANExtension2Support (took 5 ms, size +14%)
+INFO: Instrumented com.google.zxing.oned.UPCEANExtension5Support (took 16 ms, size +30%)
+INFO: Instrumented com.google.zxing.oned.EANManufacturerOrgSupport (took 8 ms, size +23%)
+INFO: Instrumented com.google.zxing.oned.EAN8Reader (took 5 ms, size +20%)
+INFO: New number of coverage counters: 2048
+INFO: Instrumented com.google.zxing.oned.UPCEReader (took 12 ms, size +16%)
+INFO: Instrumented com.google.zxing.oned.Code39Reader (took 20 ms, size +35%)
+INFO: Instrumented com.google.zxing.oned.CodaBarReader (took 16 ms, size +25%)
+INFO: Instrumented com.google.zxing.oned.Code93Reader (took 15 ms, size +30%)
+INFO: Instrumented com.google.zxing.oned.Code128Reader (took 17 ms, size +19%)
+INFO: Instrumented com.google.zxing.oned.ITFReader (took 20 ms, size +20%)
+INFO: Instrumented com.google.zxing.oned.rss.RSS14Reader (took 28 ms, size +26%)
+INFO: Instrumented com.google.zxing.oned.rss.AbstractRSSReader (took 19 ms, size +21%)
+INFO: New number of coverage counters: 4096
+INFO: Instrumented com.google.zxing.oned.rss.expanded.RSSExpandedReader (took 42 ms, size +21%)
+INFO: Instrumented com.google.zxing.qrcode.QRCodeReader (took 14 ms, size +19%)
+INFO: Instrumented com.google.zxing.ResultPoint (took 10 ms, size +20%)
+INFO: Instrumented com.google.zxing.qrcode.decoder.Decoder (took 13 ms, size +10%)
+INFO: Instrumented com.google.zxing.common.reedsolomon.ReedSolomonException (took 2 ms, size +22%)
+INFO: Instrumented com.google.zxing.common.reedsolomon.ReedSolomonDecoder (took 10 ms, size +22%)
+INFO: Instrumented com.google.zxing.common.reedsolomon.GenericGF (took 17 ms, size +17%)
+INFO: Instrumented com.google.zxing.common.reedsolomon.GenericGFPoly (took 20 ms, size +38%)
+INFO: Instrumented com.google.zxing.datamatrix.DataMatrixReader (took 9 ms, size +17%)
+INFO: Instrumented com.google.zxing.datamatrix.decoder.Decoder (took 4 ms, size +13%)
+INFO: Instrumented com.google.zxing.aztec.AztecReader (took 6 ms, size +19%)
+INFO: Instrumented com.google.zxing.pdf417.PDF417Reader (took 12 ms, size +11%)
+INFO: Instrumented com.google.zxing.multi.MultipleBarcodeReader (took 0 ms, size +0%)
+INFO: Instrumented com.google.zxing.maxicode.MaxiCodeReader (took 6 ms, size +15%)
+INFO: Instrumented com.google.zxing.maxicode.decoder.Decoder (took 5 ms, size +20%)
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 4fe948bc4004d156
+== libFuzzer crashing input ==
+MS: 2 ShuffleBytes-CopyPart-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0xa,0xa,
+\x0a\x0a
+artifact_prefix='./'; Test unit written to ./crash-71853c6197a6a7f222db0f1978c7cb232b87c5ee
+Base64: Cgo=
+reproducer_path='.'; Java reproducer written to ./Crash_71853c6197a6a7f222db0f1978c7cb232b87c5ee.java
+#4	NEW    cov: 160 ft: 160 corp: 2/3b lim: 4 exec/s: 0 rss: 666Mb L: 2/2 MS: 2 ShuffleBytes-CopyPart-
+#5	NEW    cov: 160 ft: 277 corp: 3/5b lim: 4 exec/s: 0 rss: 666Mb L: 2/2 MS: 1 ShuffleBytes-
+INFO: Instrumented com.google.zxing.Binarizer (took 2 ms, size +12%)
+#13	NEW    cov: 161 ft: 278 corp: 4/9b lim: 4 exec/s: 0 rss: 667Mb L: 4/4 MS: 3 ShuffleBytes-InsertByte-CrossOver-
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: d76128b6f468da40
+== libFuzzer crashing input ==
+MS: 4 ChangeByte-ChangeBit-CopyPart-ChangeByte-; base unit: 71853c6197a6a7f222db0f1978c7cb232b87c5ee
+0x96,0xa,0x41,
+\x96\x0aA
+artifact_prefix='./'; Test unit written to ./crash-5f52f69a1806e9e013214c9810bc630e45f062f3
+Base64: lgpB
+reproducer_path='.'; Java reproducer written to ./Crash_5f52f69a1806e9e013214c9810bc630e45f062f3.java
+#22	NEW    cov: 162 ft: 279 corp: 5/12b lim: 4 exec/s: 0 rss: 668Mb L: 3/4 MS: 4 ChangeByte-ChangeBit-CopyPart-ChangeByte-
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 97513524600585c8
+== libFuzzer crashing input ==
+MS: 2 ChangeByte-CrossOver-; base unit: 71853c6197a6a7f222db0f1978c7cb232b87c5ee
+0xa,0xa,
+\x0a\x0a
+artifact_prefix='./'; Test unit written to ./crash-71853c6197a6a7f222db0f1978c7cb232b87c5ee
+Base64: Cgo=
+reproducer_path='.'; Java reproducer written to ./Crash_71853c6197a6a7f222db0f1978c7cb232b87c5ee.java
+#37	NEW    cov: 162 ft: 280 corp: 6/14b lim: 4 exec/s: 0 rss: 668Mb L: 2/4 MS: 5 ShuffleBytes-InsertByte-CopyPart-EraseBytes-ChangeByte-
+INFO: Instrumented com.google.zxing.ResultPointCallback (took 0 ms, size +0%)
+#41	NEW    cov: 189 ft: 307 corp: 7/18b lim: 4 exec/s: 0 rss: 668Mb L: 4/4 MS: 4 InsertByte-ShuffleBytes-CrossOver-CrossOver-
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: ae9fee59e3d52bcb
+== libFuzzer crashing input ==
+MS: 5 CrossOver-CopyPart-ChangeBit-ShuffleBytes-CopyPart-; base unit: 1518dd8b0d9e863992cd899271266c857570903c
+0x1d,0x1d,0x2d,0x5d,
+\x1d\x1d-]
+artifact_prefix='./'; Test unit written to ./crash-a0cbda19af6b9eba46e28db32073aed0d174747e
+Base64: HR0tXQ==
+reproducer_path='.'; Java reproducer written to ./Crash_a0cbda19af6b9eba46e28db32073aed0d174747e.java
+#71	NEW    cov: 189 ft: 425 corp: 8/22b lim: 4 exec/s: 0 rss: 670Mb L: 4/4 MS: 5 CrossOver-CopyPart-ChangeBit-ShuffleBytes-CopyPart-
+#288	NEW    cov: 191 ft: 427 corp: 9/28b lim: 6 exec/s: 0 rss: 672Mb L: 6/6 MS: 2 ChangeBit-CopyPart-
+INFO: Instrumented com.google.zxing.common.GlobalHistogramBinarizer (took 17 ms, size +25%)
+INFO: Instrumented com.google.zxing.common.HybridBinarizer (took 12 ms, size +27%)
+#512	pulse  cov: 191 ft: 427 corp: 9/28b lim: 8 exec/s: 256 rss: 787Mb
+INFO: Instrumented com.google.zxing.LuminanceSource (took 3 ms, size +16%)
+INFO: Instrumented com.google.zxing.InvertedLuminanceSource (took 4 ms, size +22%)
+INFO: Instrumented com.google.zxing.PlanarYUVLuminanceSource (took 3 ms, size +24%)
+INFO: Instrumented com.google.zxing.RGBLuminanceSource (took 2 ms, size +23%)
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.Binarizer.getWidth(Binarizer.java:80)
+	at com.google.zxing.BinaryBitmap.getWidth(BinaryBitmap.java:44)
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 0238318b571bb9cf
+== libFuzzer crashing input ==
+MS: 2 EraseBytes-InsertRepeatedBytes-; base unit: a0cbda19af6b9eba46e28db32073aed0d174747e
+0x1d,0xd4,0xd4,0xd4,0xd4,0xd4,0x2d,0x5d,
+\x1d\xd4\xd4\xd4\xd4\xd4-]
+artifact_prefix='./'; Test unit written to ./crash-04ea37eeec3d2e194af68079cb670e85c1c553a5
+Base64: HdTU1NTULV0=
+reproducer_path='.'; Java reproducer written to ./Crash_04ea37eeec3d2e194af68079cb670e85c1c553a5.java
+#535	NEW    cov: 196 ft: 432 corp: 10/36b lim: 8 exec/s: 178 rss: 844Mb L: 8/8 MS: 2 EraseBytes-InsertRepeatedBytes-
+
+== Java Exception: java.lang.NullPointerException
+	at com.google.zxing.Binarizer.getWidth(Binarizer.java:80)
+	at com.google.zxing.BinaryBitmap.getWidth(BinaryBitmap.java:44)
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:105)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: ed3009496160f196
+== libFuzzer crashing input ==
+MS: 3 CrossOver-InsertRepeatedBytes-ChangeBinInt-; base unit: 71853c6197a6a7f222db0f1978c7cb232b87c5ee
+0xf5,0xc5,0xfc,0xfc,0xfc,0xfc,0xfc,0xfc,
+\xf5\xc5\xfc\xfc\xfc\xfc\xfc\xfc
+artifact_prefix='./'; Test unit written to ./crash-9354d246127596eb4f3850203cbdabebfeda7c41
+Base64: 9cX8/Pz8/Pw=
+reproducer_path='.'; Java reproducer written to ./Crash_9354d246127596eb4f3850203cbdabebfeda7c41.java
+#544	NEW    cov: 196 ft: 436 corp: 11/44b lim: 8 exec/s: 181 rss: 845Mb L: 8/8 MS: 4 CrossOver-InsertRepeatedBytes-ChangeBinInt-CrossOver-
+#565	NEW    cov: 198 ft: 438 corp: 12/52b lim: 8 exec/s: 188 rss: 845Mb L: 8/8 MS: 1 ShuffleBytes-
+#601	REDUCE cov: 198 ft: 438 corp: 12/51b lim: 8 exec/s: 200 rss: 845Mb L: 7/8 MS: 1 EraseBytes-
+INFO: Instrumented com.google.zxing.common.BitArray (took 12 ms, size +27%)
+INFO: Instrumented com.google.zxing.qrcode.detector.Detector (took 8 ms, size +18%)
+INFO: Instrumented com.google.zxing.qrcode.detector.FinderPattern (took 2 ms, size +15%)
+INFO: Instrumented com.google.zxing.qrcode.detector.AlignmentPattern (took 1 ms, size +17%)
+INFO: Instrumented com.google.zxing.common.BitMatrix (took 15 ms, size +34%)
+
+== Java Exception: java.lang.IllegalArgumentException: Both dimensions must be greater than 0
+	at com.google.zxing.common.BitMatrix.<init>(BitMatrix.java:60)
+	at com.google.zxing.common.GlobalHistogramBinarizer.getBlackMatrix(GlobalHistogramBinarizer.java:98)
+	at com.google.zxing.BinaryBitmap.getBlackMatrix(BinaryBitmap.java:85)
+	at com.google.zxing.qrcode.QRCodeReader.decode(QRCodeReader.java:77)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 359a12db27ef34a0
+== libFuzzer crashing input ==
+MS: 5 CrossOver-ChangeByte-ShuffleBytes-ChangeByte-CrossOver-; base unit: e28a1a26c2a1403bb87699b1baf39f2a8cd68f3f
+0x27,0xa,0xb0,0xa,0xa,0xa,0xa,0x3a,0xa,0xfc,
+'\x0a\xb0\x0a\x0a\x0a\x0a:\x0a\xfc
+artifact_prefix='./'; Test unit written to ./crash-8d7903df17eab63708b549e3555ec1171ac8d8f3
+Base64: JwqwCgoKCjoK/A==
+reproducer_path='.'; Java reproducer written to ./Crash_8d7903df17eab63708b549e3555ec1171ac8d8f3.java
+#931	REDUCE cov: 253 ft: 494 corp: 13/61b lim: 11 exec/s: 310 rss: 854Mb L: 10/10 MS: 5 CrossOver-ChangeByte-ShuffleBytes-ChangeByte-CrossOver-
+#937	NEW    cov: 253 ft: 538 corp: 14/71b lim: 11 exec/s: 312 rss: 854Mb L: 10/10 MS: 1 ChangeByte-
+#974	REDUCE cov: 256 ft: 541 corp: 15/81b lim: 11 exec/s: 324 rss: 854Mb L: 10/10 MS: 2 ChangeByte-InsertRepeatedBytes-
+
+== Java Exception: java.lang.IllegalArgumentException: Both dimensions must be greater than 0
+	at com.google.zxing.common.BitMatrix.<init>(BitMatrix.java:60)
+	at com.google.zxing.common.GlobalHistogramBinarizer.getBlackMatrix(GlobalHistogramBinarizer.java:98)
+	at com.google.zxing.common.HybridBinarizer.getBlackMatrix(HybridBinarizer.java:86)
+	at com.google.zxing.BinaryBitmap.getBlackMatrix(BinaryBitmap.java:85)
+	at com.google.zxing.qrcode.QRCodeReader.decode(QRCodeReader.java:77)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 7a309afd67c0cad7
+== libFuzzer crashing input ==
+MS: 2 CrossOver-ChangeByte-; base unit: b463e7af777cf44517bddcf56102fa1e99c73aba
+0xf8,0xf8,0xf8,0xc5,0xff,0xa,0xa,0xa,0xfc,0xfc,
+\xf8\xf8\xf8\xc5\xff\x0a\x0a\x0a\xfc\xfc
+artifact_prefix='./'; Test unit written to ./crash-a583313f2346f2aa3645df6080a521297cc95c41
+Base64: +Pj4xf8KCgr8/A==
+reproducer_path='.'; Java reproducer written to ./Crash_a583313f2346f2aa3645df6080a521297cc95c41.java
+#991	NEW    cov: 260 ft: 551 corp: 16/91b lim: 11 exec/s: 330 rss: 854Mb L: 10/10 MS: 2 CrossOver-ChangeByte-
+#1011	NEW    cov: 262 ft: 558 corp: 17/102b lim: 11 exec/s: 337 rss: 854Mb L: 11/11 MS: 5 InsertByte-ShuffleBytes-ChangeByte-ShuffleBytes-ChangeBinInt-
+#1024	pulse  cov: 262 ft: 558 corp: 17/102b lim: 11 exec/s: 341 rss: 854Mb
+#1042	NEW    cov: 262 ft: 559 corp: 18/112b lim: 11 exec/s: 347 rss: 854Mb L: 10/11 MS: 1 CrossOver-
+
+== Java Exception: java.lang.IllegalArgumentException: Both dimensions must be greater than 0
+	at com.google.zxing.common.BitMatrix.<init>(BitMatrix.java:60)
+	at com.google.zxing.common.GlobalHistogramBinarizer.getBlackMatrix(GlobalHistogramBinarizer.java:98)
+	at com.google.zxing.common.HybridBinarizer.getBlackMatrix(HybridBinarizer.java:86)
+	at com.google.zxing.BinaryBitmap.getBlackMatrix(BinaryBitmap.java:85)
+	at com.google.zxing.qrcode.QRCodeReader.decode(QRCodeReader.java:77)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: db04c43ffdfb8f3f
+== libFuzzer crashing input ==
+MS: 4 ChangeByte-CopyPart-ChangeBit-ChangeByte-; base unit: d9ed7294dc6e8d6568397442ce963c9a1ec401b9
+0xd4,0x53,0xf5,0x6f,0xf5,0x3d,0xf5,0xf5,0x3a,0xa,0x41,
+\xd4S\xf5o\xf5=\xf5\xf5:\x0aA
+artifact_prefix='./'; Test unit written to ./crash-e280ecdabfb5bd1be47b702ddf2ae75f49d2e173
+Base64: 1FP1b/U99fU6CkE=
+reproducer_path='.'; Java reproducer written to ./Crash_e280ecdabfb5bd1be47b702ddf2ae75f49d2e173.java
+#1066	NEW    cov: 262 ft: 561 corp: 19/123b lim: 11 exec/s: 355 rss: 854Mb L: 11/11 MS: 4 ChangeByte-CopyPart-ChangeBit-ChangeByte-
+
+== Java Exception: java.lang.IllegalArgumentException: Both dimensions must be greater than 0
+	at com.google.zxing.common.BitMatrix.<init>(BitMatrix.java:60)
+	at com.google.zxing.common.GlobalHistogramBinarizer.getBlackMatrix(GlobalHistogramBinarizer.java:98)
+	at com.google.zxing.BinaryBitmap.getBlackMatrix(BinaryBitmap.java:85)
+	at com.google.zxing.qrcode.QRCodeReader.decode(QRCodeReader.java:77)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 6e63e3fe1ea2ce8b
+== libFuzzer crashing input ==
+MS: 1 CopyPart-; base unit: 9457553e0ade323c36b75663a0eb5c8cff810e33
+0x27,0xa,0xb0,0xa,0xa,0x60,0xa,0x3a,0xa,0x27,
+'\x0a\xb0\x0a\x0a`\x0a:\x0a'
+artifact_prefix='./'; Test unit written to ./crash-6b8265a6049228083fe5790f6c63fb12a3263ad0
+Base64: JwqwCgpgCjoKJw==
+reproducer_path='.'; Java reproducer written to ./Crash_6b8265a6049228083fe5790f6c63fb12a3263ad0.java
+#1376	NEW    cov: 267 ft: 566 corp: 20/136b lim: 14 exec/s: 458 rss: 854Mb L: 13/13 MS: 5 InsertByte-ChangeByte-ChangeByte-EraseBytes-InsertRepeatedBytes-
+
+== Java Exception: java.lang.NegativeArraySizeException
+	at com.google.zxing.common.BitArray.makeArray(BitArray.java:325)
+	at com.google.zxing.common.BitArray.<init>(BitArray.java:41)
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:107)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:57)
+	at sun.reflect.GeneratedMethodAccessor3.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 2bf687844bd922c7
+== libFuzzer crashing input ==
+MS: 4 InsertByte-CrossOver-ChangeByte-CrossOver-; base unit: 71853c6197a6a7f222db0f1978c7cb232b87c5ee
+0xa,0xd4,0x53,0xf5,0x4f,0xf5,0xf5,0xf5,0xf5,0x3a,0xa,0x2c,0xb6,0x4f,
+\x0a\xd4S\xf5O\xf5\xf5\xf5\xf5:\x0a,\xb6O
+artifact_prefix='./'; Test unit written to ./crash-4a1de3277fe6837106d6f4fab634482f99a9874e
+Base64: CtRT9U/19fX1Ogostk8=
+reproducer_path='.'; Java reproducer written to ./Crash_4a1de3277fe6837106d6f4fab634482f99a9874e.java
+#1467	NEW    cov: 271 ft: 570 corp: 21/149b lim: 14 exec/s: 489 rss: 854Mb L: 13/13 MS: 1 InsertRepeatedBytes-
+#1598	NEW    cov: 272 ft: 571 corp: 22/162b lim: 14 exec/s: 532 rss: 855Mb L: 13/13 MS: 1 ChangeByte-
+
+== Java Exception: java.lang.ClassCastException: java.lang.Object cannot be cast to java.util.Collection
+	at com.google.zxing.MultiFormatReader.setHints(MultiFormatReader.java:103)
+	at sun.reflect.GeneratedMethodAccessor4.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 70da68b42bf061b3
+== libFuzzer crashing input ==
+MS: 1 ChangeBit-; base unit: 0debb09ec4c1b80e0e0c808915ca077e2e7ff87c
+0x2d,0xff,0xff,0xff,0xff,0xff,0xff,0xfe,0xff,0xff,0xff,0x3b,0x40,
+-\xff\xff\xff\xff\xff\xff\xfe\xff\xff\xff;@
+artifact_prefix='./'; Test unit written to ./crash-7b65138850dc2e0520651118331a0ecf1b60f3a1
+Base64: Lf////////7///87QA==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [], [new com.google.zxing.MultiFormatReader(), setHints(java.util.stream.Stream.<java.util.AbstractMap.SimpleEntry<com.google.zxing.DecodeHintType, ?>>of(new java.util.AbstractMap.SimpleEntry<>(com.google.zxing.DecodeHintType.POSSIBLE_FORMATS, ((java.util.function.Supplier<java.lang.Object>) (() -> {java.lang.Object autofuzzVariable1 = new java.lang.Object(); return autofuzzVariable1;})).get())).collect(java.util.HashMap::new, (map, e) -> map.put(e.getKey(), e.getValue()), java.util.HashMap::putAll))]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NegativeArraySizeException
+	at com.google.zxing.common.BitArray.makeArray(BitArray.java:325)
+	at com.google.zxing.common.BitArray.<init>(BitArray.java:41)
+	at com.google.zxing.oned.OneDReader.doDecode(OneDReader.java:107)
+	at com.google.zxing.oned.OneDReader.decode(OneDReader.java:54)
+	at com.google.zxing.MultiFormatReader.decodeInternal(MultiFormatReader.java:173)
+	at com.google.zxing.MultiFormatReader.decode(MultiFormatReader.java:71)
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+DEDUP_TOKEN: 991a7cd4e1a50a81
+== libFuzzer crashing input ==
+MS: 3 ChangeBinInt-EraseBytes-CrossOver-; base unit: b463e7af777cf44517bddcf56102fa1e99c73aba
+0xf8,0xf8,0xf8,0xc5,0xa,0xb0,0xa,0xa,0xa,0xa,0x3a,0xa,0xfc,0xfc,
+\xf8\xf8\xf8\xc5\x0a\xb0\x0a\x0a\x0a\x0a:\x0a\xfc\xfc
+artifact_prefix='./'; Test unit written to ./crash-b31fb02ba1b59d22ce295ab751ae73cd9ef54b99
+Base64: +Pj4xQqwCgoKCjoK/Pw=
+reproducer_path='.'; Java reproducer written to ./Crash_b31fb02ba1b59d22ce295ab751ae73cd9ef54b99.java
+#1652	NEW    cov: 272 ft: 573 corp: 23/176b lim: 14 exec/s: 550 rss: 855Mb L: 14/14 MS: 4 ChangeBinInt-EraseBytes-CrossOver-CrossOver-
+#2048	pulse  cov: 272 ft: 573 corp: 23/176b lim: 17 exec/s: 512 rss: 1989Mb
+#2246	NEW    cov: 274 ft: 575 corp: 24/193b lim: 17 exec/s: 449 rss: 2052Mb L: 17/17 MS: 4 ChangeByte-ChangeBit-CMP-CrossOver- DE: "\xed\x00"-
+==37== ERROR: libFuzzer: out-of-memory (used: 2052Mb; limit: 2048Mb)
+   To change the out-of-memory limit use -rss_limit_mb=<N>
+
+MS: 1 CopyPart-; base unit: d9ed7294dc6e8d6568397442ce963c9a1ec401b9
+0xd4,0x53,0xf5,0x4f,0xf5,0xf5,0xf5,0xf5,0x53,0xf5,0x4f,0xf5,0xf5,0xf5,0x3a,0xa,0x2c,
+\xd4S\xf5O\xf5\xf5\xf5\xf5S\xf5O\xf5\xf5\xf5:\x0a,
+artifact_prefix='./'; Test unit written to ./oom-331d5a3b2ff4c3df48b592cb1d78cd77538b4e83
+Base64: 1FP1T/X19fVT9U/19fU6Ciw=
+SUMMARY: libFuzzer: out-of-memory

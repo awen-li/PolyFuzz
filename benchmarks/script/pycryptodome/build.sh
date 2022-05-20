@@ -15,7 +15,8 @@ function compile ()
 	
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
-
+	
+	cp $ROOT/script/$target/setup.py $ROOT/$target/
 	python setup.py install
 	
 	popd

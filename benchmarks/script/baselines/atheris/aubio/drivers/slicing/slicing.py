@@ -1,21 +1,31 @@
 import sys
-import pyprob
-from aubio import source, sink
+import atheris
 
-pyprob.Setup('py_summary.xml', 'slicing.py')
+with atheris.instrument_imports():
+    from aubio import source, sink
 
-if __name__ == '__main__':
+seed_path = "seed.bin"
+
+def WriteSeed (data):
+    F = open (seed_path, "wb")
+    F.write (data)
+    F.close ()
+
+
+@atheris.instrument_func  
+def RunAubio (path):
+    s = None
     try:
         duration = 0.5
         hopsize = 256
         slice_n, total_frames_written, read = 0, 0, hopsize
         
-        f = source(sys.argv[1], 0, hopsize)
-        samplerate = f.samplerate
+        s = source(path, 0, hopsize)
+        samplerate = s.samplerate
         g = sink("tmp_aubio", samplerate)
 
         while read == hopsize:
-            vec, read = f()
+            vec, read = s()
 
             start_of_next_region = int(duration * samplerate * (slice_n + 1))
             remaining = start_of_next_region - total_frames_written
@@ -32,5 +42,15 @@ if __name__ == '__main__':
 
     except Exception as e:
         print (e)
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+
+    return s
+
+def TestOneInput(data):  
+    WriteSeed (data)
+    s = RunAubio (seed_path)
+    del s
+    
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
+    atheris.Fuzz()
     

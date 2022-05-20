@@ -8,6 +8,7 @@ init_flag = True
 time_kick = 10
 
 record_count = 0
+target = sys.argv[1]
 
 def is_exist (target):
     cmd = "ps -elf | grep " + sys.argv[1] + " | grep -v grep | grep -v extract_log.py"
@@ -18,14 +19,18 @@ def is_exist (target):
     else:
         return True
 
-target = sys.argv[1]
+def t_exit ():
+    print ("\n*******************************************************")
+    print ("Not detect the target %s, exit now....." %target)
+    print ("\n*******************************************************\n")
+    exit (0)
 
 while True:
     if not os.path.exists(target_file):
         time.sleep(time_kick)
         exists = is_exist (target)
         if exists == False:
-            print ("Not detect the target %s, exit now....." %target)
+            t_exit ()
             break
         continue
 
@@ -55,6 +60,6 @@ while True:
     os.remove (target_file)
     exists = is_exist (target)
     if exists == False:
-        print ("Not detect the target %s, exit now....." %target)
+        t_exit ()
         break
     

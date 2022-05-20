@@ -18,9 +18,11 @@ PythonInstallPath ()
 
 function compile ()
 {
-	if [ ! -d "$ROOT/$target" ]; then
-		git clone https://github.com/dell/libsmbios.git
+	if [ -d "$ROOT/$target" ]; then
+		rm -rf $ROOT/$target
 	fi
+	
+	git clone https://github.com/dell/libsmbios.git
 
 	pushd $target
 	

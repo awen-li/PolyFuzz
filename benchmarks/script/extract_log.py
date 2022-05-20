@@ -55,9 +55,9 @@ while True:
         f_w.close()
     except:
         pass
+        
+    #os.remove (target_file)
     time.sleep(time_kick)
-    
-    os.remove (target_file)
     exists = is_exist (target)
     if exists == False:
         t_exit ()

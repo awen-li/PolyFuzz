@@ -1,18 +1,27 @@
 import sys
-import pyprob
-from aubio import source, sink
+import atheris
 
-pyprob.Setup('py_summary.xml', 'tss.py')
+with atheris.instrument_imports():
+    from aubio import source, sink, pvoc, tss
 
-if __name__ == '__main__':
+seed_path = "seed.bin"
+
+def WriteSeed (data):
+    F = open (seed_path, "wb")
+    F.write (data)
+    F.close ()
+
+@atheris.instrument_func  
+def RunAubio (path):
+    s = g = h = None
     try:
         samplerate = 44100
         win_s = 1024       # fft size
         hop_s = win_s // 8 # block size
 
-        f = source(sys.argv[1], samplerate, hop_s)
-        g = sink(sys.argv[2], samplerate)
-        h = sink(sys.argv[3], samplerate)
+        s = source(path, samplerate, hop_s)
+        g = sink(path+"-1.sink", samplerate)
+        h = sink(path+"-2.sink", samplerate)
 
         pva = pvoc(win_s, hop_s)    # a phase vocoder
         pvb = pvoc(win_s, hop_s)    # another phase vocoder
@@ -25,7 +34,7 @@ if __name__ == '__main__':
         read = hop_s
 
         while read:
-            samples, read = f()         
+            samples, read = s()         
             spec = pva(samples)           
             trans_spec, stead_spec = t(spec)
             transients = pva.rdo(trans_spec)
@@ -33,9 +42,18 @@ if __name__ == '__main__':
             g(transients, read)        
             h(steadstate, read)               
 
-        del f, g, h                           
-
     except Exception as e:
         print (e)
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    
+    return s, g, h   
+
+
+def TestOneInput(data):  
+    WriteSeed (data)
+    s, g, h = RunAubio (seed_path)
+    del s, g, h   
+
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
+    atheris.Fuzz()
     

@@ -1,11 +1,11 @@
 import sys
 import io
-import tink
-from tink import cleartext_keyset_handle
-from tink import daead
-import pyprob
+import atheris
 
-pyprob.Setup('py_summary.xml', 'decrypt.py')
+with atheris.instrument_imports():
+    import tink
+    from tink import cleartext_keyset_handle
+    from tink import daead
 
 associated_data = b"fuzz_association"
 
@@ -21,22 +21,17 @@ def init_keyset (keyset_file):
     daead_primitive = keyset_handle.primitive(daead.DeterministicAead)
     return daead_primitive
 
+daead_primitive = init_keyset ('keyset.json')
 
-def daead_decrypt (primitive, data):
-    primitive.decrypt_deterministically (data, associated_data)
-    
-def load (file):
-    with open(file, 'rb') as f:
-        data = f.read()
-        return data
+@atheris.instrument_func  
+def RunTest (data):
+    try:      
+        daead_primitive.decrypt_deterministically (data, associated_data)   
+    except Exception as e:
+        print (e) 
 
 if __name__ == '__main__':
-    try:
-        data = load (sys.argv[1])
-    
-        daead_primitive = init_keyset ('keyset.json')
-        daead_decrypt (daead_primitive, data)
-    except Exception as e:
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)
+    atheris.Fuzz()
     
 

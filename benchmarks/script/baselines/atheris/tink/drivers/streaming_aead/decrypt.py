@@ -1,11 +1,11 @@
 import sys
 import io
-import tink
-from tink import cleartext_keyset_handle
-from tink import streaming_aead
-import pyprob
+import atheris
 
-pyprob.Setup('py_summary.xml', 'decrypt.py')
+with atheris.instrument_imports():
+    import tink
+    from tink import cleartext_keyset_handle
+    from tink import streaming_aead
 
 associated_data = b"fuzz_association"
 
@@ -21,24 +21,19 @@ def init_keyset (keyset_file):
     streaming_aead_primitive = keyset_handle.primitive(streaming_aead.StreamingAead)
     return streaming_aead_primitive
 
+streaming_aead_primitive = init_keyset ('keyset.json')
 
-def streaming_aead_decrypt (primitive, data):
-    ciphertext_src = io.BytesIO (data)
-    with primitive.new_decrypting_stream(ciphertext_src, associated_data) as ds:
-        ds.read()
-    
-def load (file):
-    with open(file, 'rb') as f:
-        data = f.read()
-        return data
+@atheris.instrument_func  
+def RunTest (data):
+    try:
+        ciphertext_src = io.BytesIO (data)
+        with streaming_aead_primitive.new_decrypting_stream(ciphertext_src, associated_data) as ds:
+            ds.read()
+    except Exception as e:
+        print (e)
 
 if __name__ == '__main__':
-    try:
-        data = load (sys.argv[1])
-    
-        streaming_aead_primitive = init_keyset ('keyset.json')
-        streaming_aead_decrypt (streaming_aead_primitive, data)
-    except Exception as e:
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)
+    atheris.Fuzz()
     
 

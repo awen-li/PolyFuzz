@@ -1,11 +1,11 @@
 import sys
 import io
-import tink
-from tink import cleartext_keyset_handle
-from tink import mac
-import pyprob
+import atheris
 
-pyprob.Setup('py_summary.xml', 'decrypt.py')
+with atheris.instrument_imports():
+    import tink
+    from tink import cleartext_keyset_handle
+    from tink import mac
 
 mac.register ()
 
@@ -18,27 +18,25 @@ def init_keyset (keyset_file):
     keyset_handle = cleartext_keyset_handle.read(reader)
     mac_primitive = keyset_handle.primitive(mac.Mac)
     return mac_primitive
-
-
-def mac_decrypt (primitive, data):
-    tag = mac_primitive.compute_mac(data)
-    primitive.verify_mac (tag, data)
     
-def load (file):
-    with open(file, 'rb') as f:
-        data = f.read()
-        return data
+mac_primitive = init_keyset ('keyset.json')
 
-if __name__ == '__main__':
+@atheris.instrument_func  
+def RunTest (data):
     try:
         data = load (sys.argv[1])
         raw_data = [b"",
                     b":KKllk???????????2222??????kjfj",
                     b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
-        mac_primitive = init_keyset ('keyset.json')
+        
         for data in raw_data:
-            mac_decrypt (mac_primitive, data)
+            tag = mac_primitive.compute_mac(data)
+            mac_primitive.verify_mac (tag, data)
     except Exception as e:
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+        print (e)
     
+
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)
+    atheris.Fuzz()
 

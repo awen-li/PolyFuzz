@@ -1,11 +1,11 @@
 import sys
 import io
-import tink
-from tink import cleartext_keyset_handle
-from tink import signature
-import pyprob
+import atheris
 
-pyprob.Setup('py_summary.xml', 'decrypt.py')
+with atheris.instrument_imports():
+    import tink
+    from tink import cleartext_keyset_handle
+    from tink import signature
 
 signature.register()
 
@@ -21,28 +21,28 @@ def init_keyset (keyset_file):
     signature_primitive   = public_keyset_handle.primitive(signature.PublicKeyVerify)
     
     return private_keyset_handle, signature_primitive
-  
-def load (file):
-    with open(file, 'rb') as f:
-        data = f.read()
-        return data
 
-if __name__ == '__main__':
+private_keyset_handle, signature_primitive = init_keyset ('keyset.json')
+
+@atheris.instrument_func  
+def RunTest (data):
     try:
-        data = load (sys.argv[1])
-    
         raw_data = [b"",
                     b":KKllk???????????2222??????kjfj",
                     b"\x86afjsahshjfksfkhalfkjjjjjjjeeeeeeeee?????????????has"]
-        private_keyset_handle, signature_primitive = init_keyset ('keyset.json')
-    
-        for data in raw_data:
+        
+        for dt in raw_data:
             signer = private_keyset_handle.primitive(signature.PublicKeySign)
-            signature_data = signer.sign(data)
+            signature_data = signer.sign(dt)
     
             signature_primitive.verify (signature_data, data)
     except Exception as e:
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+        print (e) 
+
+
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)
+    atheris.Fuzz()
     
 
 

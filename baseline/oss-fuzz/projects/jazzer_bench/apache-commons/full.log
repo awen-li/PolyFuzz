@@ -1,0 +1,1111 @@
+INFO: Loaded 122 hooks from com.code_intelligence.jazzer.runtime.TraceCmpHooks
+INFO: Loaded 4 hooks from com.code_intelligence.jazzer.runtime.TraceDivHooks
+INFO: Loaded 2 hooks from com.code_intelligence.jazzer.runtime.TraceIndirHooks
+INFO: Loaded 4 hooks from com.code_intelligence.jazzer.runtime.NativeLibHooks
+INFO: Loaded 8 hooks from com.code_intelligence.jazzer.sanitizers.Deserialization
+INFO: Loaded 3 hooks from com.code_intelligence.jazzer.sanitizers.ExpressionLanguageInjection
+INFO: Loaded 70 hooks from com.code_intelligence.jazzer.sanitizers.LdapInjection
+INFO: Loaded 50 hooks from com.code_intelligence.jazzer.sanitizers.NamingContextLookup
+INFO: Loaded 1 hooks from com.code_intelligence.jazzer.sanitizers.OsCommandInjection
+INFO: Loaded 33 hooks from com.code_intelligence.jazzer.sanitizers.ReflectiveCall
+INFO: Loaded 8 hooks from com.code_intelligence.jazzer.sanitizers.RegexInjection
+INFO: Loaded 16 hooks from com.code_intelligence.jazzer.sanitizers.RegexRoadblocks
+INFO: Instrumented java.util.regex.Pattern$BackRef with custom hooks only (took 28 ms, size +47%)
+INFO: Instrumented java.util.regex.Pattern$Branch with custom hooks only (took 22 ms, size +36%)
+INFO: Instrumented java.util.regex.Pattern$BranchConn with custom hooks only (took 15 ms, size +82%)
+INFO: Instrumented java.util.regex.Pattern$BnM with custom hooks only (took 20 ms, size +26%)
+INFO: Instrumented java.util.regex.Pattern$GroupCurly with custom hooks only (took 32 ms, size +45%)
+INFO: Instrumented java.util.regex.Pattern$Ques with custom hooks only (took 18 ms, size +120%)
+INFO: Instrumented java.util.regex.Matcher with custom hooks only (took 215 ms, size +6%)
+INFO: Instrumented java.util.regex.Pattern$Start with custom hooks only (took 15 ms, size +46%)
+INFO: Instrumented java.util.regex.Pattern$First with custom hooks only (took 17 ms, size +65%)
+INFO: Instrumented java.util.regex.Pattern$Slice with custom hooks only (took 10 ms, size +60%)
+INFO: Instrumented java.util.regex.Pattern$Curly with custom hooks only (took 33 ms, size +69%)
+INFO: Instrumented java.util.regex.Pattern$BmpCharProperty with custom hooks only (took 14 ms, size +53%)
+INFO: Instrumented java.util.regex.Pattern$CharProperty with custom hooks only (took 24 ms, size +38%)
+INFO: Instrumented java.util.regex.Pattern$GroupHead with custom hooks only (took 16 ms, size +81%)
+INFO: Instrumented java.util.regex.Pattern with custom hooks only (took 494 ms, size +3%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipFile (took 205 ms, size +17%)
+INFO: New number of coverage counters: 1024
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipArchiveEntry (took 72 ms, size +21%)
+INFO: Instrumented org.apache.commons.compress.archivers.ArchiveEntry (took 1 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.EntryStreamOffsets (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipFile$Entry (took 5 ms, size +41%)
+INFO: Instrumented org.apache.commons.compress.utils.BoundedArchiveInputStream (took 7 ms, size +26%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipFile$BoundedFileChannelInputStream (took 3 ms, size +9%)
+INFO: Instrumented org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream (took 3 ms, size +10%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipFile$StoredStatisticsStream (took 4 ms, size +14%)
+INFO: Instrumented org.apache.commons.compress.utils.InputStreamStatistics (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.utils.CountingInputStream (took 8 ms, size +34%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.UnshrinkingInputStream (took 7 ms, size +28%)
+INFO: New number of coverage counters: 2048
+INFO: Instrumented org.apache.commons.compress.compressors.lzw.LZWInputStream (took 25 ms, size +16%)
+INFO: Instrumented org.apache.commons.compress.compressors.CompressorInputStream (took 7 ms, size +25%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ExplodingInputStream (took 8 ms, size +23%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipFile$1 (took 2 ms, size +9%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.InflaterInputStreamWithStatistics (took 7 ms, size +18%)
+INFO: Instrumented org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream (took 59 ms, size +24%)
+INFO: Instrumented org.apache.commons.compress.compressors.bzip2.BZip2Constants (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream (took 10 ms, size +21%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.UnsupportedZipFeatureException (took 6 ms, size +6%)
+INFO: New number of coverage counters: 4096
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream (took 66 ms, size +26%)
+INFO: Instrumented org.apache.commons.compress.archivers.ArchiveOutputStream (took 4 ms, size +14%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.Zip64RequiredException (took 1 ms, size +6%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipExtraField (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipSplitOutputStream (took 11 ms, size +15%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipLong (took 9 ms, size +14%)
+INFO: Instrumented org.apache.commons.compress.utils.ByteUtils (took 7 ms, size +16%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipArchiveEntryPredicate (took 0 ms, size +0%)
+INFO: libFuzzer ignores flags that start with '--'
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 2508334942
+INFO: Loaded 4 modules   (4096 inline 8-bit counters): 512 [0x7ffefdf19010, 0x7ffefdf19210), 512 [0x7ffefdf19210, 0x7ffefdf19410), 1024 [0x7ffefdf19410, 0x7ffefdf19810), 2048 [0x7ffefdf19810, 0x7ffefdf1a010), 
+INFO: Loaded 4 PC tables (4096 PCs): 512 [0x10f77c0,0x10f97c0), 512 [0x10e6340,0x10e8340), 1024 [0x1116530,0x111a530), 2048 [0x113f1c0,0x11471c0), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: A corpus is not provided, starting from an empty corpus
+#2	INITED cov: 37 ft: 37 corp: 1/1b exec/s: 0 rss: 643Mb
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:224)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:175)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 93c85fac77d9d38d
+== libFuzzer crashing input ==
+MS: 3 CopyPart-ShuffleBytes-InsertByte-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0xa,0xde,
+\x0a\xde
+artifact_prefix='./'; Test unit written to ./crash-6273ea8565617402880bbd722f1b6c5113674f4e
+Base64: Ct4=
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.nio.file.Files.provider(Files.java:97)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: a7d6f569ed13a3e3
+== libFuzzer crashing input ==
+MS: 5 ChangeBinInt-InsertByte-CrossOver-ChangeBit-InsertByte-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0x6d,0x1,0x2,
+m\x01\x02
+artifact_prefix='./'; Test unit written to ./crash-099581a8d06b6429953f0e2bf1d4004f00f02f7d
+Base64: bQEC
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.file.Path) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#12	NEW    cov: 38 ft: 38 corp: 2/4b lim: 4 exec/s: 0 rss: 645Mb L: 3/3 MS: 5 ChangeBinInt-InsertByte-CrossOver-ChangeBit-InsertByte-
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ExtraFieldParsingBehavior (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.UnparseableExtraFieldBehavior (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel (took 10 ms, size +15%)
+INFO: Instrumented org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel (took 8 ms, size +18%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipEncodingHelper (took 4 ms, size +34%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.ZipEncoding (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.NioZipEncoding (took 7 ms, size +18%)
+INFO: Instrumented org.apache.commons.compress.archivers.zip.CharsetAccessor (took 0 ms, size +0%)
+INFO: Instrumented org.apache.commons.compress.utils.IOUtils (took 8 ms, size +21%)
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 7 more
+DEDUP_TOKEN: d4066b70b956e5d6
+== libFuzzer crashing input ==
+MS: 4 CrossOver-CopyPart-ChangeBit-ChangeBit-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0xa,0x4a,0xa,0x4a,
+\x0aJ\x0aJ
+artifact_prefix='./'; Test unit written to ./crash-0787aa5331daf528317ba82d28bbf90c71deda8d
+Base64: CkoKSg==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#16	pulse  cov: 38 ft: 77 corp: 2/4b lim: 4 exec/s: 8 rss: 778Mb
+#16	NEW    cov: 77 ft: 77 corp: 3/8b lim: 4 exec/s: 8 rss: 778Mb L: 4/4 MS: 4 CrossOver-CopyPart-ChangeBit-ChangeBit-
+#22	NEW    cov: 77 ft: 78 corp: 4/11b lim: 4 exec/s: 11 rss: 778Mb L: 3/4 MS: 1 CopyPart-
+
+== Java Exception: java.lang.NullPointerException
+	at java.io.File.<init>(File.java:279)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: a652a8dd27e0f921
+== libFuzzer crashing input ==
+MS: 2 EraseBytes-InsertByte-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0x2e,0x6d,0x1,
+.m\x01
+artifact_prefix='./'; Test unit written to ./crash-12f39432392a6fca673211bc85b916c083b8c501
+Base64: Lm0B
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+INFO: Instrumented org.apache.commons.compress.utils.SeekableInMemoryByteChannel (took 9 ms, size +24%)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:348)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 3691c2cf274276dc
+== libFuzzer crashing input ==
+MS: 5 EraseBytes-InsertByte-CopyPart-ChangeByte-ChangeBinInt-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0xd2,0x92,0x92,0xcb,
+\xd2\x92\x92\xcb
+artifact_prefix='./'; Test unit written to ./crash-aaa91c5dc2ccd85ab091f3154511b012f0fdefcf
+Base64: 0pKSyw==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) (org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#27	NEW    cov: 81 ft: 91 corp: 5/15b lim: 4 exec/s: 13 rss: 796Mb L: 4/4 MS: 5 EraseBytes-InsertByte-CopyPart-ChangeByte-ChangeBinInt-
+#32	pulse  cov: 81 ft: 91 corp: 5/15b lim: 4 exec/s: 16 rss: 796Mb
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:224)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: e07a26aea9b9ecc5
+== libFuzzer crashing input ==
+MS: 1 ShuffleBytes-; base unit: 099581a8d06b6429953f0e2bf1d4004f00f02f7d
+0x1,0x6d,0x2,
+\x01m\x02
+artifact_prefix='./'; Test unit written to ./crash-733c73b679553d71ce6934826f04ebdbd0abfae2
+Base64: AW0C
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 6 more
+DEDUP_TOKEN: 0dbe64a0b768e60d
+== libFuzzer crashing input ==
+MS: 4 CrossOver-CrossOver-ShuffleBytes-CMP- DE: "/!"-; base unit: 099581a8d06b6429953f0e2bf1d4004f00f02f7d
+0xa,0x2f,0x21,0xa,
+\x0a/!\x0a
+artifact_prefix='./'; Test unit written to ./crash-e5a015984f3e7cfe1d45a8b8ad4c6be64007bb13
+Base64: Ci8hCg==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("", (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#41	NEW    cov: 88 ft: 98 corp: 6/19b lim: 4 exec/s: 20 rss: 796Mb L: 4/4 MS: 4 CrossOver-CrossOver-ShuffleBytes-CMP- DE: "/!"-
+#42	NEW    cov: 88 ft: 133 corp: 7/23b lim: 4 exec/s: 21 rss: 796Mb L: 4/4 MS: 1 ChangeBit-
+
+== Java Exception: java.lang.NullPointerException
+	at java.nio.file.Files.provider(Files.java:97)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:185)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 6e3ce185d494c0a3
+== libFuzzer crashing input ==
+MS: 2 CopyPart-CrossOver-; base unit: 0787aa5331daf528317ba82d28bbf90c71deda8d
+0xa,0xd2,0x92,
+\x0a\xd2\x92
+artifact_prefix='./'; Test unit written to ./crash-dd462f61b1c0f73aa5ed0f202076d59196e7c2d1
+Base64: CtKS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.file.Path) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#53	NEW    cov: 88 ft: 140 corp: 8/27b lim: 4 exec/s: 26 rss: 796Mb L: 4/4 MS: 1 CopyPart-
+
+== Java Exception: java.lang.NullPointerException
+	at java.nio.file.Files.provider(Files.java:97)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 3443de82d381d739
+== libFuzzer crashing input ==
+MS: 1 ChangeByte-; base unit: 099581a8d06b6429953f0e2bf1d4004f00f02f7d
+0x53,0x1,0x2,
+S\x01\x02
+artifact_prefix='./'; Test unit written to ./crash-b45e13e7f2621976064fad2bee3aa4cf143df37b
+Base64: UwEC
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.file.Path) null, (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#59	NEW    cov: 88 ft: 141 corp: 9/31b lim: 4 exec/s: 29 rss: 796Mb L: 4/4 MS: 1 CopyPart-
+#64	pulse  cov: 88 ft: 141 corp: 9/31b lim: 4 exec/s: 32 rss: 796Mb
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:224)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:175)
+	at sun.reflect.GeneratedConstructorAccessor6.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 9685eb62caa1c3aa
+== libFuzzer crashing input ==
+MS: 5 PersAutoDict-ChangeBinInt-CrossOver-InsertByte-ChangeBit- DE: "/!"-; base unit: dab474011ac211e3b2b4c7e27e9e1c50d386fa52
+0x23,0xf,
+#\x0f
+artifact_prefix='./'; Test unit written to ./crash-297ec22c6b091eb7f1131a2e179e73e0be16a3c3
+Base64: Iw8=
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:254)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: aa60243ea7860cb3
+== libFuzzer crashing input ==
+MS: 1 ShuffleBytes-; base unit: 099581a8d06b6429953f0e2bf1d4004f00f02f7d
+0x2,0x6d,0x1,
+\x02m\x01
+artifact_prefix='./'; Test unit written to ./crash-8fd3036f21893efdc935224593c69f0078ee3d7f
+Base64: Am0B
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null, (java.lang.String) null, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 462a3e57b855de27
+== libFuzzer crashing input ==
+MS: 2 EraseBytes-InsertByte-; base unit: 443896ca9ce645c5f316a1680cb98480044a368d
+0x8,0x4a,0x5b,
+\x08J[
+artifact_prefix='./'; Test unit written to ./crash-375139a3ff3abb0eec1e1e16c0e5ad74b148bf18
+Base64: CEpb
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) null, (java.lang.String) null, (java.lang.String) null, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.io.File.<init>(File.java:279)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 9b999613b04d768b
+== libFuzzer crashing input ==
+MS: 5 ChangeBinInt-CopyPart-PersAutoDict-EraseBytes-CrossOver- DE: "/!"-; base unit: aaa91c5dc2ccd85ab091f3154511b012f0fdefcf
+0x21,0x92,0xd0,
+!\x92\xd0
+artifact_prefix='./'; Test unit written to ./crash-fe6ecf3a1c26f5d743af317d10297ff889a982b5
+Base64: IZLQ
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.lang.String) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.GeneratedConstructorAccessor7.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 6 more
+DEDUP_TOKEN: 0035dad993e4f3cb
+== libFuzzer crashing input ==
+MS: 1 ShuffleBytes-; base unit: 0787aa5331daf528317ba82d28bbf90c71deda8d
+0xa,0x4a,0xa,0x4a,
+\x0aJ\x0aJ
+artifact_prefix='./'; Test unit written to ./crash-0787aa5331daf528317ba82d28bbf90c71deda8d
+Base64: CkoKSg==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.io.File.<init>(File.java:279)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 18404cebea8986c7
+== libFuzzer crashing input ==
+MS: 5 ShuffleBytes-CopyPart-PersAutoDict-EraseBytes-ShuffleBytes- DE: "/!"-; base unit: 0787aa5331daf528317ba82d28bbf90c71deda8d
+0x21,0xa,0x2f,
+!\x0a/
+artifact_prefix='./'; Test unit written to ./crash-4b001c80c34747ccf69aade8febfa515b31d3f32
+Base64: IQov
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.lang.String) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#128	pulse  cov: 88 ft: 141 corp: 9/31b lim: 4 exec/s: 42 rss: 796Mb
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 5 more
+DEDUP_TOKEN: cd6603f0a73dc0ac
+== libFuzzer crashing input ==
+MS: 1 ChangeByte-; base unit: dab474011ac211e3b2b4c7e27e9e1c50d386fa52
+0x2f,0x2f,0x89,0xa,
+//\x89\x0a
+artifact_prefix='./'; Test unit written to ./crash-59f1efd93fad74363181d1fdf09a45d13065363f
+Base64: Ly+JCg==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("", (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.io.File.<init>(File.java:279)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.GeneratedConstructorAccessor7.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 34ad83abf7906df6
+== libFuzzer crashing input ==
+MS: 2 ChangeBit-EraseBytes-; base unit: 443896ca9ce645c5f316a1680cb98480044a368d
+0x4a,0xa,0x4a,
+J\x0aJ
+artifact_prefix='./'; Test unit written to ./crash-9be0e4c219213a6c8a4e8a9454ce535e9232d106
+Base64: SgpK
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:301)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 7c3a94293b4bd739
+== libFuzzer crashing input ==
+MS: 4 ChangeBinInt-EraseBytes-CopyPart-ChangeBinInt-; base unit: 443896ca9ce645c5f316a1680cb98480044a368d
+0xf1,0xaf,0x4a,
+\xf1\xafJ
+artifact_prefix='./'; Test unit written to ./crash-c6ccba6dda62bc2bf1a00b62c0c34cf03e9c4589
+Base64: 8a9K
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null, (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:368)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 2152d5c9bb491b38
+== libFuzzer crashing input ==
+MS: 5 CopyPart-CopyPart-ChangeByte-ChangeBit-ChangeBinInt-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0xf6,0xf5,0xc5,0xfb,
+\xf6\xf5\xc5\xfb
+artifact_prefix='./'; Test unit written to ./crash-88442fd12d806d50a0dfc166f63fb5646fec233b
+Base64: 9vXF+w==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) (org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:348)
+	at sun.reflect.GeneratedConstructorAccessor9.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 3db14cb2c30491e3
+== libFuzzer crashing input ==
+MS: 1 CopyPart-; base unit: aaa91c5dc2ccd85ab091f3154511b012f0fdefcf
+0xd2,0x92,0x92,0xcb,
+\xd2\x92\x92\xcb
+artifact_prefix='./'; Test unit written to ./crash-aaa91c5dc2ccd85ab091f3154511b012f0fdefcf
+Base64: 0pKSyw==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) (org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#256	pulse  cov: 88 ft: 141 corp: 9/31b lim: 4 exec/s: 85 rss: 796Mb
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:224)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:175)
+	at sun.reflect.GeneratedConstructorAccessor6.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 6 more
+DEDUP_TOKEN: 79dfef9080b29a02
+== libFuzzer crashing input ==
+MS: 1 CrossOver-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0x6d,0x1,0x1,0xd2,0x92,0x92,
+m\x01\x01\xd2\x92\x92
+artifact_prefix='./'; Test unit written to ./crash-60d3f9f34c2dd79a565d79b1d7dbeeeb3d2301b6
+Base64: bQEB0pKS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(new java.io.File(""))]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#270	NEW    cov: 89 ft: 142 corp: 10/37b lim: 6 exec/s: 90 rss: 796Mb L: 6/6 MS: 1 CrossOver-
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:428)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 5270e18bbff3d125
+== libFuzzer crashing input ==
+MS: 1 InsertByte-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0x6d,0x9,0x1,0x1,
+m\x09\x01\x01
+artifact_prefix='./'; Test unit written to ./crash-c1eb71aa371360309b49e4e9100993001a72bf72
+Base64: bQkBAQ==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) (org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel) null, (java.lang.String) null, (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile unknown archive
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:348)
+	at sun.reflect.GeneratedConstructorAccessor9.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.util.zip.ZipException: Archive is not a ZIP archive
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1288)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 4 more
+DEDUP_TOKEN: 969ca512aaf14478
+== libFuzzer crashing input ==
+MS: 1 CopyPart-; base unit: aaa91c5dc2ccd85ab091f3154511b012f0fdefcf
+0xd2,0x92,0x92,0x92,0x92,0xcb,
+\xd2\x92\x92\x92\x92\xcb
+artifact_prefix='./'; Test unit written to ./crash-a51d45e310e5eee89abe6073107febb9a317f94d
+Base64: 0pKSkpLL
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) ((java.util.function.Supplier<org.apache.commons.compress.utils.SeekableInMemoryByteChannel>) (() -> {org.apache.commons.compress.utils.SeekableInMemoryByteChannel autofuzzVariable0 = new org.apache.commons.compress.utils.SeekableInMemoryByteChannel(); return autofuzzVariable0;})).get())]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#301	NEW    cov: 98 ft: 151 corp: 11/43b lim: 6 exec/s: 100 rss: 796Mb L: 6/6 MS: 1 CopyPart-
+#307	NEW    cov: 99 ft: 152 corp: 12/49b lim: 6 exec/s: 102 rss: 796Mb L: 6/6 MS: 1 CopyPart-
+
+== Java Exception: java.nio.charset.IllegalCharsetNameException: 
+	at java.nio.charset.Charset.checkName(Charset.java:303)
+	at java.nio.charset.Charset.lookup2(Charset.java:484)
+	at java.nio.charset.Charset.lookup(Charset.java:464)
+	at java.nio.charset.Charset.forName(Charset.java:528)
+	at org.apache.commons.compress.archivers.zip.ZipEncodingHelper.getZipEncoding(ZipEncodingHelper.java:59)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:439)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 3cbd6b99677a4ec6
+== libFuzzer crashing input ==
+MS: 2 PersAutoDict-PersAutoDict- DE: "/!"-"/!"-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0x2f,0x21,0x2f,0x21,0x1,
+/!/!\x01
+artifact_prefix='./'; Test unit written to ./crash-938b18a57fc9870847e2e90a4c1a9b822f910141
+Base64: LyEvIQE=
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("", "")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.nio.file.NoSuchFileException: 
+
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:102)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:107)
+	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:214)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: a7c2c50e7a2418d5
+== libFuzzer crashing input ==
+MS: 3 CrossOver-CrossOver-PersAutoDict- DE: "/!"-; base unit: 0787aa5331daf528317ba82d28bbf90c71deda8d
+0xa,0x4a,0x6d,0x2f,0x21,0x92,
+\x0aJm/!\x92
+artifact_prefix='./'; Test unit written to ./crash-e7b56df47933dd66e0abcbdbff070e862cadd0ff
+Base64: CkptLyGS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("\\n", "")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#343	NEW    cov: 99 ft: 153 corp: 13/55b lim: 6 exec/s: 114 rss: 796Mb L: 6/6 MS: 1 PersAutoDict- DE: "/!"-
+#390	NEW    cov: 99 ft: 162 corp: 14/61b lim: 6 exec/s: 130 rss: 796Mb L: 6/6 MS: 2 ChangeBit-ShuffleBytes-
+#395	NEW    cov: 100 ft: 163 corp: 15/67b lim: 6 exec/s: 131 rss: 796Mb L: 6/6 MS: 5 CopyPart-EraseBytes-ChangeByte-ChangeByte-CMP- DE: "\xff\xff"-
+
+== Java Exception: java.nio.file.NoSuchFileException: m
+	at sun.nio.fs.UnixException.translateToIOException(UnixException.java:86)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:102)
+	at sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:107)
+	at sun.nio.fs.UnixFileSystemProvider.newByteChannel(UnixFileSystemProvider.java:214)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.GeneratedConstructorAccessor7.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 9e6c61649b16bde3
+== libFuzzer crashing input ==
+MS: 3 ChangeByte-ShuffleBytes-ChangeBit-; base unit: c0e5d9a6fe6b712a2687ac8b646dac6e8071cac8
+0x6d,0x1,0x31,0x90,0x92,0x92,
+m\x011\x90\x92\x92
+artifact_prefix='./'; Test unit written to ./crash-89726a5e7232f605752648d81d4cfcfebbd91823
+Base64: bQExkJKS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("m")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:301)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 4 more
+DEDUP_TOKEN: 5466c095109c8a89
+== libFuzzer crashing input ==
+MS: 4 CrossOver-ChangeBit-CrossOver-ChangeBinInt-; base unit: 60d3f9f34c2dd79a565d79b1d7dbeeeb3d2301b6
+0x9d,0x2d,0x7d,0x2d,0x92,0x92,
+\x9d-}-\x92\x92
+artifact_prefix='./'; Test unit written to ./crash-c615aec270103a58a6c54a58995b400b8055998d
+Base64: nS19LZKS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(new java.io.File(""), (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#414	NEW    cov: 104 ft: 167 corp: 16/73b lim: 6 exec/s: 138 rss: 796Mb L: 6/6 MS: 4 CrossOver-ChangeBit-CrossOver-ChangeBinInt-
+
+== Java Exception: java.io.IOException: Error on ZipFile null
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.util.zip.ZipException: Archive is not a ZIP archive
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1288)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 4 more
+DEDUP_TOKEN: e5d48dd881fff183
+== libFuzzer crashing input ==
+MS: 3 CrossOver-InsertByte-PersAutoDict- DE: "/!"-; base unit: b1ac0f0c795744fac22523c873c372a990211279
+0xff,0x2f,0x21,0x40,0x2a,0x6d,
+\xff/!@*m
+artifact_prefix='./'; Test unit written to ./crash-63f723f08e115eb31ebb0f359dd2c1bc027b2424
+Base64: /y8hQCpt
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) ((java.util.function.Supplier<org.apache.commons.compress.utils.SeekableInMemoryByteChannel>) (() -> {org.apache.commons.compress.utils.SeekableInMemoryByteChannel autofuzzVariable0 = new org.apache.commons.compress.utils.SeekableInMemoryByteChannel(); return autofuzzVariable0;})).get(), (java.lang.String) null, (java.lang.String) null, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1301)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at sun.reflect.GeneratedConstructorAccessor11.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 2db8274728e89e67
+== libFuzzer crashing input ==
+MS: 1 EraseBytes-; base unit: b1ac0f0c795744fac22523c873c372a990211279
+0x2f,0x40,0x21,0x21,
+/@!!
+artifact_prefix='./'; Test unit written to ./crash-de1da5ba4f5cf8b77f4d951797af6435f5381059
+Base64: L0AhIQ==
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) (org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel) null, (java.lang.String) null, (java.lang.String) null, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#512	pulse  cov: 104 ft: 167 corp: 16/73b lim: 6 exec/s: 170 rss: 796Mb
+#525	NEW    cov: 104 ft: 171 corp: 17/79b lim: 6 exec/s: 175 rss: 796Mb L: 6/6 MS: 1 CopyPart-
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:224)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 6 more
+DEDUP_TOKEN: 90e6f1aa2a988622
+== libFuzzer crashing input ==
+MS: 3 CopyPart-ChangeByte-InsertByte-; base unit: bb0aad4c7bd7be16c1993dd87ef3d4b9317c344e
+0x41,0x1,0x1,0x1,0x7e,0x1,
+A\x01\x01\x01~\x01
+artifact_prefix='./'; Test unit written to ./crash-0f64c4541b00b93e6e5a13b2527e1703b9b6f7ac
+Base64: QQEBAX4B
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(new java.io.File(""), (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: Ý¥
+	at sun.nio.fs.UnixPath.encode(UnixPath.java:147)
+	at sun.nio.fs.UnixPath.<init>(UnixPath.java:71)
+	at sun.nio.fs.UnixFileSystem.getPath(UnixFileSystem.java:281)
+	at java.io.File.toPath(File.java:2273)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:196)
+	at sun.reflect.GeneratedConstructorAccessor7.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 083b168bb6b1c053
+== libFuzzer crashing input ==
+MS: 3 ChangeByte-ChangeBit-CrossOver-; base unit: c615aec270103a58a6c54a58995b400b8055998d
+0x9d,0x25,0x2d,0x4a,0xa,0x4a,
+\x9d%-J\x0aJ
+artifact_prefix='./'; Test unit written to ./crash-2493e045c9f36045f58dab18860ded984450801f
+Base64: nSUtSgpK
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("?")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile /root/xFuzz/baseline/oss-fuzz/projects/jazzer_bench/apache-commons
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:301)
+	at sun.reflect.GeneratedConstructorAccessor15.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.io.IOException: Is a directory
+	at sun.nio.ch.FileDispatcherImpl.read0(Native Method)
+	at sun.nio.ch.FileDispatcherImpl.read(FileDispatcherImpl.java:46)
+	at sun.nio.ch.IOUtil.readIntoNativeBuffer(IOUtil.java:223)
+	at sun.nio.ch.IOUtil.read(IOUtil.java:197)
+	at sun.nio.ch.FileChannelImpl.read(FileChannelImpl.java:159)
+	at org.apache.commons.compress.utils.IOUtils.readFully(IOUtils.java:226)
+	at org.apache.commons.compress.archivers.zip.ZipFile.tryToLocateSignature(ZipFile.java:1309)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1285)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 3 more
+DEDUP_TOKEN: 96c7e8c89d9dc2c3
+== libFuzzer crashing input ==
+MS: 1 ChangeBinInt-; base unit: c615aec270103a58a6c54a58995b400b8055998d
+0x9d,0x2d,0x75,0x2d,0x92,0x92,
+\x9d-u-\x92\x92
+artifact_prefix='./'; Test unit written to ./crash-b0115a19d0633bc6b31cbc49122ebe61872e18df
+Base64: nS11LZKS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(new java.io.File(""), (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: Ý­
+	at sun.nio.fs.UnixPath.encode(UnixPath.java:147)
+	at sun.nio.fs.UnixPath.<init>(UnixPath.java:71)
+	at sun.nio.fs.UnixFileSystem.getPath(UnixFileSystem.java:281)
+	at java.io.File.toPath(File.java:2273)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: d6dde59ae8c54784
+== libFuzzer crashing input ==
+MS: 5 ChangeBinInt-ChangeBit-ShuffleBytes-ChangeByte-PersAutoDict- DE: "/!"-; base unit: c615aec270103a58a6c54a58995b400b8055998d
+0x9d,0x2d,0x2f,0x21,0x24,0x92,
+\x9d-/!$\x92
+artifact_prefix='./'; Test unit written to ./crash-fe646d6c822e67cad0dddde1126922639add6a3d
+Base64: nS0vISSS
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile("?", (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.nio.file.InvalidPathException: Nul character not allowed: À€
+	at sun.nio.fs.UnixPath.checkNotNul(UnixPath.java:93)
+	at sun.nio.fs.UnixPath.normalizeAndCheck(UnixPath.java:83)
+	at sun.nio.fs.UnixPath.<init>(UnixPath.java:71)
+	at sun.nio.fs.UnixFileSystem.getPath(UnixFileSystem.java:281)
+	at java.io.File.toPath(File.java:2273)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:210)
+	at sun.reflect.GeneratedConstructorAccessor8.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 79ade62322afb1a5
+== libFuzzer crashing input ==
+MS: 4 InsertByte-ShuffleBytes-InsertByte-ChangeByte-; base unit: dab474011ac211e3b2b4c7e27e9e1c50d386fa52
+0x0,0xbe,0x2f,0x21,0x41,0xa,
+\x00\xbe/!A\x0a
+artifact_prefix='./'; Test unit written to ./crash-6e888d40de1f3f85fd5bdf7d2ef505b57cb0d655
+Base64: AL4vIUEK
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(" ", "")]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.nio.file.Files.provider(Files.java:97)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at sun.reflect.GeneratedConstructorAccessor16.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: b4fa7c6e101bcad3
+== libFuzzer crashing input ==
+MS: 3 EraseBytes-CopyPart-ShuffleBytes-; base unit: 9e88d9521911ee8e21ba9d25c44f0ca9fa5f34ac
+0x6d,0x6d,0x2f,
+mm/
+artifact_prefix='./'; Test unit written to ./crash-f3d896a6bba144ec080d1127ad778c41bbed497c
+Base64: bW0v
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.file.Path) null, (java.lang.String) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:301)
+	at sun.reflect.GeneratedConstructorAccessor15.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 95c85953b851f2d1
+== libFuzzer crashing input ==
+MS: 5 CrossOver-ChangeByte-ChangeBit-CrossOver-PersAutoDict- DE: "\xff\xff"-; base unit: dab474011ac211e3b2b4c7e27e9e1c50d386fa52
+0xff,0xff,0xca,
+\xff\xff\xca
+artifact_prefix='./'; Test unit written to ./crash-48e7b6e1e7e5c71de9b6ac9012e70ceeeb8a57fe
+Base64: ///K
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.io.File) null, (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.lang.NullPointerException
+	at java.nio.file.Files.provider(Files.java:97)
+	at java.nio.file.Files.newByteChannel(Files.java:361)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:329)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:270)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:237)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:185)
+	at sun.reflect.GeneratedConstructorAccessor18.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 1d13e89820d14c16
+== libFuzzer crashing input ==
+MS: 4 EraseBytes-CMP-CrossOver-CrossOver- DE: "\x03\x00"-; base unit: b1ac0f0c795744fac22523c873c372a990211279
+0xa,0x2f,0x2f,
+\x0a//
+artifact_prefix='./'; Test unit written to ./crash-be6ba280fa01ed0eff7798e8af38ff2fd27cfe50
+Base64: Ci8v
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.file.Path) null)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.io.IOException: Error on ZipFile null
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:452)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:392)
+	at sun.reflect.GeneratedConstructorAccessor11.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+Caused by: java.util.zip.ZipException: Archive is not a ZIP archive
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtEndOfCentralDirectoryRecord(ZipFile.java:1288)
+	at org.apache.commons.compress.archivers.zip.ZipFile.positionAtCentralDirectory(ZipFile.java:1164)
+	at org.apache.commons.compress.archivers.zip.ZipFile.populateFromCentralDirectory(ZipFile.java:782)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:445)
+	... 3 more
+DEDUP_TOKEN: 467340d065515a45
+== libFuzzer crashing input ==
+MS: 4 ChangeBinInt-InsertByte-ChangeBit-InsertByte-; base unit: e5a015984f3e7cfe1d45a8b8ad4c6be64007bb13
+0xa,0xc8,0xce,0xda,0xa,0x5d,
+\x0a\xc8\xce\xda\x0a]
+artifact_prefix='./'; Test unit written to ./crash-1973d422d1a17c18180f683aa273f762a8debf1f
+Base64: CsjO2gpd
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile((java.nio.channels.SeekableByteChannel) ((java.util.function.Supplier<org.apache.commons.compress.utils.SeekableInMemoryByteChannel>) (() -> {org.apache.commons.compress.utils.SeekableInMemoryByteChannel autofuzzVariable0 = new org.apache.commons.compress.utils.SeekableInMemoryByteChannel(); return autofuzzVariable0;})).get(), (java.lang.String) null, (java.lang.String) null, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+
+== Java Exception: java.nio.file.InvalidPathException: Malformed input or input contains unmappable characters: Ý’
+	at sun.nio.fs.UnixPath.encode(UnixPath.java:147)
+	at sun.nio.fs.UnixPath.<init>(UnixPath.java:71)
+	at sun.nio.fs.UnixFileSystem.getPath(UnixFileSystem.java:281)
+	at java.io.File.toPath(File.java:2273)
+	at org.apache.commons.compress.archivers.zip.ZipFile.<init>(ZipFile.java:301)
+	at sun.reflect.GeneratedConstructorAccessor15.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+DEDUP_TOKEN: 8a1f57d20849530e
+== libFuzzer crashing input ==
+MS: 3 ChangeBit-ShuffleBytes-PersAutoDict- DE: "\xff\xff"-; base unit: e078dae63b9b1f754f90aadab6fff2f6207501d9
+0x9d,0x92,0xad,0x7d,0x7d,0xff,0xff,0x92,
+\x9d\x92\xad}}\xff\xff\x92
+artifact_prefix='./'; Test unit written to ./crash-833c6cb939dd55ec92b131f90dc1322c8aaf2e45
+Base64: nZKtfX3//5I=
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [new org.apache.commons.compress.archivers.zip.ZipFile(new java.io.File("?"), (java.lang.String) null, false, false)]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+Unexpected exception encountered during autofuzz
+
+== Java Exception: com.code_intelligence.jazzer.api.FuzzerSecurityIssueHigh: Remote Code Execution
+Unrestricted class loading based on externally controlled data may allow
+remote code execution depending on available classes on the classpath.
+	at jaz.Zer.<clinit>(Zer.java:54)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at com.code_intelligence.jazzer.autofuzz.Meta.autofuzz(Meta.java:139)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consume(Meta.java:490)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consume(Meta.java:473)
+	at com.code_intelligence.jazzer.autofuzz.Meta.lambda$consumeArguments$10(Meta.java:659)
+	at java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:193)
+	at java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:948)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:482)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:472)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:546)
+	at java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:505)
+	at java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:511)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consumeArguments(Meta.java:660)
+	at com.code_intelligence.jazzer.autofuzz.Meta.autofuzz(Meta.java:134)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consume(Meta.java:490)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consume(Meta.java:473)
+	at com.code_intelligence.jazzer.autofuzz.Meta.lambda$consumeArguments$10(Meta.java:659)
+	at java.util.stream.ReferencePipeline$3$1.accept(ReferencePipeline.java:193)
+	at java.util.Spliterators$ArraySpliterator.forEachRemaining(Spliterators.java:948)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:482)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:472)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:546)
+	at java.util.stream.AbstractPipeline.evaluateToArrayNode(AbstractPipeline.java:260)
+	at java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:505)
+	at java.util.stream.ReferencePipeline.toArray(ReferencePipeline.java:511)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consumeArguments(Meta.java:660)
+	at com.code_intelligence.jazzer.autofuzz.Meta.autofuzz(Meta.java:134)
+	at com.code_intelligence.jazzer.autofuzz.Meta.consume(Meta.java:490)
+	at com.code_intelligence.jazzer.autofuzz.Meta.autofuzz(Meta.java:85)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.fuzzerTestOneInput(FuzzTarget.java:246)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.fuzzerTestOneInput(FuzzTarget.java:211)
+DEDUP_TOKEN: 8aac62662c45e029
+== libFuzzer crashing input ==
+MS: 5 ChangeByte-ChangeBit-ChangeBinInt-ChangeBit-InsertRepeatedBytes-; base unit: adc83b19e793491b1c6ea0fd8b46cd9f32e592fc
+0x5,0xa3,0xa3,0xa3,0xa3,0xa3,0xa3,0xa3,
+\x05\xa3\xa3\xa3\xa3\xa3\xa3\xa3
+artifact_prefix='./'; Test unit written to ./crash-ae38b587ef05e5bd97f91e8532075ccd3f2e4148
+Base64: BaOjo6Ojo6M=
+Exception in thread "main" com.code_intelligence.jazzer.autofuzz.AutofuzzError: popGroup must be called exactly once for every pushGroup: [[], [], [], [], [], [], [new jaz.Zer()]]
+Please file an issue at:
+  https://github.com/CodeIntelligenceTesting/jazzer/issues/new/choose
+	at com.code_intelligence.jazzer.autofuzz.AutofuzzCodegenVisitor.generate(AutofuzzCodegenVisitor.java:55)
+	at com.code_intelligence.jazzer.autofuzz.FuzzTarget.dumpReproducer(FuzzTarget.java:223)
+#760	NEW    cov: 104 ft: 174 corp: 18/87b lim: 8 exec/s: 253 rss: 818Mb L: 8/8 MS: 5 ChangeByte-ChangeBit-ChangeBinInt-ChangeBit-InsertRepeatedBytes-
+#761	NEW    cov: 106 ft: 176 corp: 19/94b lim: 8 exec/s: 253 rss: 818Mb L: 7/8 MS: 1 CrossOver-
+#805	NEW    cov: 107 ft: 177 corp: 20/102b lim: 8 exec/s: 268 rss: 818Mb L: 8/8 MS: 4 InsertByte-PersAutoDict-InsertByte-ChangeBit- DE: "/!"-
+#856	NEW    cov: 128 ft: 203 corp: 21/110b lim: 8 exec/s: 285 rss: 818Mb L: 8/8 MS: 1 CrossOver-
+#883	REDUCE cov: 128 ft: 203 corp: 21/108b lim: 8 exec/s: 294 rss: 818Mb L: 6/8 MS: 2 ChangeByte-EraseBytes-
+#1000	NEW    cov: 128 ft: 228 corp: 22/116b lim: 8 exec/s: 333 rss: 818Mb L: 8/8 MS: 2 CrossOver-InsertByte-
+#1024	pulse  cov: 128 ft: 228 corp: 22/116b lim: 8 exec/s: 341 rss: 818Mb
+#1301	REDUCE cov: 128 ft: 228 corp: 22/115b lim: 8 exec/s: 433 rss: 818Mb L: 3/8 MS: 1 EraseBytes-
+#1631	NEW    cov: 128 ft: 248 corp: 23/126b lim: 11 exec/s: 407 rss: 1741Mb L: 11/11 MS: 5 EraseBytes-ChangeByte-CMP-CopyPart-ShuffleBytes- DE: "; %s"-
+#1692	NEW    cov: 128 ft: 273 corp: 24/134b lim: 11 exec/s: 423 rss: 1741Mb L: 8/11 MS: 1 ChangeByte-
+#1829	NEW    cov: 128 ft: 280 corp: 25/143b lim: 11 exec/s: 166 rss: 1861Mb L: 9/11 MS: 2 ShuffleBytes-EraseBytes-
+#1914	NEW    cov: 128 ft: 284 corp: 26/151b lim: 11 exec/s: 174 rss: 1861Mb L: 8/11 MS: 5 PersAutoDict-ShuffleBytes-ChangeByte-CopyPart-ChangeBit- DE: "/!"-
+#2048	pulse  cov: 128 ft: 284 corp: 26/151b lim: 11 exec/s: 186 rss: 1862Mb
+#2812	NEW    cov: 129 ft: 285 corp: 27/167b lim: 17 exec/s: 234 rss: 1865Mb L: 16/16 MS: 3 InsertRepeatedBytes-PersAutoDict-ChangeBinInt- DE: "; %s"-
+#2979	NEW    cov: 129 ft: 288 corp: 28/178b lim: 17 exec/s: 175 rss: 1865Mb L: 11/16 MS: 2 CopyPart-ChangeByte-
+#3000	NEW    cov: 129 ft: 291 corp: 29/189b lim: 17 exec/s: 176 rss: 1865Mb L: 11/16 MS: 1 PersAutoDict- DE: "/!"-
+#3047	NEW    cov: 129 ft: 294 corp: 30/200b lim: 17 exec/s: 169 rss: 1865Mb L: 11/16 MS: 2 ChangeBinInt-ChangeByte-
+#3194	NEW    cov: 129 ft: 297 corp: 31/211b lim: 17 exec/s: 145 rss: 1955Mb L: 11/16 MS: 2 CrossOver-ChangeBit-
+#3875	NEW    cov: 129 ft: 318 corp: 32/219b lim: 21 exec/s: 92 rss: 2040Mb L: 8/16 MS: 1 ChangeByte-
+#4096	pulse  cov: 129 ft: 318 corp: 32/219b lim: 21 exec/s: 91 rss: 2043Mb
+==38== ERROR: libFuzzer: out-of-memory (used: 2060Mb; limit: 2048Mb)
+   To change the out-of-memory limit use -rss_limit_mb=<N>
+
+MS: 1 CMP- DE: "\x0f\x00\x01\x00"-; base unit: 8a7404bf370ca24622e80b7de57ef3a1798ecbca
+0xf,0x0,0x1,0x0,0x5,0xa3,0xa3,0x3b,0x25,0x20,0x20,0x73,0x25,0x2e,0x7c,
+\x0f\x00\x01\x00\x05\xa3\xa3;%  s%.|
+artifact_prefix='./'; Test unit written to ./oom-cfa00e8975ca36eeb50c78feea90e0561b8e9b57
+Base64: DwABAAWjozslICBzJS58
+SUMMARY: libFuzzer: out-of-memory

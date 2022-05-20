@@ -1,22 +1,33 @@
-import sys
-import pyprob
-import numpy as np
-from aubio import source, pvoc, specdesc
 
-pyprob.Setup('py_summary.xml', 'specdesc.py')
+import numpy as np
+import sys
+import atheris
+
+with atheris.instrument_imports():
+    from aubio import source, pvoc, specdesc
+
 
 win_s   = 512                 
 hop_s   = win_s // 4          
 methods = ['default', 'energy', 'hfc', 'complex', 'phase', 'specdiff', 'kl',
            'mkl', 'specflux', 'centroid', 'slope', 'rolloff', 'spread', 'skewness',
            'kurtosis', 'decrease',]
+           
+seed_path = "seed.bin"
 
-if __name__ == '__main__':
+def WriteSeed (data):
+    F = open (seed_path, "wb")
+    F.write (data)
+    F.close ()
+
+@atheris.instrument_func  
+def RunAubio (path):
+    s = None
     try:
         all_descs = {}
         o = {}
         
-        s = source(sys.argv[1])
+        s = source(path)
         samplerate = s.samplerate
         
         pv = pvoc(win_s, hop_s)
@@ -35,5 +46,15 @@ if __name__ == '__main__':
 
     except Exception as e:
         print (e)
-        pyprob.PyExcept (type(e).__name__, __file__, e.__traceback__.tb_lineno)
+    return s
+
+
+def TestOneInput(data):  
+    WriteSeed (data)
+    s = RunAubio (seed_path)
+    del s
+
+if __name__ == '__main__':
+    atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
+    atheris.Fuzz()
     

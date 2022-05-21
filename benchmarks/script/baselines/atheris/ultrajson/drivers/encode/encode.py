@@ -7,6 +7,7 @@ with atheris.instrument_imports():
 @atheris.instrument_func    
 def RunTest (InputData):
     try:
+        InputData = eval (InputData)
         enc = ujson.encode(InputData)
         dec = ujson.decode(enc)
         enc = ujson.dumps (InputData)

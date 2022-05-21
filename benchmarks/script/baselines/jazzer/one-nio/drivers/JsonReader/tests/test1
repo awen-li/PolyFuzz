@@ -1,0 +1,52 @@
+[{
+  "created_at": "Thu Jun 22 21:00:00 +0000 2017",
+  "id": 877994604561387500,
+  "id_str": "877994604561387520",
+  "text": "Creating a Grocery List Manager \u0026 Display Items https://t.co/xFox12345 #Angular",
+  "truncated": false,
+  "entities": {
+    "hashtags": [{
+      "text": "Angular",
+      "indices": [103, 111]
+    }],
+    "symbols": [null],
+    "user_mentions": [],
+    "urls": [{
+      "url": "https://t.co/xFox12345",
+      "expanded_url": "http://example.com/2sr60pf",
+      "display_url": "example.com/2sr60pf",
+      "indices": [79, 102]
+    }]
+  },
+  "source": "<a href=\"http://example.com\" rel=\"nofollow\">Some link</a>",
+  "user": {
+    "id": 772682964,
+    "id_str": "772682964",
+    "name": "Example JavaScript",
+    "screen_name": "ExampleJS",
+    "location": "Melbourne, Australia",
+    "description": "Keep up with JavaScript tutorials, tips, tricks and articles.",
+    "url": "http://t.co/cCHxxxxx",
+    "entities": {
+      "url": {
+        "urls": [{
+          "url": "http://t.co/cCHxxxxx",
+          "expanded_url": "http://example.com/javascript",
+          "display_url": "example.com/javascript",
+          "indices": [0, 22]
+        }]
+      },
+      "description": {
+        "urls": []
+      }
+    },
+    "protected": false,
+    "followers_count": 2145,
+    "friends_count": 18,
+    "listed_count": 328,
+    "created_at": "Wed Aug 22 02:06:33 +0000 2012",
+    "favourites_count": 57,
+    "utc_offset": 43200,
+    "time_zone": "Wellington"
+  }
+}]

@@ -26,6 +26,8 @@ def t_exit ():
     exit (0)
 
 while True:
+    time.sleep(time_kick)
+    
     if not os.path.exists(target_file):
         time.sleep(time_kick)
         exists = is_exist (target)
@@ -57,7 +59,6 @@ while True:
         pass
         
     #os.remove (target_file)
-    time.sleep(time_kick)
     exists = is_exist (target)
     if exists == False:
         t_exit ()

@@ -1,30 +1,15 @@
+#!/bin/sh
 
-export AFL_SKIP_BIN_CHECK=1
+target=JepDr1.jar
 
-if [ ! -d "fuzz" ]; then
-   mkdir -p fuzz/in
-   cp ./tests/* fuzz/in/
-fi
+# link jazzer to current fuzzing directory
+ln -s $JAZZER_ROOT/jazzer jazzer
+ln -s $JAZZER_ROOT/jazzer_agent_deploy.jar jazzer_agent_deploy.jar
+ln -s $JAZZER_ROOT/jazzer_api_deploy.jar jazzer_api_deploy.jar
 
-cp JepDr1.jar fuzz/
-cp subprocess fuzz/ -rf
-
-cd fuzz
-#afl-system-config
-
-#enable debug for child process
-export AFL_DEBUG_CHILD=1
-
-#enable crash exit code
-export AFL_CRASH_EXITCODE=100
+export JEP_PATH=$JepPath/jep-4.0.3.jar
 
 
-cp ../../../EXTERNAL_LOC ./
-if [ "$?" != "0" ]; then
-	echo "copy EXTERNAL_LOC fail, please check the configuration!!!!"
-	exit 0
-fi
+python $BENCH/script/popen_log.py "./jazzer --cp=$target:$JEP_PATH --target_class=JepDr.JepDrOne ./tests" &
 
-export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
 

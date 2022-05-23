@@ -1,7 +1,5 @@
 #!/bin/sh
 
-python slicing.py ../test_aubios > full.log 2>&1 &
 
-python $BENCH/script/extract_log.py "slicing.py"
+python $BENCH/script/popen_log.py  "python slicing.py ../test_aubios" &
 
-rm -rf full.log

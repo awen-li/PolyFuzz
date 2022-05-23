@@ -17,7 +17,7 @@ public class CfgSrvDrv
                 
             HttpServerConfig config = ConfigParser.parse(new String(bytes, "UTF-8"), HttpServerConfig.class);
         }
-        catch (IOException e) 
+        catch (Exception e) 
         {
             return;
         }      

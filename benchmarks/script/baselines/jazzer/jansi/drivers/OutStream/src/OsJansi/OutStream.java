@@ -23,7 +23,7 @@ public class OutStream
                                                                      AnsiColors.TrueColor, Charset.forName("UTF-8"), null, null, false);
                 ansiOutput.write(input);
             }
-            catch (IOException e) 
+            catch (Exception e) 
             {
                 return;
             }

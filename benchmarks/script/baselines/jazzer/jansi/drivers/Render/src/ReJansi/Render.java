@@ -8,8 +8,15 @@ public class Render
 {   
         public static void fuzzerTestOneInput(byte[] input) 
         {
-            String str = new String(input);
-            render(str);
+            try
+            {
+                String str = new String(input);
+                render(str);
+            }
+            catch (Exception e) 
+            {
+        		return;
+            }
         }
 }
 

@@ -24,8 +24,14 @@ public class StringTe
                 }
             }
 
-            Ansi ansi = Ansi.ansi().cursor( x, y).reset();
-
+            try
+            {
+                Ansi ansi = Ansi.ansi().cursor( x, y).reset();
+            }
+            catch (Exception e) 
+            {
+        			return;
+            }
         }
 }
 

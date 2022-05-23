@@ -38,7 +38,17 @@ public class JepDrOne {
         config.addIncludePaths("subprocess");
         
         Interpreter interp = new SubInterpreter(config);
-        interp.runScript(seed);
+
+        try 
+        {
+            interp.runScript(seed);
+        }
+        catch (Exception e) 
+        {
+            return;
+        }
+
+        interp.close ();
     }
 
 }

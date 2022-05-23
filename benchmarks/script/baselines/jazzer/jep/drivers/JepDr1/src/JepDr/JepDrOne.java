@@ -33,14 +33,14 @@ public class JepDrOne {
         String seed = "seed";
         
         WritOneCase (seed, input);
-
-        JepConfig config = new JepConfig();
-        config.addIncludePaths("subprocess");
-        
-        Interpreter interp = new SubInterpreter(config);
+        Interpreter interp = null;
 
         try 
         {
+            JepConfig config = new JepConfig();
+            config.addIncludePaths("subprocess");
+        
+            interp = new SubInterpreter(config);
             interp.runScript(seed);
         }
         catch (Exception e) 

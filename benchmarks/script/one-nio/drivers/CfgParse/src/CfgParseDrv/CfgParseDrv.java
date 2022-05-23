@@ -78,7 +78,7 @@ public class CfgParseDrv
                 
             testConfig = ConfigParser.parse(new String(bytes, "UTF-8"), TestConfig.class);
         }
-        catch (IOException e) 
+        catch (Exception e) 
         {
             return;
         }      

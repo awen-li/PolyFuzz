@@ -69,7 +69,7 @@ public class Render
 
                 render(Input);
             }
-            catch (IOException e) 
+            catch (Exception e) 
     		{
     			return;
     		}

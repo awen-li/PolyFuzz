@@ -77,7 +77,7 @@ public class StringTe
 
                 Ansi ansi = Ansi.ansi().cursor( x, y).reset();
             }
-            catch (IOException e) 
+            catch (Exception e) 
     		{
     			return;
     		}

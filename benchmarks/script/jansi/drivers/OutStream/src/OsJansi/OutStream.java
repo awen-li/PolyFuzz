@@ -74,7 +74,7 @@ public class OutStream
                 ansiOutput.write((Input).getBytes());
                 //System.out.println(baos.toString());
             }
-            catch (IOException e) 
+            catch (Exception e) 
     		{
     			return;
     		}

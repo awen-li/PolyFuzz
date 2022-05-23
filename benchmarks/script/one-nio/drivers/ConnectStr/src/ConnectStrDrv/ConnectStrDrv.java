@@ -29,7 +29,7 @@ public class ConnectStrDrv
                 
             ConnectionString conn = new ConnectionString(new String(bytes, "UTF-8"));
         }
-        catch (IOException e) 
+        catch (Exception e) 
         {
     		return;
         }

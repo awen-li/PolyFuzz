@@ -63,7 +63,7 @@ public class LZ4Drv
                 
             Compression (bytes);
         }
-        catch (IOException e) 
+        catch (Exception e) 
         {
     			return;
         }

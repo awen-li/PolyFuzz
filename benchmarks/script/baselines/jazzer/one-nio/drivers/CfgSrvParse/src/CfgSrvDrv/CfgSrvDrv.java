@@ -12,6 +12,7 @@ public class CfgSrvDrv
     {
         try
         {
+            if (input.length == 0) return;
             byte[] bytes = input;
                 
             HttpServerConfig config = ConfigParser.parse(new String(bytes, "UTF-8"), HttpServerConfig.class);

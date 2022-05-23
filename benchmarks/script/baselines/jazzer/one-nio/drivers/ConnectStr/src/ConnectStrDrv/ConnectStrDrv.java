@@ -13,6 +13,8 @@ public class ConnectStrDrv
     {
         try
         {
+            if (input.length == 0) return;
+            
             byte[] bytes = input;
                 
             ConnectionString conn = new ConnectionString(new String(bytes, "UTF-8"));

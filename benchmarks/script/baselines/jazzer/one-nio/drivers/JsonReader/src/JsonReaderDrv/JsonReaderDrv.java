@@ -11,6 +11,8 @@ public class JsonReaderDrv
     {
         try
         {
+            if (input.length == 0) return;
+            
             byte[] bytes = input;
 
             JsonReader reader = new JsonReader(bytes);

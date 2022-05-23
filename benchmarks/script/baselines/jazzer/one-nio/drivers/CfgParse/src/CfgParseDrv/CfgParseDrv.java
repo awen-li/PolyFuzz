@@ -62,6 +62,7 @@ public class CfgParseDrv
     {
         try
         {
+            if (input.length == 0) return;
             testConfig = ConfigParser.parse(new String(input, "UTF-8"), TestConfig.class);
         }
         catch (IOException e) 

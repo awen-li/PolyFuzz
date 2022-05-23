@@ -11,6 +11,7 @@ public class URLEncodDrv
     {
         try
         {
+            if (input.length == 0) return;
             byte[] bytes = input;
                 
             String Str = URLEncoder.decode(new String(bytes, "UTF-8"));

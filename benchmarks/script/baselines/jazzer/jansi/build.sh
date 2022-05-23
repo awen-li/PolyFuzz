@@ -13,8 +13,7 @@ function compile ()
 
 	pushd $target
 	
-	cp $ROOT/script/$target/Makefile $ROOT/$target
-    make 
+    	make 
 	
 	mvn clean package
 	

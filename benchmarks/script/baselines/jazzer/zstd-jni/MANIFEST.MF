@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Implementation-Title: zstd-jni
+Automatic-Module-Name: com.github.luben.zstd_jni
+Implementation-Version: 1.5.2-2
+Bundle-NativeCode: darwin/x86_64/libzstd-jni-1.5.2-2.dylib;osname=MacOS;osname=MacOSX;processor=x86_64,
+ darwin/aarch64/libzstd-jni-1.5.2-2.dylib;osname=MacOS;osname=MacOSX;processor=aarch64,freebsd/amd64/libzstd-jni-1.5.2-2.so;osname=FreeBSD;processor=amd64,
+ freebsd/i386/libzstd-jni-1.5.2-2.so;osname=FreeBSD;processor=i386,
+ linux/aarch64/libzstd-jni-1.5.2-2.so;osname=Linux;processor=aarch64,
+ linux/amd64/libzstd-jni-1.5.2-2.so;osname=Linux;processor=amd64,
+ linux/arm/libzstd-jni-1.5.2-2.so;osname=Linux;processor=arm,
+ linux/i386/libzstd-jni-1.5.2-2.so;osname=Linux;processor=i386,
+ linux/mips64/libzstd-jni-1.5.2-2.so;osname=Linux;processor=mips64,
+ linux/loongarch64/libzstd-jni-1.5.2-2.so;osname=Linux;processor=loongarch64,
+ linux/ppc64/libzstd-jni-1.5.2-2.so;osname=Linux;processor=ppc64,
+ linux/ppc64le/libzstd-jni-1.5.2-2.so;osname=Linux;processor=ppc64le,
+ linux/s390x/libzstd-jni-1.5.2-2.so;osname=Linux;processor=s390x,
+ win/amd64/libzstd-jni-1.5.2-2.dll;osname=Win32;processor=amd64,
+ win/x86/libzstd-jni-1.5.2-2.dll;osname=Win32;processor=x86
+Specification-Vendor: com.github.luben
+Specification-Title: zstd-jni
+Implementation-Vendor-Id: com.github.luben
+Specification-Version: 1.5.2-2
+Implementation-Vendor: com.github.luben
+

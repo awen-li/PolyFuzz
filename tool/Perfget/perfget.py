@@ -44,23 +44,21 @@ class PerfStat ():
             
             print ("Read per-metric from %s" %drv)
             with open(FilePath, 'r', encoding='latin1') as pf:
-                isLineOne = 0
-                for line in pf:
-                    if isLineOne == 0:
-                        isLineOne = 1
-                        continue
-                    Item = list (line.split (","))
-                    TimeStamp  = str (Item[0])
-                    PathNum    = int (Item[1])
-                    BlockNum   = int (Item[2])
-                    BugNum     = int (Item[3])
+                lines = pf.readlines()
+                last_line = lines[-1]
+                
+                Item = list (last_line.split (","))
+                TimeStamp  = str (Item[0])
+                PathNum    = int (Item[1])
+                BlockNum   = int (Item[2])
+                BugNum     = int (Item[3])
 
-                    self.TotalPathNum  += PathNum
-                    self.TotalBlockNum += BlockNum
-                    self.TotalBugNum   += BugNum
+                self.TotalPathNum  += PathNum
+                self.TotalBlockNum += BlockNum
+                self.TotalBugNum   += BugNum
                     
-                    ST = Stat (drv, PathNum, BlockNum, BugNum)
-                    self.Stats.append (ST)
+                ST = Stat (drv, PathNum, BlockNum, BugNum)
+                self.Stats.append (ST)
 
     def ShowStat (self):
         print ("===============================================")

@@ -1,0 +1,94 @@
+Sun May 22 12:16:25 2022 INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+
+Sun May 22 12:46:25 2022 #6508016	REDUCE cov: 193 ft: 489 corp: 194/8944b lim: 4096 exec/s: 3621 rss: 88Mb L: 299/856 MS: 1 EraseBytes-
+
+Sun May 22 13:16:26 2022 #13047844	REDUCE cov: 193 ft: 489 corp: 194/7990b lim: 4096 exec/s: 3654 rss: 88Mb L: 166/808 MS: 2 EraseBytes-CopyPart-
+
+Sun May 22 13:46:26 2022 #19833962	REDUCE cov: 193 ft: 489 corp: 194/7718b lim: 4096 exec/s: 3694 rss: 88Mb L: 238/795 MS: 1 EraseBytes-
+
+Sun May 22 14:16:26 2022 #26698169	REDUCE cov: 193 ft: 489 corp: 194/7566b lim: 4096 exec/s: 3710 rss: 88Mb L: 175/786 MS: 1 EraseBytes-
+
+Sun May 22 14:46:26 2022 #33554432	pulse  cov: 193 ft: 489 corp: 194/7406b lim: 4096 exec/s: 3738 rss: 88Mb
+
+Sun May 22 15:16:26 2022 #40616920	REDUCE cov: 193 ft: 489 corp: 194/7310b lim: 4096 exec/s: 3769 rss: 88Mb L: 239/709 MS: 1 EraseBytes-
+
+Sun May 22 15:46:26 2022 #47398456	REDUCE cov: 193 ft: 489 corp: 194/7251b lim: 4096 exec/s: 3788 rss: 88Mb L: 157/689 MS: 1 EraseBytes-
+
+Sun May 22 16:16:26 2022 #54547920	REDUCE cov: 193 ft: 489 corp: 194/7193b lim: 4096 exec/s: 3804 rss: 88Mb L: 675/675 MS: 4 InsertByte-EraseBytes-InsertByte-CopyPart-
+
+Sun May 22 16:46:26 2022 #61512555	REDUCE cov: 193 ft: 489 corp: 194/7085b lim: 4096 exec/s: 3818 rss: 88Mb L: 4/595 MS: 2 EraseBytes-CrossOver-
+
+Sun May 22 17:16:26 2022 #68713358	REDUCE cov: 193 ft: 489 corp: 194/7033b lim: 4096 exec/s: 3828 rss: 88Mb L: 212/570 MS: 1 EraseBytes-
+
+Sun May 22 17:46:26 2022 #75844233	REDUCE cov: 193 ft: 489 corp: 194/6992b lim: 4096 exec/s: 3834 rss: 88Mb L: 52/548 MS: 1 EraseBytes-
+
+Sun May 22 18:16:27 2022 #82528688	REDUCE cov: 193 ft: 489 corp: 194/6936b lim: 4096 exec/s: 3842 rss: 88Mb L: 208/514 MS: 3 CopyPart-InsertRepeatedBytes-EraseBytes-
+
+Sun May 22 18:46:27 2022 #90046124	REDUCE cov: 195 ft: 492 corp: 195/6931b lim: 4096 exec/s: 3849 rss: 88Mb L: 202/469 MS: 1 EraseBytes-
+
+Sun May 22 19:16:27 2022 #96682766	REDUCE cov: 195 ft: 492 corp: 195/6829b lim: 4096 exec/s: 3856 rss: 88Mb L: 374/374 MS: 1 EraseBytes-
+
+Sun May 22 19:46:27 2022 #103491786	REDUCE cov: 195 ft: 492 corp: 195/6812b lim: 4096 exec/s: 3864 rss: 88Mb L: 142/373 MS: 1 EraseBytes-
+
+Sun May 22 20:16:27 2022 #110840223	REDUCE cov: 195 ft: 492 corp: 195/6807b lim: 4096 exec/s: 3869 rss: 88Mb L: 188/372 MS: 3 CopyPart-EraseBytes-EraseBytes-
+
+Sun May 22 20:46:27 2022 #118471589	REDUCE cov: 195 ft: 492 corp: 195/6798b lim: 4096 exec/s: 3872 rss: 88Mb L: 183/372 MS: 1 EraseBytes-
+
+Sun May 22 21:16:27 2022 #122369873	REDUCE cov: 195 ft: 492 corp: 195/6777b lim: 4096 exec/s: 3873 rss: 88Mb L: 181/370 MS: 2 ChangeBinInt-EraseBytes-
+
+Sun May 22 21:46:27 2022 #132489226	REDUCE cov: 195 ft: 492 corp: 195/6755b lim: 4096 exec/s: 3874 rss: 88Mb L: 196/353 MS: 1 EraseBytes-
+
+Sun May 22 22:16:27 2022 #137458044	REDUCE cov: 195 ft: 492 corp: 195/6747b lim: 4096 exec/s: 3877 rss: 88Mb L: 89/350 MS: 1 EraseBytes-
+
+Sun May 22 22:46:27 2022 #146445165	REDUCE cov: 195 ft: 492 corp: 195/6708b lim: 4096 exec/s: 3879 rss: 88Mb L: 82/347 MS: 1 EraseBytes-
+
+Sun May 22 23:16:27 2022 #151748879	REDUCE cov: 195 ft: 492 corp: 195/6690b lim: 4096 exec/s: 3881 rss: 88Mb L: 164/346 MS: 2 InsertByte-EraseBytes-
+
+Sun May 22 23:46:27 2022 #160516131	REDUCE cov: 195 ft: 492 corp: 195/6671b lim: 4096 exec/s: 3883 rss: 88Mb L: 32/346 MS: 4 EraseBytes-CopyPart-CMP-EraseBytes- DE: "'\012"-
+
+Mon May 23 00:16:28 2022 #166771532	REDUCE cov: 195 ft: 492 corp: 195/6662b lim: 4096 exec/s: 3885 rss: 88Mb L: 145/345 MS: 3 ChangeBit-ShuffleBytes-EraseBytes-
+
+Mon May 23 00:46:28 2022 #173842660	REDUCE cov: 195 ft: 492 corp: 195/6659b lim: 4096 exec/s: 3885 rss: 88Mb L: 80/344 MS: 1 EraseBytes-
+
+Mon May 23 01:16:28 2022 #181785037	REDUCE cov: 195 ft: 492 corp: 195/6652b lim: 4096 exec/s: 3886 rss: 88Mb L: 45/340 MS: 5 EraseBytes-CopyPart-CrossOver-ChangeASCIIInt-EraseBytes-
+
+Mon May 23 01:46:28 2022 #186597502	REDUCE cov: 195 ft: 492 corp: 195/6646b lim: 4096 exec/s: 3886 rss: 88Mb L: 56/340 MS: 1 EraseBytes-
+
+Mon May 23 02:16:28 2022 #195032869	REDUCE cov: 195 ft: 492 corp: 195/6635b lim: 4096 exec/s: 3886 rss: 88Mb L: 330/330 MS: 1 EraseBytes-
+
+Mon May 23 02:46:28 2022 #195032869	REDUCE cov: 195 ft: 492 corp: 195/6635b lim: 4096 exec/s: 3886 rss: 88Mb L: 330/330 MS: 1 EraseBytes-
+
+Mon May 23 03:16:28 2022 #195032869	REDUCE cov: 195 ft: 492 corp: 195/6635b lim: 4096 exec/s: 3886 rss: 88Mb L: 330/330 MS: 1 EraseBytes-
+
+Mon May 23 03:46:28 2022 #215054768	REDUCE cov: 195 ft: 492 corp: 195/6624b lim: 4096 exec/s: 3884 rss: 88Mb L: 42/325 MS: 3 InsertRepeatedBytes-EraseBytes-CopyPart-
+
+Mon May 23 04:16:28 2022 #223162417	REDUCE cov: 195 ft: 492 corp: 195/6614b lim: 4096 exec/s: 3883 rss: 88Mb L: 146/323 MS: 2 CopyPart-EraseBytes-
+
+Mon May 23 04:46:28 2022 #226332439	REDUCE cov: 195 ft: 492 corp: 195/6608b lim: 4096 exec/s: 3883 rss: 88Mb L: 68/318 MS: 3 ShuffleBytes-CopyPart-EraseBytes-
+
+Mon May 23 05:16:29 2022 #231049091	REDUCE cov: 195 ft: 492 corp: 195/6607b lim: 4096 exec/s: 3883 rss: 88Mb L: 317/317 MS: 2 ChangeBit-EraseBytes-
+
+Mon May 23 05:46:29 2022 #244624517	REDUCE cov: 195 ft: 492 corp: 195/6602b lim: 4096 exec/s: 3883 rss: 88Mb L: 314/314 MS: 2 ChangeASCIIInt-EraseBytes-
+
+Mon May 23 06:16:29 2022 #251249420	REDUCE cov: 195 ft: 492 corp: 195/6596b lim: 4096 exec/s: 3884 rss: 88Mb L: 22/313 MS: 1 EraseBytes-
+
+Mon May 23 06:46:29 2022 #256432131	REDUCE cov: 195 ft: 492 corp: 195/6595b lim: 4096 exec/s: 3885 rss: 88Mb L: 53/313 MS: 1 EraseBytes-
+
+Mon May 23 07:16:29 2022 #256432131	REDUCE cov: 195 ft: 492 corp: 195/6595b lim: 4096 exec/s: 3885 rss: 88Mb L: 53/313 MS: 1 EraseBytes-
+
+Mon May 23 07:46:29 2022 #271070787	REDUCE cov: 195 ft: 492 corp: 195/6585b lim: 4096 exec/s: 3888 rss: 88Mb L: 304/304 MS: 1 EraseBytes-
+
+Mon May 23 08:16:29 2022 #271070787	REDUCE cov: 195 ft: 492 corp: 195/6585b lim: 4096 exec/s: 3888 rss: 88Mb L: 304/304 MS: 1 EraseBytes-
+
+Mon May 23 08:46:29 2022 #286435337	REDUCE cov: 195 ft: 492 corp: 195/6582b lim: 4096 exec/s: 3890 rss: 88Mb L: 52/303 MS: 1 EraseBytes-
+
+Mon May 23 09:16:29 2022 #287773301	REDUCE cov: 195 ft: 492 corp: 195/6579b lim: 4096 exec/s: 3890 rss: 88Mb L: 300/300 MS: 4 ShuffleBytes-ChangeBinInt-ChangeASCIIInt-EraseBytes-
+
+Mon May 23 09:46:29 2022 #298302167	REDUCE cov: 195 ft: 492 corp: 195/6578b lim: 4096 exec/s: 3892 rss: 88Mb L: 142/300 MS: 1 EraseBytes-
+
+Mon May 23 10:16:30 2022 #298302167	REDUCE cov: 195 ft: 492 corp: 195/6578b lim: 4096 exec/s: 3892 rss: 88Mb L: 142/300 MS: 1 EraseBytes-
+
+Mon May 23 10:46:30 2022 #298302167	REDUCE cov: 195 ft: 492 corp: 195/6578b lim: 4096 exec/s: 3892 rss: 88Mb L: 142/300 MS: 1 EraseBytes-
+
+Mon May 23 11:16:30 2022 #321621545	REDUCE cov: 195 ft: 492 corp: 195/6570b lim: 4096 exec/s: 3894 rss: 88Mb L: 140/294 MS: 4 ShuffleBytes-CopyPart-EraseBytes-CopyPart-
+

@@ -9,13 +9,20 @@ public class JepDrOne {
 
     public static void main(String argv[]) throws Throwable 
     {
-        String spt = argv [0];
+        try 
+        {
+            String spt = argv [0];
 
-        JepConfig config = new JepConfig();
-        config.addIncludePaths("subprocess");
-        
-        Interpreter interp = new SubInterpreter(config);
-        interp.runScript(spt);
+            JepConfig config = new JepConfig();
+            config.addIncludePaths("subprocess");
+            
+            Interpreter interp = new SubInterpreter(config);
+            interp.runScript(spt);
+        }
+        catch (Exception e) 
+        {
+            return;
+        }
     }
 
 }

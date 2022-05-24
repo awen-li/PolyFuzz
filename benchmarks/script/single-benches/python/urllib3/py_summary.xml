@@ -1,0 +1,432 @@
+<?xml version="1.0" ?>
+<py_summary branchs="1390">
+  <file name="_request_methods.py" id="1">
+    <function class="RequestMethods" name="__init__" sline="47" eline="48" brval="" bbs="47"/>
+    <function class="RequestMethods" name="urlopen" sline="50" eline="60" brval="" bbs="50"/>
+    <function class="RequestMethods" name="request" sline="65" eline="116" brval="" bbs="65 89 94 95 97 104 107 116"/>
+    <function class="RequestMethods" name="request_encode_url" sline="120" eline="141" brval="" bbs="120 132 138"/>
+    <function class="RequestMethods" name="request_encode_body" sline="143" eline="216" brval="" bbs="143 188 194 195 200 205"/>
+  </file>
+  <file name="connection.py" id="2">
+    <function class="HTTPConnection" name="__init__" sline="134" eline="164" brval="" bbs="134"/>
+    <function class="HTTPConnection" name="host" sline="172" eline="188" brval="" bbs="172"/>
+    <function class="HTTPConnection" name="host" sline="191" eline="198" brval="" bbs="191"/>
+    <function class="HTTPConnection" name="_new_conn" sline="200" eline="226" brval="" bbs="200"/>
+    <function class="HTTPConnection" name="_is_using_tunnel" sline="228" eline="229" brval="" bbs="228"/>
+    <function class="HTTPConnection" name="_prepare_conn" sline="231" eline="238" brval="" bbs="231 233"/>
+    <function class="HTTPConnection" name="connect" sline="240" eline="244" brval="" bbs="240"/>
+    <function class="HTTPConnection" name="close" sline="246" eline="248" brval="" bbs="246"/>
+    <function class="HTTPConnection" name="putrequest" sline="250" eline="266" brval="" bbs="250 261"/>
+    <function class="HTTPConnection" name="putheader" sline="270" eline="278" brval="" bbs="270 272 274"/>
+    <function class="HTTPConnection" name="request" sline="284" eline="308" brval="" bbs="284 291 295 298 299 304"/>
+    <function class="HTTPConnection" name="request_chunked" sline="310" eline="353" brval="" bbs="310 321 329 331 333 337 338 340 341 343"/>
+    <function class="HTTPSConnection" name="__init__" sline="374" eline="411" brval="" bbs="374"/>
+    <function class="HTTPSConnection" name="set_cert" sline="413" eline="444" brval="" bbs="413 430 431 434"/>
+    <function class="HTTPSConnection" name="connect" sline="446" eline="506" brval="" bbs="446 454 455 473 477"/>
+    <function class="HTTPSConnection" name="_connect_tls_proxy" sline="508" eline="536" brval="" bbs="508"/>
+    <function class="" name="_ssl_wrap_socket_and_match_hostname" sline="549" eline="655" brval="632:assert_hostname:4134975472 " bbs="549 574 583 588 600 612 614 630 632 642 645"/>
+    <function class="" name="_match_hostname" sline="662" eline="675" brval="" bbs="662 671"/>
+    <function class="" name="_wrap_proxy_error" sline="688" eline="709" brval="" bbs="688"/>
+    <function class="" name="_get_default_user_agent" sline="712" eline="713" brval="" bbs="712"/>
+  </file>
+  <file name="_collections.py" id="3">
+    <function class="HasGettableStringKeys" name="keys" sline="26" eline="27" brval="" bbs="26"/>
+    <function class="" name="ensure_can_construct_http_header_dict" sline="55" eline="72" brval="" bbs="55 58 60 64 69 72"/>
+    <function class="RecentlyUsedContainer" name="__init__" sline="94" eline="101" brval="" bbs="94"/>
+    <function class="RecentlyUsedContainer" name="clear" sline="151" eline="159" brval="" bbs="151 157 158"/>
+    <function class="RecentlyUsedContainer" name="keys" sline="161" eline="163" brval="" bbs="161"/>
+    <function class="HTTPHeaderDictItemView" name="__init__" sline="194" eline="195" brval="" bbs="194"/>
+    <function class="HTTPHeaderDict" name="__init__" sline="247" eline="256" brval="" bbs="247 250 251 254 255"/>
+    <function class="HTTPHeaderDict" name="discard" sline="298" eline="300" brval="" bbs="298"/>
+    <function class="HTTPHeaderDict" name="add" sline="304" eline="321" brval="" bbs="304 314 320"/>
+    <function class="HTTPHeaderDict" name="extend" sline="323" eline="354" brval="" bbs="323 328 334 335 337 338 340 342 344 350 353"/>
+    <function class="HTTPHeaderDict" name="getlist" sline="357" eline="358" brval="" bbs="357"/>
+    <function class="HTTPHeaderDict" name="getlist" sline="361" eline="362" brval="" bbs="361"/>
+    <function class="HTTPHeaderDict" name="getlist" sline="364" eline="380" brval="" bbs="364"/>
+    <function class="HTTPHeaderDict" name="_copy_from" sline="393" eline="396" brval="" bbs="393 394"/>
+    <function class="HTTPHeaderDict" name="copy" sline="398" eline="401" brval="" bbs="398"/>
+    <function class="HTTPHeaderDict" name="iteritems" sline="403" eline="408" brval="" bbs="403 405 407"/>
+    <function class="HTTPHeaderDict" name="itermerged" sline="410" eline="414" brval="" bbs="410 412"/>
+    <function class="HTTPHeaderDict" name="items" sline="416" eline="417" brval="" bbs="416"/>
+    <function class="HTTPHeaderDict" name="_has_value_for_header" sline="419" eline="422" brval="" bbs="419 420"/>
+  </file>
+  <file name="filepost.py" id="4">
+    <function class="" name="choose_boundary" sline="20" eline="24" brval="" bbs="20"/>
+    <function class="" name="iter_field_objects" sline="27" eline="46" brval="" bbs="27 37 40 42 43 46"/>
+    <function class="" name="encode_multipart_formdata" sline="49" eline="87" brval="" bbs="49 64 67 73 76 79"/>
+  </file>
+  <file name="response.py" id="5">
+    <function class="ContentDecoder" name="decompress" sline="56" eline="57" brval="" bbs="56"/>
+    <function class="ContentDecoder" name="flush" sline="59" eline="60" brval="" bbs="59"/>
+    <function class="DeflateDecoder" name="__init__" sline="64" eline="67" brval="" bbs="64"/>
+    <function class="DeflateDecoder" name="decompress" sline="69" eline="82" brval="" bbs="69 70 73 79"/>
+    <function class="DeflateDecoder" name="flush" sline="91" eline="92" brval="" bbs="91"/>
+    <function class="GzipDecoder" name="__init__" sline="103" eline="105" brval="" bbs="103"/>
+    <function class="GzipDecoder" name="decompress" sline="107" eline="126" brval="" bbs="107 109 111 123"/>
+    <function class="GzipDecoder" name="flush" sline="128" eline="129" brval="" bbs="128"/>
+    <function class="BrotliDecoder" name="__init__" sline="138" eline="143" brval="" bbs="138 140 143"/>
+    <function class="BrotliDecoder" name="flush" sline="145" eline="148" brval="" bbs="145 146"/>
+    <function class="MultiDecoder" name="__init__" sline="160" eline="161" brval="" bbs="160"/>
+    <function class="MultiDecoder" name="flush" sline="163" eline="164" brval="" bbs="163"/>
+    <function class="MultiDecoder" name="decompress" sline="166" eline="169" brval="" bbs="166 167"/>
+    <function class="" name="_get_decoder" sline="172" eline="182" brval="" bbs="172 173 176 179"/>
+    <function class="BaseHTTPResponse" name="__init__" sline="195" eline="224" brval="" bbs="195 206 209 221"/>
+    <function class="BaseHTTPResponse" name="get_redirect_location" sline="226" eline="236" brval="" bbs="226 234"/>
+    <function class="BaseHTTPResponse" name="data" sline="239" eline="240" brval="" bbs="239"/>
+    <function class="BaseHTTPResponse" name="json" sline="242" eline="253" brval="" bbs="242"/>
+    <function class="BaseHTTPResponse" name="url" sline="256" eline="257" brval="" bbs="256"/>
+    <function class="BaseHTTPResponse" name="closed" sline="260" eline="261" brval="" bbs="260"/>
+    <function class="BaseHTTPResponse" name="connection" sline="264" eline="265" brval="" bbs="264"/>
+    <function class="BaseHTTPResponse" name="stream" sline="267" eline="270" brval="" bbs="267"/>
+    <function class="BaseHTTPResponse" name="read" sline="272" eline="278" brval="" bbs="272"/>
+    <function class="BaseHTTPResponse" name="read_chunked" sline="280" eline="285" brval="" bbs="280"/>
+    <function class="BaseHTTPResponse" name="release_conn" sline="287" eline="288" brval="" bbs="287"/>
+    <function class="BaseHTTPResponse" name="drain_conn" sline="290" eline="291" brval="" bbs="290"/>
+    <function class="BaseHTTPResponse" name="close" sline="293" eline="294" brval="" bbs="293"/>
+    <function class="BaseHTTPResponse" name="_init_decoder" sline="296" eline="313" brval="" bbs="296 303 304 306 312"/>
+    <function class="BaseHTTPResponse" name="_decode" sline="315" eline="337" brval="" bbs="315 321 325 334"/>
+    <function class="BaseHTTPResponse" name="_flush_decoder" sline="339" eline="346" brval="" bbs="339 344"/>
+    <function class="BaseHTTPResponse" name="readable" sline="349" eline="350" brval="" bbs="349"/>
+    <function class="BaseHTTPResponse" name="readinto" sline="352" eline="358" brval="" bbs="352 354 357 358"/>
+    <function class="BaseHTTPResponse" name="getheaders" sline="361" eline="362" brval="" bbs="361"/>
+    <function class="BaseHTTPResponse" name="getheader" sline="364" eline="365" brval="" bbs="364"/>
+    <function class="BaseHTTPResponse" name="info" sline="368" eline="369" brval="" bbs="368"/>
+    <function class="BaseHTTPResponse" name="geturl" sline="371" eline="372" brval="" bbs="371"/>
+    <function class="HTTPResponse" name="__init__" sline="408" eline="467" brval="" bbs="408 445 448 450 456 466"/>
+    <function class="HTTPResponse" name="release_conn" sline="469" eline="474" brval="" bbs="469 470"/>
+    <function class="HTTPResponse" name="drain_conn" sline="476" eline="483" brval="" bbs="476"/>
+    <function class="HTTPResponse" name="data" sline="488" eline="496" brval="" bbs="488 490 493"/>
+    <function class="HTTPResponse" name="connection" sline="499" eline="500" brval="" bbs="499"/>
+    <function class="HTTPResponse" name="isclosed" sline="502" eline="503" brval="" bbs="502"/>
+    <function class="HTTPResponse" name="tell" sline="505" eline="511" brval="" bbs="505"/>
+    <function class="HTTPResponse" name="_init_length" sline="513" eline="567" brval="550:length:4139508336 564:status:4139620720 " bbs="513 520 521 541 550 554 564"/>
+    <function class="HTTPResponse" name="_error_catcher" sline="570" eline="623" brval="" bbs="570 607 611 617 622"/>
+    <function class="HTTPResponse" name="read" sline="625" eline="703" brval="669:amt:4134977008 " bbs="625 652 655 662 667 668 669 681 693 695 700"/>
+    <function class="HTTPResponse" name="stream" sline="705" eline="730" brval="" bbs="705 723 726 729"/>
+    <function class="HTTPResponse" name="from_httplib" sline="733" eline="757" brval="" bbs="733 745"/>
+    <function class="HTTPResponse" name="close" sline="760" eline="768" brval="" bbs="760 761 764 767"/>
+    <function class="HTTPResponse" name="closed" sline="771" eline="781" brval="" bbs="771 772 774 776 778 781"/>
+    <function class="HTTPResponse" name="fileno" sline="783" eline="789" brval="" bbs="783 784 786 789"/>
+    <function class="HTTPResponse" name="flush" sline="794" eline="800" brval="" bbs="794 795"/>
+    <function class="HTTPResponse" name="supports_chunked_reads" sline="802" eline="809" brval="" bbs="802"/>
+    <function class="HTTPResponse" name="_update_chunk_length" sline="811" eline="819" brval="" bbs="811 814"/>
+    <function class="HTTPResponse" name="_handle_chunk" sline="825" eline="845" brval="" bbs="825 827 832 836 842 843 844"/>
+    <function class="HTTPResponse" name="read_chunked" sline="847" eline="917" brval="" bbs="847 865 870 878 884 887 889 895 898 903 907 909 912 916"/>
+    <function class="HTTPResponse" name="url" sline="920" eline="926" brval="" bbs="920"/>
+    <function class="HTTPResponse" name="url" sline="929" eline="930" brval="" bbs="929"/>
+  </file>
+  <file name="connectionpool.py" id="6">
+    <function class="ConnectionPool" name="__init__" sline="81" eline="87" brval="" bbs="81 82"/>
+    <function class="ConnectionPool" name="close" sline="105" eline="109" brval="" bbs="105"/>
+    <function class="HTTPConnectionPool" name="__init__" sline="172" eline="221" brval="" bbs="172 189 192 206 214"/>
+    <function class="HTTPConnectionPool" name="_new_conn" sline="223" eline="241" brval="" bbs="223"/>
+    <function class="HTTPConnectionPool" name="_get_conn" sline="243" eline="284" brval="" bbs="243 257 275 278"/>
+    <function class="HTTPConnectionPool" name="_put_conn" sline="286" eline="328" brval="" bbs="286 300 327"/>
+    <function class="HTTPConnectionPool" name="_validate_conn" sline="330" eline="334" brval="" bbs="330"/>
+    <function class="HTTPConnectionPool" name="_prepare_proxy" sline="336" eline="338" brval="" bbs="336"/>
+    <function class="HTTPConnectionPool" name="_get_timeout" sline="340" eline="350" brval="" bbs="340 342 345 350"/>
+    <function class="HTTPConnectionPool" name="_raise_timeout" sline="352" eline="369" brval="" bbs="352 360 366"/>
+    <function class="HTTPConnectionPool" name="_make_request" sline="371" eline="492" brval="456:read_timeout:4133851504 " bbs="371 430 433 450 456"/>
+    <function class="HTTPConnectionPool" name="_absolute_url" sline="494" eline="495" brval="" bbs="494"/>
+    <function class="HTTPConnectionPool" name="close" sline="497" eline="510" brval="" bbs="497 501 507 509"/>
+    <function class="HTTPConnectionPool" name="is_same_host" sline="515" eline="535" brval="" bbs="515 520 526 530 532"/>
+    <function class="HTTPConnectionPool" name="urlopen" sline="537" eline="903" brval="843:response:4138661360 " bbs="537 649 652 655 659 663 666 688 714 717 803 808 813 819 842 843 875"/>
+    <function class="HTTPSConnectionPool" name="__init__" sline="923" eline="971" brval="" bbs="923"/>
+    <function class="HTTPSConnectionPool" name="_prepare_conn" sline="973" eline="994" brval="" bbs="973 979"/>
+    <function class="HTTPSConnectionPool" name="_prepare_proxy" sline="996" eline="1008" brval="" bbs="996 1005"/>
+    <function class="HTTPSConnectionPool" name="_new_conn" sline="1010" eline="1043" brval="" bbs="1010 1022 1029"/>
+    <function class="HTTPSConnectionPool" name="_validate_conn" sline="1045" eline="1056" brval="" bbs="1045 1052 1055"/>
+    <function class="" name="connection_from_url" sline="1067" eline="1093" brval="" bbs="1067 1090 1093"/>
+    <function class="" name="_normalize_host" sline="1097" eline="1098" brval="" bbs="1097"/>
+    <function class="" name="_normalize_host" sline="1102" eline="1103" brval="" bbs="1102"/>
+    <function class="" name="_normalize_host" sline="1106" eline="1121" brval="" bbs="1106 1119"/>
+  </file>
+  <file name="fields.py" id="7">
+    <function class="" name="guess_content_type" sline="21" eline="34" brval="" bbs="21 32"/>
+    <function class="" name="format_header_param_rfc2231" sline="37" eline="82" brval="" bbs="37 67 70"/>
+    <function class="" name="format_multipart_header_param" sline="85" eline="120" brval="" bbs="85 115"/>
+    <function class="" name="format_header_param_html5" sline="123" eline="138" brval="" bbs="123"/>
+    <function class="" name="format_header_param" sline="141" eline="156" brval="" bbs="141"/>
+    <function class="RequestField" name="__init__" sline="178" eline="205" brval="" bbs="178 190 193 205"/>
+    <function class="RequestField" name="from_tuples" sline="208" eline="252" brval="" bbs="208 234 235 240 241 243 244 245"/>
+    <function class="RequestField" name="_render_part" sline="254" eline="268" brval="" bbs="254"/>
+    <function class="RequestField" name="_render_parts" sline="270" eline="299" brval="" bbs="270 290 293 295 296"/>
+    <function class="RequestField" name="render_headers" sline="301" eline="318" brval="" bbs="301 308 309 312 313 314"/>
+    <function class="RequestField" name="make_multipart" sline="320" eline="351" brval="" bbs="320"/>
+  </file>
+  <file name="exceptions.py" id="8">
+    <function class="PoolError" name="__init__" sline="34" eline="36" brval="" bbs="34"/>
+    <function class="RequestError" name="__init__" sline="46" eline="48" brval="" bbs="46"/>
+    <function class="ProxyError" name="__init__" sline="67" eline="69" brval="" bbs="67"/>
+    <function class="MaxRetryError" name="__init__" sline="102" eline="109" brval="" bbs="102"/>
+    <function class="HostChangedError" name="__init__" sline="115" eline="120" brval="" bbs="115"/>
+    <function class="NewConnectionError" name="__init__" sline="156" eline="158" brval="" bbs="156"/>
+    <function class="NewConnectionError" name="pool" sline="161" eline="169" brval="" bbs="161"/>
+    <function class="NameResolutionError" name="__init__" sline="175" eline="177" brval="" bbs="175"/>
+    <function class="LocationParseError" name="__init__" sline="207" eline="211" brval="" bbs="207"/>
+    <function class="URLSchemeUnknown" name="__init__" sline="217" eline="221" brval="" bbs="217"/>
+    <function class="IncompleteRead" name="__init__" sline="293" eline="295" brval="" bbs="293"/>
+    <function class="InvalidChunkLength" name="__init__" sline="307" eline="311" brval="" bbs="307"/>
+    <function class="ProxySchemeUnknown" name="__init__" sline="331" eline="340" brval="" bbs="331 334 336 339"/>
+    <function class="HeaderParsingError" name="__init__" sline="352" eline="356" brval="" bbs="352"/>
+  </file>
+  <file name="_version.py" id="9"/>
+  <file name="poolmanager.py" id="10">
+    <function class="" name="_default_key_normalizer" sline="105" eline="157" brval="" bbs="105 133 134 140 145 149 150 154"/>
+    <function class="PoolManager" name="__init__" sline="209" eline="0" brval="" bbs="209"/>
+    <function class="" name="dispose_func" sline="218" eline="219" brval="" bbs="218"/>
+    <function class="PoolManager" name="_new_pool" sline="242" eline="278" brval="" bbs="242 259 264 271 274 275"/>
+    <function class="PoolManager" name="clear" sline="280" eline="287" brval="" bbs="280"/>
+    <function class="PoolManager" name="connection_from_host" sline="289" eline="316" brval="" bbs="289 306 311"/>
+    <function class="PoolManager" name="connection_from_context" sline="318" eline="341" brval="" bbs="318 327 337"/>
+    <function class="PoolManager" name="connection_from_pool_key" sline="343" eline="367" brval="" bbs="343 357"/>
+    <function class="PoolManager" name="connection_from_url" sline="369" eline="383" brval="" bbs="369"/>
+    <function class="PoolManager" name="_merge_pool_kwargs" sline="387" eline="405" brval="" bbs="387 396 397 398 404"/>
+    <function class="PoolManager" name="_proxy_requires_url_absolute_form" sline="407" eline="416" brval="" bbs="407 413"/>
+    <function class="PoolManager" name="urlopen" sline="420" eline="487" brval="454:response:4138661360 " bbs="420 438 441 444 447 454 458 464 468 469"/>
+    <function class="ProxyManager" name="__init__" sline="539" eline="572" brval="" bbs="539 550 553 556 559"/>
+    <function class="ProxyManager" name="connection_from_host" sline="574" eline="586" brval="" bbs="574 581"/>
+    <function class="ProxyManager" name="_set_proxy_headers" sline="590" eline="605" brval="" bbs="590 600 603"/>
+    <function class="ProxyManager" name="urlopen" sline="607" eline="619" brval="" bbs="607 612"/>
+    <function class="" name="proxy_from_url" sline="622" eline="623" brval="" bbs="622"/>
+  </file>
+  <file name="__init__.py" id="11">
+    <function class="" name="add_stderr_logger" sline="48" eline="63" brval="" bbs="48"/>
+    <function class="" name="disable_warnings" sline="81" eline="85" brval="" bbs="81"/>
+    <function class="" name="request" sline="91" eline="112" brval="" bbs="91"/>
+  </file>
+  <file name="securetransport.py" id="12">
+    <function class="" name="inject_into_urllib3" sline="178" eline="188" brval="" bbs="178"/>
+    <function class="" name="extract_from_urllib3" sline="191" eline="201" brval="" bbs="191"/>
+    <function class="" name="_read_callback" sline="204" eline="254" brval="226:timeout:4138130032 " bbs="204 214 225 226 227 236 237 251"/>
+    <function class="" name="_write_callback" sline="261" eline="307" brval="284:timeout:4138130032 " bbs="261 271 283 284 285 304"/>
+    <function class="WrappedSocket" name="__init__" sline="326" eline="342" brval="" bbs="326"/>
+    <function class="WrappedSocket" name="_raise_on_error" sline="345" eline="363" brval="" bbs="345 360"/>
+    <function class="WrappedSocket" name="_set_alpn_protocols" sline="365" eline="376" brval="" bbs="365 369"/>
+    <function class="WrappedSocket" name="_custom_validate" sline="378" eline="413" brval="" bbs="378 386 395"/>
+    <function class="WrappedSocket" name="_evaluate_trust" sline="415" eline="453" brval="" bbs="415 417 434 447 450"/>
+    <function class="WrappedSocket" name="handshake" sline="455" eline="545" brval="" bbs="455 486 496 497 519 526 534 538 540 544 545"/>
+    <function class="WrappedSocket" name="fileno" sline="547" eline="548" brval="" bbs="547"/>
+    <function class="WrappedSocket" name="_decref_socketios" sline="551" eline="555" brval="" bbs="551 552 554"/>
+    <function class="WrappedSocket" name="recv" sline="557" eline="561" brval="" bbs="557"/>
+    <function class="WrappedSocket" name="recv_into" sline="563" eline="606" brval="589:processed_bytes:4134872432 " bbs="563 567 570 584 589 592 602"/>
+    <function class="WrappedSocket" name="settimeout" sline="608" eline="609" brval="" bbs="608"/>
+    <function class="WrappedSocket" name="gettimeout" sline="611" eline="612" brval="" bbs="611"/>
+    <function class="WrappedSocket" name="send" sline="614" eline="629" brval="622:processed_bytes:4134872432 " bbs="614 622 626"/>
+    <function class="WrappedSocket" name="sendall" sline="631" eline="635" brval="" bbs="631 633"/>
+    <function class="WrappedSocket" name="shutdown" sline="637" eline="639" brval="" bbs="637"/>
+    <function class="WrappedSocket" name="close" sline="641" eline="658" brval="" bbs="641 643 645 648 651 658"/>
+    <function class="WrappedSocket" name="getpeercert" sline="660" eline="716" brval="" bbs="660 680 690 695 711 713"/>
+    <function class="WrappedSocket" name="version" sline="718" eline="737" brval="" bbs="718 724 726 728 730 732 734 737"/>
+    <function class="" name="makefile" sline="740" eline="752" brval="" bbs="740"/>
+    <function class="SecureTransportContext" name="__init__" sline="765" eline="777" brval="" bbs="765 768"/>
+    <function class="SecureTransportContext" name="check_hostname" sline="780" eline="785" brval="" bbs="780"/>
+    <function class="SecureTransportContext" name="check_hostname" sline="788" eline="793" brval="" bbs="788"/>
+    <function class="SecureTransportContext" name="options" sline="796" eline="803" brval="" bbs="796"/>
+    <function class="SecureTransportContext" name="options" sline="806" eline="808" brval="" bbs="806"/>
+    <function class="SecureTransportContext" name="verify_mode" sline="811" eline="812" brval="" bbs="811"/>
+    <function class="SecureTransportContext" name="verify_mode" sline="815" eline="816" brval="" bbs="815"/>
+    <function class="SecureTransportContext" name="set_default_verify_paths" sline="818" eline="828" brval="" bbs="818"/>
+    <function class="SecureTransportContext" name="load_default_certs" sline="830" eline="831" brval="" bbs="830"/>
+    <function class="SecureTransportContext" name="set_ciphers" sline="833" eline="834" brval="" bbs="833"/>
+    <function class="SecureTransportContext" name="load_verify_locations" sline="836" eline="851" brval="" bbs="836 843 847"/>
+    <function class="SecureTransportContext" name="load_cert_chain" sline="853" eline="861" brval="" bbs="853"/>
+    <function class="SecureTransportContext" name="set_alpn_protocols" sline="863" eline="873" brval="" bbs="863 869"/>
+    <function class="SecureTransportContext" name="wrap_socket" sline="875" eline="906" brval="" bbs="875"/>
+    <function class="SecureTransportContext" name="minimum_version" sline="909" eline="910" brval="" bbs="909"/>
+    <function class="SecureTransportContext" name="minimum_version" sline="913" eline="914" brval="" bbs="913"/>
+    <function class="SecureTransportContext" name="maximum_version" sline="917" eline="918" brval="" bbs="917"/>
+    <function class="SecureTransportContext" name="maximum_version" sline="921" eline="922" brval="" bbs="921"/>
+  </file>
+  <file name="socks.py" id="13">
+    <function class="SOCKSConnection" name="__init__" sline="92" eline="96" brval="" bbs="92"/>
+    <function class="SOCKSConnection" name="_new_conn" sline="98" eline="154" brval="" bbs="98 103 106"/>
+    <function class="SOCKSProxyManager" name="__init__" sline="184" eline="228" brval="" bbs="184 195 197 199 202 205 208 212"/>
+  </file>
+  <file name="pyopenssl.py" id="14">
+    <function class="" name="inject_into_urllib3" sline="149" eline="160" brval="" bbs="149"/>
+    <function class="" name="extract_from_urllib3" sline="163" eline="172" brval="" bbs="163"/>
+    <function class="" name="_validate_dependencies_met" sline="175" eline="195" brval="" bbs="175 183 194"/>
+    <function class="" name="_dnsname_to_stdlib" sline="201" eline="0" brval="" bbs="201"/>
+    <function class="" name="idna_encode" sline="215" eline="228" brval="" bbs="215 224 225"/>
+    <function class="" name="get_subj_alt_name" sline="242" eline="293" brval="" bbs="242 247 252"/>
+    <function class="WrappedSocket" name="__init__" sline="299" eline="309" brval="" bbs="299"/>
+    <function class="WrappedSocket" name="fileno" sline="311" eline="312" brval="" bbs="311"/>
+    <function class="WrappedSocket" name="_decref_socketios" sline="315" eline="319" brval="" bbs="315 316 318"/>
+    <function class="WrappedSocket" name="recv" sline="321" eline="344" brval="" bbs="321"/>
+    <function class="WrappedSocket" name="recv_into" sline="346" eline="348" brval="" bbs="346"/>
+    <function class="WrappedSocket" name="settimeout" sline="369" eline="370" brval="" bbs="369"/>
+    <function class="WrappedSocket" name="_send_until_done" sline="372" eline="375" brval="" bbs="372 373"/>
+    <function class="WrappedSocket" name="sendall" sline="383" eline="389" brval="" bbs="383 385"/>
+    <function class="WrappedSocket" name="shutdown" sline="391" eline="393" brval="" bbs="391"/>
+    <function class="WrappedSocket" name="close" sline="395" eline="403" brval="" bbs="395 396 403"/>
+    <function class="WrappedSocket" name="getpeercert" sline="405" eline="416" brval="" bbs="405 408 411"/>
+    <function class="WrappedSocket" name="version" sline="419" eline="420" brval="" bbs="419"/>
+    <function class="PyOpenSSLContext" name="__init__" sline="433" eline="439" brval="" bbs="433"/>
+    <function class="PyOpenSSLContext" name="options" sline="442" eline="443" brval="" bbs="442"/>
+    <function class="PyOpenSSLContext" name="options" sline="446" eline="448" brval="" bbs="446"/>
+    <function class="PyOpenSSLContext" name="verify_mode" sline="451" eline="452" brval="" bbs="451"/>
+    <function class="PyOpenSSLContext" name="verify_mode" sline="455" eline="456" brval="" bbs="455"/>
+    <function class="PyOpenSSLContext" name="set_default_verify_paths" sline="458" eline="459" brval="" bbs="458"/>
+    <function class="PyOpenSSLContext" name="set_ciphers" sline="461" eline="464" brval="" bbs="461 462"/>
+    <function class="PyOpenSSLContext" name="load_verify_locations" sline="466" eline="479" brval="" bbs="466 472 474 478"/>
+    <function class="PyOpenSSLContext" name="load_cert_chain" sline="483" eline="494" brval="" bbs="483 490 491"/>
+    <function class="PyOpenSSLContext" name="set_alpn_protocols" sline="496" eline="498" brval="" bbs="496"/>
+    <function class="PyOpenSSLContext" name="wrap_socket" sline="500" eline="529" brval="" bbs="500 511 512 518"/>
+    <function class="PyOpenSSLContext" name="_set_ctx_options" sline="531" eline="532" brval="" bbs="531"/>
+    <function class="PyOpenSSLContext" name="minimum_version" sline="539" eline="540" brval="" bbs="539"/>
+    <function class="PyOpenSSLContext" name="minimum_version" sline="543" eline="545" brval="" bbs="543"/>
+    <function class="PyOpenSSLContext" name="maximum_version" sline="548" eline="549" brval="" bbs="548"/>
+    <function class="PyOpenSSLContext" name="maximum_version" sline="552" eline="554" brval="" bbs="552"/>
+    <function class="" name="_verify_callback" sline="557" eline="564" brval="" bbs="557"/>
+  </file>
+  <file name="__init__.py" id="15"/>
+  <file name="low_level.py" id="16">
+    <function class="" name="_cf_data_from_bytes" sline="39" eline="44" brval="" bbs="39"/>
+    <function class="" name="_cf_dictionary_from_tuples" sline="49" eline="61" brval="" bbs="49"/>
+    <function class="" name="_cfstr" sline="71" eline="82" brval="" bbs="71"/>
+    <function class="" name="_create_cfstring_array" sline="85" eline="113" brval="" bbs="85 99 101 103"/>
+    <function class="" name="_cf_string_to_unicode" sline="116" eline="138" brval="" bbs="116 128 133 136"/>
+    <function class="" name="_assert_no_error" sline="141" eline="161" brval="148:error:4160215792 " bbs="141 148 155 158"/>
+    <function class="" name="_cert_array_from_pem" sline="164" eline="207" brval="" bbs="164 175 183 187 189 195"/>
+    <function class="" name="_is_cert" sline="210" eline="215" brval="" bbs="210"/>
+    <function class="" name="_is_identity" sline="218" eline="223" brval="" bbs="218"/>
+    <function class="" name="_temporary_keychain" sline="226" eline="258" brval="" bbs="226"/>
+    <function class="" name="_load_items_from_file" sline="261" eline="315" brval="" bbs="261 299 303 306 310"/>
+    <function class="" name="_load_client_cert_chain" sline="318" eline="390" brval="" bbs="318 357 364 382 389"/>
+    <function class="" name="_build_tls_unknown_ca_alert" sline="402" eline="413" brval="" bbs="402"/>
+  </file>
+  <file name="bindings.py" id="17">
+    <function class="" name="load_cdll" sline="64" eline="76" brval="" bbs="64 70 73 74"/>
+  </file>
+  <file name="__init__.py" id="18"/>
+  <file name="request.py" id="19">
+    <function class="" name="make_headers" sline="38" eline="114" brval="" bbs="38 86 87 89 92 95 98 101 106 111"/>
+    <function class="" name="set_file_position" sline="117" eline="134" brval="" bbs="117 124 126"/>
+    <function class="" name="rewind_body" sline="137" eline="162" brval="" bbs="137 149 156 162"/>
+  </file>
+  <file name="connection.py" id="20">
+    <function class="" name="is_connection_dropped" sline="11" eline="22" brval="" bbs="11 19"/>
+    <function class="" name="create_connection" sline="29" eline="92" brval="" bbs="29 48 62 71 73 85 92"/>
+    <function class="" name="_set_socket_options" sline="95" eline="102" brval="" bbs="95 98 101"/>
+    <function class="" name="allowed_gai_family" sline="105" eline="113" brval="" bbs="105 111"/>
+    <function class="" name="_has_ipv6" sline="116" eline="136" brval="" bbs="116 121 134"/>
+  </file>
+  <file name="url.py" id="21">
+    <function class="Url" name="hostname" sline="117" eline="119" brval="" bbs="117"/>
+    <function class="Url" name="request_uri" sline="122" eline="129" brval="" bbs="122 126"/>
+    <function class="Url" name="authority" sline="132" eline="145" brval="" bbs="132 142 145"/>
+    <function class="Url" name="netloc" sline="148" eline="159" brval="" bbs="148 155 157"/>
+    <function class="Url" name="url" sline="162" eline="207" brval="" bbs="162 192 194 196 198 200 202 204"/>
+    <function class="" name="_encode_invalid_chars" sline="214" eline="217" brval="" bbs="214"/>
+    <function class="" name="_encode_invalid_chars" sline="221" eline="224" brval="" bbs="221"/>
+    <function class="" name="_encode_invalid_chars" sline="227" eline="260" brval="" bbs="227 233 249 253"/>
+    <function class="" name="_remove_path_dot_segments" sline="263" eline="290" brval="" bbs="263 268 270 273 277 282 287"/>
+    <function class="" name="_normalize_host" sline="293" eline="316" brval="" bbs="293 294 295 297 299 303 306 310 311"/>
+    <function class="" name="_idna_encode" sline="319" eline="335" brval="" bbs="319 320"/>
+    <function class="" name="_encode_target" sline="338" eline="353" brval="" bbs="338 345 350"/>
+    <function class="" name="parse_url" sline="356" eline="450" brval="" bbs="356 384 389 406 409 413 415 418 420 422 425 429 432 434 444 445 448"/>
+  </file>
+  <file name="retry.py" id="22">
+    <function class="Retry" name="__init__" sline="200" eline="239" brval="226:redirect:4134475824 226:total:4140884528 " bbs="200 226"/>
+    <function class="Retry" name="new" sline="243" eline="263" brval="" bbs="243"/>
+    <function class="Retry" name="from_int" sline="266" eline="282" brval="" bbs="266 273 276"/>
+    <function class="Retry" name="get_backoff_time" sline="284" eline="299" brval="295:consecutive_errors_len:4134527024 " bbs="284 295"/>
+    <function class="Retry" name="parse_retry_after" sline="301" eline="316" brval="" bbs="301 304 307 308 311 312"/>
+    <function class="Retry" name="get_retry_after" sline="318" eline="326" brval="" bbs="318 323"/>
+    <function class="Retry" name="sleep_for_retry" sline="328" eline="334" brval="" bbs="328 330"/>
+    <function class="Retry" name="_sleep_backoff" sline="336" eline="340" brval="338:backoff:4133473008 " bbs="336 338"/>
+    <function class="Retry" name="sleep" sline="342" eline="356" brval="" bbs="342 351 353"/>
+    <function class="Retry" name="_is_connection_error" sline="358" eline="364" brval="" bbs="358 362"/>
+    <function class="Retry" name="_is_read_error" sline="366" eline="370" brval="" bbs="366"/>
+    <function class="Retry" name="_is_method_retryable" sline="372" eline="378" brval="" bbs="372 376"/>
+    <function class="Retry" name="is_retry" sline="380" eline="395" brval="" bbs="380 389 392"/>
+    <function class="Retry" name="is_exhausted" sline="402" eline="419" brval="" bbs="402 416"/>
+    <function class="Retry" name="increment" sline="421" eline="516" brval="459:connect:4134873072 466:read:4159796208 " bbs="421 440 445 457 459 461 464 466 468 471 473 476 478 482 489 490 491 510"/>
+  </file>
+  <file name="ssltransport.py" id="23">
+    <function class="SSLTransport" name="_validate_ssl_context_for_tls_in_tls" sline="47" eline="57" brval="" bbs="47 56"/>
+    <function class="SSLTransport" name="__init__" sline="62" eline="83" brval="" bbs="62"/>
+    <function class="SSLTransport" name="fileno" sline="91" eline="92" brval="" bbs="91"/>
+    <function class="SSLTransport" name="read" sline="94" eline="95" brval="" bbs="94"/>
+    <function class="SSLTransport" name="recv" sline="97" eline="100" brval="98:flags:4160099888 " bbs="97 98"/>
+    <function class="SSLTransport" name="recv_into" sline="102" eline="112" brval="108:flags:4160099888 " bbs="102 108 110"/>
+    <function class="SSLTransport" name="sendall" sline="114" eline="122" brval="115:flags:4160099888 " bbs="114 115 120"/>
+    <function class="SSLTransport" name="send" sline="124" eline="127" brval="125:flags:4160099888 " bbs="124 125"/>
+    <function class="SSLTransport" name="makefile" sline="129" eline="179" brval="163:buffering:4159594544 " bbs="129 145 153 155 159 161 163 164 168 170 173 174 175"/>
+    <function class="SSLTransport" name="unwrap" sline="181" eline="182" brval="" bbs="181"/>
+    <function class="SSLTransport" name="close" sline="184" eline="185" brval="" bbs="184"/>
+    <function class="SSLTransport" name="getpeercert" sline="188" eline="191" brval="" bbs="188"/>
+    <function class="SSLTransport" name="getpeercert" sline="194" eline="195" brval="" bbs="194"/>
+    <function class="SSLTransport" name="getpeercert" sline="197" eline="198" brval="" bbs="197"/>
+    <function class="SSLTransport" name="version" sline="200" eline="201" brval="" bbs="200"/>
+    <function class="SSLTransport" name="cipher" sline="203" eline="204" brval="" bbs="203"/>
+    <function class="SSLTransport" name="selected_alpn_protocol" sline="206" eline="207" brval="" bbs="206"/>
+    <function class="SSLTransport" name="selected_npn_protocol" sline="209" eline="210" brval="" bbs="209"/>
+    <function class="SSLTransport" name="shared_ciphers" sline="212" eline="213" brval="" bbs="212"/>
+    <function class="SSLTransport" name="compression" sline="215" eline="216" brval="" bbs="215"/>
+    <function class="SSLTransport" name="settimeout" sline="218" eline="219" brval="" bbs="218"/>
+    <function class="SSLTransport" name="gettimeout" sline="221" eline="222" brval="" bbs="221"/>
+    <function class="SSLTransport" name="_decref_socketios" sline="224" eline="225" brval="" bbs="224"/>
+    <function class="SSLTransport" name="_wrap_ssl_read" sline="227" eline="231" brval="" bbs="227"/>
+    <function class="SSLTransport" name="_ssl_io_loop" sline="240" eline="241" brval="" bbs="240"/>
+    <function class="SSLTransport" name="_ssl_io_loop" sline="245" eline="246" brval="" bbs="245"/>
+    <function class="SSLTransport" name="_ssl_io_loop" sline="250" eline="256" brval="" bbs="250"/>
+    <function class="SSLTransport" name="_ssl_io_loop" sline="258" eline="294" brval="" bbs="258 268 271 273 276 286 288 290 293"/>
+  </file>
+  <file name="proxy.py" id="24">
+    <function class="" name="connection_requires_http_tunnel" sline="9" eline="41" brval="" bbs="9 25 29 33"/>
+  </file>
+  <file name="ssl_match_hostname.py" id="25">
+    <function class="" name="_dnsname_match" sline="22" eline="75" brval="" bbs="22 30 40 50 56 60 68 71"/>
+    <function class="" name="_ipaddress_match" sline="78" eline="87" brval="" bbs="78"/>
+    <function class="" name="match_hostname" sline="90" eline="146" brval="" bbs="90 102 118 119 120 123 124 130 131 132 133 134 138 143 146"/>
+  </file>
+  <file name="util.py" id="26">
+    <function class="" name="to_bytes" sline="5" eline="14" brval="" bbs="5 8 10 12"/>
+    <function class="" name="to_str" sline="17" eline="26" brval="" bbs="17 20 22 24"/>
+    <function class="" name="reraise" sline="29" eline="40" brval="" bbs="29 35"/>
+  </file>
+  <file name="response.py" id="27">
+    <function class="" name="is_fp_closed" sline="7" eline="35" brval="" bbs="7"/>
+    <function class="" name="assert_header_parsing" sline="38" eline="86" brval="" bbs="38 53 60 63 85"/>
+    <function class="" name="is_response_to_head" sline="89" eline="99" brval="" bbs="89"/>
+  </file>
+  <file name="wait.py" id="28">
+    <function class="" name="select_wait_for_socket" sline="32" eline="53" brval="" bbs="32 38 42 44"/>
+    <function class="" name="poll_wait_for_socket" sline="56" eline="0" brval="" bbs="56 62 65 67"/>
+    <function class="" name="do_poll" sline="73" eline="76" brval="" bbs="73 74"/>
+    <function class="" name="_have_working_poll" sline="81" eline="91" brval="" bbs="81"/>
+    <function class="" name="wait_for_socket" sline="94" eline="109" brval="" bbs="94 105 107"/>
+    <function class="" name="wait_for_read" sline="112" eline="116" brval="" bbs="112"/>
+    <function class="" name="wait_for_write" sline="119" eline="123" brval="" bbs="119"/>
+  </file>
+  <file name="timeout.py" id="29">
+    <function class="Timeout" name="__init__" sline="109" eline="118" brval="" bbs="109"/>
+    <function class="Timeout" name="resolve_default_timeout" sline="127" eline="128" brval="" bbs="127"/>
+    <function class="Timeout" name="_validate_timeout" sline="131" eline="170" brval="158:value:4160519600 " bbs="131 141 144 158"/>
+    <function class="Timeout" name="from_float" sline="173" eline="186" brval="" bbs="173"/>
+    <function class="Timeout" name="clone" sline="188" eline="200" brval="" bbs="188"/>
+    <function class="Timeout" name="start_connect" sline="202" eline="211" brval="" bbs="202 208"/>
+    <function class="Timeout" name="get_connect_duration" sline="213" eline="225" brval="" bbs="213 221"/>
+    <function class="Timeout" name="connect_timeout" sline="228" eline="243" brval="" bbs="228 237 240"/>
+    <function class="Timeout" name="read_timeout" sline="246" eline="275" brval="" bbs="246 262 269 272 275"/>
+  </file>
+  <file name="ssl_.py" id="30">
+    <function class="" name="_is_ge_openssl_v1_1_1" sline="28" eline="37" brval="" bbs="28"/>
+    <function class="" name="_is_openssl_issue_14579_fixed" sline="41" eline="55" brval="" bbs="41"/>
+    <function class="" name="_is_bpo_43522_fixed" sline="59" eline="84" brval="" bbs="59 76"/>
+    <function class="" name="_is_has_never_check_common_name_reliable" sline="88" eline="96" brval="" bbs="88"/>
+    <function class="" name="assert_fingerprint" sline="208" eline="233" brval="" bbs="208 218 224 232"/>
+    <function class="" name="resolve_cert_reqs" sline="238" eline="258" brval="" bbs="238 249 252 254"/>
+    <function class="" name="resolve_ssl_version" sline="261" eline="274" brval="" bbs="261 265 268 270"/>
+    <function class="" name="create_urllib3_context" sline="277" eline="432" brval="" bbs="277 327 331 334 343 346 353 364 367 369 374 380 403 413 417 418 427 429"/>
+    <function class="" name="ssl_wrap_socket" sline="436" eline="451" brval="" bbs="436"/>
+    <function class="" name="ssl_wrap_socket" sline="455" eline="470" brval="" bbs="455"/>
+    <function class="" name="ssl_wrap_socket" sline="473" eline="558" brval="" bbs="473 512 517 523 530 533 534 537 540 545"/>
+    <function class="" name="is_ipaddress" sline="561" eline="571" brval="" bbs="561 568"/>
+    <function class="" name="_is_key_file_encrypted" sline="574" eline="582" brval="" bbs="574 577 579"/>
+    <function class="" name="_ssl_wrap_socket_impl" sline="585" eline="601" brval="" bbs="585 591 592"/>
+  </file>
+  <file name="__init__.py" id="31"/>
+</py_summary>

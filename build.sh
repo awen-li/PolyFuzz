@@ -38,6 +38,7 @@ cd $BASE_DIR/tool/BBstat
 make clean && make
 cd $BASE_DIR/tool/javawrapper
 make clean && make
+cd $BASE_DIR/tool/Perfget && ./install.sh
 cp $BASE_DIR/tool/delshm.sh /usr/bin/
 cp $BASE_DIR/tool/PyVersion.sh /usr/bin/
 cd $BASE_DIR

@@ -1,0 +1,811 @@
+<?xml version="1.0" ?>
+<py_summary branchs="3236">
+  <file name="callbacks.py" id="1">
+    <function class="" name="nofollow" sline="4" eline="19" brval="" bbs="4 7 10 15"/>
+    <function class="" name="target_blank" sline="22" eline="32" brval="" bbs="22 25 28"/>
+  </file>
+  <file name="css_sanitizer.py" id="2">
+    <function class="CSSSanitizer" name="__init__" sline="71" eline="77" brval="" bbs="71"/>
+    <function class="CSSSanitizer" name="sanitize_css" sline="79" eline="104" brval="" bbs="79 83 87 88 89 94 95 101"/>
+  </file>
+  <file name="sanitizer.py" id="3">
+    <function class="Cleaner" name="__init__" sline="80" eline="133" brval="" bbs="80"/>
+    <function class="Cleaner" name="clean" sline="146" eline="184" brval="" bbs="146 156 164 181"/>
+    <function class="" name="attribute_filter_factory" sline="187" eline="0" brval="" bbs="187 195 198"/>
+    <function class="" name="_attr_filter" sline="200" eline="216" brval="" bbs="200 201 203 206 209 211"/>
+    <function class="" name="_attr_filter" sline="222" eline="223" brval="" bbs="222"/>
+    <function class="BleachSanitizerFilter" name="__init__" sline="237" eline="282" brval="" bbs="237"/>
+    <function class="BleachSanitizerFilter" name="sanitize_stream" sline="289" eline="299" brval="" bbs="289 290 293 296 299"/>
+    <function class="BleachSanitizerFilter" name="merge_characters" sline="301" eline="332" brval="" bbs="301 305 306 307 313 319 320 322"/>
+    <function class="BleachSanitizerFilter" name="sanitize_token" sline="339" eline="380" brval="" bbs="339 356 357 360 364 366 367 374 376 380"/>
+    <function class="BleachSanitizerFilter" name="sanitize_characters" sline="382" eline="441" brval="" bbs="382 399 406 413 414 417 419 420 430 435"/>
+    <function class="BleachSanitizerFilter" name="sanitize_uri_value" sline="443" eline="496" brval="" bbs="443 477 479 484 488 493"/>
+    <function class="BleachSanitizerFilter" name="allow_token" sline="498" eline="565" brval="" bbs="498 500 508 515 520 522 527 530 536 539 540 544 548 549 558"/>
+    <function class="BleachSanitizerFilter" name="disallowed_token" sline="567" eline="609" brval="" bbs="567 569 572 575 578 583 586 601 603"/>
+  </file>
+  <file name="linkifier.py" id="4">
+    <function class="" name="build_url_re" sline="31" eline="44" brval="" bbs="31"/>
+    <function class="" name="build_email_re" sline="64" eline="77" brval="" bbs="64"/>
+    <function class="Linker" name="__init__" sline="109" eline="154" brval="" bbs="109"/>
+    <function class="Linker" name="linkify" sline="163" eline="188" brval="" bbs="163 173 176"/>
+    <function class="LinkifyFilter" name="__init__" sline="205" eline="239" brval="" bbs="205"/>
+    <function class="LinkifyFilter" name="apply_callbacks" sline="241" eline="259" brval="" bbs="241 255 257"/>
+    <function class="LinkifyFilter" name="extract_character_data" sline="261" eline="286" brval="" bbs="261 281 283"/>
+    <function class="LinkifyFilter" name="handle_email_addresses" sline="288" eline="344" brval="" bbs="288 290 291 297 298 316 324 325 334 337"/>
+    <function class="LinkifyFilter" name="strip_non_url_bits" sline="346" eline="392" brval="" bbs="346 354 357 361 372 378 384"/>
+    <function class="LinkifyFilter" name="handle_links" sline="394" eline="469" brval="" bbs="394 397 398 399 403 407 412 413 426 429 434 442 445 446 454 459 462"/>
+    <function class="LinkifyFilter" name="handle_a_tag" sline="471" eline="511" brval="" bbs="471 481 484 490 496 497 499 509 510 511"/>
+  </file>
+  <file name="html5lib_shim.py" id="5">
+    <function class="InputStreamWithMemory" name="__init__" sline="247" eline="251" brval="" bbs="247"/>
+    <function class="InputStreamWithMemory" name="errors" sline="254" eline="255" brval="" bbs="254"/>
+    <function class="InputStreamWithMemory" name="charEncoding" sline="258" eline="259" brval="" bbs="258"/>
+    <function class="InputStreamWithMemory" name="changeEncoding" sline="262" eline="263" brval="" bbs="262"/>
+    <function class="InputStreamWithMemory" name="char" sline="265" eline="270" brval="" bbs="265 268"/>
+    <function class="InputStreamWithMemory" name="charsUntil" sline="272" eline="275" brval="" bbs="272"/>
+    <function class="InputStreamWithMemory" name="unget" sline="277" eline="280" brval="" bbs="277 278"/>
+    <function class="InputStreamWithMemory" name="get_tag" sline="282" eline="290" brval="" bbs="282"/>
+    <function class="InputStreamWithMemory" name="start_tag" sline="292" eline="299" brval="" bbs="292"/>
+    <function class="BleachHTMLTokenizer" name="__init__" sline="305" eline="314" brval="" bbs="305"/>
+    <function class="BleachHTMLTokenizer" name="consumeEntity" sline="390" eline="406" brval="" bbs="390 393 402 406"/>
+    <function class="BleachHTMLTokenizer" name="tagOpenState" sline="408" eline="414" brval="" bbs="408"/>
+    <function class="BleachHTMLTokenizer" name="emitCurrentToken" sline="416" eline="458" brval="" bbs="416 419 427 428 440 448"/>
+    <function class="BleachHTMLParser" name="__init__" sline="464" eline="477" brval="" bbs="464"/>
+    <function class="BleachHTMLParser" name="_parse" sline="479" eline="497" brval="" bbs="479"/>
+    <function class="" name="convert_entity" sline="503" eline="534" brval="529:code_point:2909332976 " bbs="503 514 515 518 523 525 529 532"/>
+    <function class="" name="convert_entities" sline="537" eline="569" brval="" bbs="537 545 549 550 553 555 560 563"/>
+    <function class="" name="match_entity" sline="572" eline="629" brval="" bbs="572 585 595 599 603 607 609 613 618 621 626"/>
+    <function class="" name="next_possible_entity" sline="635" eline="648" brval="647:i:2934736240 " bbs="635 644 645 647"/>
+    <function class="BleachHTMLSerializer" name="escape_base_amp" sline="664" eline="693" brval="" bbs="664 675 676 679 683 689"/>
+    <function class="BleachHTMLSerializer" name="serialize" sline="695" eline="724" brval="" bbs="695 705 706 707 710 711 717 722 724"/>
+  </file>
+  <file name="__init__.py" id="6">
+    <function class="" name="clean" sline="22" eline="82" brval="" bbs="22"/>
+    <function class="" name="linkify" sline="85" eline="125" brval="" bbs="85"/>
+  </file>
+  <file name="parse.py" id="7">
+    <function class="" name="clear_cache" sline="86" eline="89" brval="" bbs="86"/>
+    <function class="" name="_noop" sline="101" eline="102" brval="" bbs="101"/>
+    <function class="" name="_encode_result" sline="104" eline="106" brval="" bbs="104"/>
+    <function class="" name="_decode_args" sline="108" eline="110" brval="" bbs="108"/>
+    <function class="" name="_coerce_args" sline="112" eline="126" brval="" bbs="112 119 122 124"/>
+    <function class="_ResultMixinStr" name="encode" sline="133" eline="134" brval="" bbs="133"/>
+    <function class="_ResultMixinBytes" name="decode" sline="141" eline="142" brval="" bbs="141"/>
+    <function class="_NetlocResultMixinBase" name="username" sline="150" eline="151" brval="" bbs="150"/>
+    <function class="_NetlocResultMixinBase" name="password" sline="154" eline="155" brval="" bbs="154"/>
+    <function class="_NetlocResultMixinBase" name="hostname" sline="158" eline="166" brval="" bbs="158 160"/>
+    <function class="_NetlocResultMixinBase" name="port" sline="169" eline="175" brval="" bbs="169 171 173"/>
+    <function class="_NetlocResultMixinStr" name="_userinfo" sline="182" eline="191" brval="" bbs="182 185 187 190"/>
+    <function class="_NetlocResultMixinStr" name="_hostinfo" sline="194" eline="205" brval="" bbs="194 198 202 203"/>
+    <function class="_NetlocResultMixinBytes" name="_userinfo" sline="212" eline="221" brval="" bbs="212 215 217 220"/>
+    <function class="_NetlocResultMixinBytes" name="_hostinfo" sline="224" eline="235" brval="" bbs="224 228 232 233"/>
+    <function class="DefragResult" name="geturl" sline="315" eline="319" brval="" bbs="315 316 319"/>
+    <function class="SplitResult" name="geturl" sline="323" eline="324" brval="" bbs="323"/>
+    <function class="ParseResult" name="geturl" sline="328" eline="329" brval="" bbs="328"/>
+    <function class="DefragResultBytes" name="geturl" sline="334" eline="338" brval="" bbs="334 335 338"/>
+    <function class="SplitResultBytes" name="geturl" sline="342" eline="343" brval="" bbs="342"/>
+    <function class="ParseResultBytes" name="geturl" sline="347" eline="348" brval="" bbs="347"/>
+    <function class="" name="_fix_result_transcoding" sline="351" eline="359" brval="" bbs="351 357"/>
+    <function class="" name="urlparse" sline="364" eline="378" brval="" bbs="364 373 376"/>
+    <function class="" name="_splitparams" sline="380" eline="387" brval="383:i:2934736240 " bbs="380 381 383 386"/>
+    <function class="" name="_splitnetloc" sline="389" eline="395" brval="393:wdelim:2912208368 " bbs="389 391 393"/>
+    <function class="" name="_checknetloc" sline="397" eline="412" brval="" bbs="397 398 408 410 411"/>
+    <function class="" name="_remove_unsafe_bytes_from_url" sline="415" eline="418" brval="" bbs="415 416"/>
+    <function class="" name="urlsplit" sline="420" eline="478" brval="438:i:2934736240 " bbs="420 432 434 438 439 442 444 447 449 455 456 466 468 471 473"/>
+    <function class="" name="urlunparse" sline="480" eline="489" brval="" bbs="480 487"/>
+    <function class="" name="urlunsplit" sline="491" eline="508" brval="" bbs="491 499 500 502 504 506"/>
+    <function class="" name="urljoin" sline="510" eline="575" brval="" bbs="510 513 515 524 526 527 532 535 541 547 550 553 557 558 565 568 570"/>
+    <function class="" name="urldefrag" sline="579" eline="593" brval="" bbs="579 587 591 592"/>
+    <function class="" name="unquote_to_bytes" sline="598" eline="626" brval="" bbs="598 602 606 609 616 619"/>
+    <function class="" name="unquote" sline="630" eline="653" brval="" bbs="630 640 643 645 650"/>
+    <function class="" name="parse_qs" sline="656" eline="695" brval="" bbs="656 690 691 694"/>
+    <function class="" name="parse_qsl" sline="698" eline="762" brval="" bbs="698 729 735 737 742 743 746 747 750 753 754"/>
+    <function class="" name="unquote_plus" sline="764" eline="771" brval="" bbs="764"/>
+    <function class="Quoter" name="__init__" sline="788" eline="790" brval="" bbs="788"/>
+    <function class="" name="quote" sline="802" eline="844" brval="" bbs="802 831 832 834 836 840 842"/>
+    <function class="" name="quote_plus" sline="846" eline="861" brval="" bbs="846 853 856 859"/>
+    <function class="" name="quote_from_bytes" sline="863" eline="883" brval="" bbs="863 868 870 872 876 877"/>
+    <function class="" name="urlencode" sline="885" eline="963" brval="" bbs="885 902 907 910 922 923 924 927 929 932 935 936 939 941 944 948 957 958 961"/>
+    <function class="" name="to_bytes" sline="965" eline="976" brval="" bbs="965 970"/>
+    <function class="" name="unwrap" sline="978" eline="984" brval="" bbs="978 981 983"/>
+    <function class="" name="splittype" sline="987" eline="997" brval="" bbs="987 990 994"/>
+    <function class="" name="splithost" sline="1000" eline="1012" brval="" bbs="1000 1003 1007 1009"/>
+    <function class="" name="splituser" sline="1014" eline="1017" brval="" bbs="1014"/>
+    <function class="" name="splitpasswd" sline="1019" eline="1022" brval="" bbs="1019"/>
+    <function class="" name="splitport" sline="1026" eline="1037" brval="" bbs="1026 1029 1033 1035"/>
+    <function class="" name="splitnport" sline="1039" eline="1053" brval="" bbs="1039 1045 1047"/>
+    <function class="" name="splitquery" sline="1055" eline="1060" brval="" bbs="1055 1058"/>
+    <function class="" name="splittag" sline="1062" eline="1067" brval="" bbs="1062 1065"/>
+    <function class="" name="splitattr" sline="1069" eline="1073" brval="" bbs="1069"/>
+    <function class="" name="splitvalue" sline="1075" eline="1078" brval="" bbs="1075"/>
+  </file>
+  <file name="__init__.py" id="8"/>
+  <file name="serializer.py" id="9">
+    <function class="" name="htmlentityreplace_errors" sline="42" eline="69" brval="" bbs="42 43 47 48 52 56 58 60 63 66 69"/>
+    <function class="" name="serialize" sline="75" eline="101" brval="" bbs="75"/>
+    <function class="HTMLSerializer" name="__init__" sline="135" eline="222" brval="" bbs="135 215 217 219"/>
+    <function class="HTMLSerializer" name="encode" sline="224" eline="229" brval="" bbs="224 226 229"/>
+    <function class="HTMLSerializer" name="encodeStrict" sline="231" eline="236" brval="" bbs="231 233 236"/>
+    <function class="HTMLSerializer" name="serialize" sline="238" eline="373" brval="" bbs="238 244 250 255 258 261 265 267 270 272 274 275 276 280 286 287 288 292 294 297 299 301 308 312 314 316 319 322 324 326 327 329 331 334 339 340 341 344 347 349 351 355 357 361 364 366 369 373"/>
+    <function class="HTMLSerializer" name="render" sline="375" eline="398" brval="" bbs="375 395 398"/>
+    <function class="HTMLSerializer" name="serializeError" sline="400" eline="404" brval="" bbs="400 403"/>
+  </file>
+  <file name="_utils.py" id="10">
+    <function class="MethodDispatcher" name="__init__" sline="57" eline="67" brval="" bbs="57 59 60 61 64"/>
+    <function class="BoundMethodDispatcher" name="__init__" sline="78" eline="80" brval="" bbs="78"/>
+    <function class="BoundMethodDispatcher" name="get" sline="87" eline="91" brval="" bbs="87 88 91"/>
+    <function class="" name="isSurrogatePair" sline="106" eline="109" brval="" bbs="106"/>
+    <function class="" name="surrogatePairToCodepoint" sline="112" eline="115" brval="" bbs="112"/>
+    <function class="" name="moduleFactoryFactory" sline="121" eline="0" brval="" bbs="121"/>
+    <function class="" name="moduleFactory" sline="124" eline="133" brval="" bbs="124 125 128"/>
+    <function class="" name="memoize" sline="150" eline="0" brval="" bbs="150"/>
+    <function class="" name="wrapped" sline="153" eline="157" brval="" bbs="153 155"/>
+  </file>
+  <file name="html5parser.py" id="11">
+    <function class="" name="parse" sline="26" eline="46" brval="" bbs="26"/>
+    <function class="" name="parseFragment" sline="49" eline="71" brval="" bbs="49"/>
+    <function class="" name="method_decorator_metaclass" sline="74" eline="83" brval="" bbs="74"/>
+    <function class="HTMLParser" name="__init__" sline="93" eline="122" brval="" bbs="93 116"/>
+    <function class="HTMLParser" name="_parse" sline="124" eline="133" brval="" bbs="124"/>
+    <function class="HTMLParser" name="reset" sline="138" eline="170" brval="" bbs="138 146 149 151 153 158 163 164"/>
+    <function class="HTMLParser" name="documentEncoding" sline="173" eline="180" brval="" bbs="173 178"/>
+    <function class="HTMLParser" name="isHTMLIntegrationPoint" sline="182" eline="190" brval="" bbs="182 183 190"/>
+    <function class="HTMLParser" name="isMathMLTextIntegrationPoint" sline="192" eline="193" brval="" bbs="192"/>
+    <function class="HTMLParser" name="mainLoop" sline="195" eline="260" brval="" bbs="195 204 207 215 219 233 235 237 239 241 243 245 248 256 259"/>
+    <function class="HTMLParser" name="parse" sline="262" eline="285" brval="" bbs="262"/>
+    <function class="HTMLParser" name="parseFragment" sline="287" eline="313" brval="" bbs="287"/>
+    <function class="HTMLParser" name="parseError" sline="315" eline="321" brval="" bbs="315 317 320"/>
+    <function class="HTMLParser" name="adjustMathMLAttributes" sline="323" eline="324" brval="" bbs="323"/>
+    <function class="HTMLParser" name="adjustSVGAttributes" sline="326" eline="327" brval="" bbs="326"/>
+    <function class="HTMLParser" name="adjustForeignAttributes" sline="329" eline="330" brval="" bbs="329"/>
+    <function class="HTMLParser" name="reparseTokenNormal" sline="332" eline="334" brval="" bbs="332"/>
+    <function class="HTMLParser" name="resetInsertionMode" sline="336" eline="378" brval="" bbs="336 356 359 365 368 371 374"/>
+    <function class="HTMLParser" name="parseRCDataRawtext" sline="380" eline="393" brval="" bbs="380 386 389"/>
+    <function class="" name="getPhases" sline="397" eline="0" brval="" bbs="397"/>
+    <function class="" name="log" sline="398" eline="0" brval="" bbs="398"/>
+    <function class="" name="wrapped" sline="402" eline="416" brval="" bbs="402 403 406 416"/>
+    <function class="" name="getMetaclass" sline="419" eline="423" brval="" bbs="419 420 423"/>
+    <function class="Phase" name="__init__" sline="431" eline="435" brval="" bbs="431"/>
+    <function class="Phase" name="processEOF" sline="437" eline="438" brval="" bbs="437"/>
+    <function class="Phase" name="processComment" sline="440" eline="443" brval="" bbs="440"/>
+    <function class="Phase" name="processDoctype" sline="445" eline="446" brval="" bbs="445"/>
+    <function class="Phase" name="processCharacters" sline="448" eline="449" brval="" bbs="448"/>
+    <function class="Phase" name="processSpaceCharacters" sline="451" eline="452" brval="" bbs="451"/>
+    <function class="Phase" name="processStartTag" sline="454" eline="469" brval="" bbs="454 461 464 466"/>
+    <function class="Phase" name="startTagHtml" sline="471" eline="479" brval="" bbs="471 472 476 477"/>
+    <function class="Phase" name="processEndTag" sline="481" eline="496" brval="" bbs="481 488 491 493"/>
+    <function class="InitialPhase" name="processSpaceCharacters" sline="501" eline="502" brval="" bbs="501"/>
+    <function class="InitialPhase" name="processComment" sline="504" eline="505" brval="" bbs="504"/>
+    <function class="InitialPhase" name="processDoctype" sline="507" eline="600" brval="" bbs="507 513 517 522 525 591"/>
+    <function class="InitialPhase" name="anythingElse" sline="602" eline="604" brval="" bbs="602"/>
+    <function class="InitialPhase" name="processCharacters" sline="606" eline="609" brval="" bbs="606"/>
+    <function class="InitialPhase" name="processStartTag" sline="611" eline="615" brval="" bbs="611"/>
+    <function class="InitialPhase" name="processEndTag" sline="617" eline="621" brval="" bbs="617"/>
+    <function class="InitialPhase" name="processEOF" sline="623" eline="626" brval="" bbs="623"/>
+    <function class="BeforeHtmlPhase" name="insertHtmlElement" sline="632" eline="634" brval="" bbs="632"/>
+    <function class="BeforeHtmlPhase" name="processEOF" sline="637" eline="639" brval="" bbs="637"/>
+    <function class="BeforeHtmlPhase" name="processComment" sline="641" eline="642" brval="" bbs="641"/>
+    <function class="BeforeHtmlPhase" name="processSpaceCharacters" sline="644" eline="645" brval="" bbs="644"/>
+    <function class="BeforeHtmlPhase" name="processCharacters" sline="647" eline="649" brval="" bbs="647"/>
+    <function class="BeforeHtmlPhase" name="processStartTag" sline="651" eline="655" brval="" bbs="651 652"/>
+    <function class="BeforeHtmlPhase" name="processEndTag" sline="657" eline="663" brval="" bbs="657 658 662 663"/>
+    <function class="BeforeHeadPhase" name="processEOF" sline="668" eline="670" brval="" bbs="668"/>
+    <function class="BeforeHeadPhase" name="processSpaceCharacters" sline="672" eline="673" brval="" bbs="672"/>
+    <function class="BeforeHeadPhase" name="processCharacters" sline="675" eline="677" brval="" bbs="675"/>
+    <function class="BeforeHeadPhase" name="startTagHtml" sline="679" eline="680" brval="" bbs="679"/>
+    <function class="BeforeHeadPhase" name="startTagHead" sline="682" eline="685" brval="" bbs="682"/>
+    <function class="BeforeHeadPhase" name="startTagOther" sline="687" eline="689" brval="" bbs="687"/>
+    <function class="BeforeHeadPhase" name="endTagImplyHead" sline="691" eline="693" brval="" bbs="691"/>
+    <function class="BeforeHeadPhase" name="endTagOther" sline="695" eline="696" brval="" bbs="695"/>
+    <function class="InHeadPhase" name="processEOF" sline="714" eline="716" brval="" bbs="714"/>
+    <function class="InHeadPhase" name="processCharacters" sline="718" eline="720" brval="" bbs="718"/>
+    <function class="InHeadPhase" name="startTagHtml" sline="722" eline="723" brval="" bbs="722"/>
+    <function class="InHeadPhase" name="startTagHead" sline="725" eline="726" brval="" bbs="725"/>
+    <function class="InHeadPhase" name="startTagBaseLinkCommand" sline="728" eline="731" brval="" bbs="728"/>
+    <function class="InHeadPhase" name="startTagMeta" sline="733" eline="752" brval="" bbs="733 739 740 742"/>
+    <function class="InHeadPhase" name="startTagTitle" sline="754" eline="755" brval="" bbs="754"/>
+    <function class="InHeadPhase" name="startTagNoFramesStyle" sline="757" eline="759" brval="" bbs="757"/>
+    <function class="InHeadPhase" name="startTagNoscript" sline="761" eline="766" brval="" bbs="761 762 765 766"/>
+    <function class="InHeadPhase" name="startTagScript" sline="768" eline="772" brval="" bbs="768"/>
+    <function class="InHeadPhase" name="startTagOther" sline="774" eline="776" brval="" bbs="774"/>
+    <function class="InHeadPhase" name="endTagHead" sline="778" eline="781" brval="" bbs="778"/>
+    <function class="InHeadPhase" name="endTagHtmlBodyBr" sline="783" eline="785" brval="" bbs="783"/>
+    <function class="InHeadPhase" name="endTagOther" sline="787" eline="788" brval="" bbs="787"/>
+    <function class="InHeadPhase" name="anythingElse" sline="790" eline="791" brval="" bbs="790"/>
+    <function class="InHeadNoscriptPhase" name="processEOF" sline="815" eline="818" brval="" bbs="815"/>
+    <function class="InHeadNoscriptPhase" name="processComment" sline="820" eline="821" brval="" bbs="820"/>
+    <function class="InHeadNoscriptPhase" name="processCharacters" sline="823" eline="826" brval="" bbs="823"/>
+    <function class="InHeadNoscriptPhase" name="processSpaceCharacters" sline="828" eline="829" brval="" bbs="828"/>
+    <function class="InHeadNoscriptPhase" name="startTagHtml" sline="831" eline="832" brval="" bbs="831"/>
+    <function class="InHeadNoscriptPhase" name="startTagBaseLinkCommand" sline="834" eline="835" brval="" bbs="834"/>
+    <function class="InHeadNoscriptPhase" name="startTagHeadNoscript" sline="837" eline="838" brval="" bbs="837"/>
+    <function class="InHeadNoscriptPhase" name="startTagOther" sline="840" eline="843" brval="" bbs="840"/>
+    <function class="InHeadNoscriptPhase" name="endTagNoscript" sline="845" eline="848" brval="" bbs="845"/>
+    <function class="InHeadNoscriptPhase" name="endTagBr" sline="850" eline="853" brval="" bbs="850"/>
+    <function class="InHeadNoscriptPhase" name="endTagOther" sline="855" eline="856" brval="" bbs="855"/>
+    <function class="InHeadNoscriptPhase" name="anythingElse" sline="858" eline="860" brval="" bbs="858"/>
+    <function class="AfterHeadPhase" name="processEOF" sline="878" eline="880" brval="" bbs="878"/>
+    <function class="AfterHeadPhase" name="processCharacters" sline="882" eline="884" brval="" bbs="882"/>
+    <function class="AfterHeadPhase" name="startTagHtml" sline="886" eline="887" brval="" bbs="886"/>
+    <function class="AfterHeadPhase" name="startTagBody" sline="889" eline="892" brval="" bbs="889"/>
+    <function class="AfterHeadPhase" name="startTagFrameset" sline="894" eline="896" brval="" bbs="894"/>
+    <function class="AfterHeadPhase" name="startTagFromHead" sline="898" eline="906" brval="" bbs="898 903 904"/>
+    <function class="AfterHeadPhase" name="startTagHead" sline="908" eline="909" brval="" bbs="908"/>
+    <function class="AfterHeadPhase" name="startTagOther" sline="911" eline="913" brval="" bbs="911"/>
+    <function class="AfterHeadPhase" name="endTagHtmlBodyBr" sline="915" eline="917" brval="" bbs="915"/>
+    <function class="AfterHeadPhase" name="endTagOther" sline="919" eline="920" brval="" bbs="919"/>
+    <function class="AfterHeadPhase" name="anythingElse" sline="922" eline="925" brval="" bbs="922"/>
+    <function class="InBodyPhase" name="__init__" sline="946" eline="949" brval="" bbs="946"/>
+    <function class="InBodyPhase" name="isMatchingFormattingElement" sline="951" eline="954" brval="" bbs="951"/>
+    <function class="InBodyPhase" name="addFormattingElement" sline="957" eline="971" brval="" bbs="957 962 963 965 969"/>
+    <function class="InBodyPhase" name="processEOF" sline="974" eline="981" brval="" bbs="974 978 979"/>
+    <function class="InBodyPhase" name="processSpaceCharactersDropNewline" sline="984" eline="995" brval="" bbs="984 989 993"/>
+    <function class="InBodyPhase" name="processCharacters" sline="997" eline="1007" brval="" bbs="997 998 1004"/>
+    <function class="InBodyPhase" name="processSpaceCharactersNonPre" sline="1009" eline="1011" brval="" bbs="1009"/>
+    <function class="InBodyPhase" name="startTagProcessInHead" sline="1013" eline="1014" brval="" bbs="1013"/>
+    <function class="InBodyPhase" name="startTagBody" sline="1016" eline="1025" brval="" bbs="1016 1018 1022 1023 1024"/>
+    <function class="InBodyPhase" name="startTagFrameset" sline="1027" eline="1039" brval="" bbs="1027 1029 1031 1034 1036 1038 1039"/>
+    <function class="InBodyPhase" name="startTagCloseP" sline="1041" eline="1044" brval="" bbs="1041 1042"/>
+    <function class="InBodyPhase" name="startTagPreListing" sline="1046" eline="1051" brval="" bbs="1046 1047"/>
+    <function class="InBodyPhase" name="startTagForm" sline="1053" eline="1060" brval="" bbs="1053 1054 1057 1059 1060"/>
+    <function class="InBodyPhase" name="startTagListItem" sline="1062" eline="1082" brval="" bbs="1062 1069 1070 1074 1078"/>
+    <function class="InBodyPhase" name="startTagPlaintext" sline="1084" eline="1088" brval="" bbs="1084 1085"/>
+    <function class="InBodyPhase" name="startTagHeading" sline="1090" eline="1096" brval="" bbs="1090 1091 1093"/>
+    <function class="InBodyPhase" name="startTagA" sline="1098" eline="1109" brval="" bbs="1098 1100 1104 1106"/>
+    <function class="InBodyPhase" name="startTagFormatting" sline="1111" eline="1113" brval="" bbs="1111"/>
+    <function class="InBodyPhase" name="startTagNobr" sline="1115" eline="1123" brval="" bbs="1115 1117"/>
+    <function class="InBodyPhase" name="startTagButton" sline="1125" eline="1134" brval="" bbs="1125 1126 1132 1133 1134"/>
+    <function class="InBodyPhase" name="startTagAppletMarqueeObject" sline="1136" eline="1140" brval="" bbs="1136"/>
+    <function class="InBodyPhase" name="startTagXmp" sline="1142" eline="1147" brval="" bbs="1142 1143"/>
+    <function class="InBodyPhase" name="startTagTable" sline="1149" eline="1155" brval="" bbs="1149 1150 1151"/>
+    <function class="InBodyPhase" name="startTagVoidFormatting" sline="1157" eline="1162" brval="" bbs="1157"/>
+    <function class="InBodyPhase" name="startTagInput" sline="1164" eline="1170" brval="" bbs="1164 1167"/>
+    <function class="InBodyPhase" name="startTagParamSource" sline="1172" eline="1175" brval="" bbs="1172"/>
+    <function class="InBodyPhase" name="startTagHr" sline="1177" eline="1183" brval="" bbs="1177 1178"/>
+    <function class="InBodyPhase" name="startTagImage" sline="1185" eline="1189" brval="" bbs="1185"/>
+    <function class="InBodyPhase" name="startTagIsIndex" sline="1193" eline="1222" brval="" bbs="1193 1195 1198 1205 1208 1212 1214"/>
+    <function class="InBodyPhase" name="startTagTextarea" sline="1224" eline="1228" brval="" bbs="1224"/>
+    <function class="InBodyPhase" name="startTagIFrame" sline="1230" eline="1232" brval="" bbs="1230"/>
+    <function class="InBodyPhase" name="startTagNoscript" sline="1234" eline="1238" brval="" bbs="1234 1235 1238"/>
+    <function class="InBodyPhase" name="startTagRawtext" sline="1240" eline="1242" brval="" bbs="1240"/>
+    <function class="InBodyPhase" name="startTagOpt" sline="1244" eline="1248" brval="" bbs="1244 1245"/>
+    <function class="InBodyPhase" name="startTagSelect" sline="1250" eline="1262" brval="" bbs="1250 1254 1262"/>
+    <function class="InBodyPhase" name="startTagRpRt" sline="1264" eline="1269" brval="" bbs="1264 1265 1267"/>
+    <function class="InBodyPhase" name="startTagMath" sline="1271" eline="1281" brval="" bbs="1271 1279"/>
+    <function class="InBodyPhase" name="startTagSvg" sline="1283" eline="1293" brval="" bbs="1283 1291"/>
+    <function class="InBodyPhase" name="startTagMisplaced" sline="1295" eline="1302" brval="" bbs="1295"/>
+    <function class="InBodyPhase" name="startTagOther" sline="1304" eline="1306" brval="" bbs="1304"/>
+    <function class="InBodyPhase" name="endTagP" sline="1308" eline="1319" brval="" bbs="1308 1309 1314 1315 1317 1318"/>
+    <function class="InBodyPhase" name="endTagBody" sline="1321" eline="1337" brval="" bbs="1321 1322 1325 1326 1327"/>
+    <function class="InBodyPhase" name="endTagHtml" sline="1339" eline="1343" brval="" bbs="1339 1341"/>
+    <function class="InBodyPhase" name="endTagBlock" sline="1345" eline="1357" brval="" bbs="1345 1347 1350 1352 1354 1356"/>
+    <function class="InBodyPhase" name="endTagForm" sline="1359" eline="1370" brval="" bbs="1359 1362 1366 1367 1370"/>
+    <function class="InBodyPhase" name="endTagListItem" sline="1372" eline="1387" brval="" bbs="1372 1373 1376 1377 1380 1381 1385 1386"/>
+    <function class="InBodyPhase" name="endTagHeading" sline="1389" eline="1402" brval="" bbs="1389 1390 1391 1394 1397 1398 1400"/>
+    <function class="InBodyPhase" name="endTagFormatting" sline="1404" eline="1564" brval="" bbs="1404 1413 1428 1441 1450 1460 1471 1472 1484 1486 1506 1511 1515 1518 1530 1540 1543 1547"/>
+    <function class="InBodyPhase" name="endTagAppletMarqueeObject" sline="1567" eline="1577" brval="" bbs="1567 1568 1570 1573 1575"/>
+    <function class="InBodyPhase" name="endTagBr" sline="1579" eline="1584" brval="" bbs="1579"/>
+    <function class="InBodyPhase" name="endTagOther" sline="1586" eline="1598" brval="" bbs="1586 1587 1588 1590 1592 1596"/>
+    <function class="TextPhase" name="processCharacters" sline="1668" eline="1669" brval="" bbs="1668"/>
+    <function class="TextPhase" name="processEOF" sline="1671" eline="1676" brval="" bbs="1671"/>
+    <function class="TextPhase" name="startTagOther" sline="1678" eline="1679" brval="" bbs="1678"/>
+    <function class="TextPhase" name="endTagScript" sline="1681" eline="1684" brval="" bbs="1681"/>
+    <function class="TextPhase" name="endTagOther" sline="1688" eline="1690" brval="" bbs="1688"/>
+    <function class="InTablePhase" name="clearStackToTableContext" sline="1703" eline="1708" brval="" bbs="1703 1705"/>
+    <function class="InTablePhase" name="processEOF" sline="1712" eline="1716" brval="" bbs="1712 1713 1716"/>
+    <function class="InTablePhase" name="processSpaceCharacters" sline="1719" eline="1723" brval="" bbs="1719"/>
+    <function class="InTablePhase" name="processCharacters" sline="1725" eline="1729" brval="" bbs="1725"/>
+    <function class="InTablePhase" name="insertText" sline="1731" eline="1736" brval="" bbs="1731"/>
+    <function class="InTablePhase" name="startTagCaption" sline="1738" eline="1742" brval="" bbs="1738"/>
+    <function class="InTablePhase" name="startTagColgroup" sline="1744" eline="1747" brval="" bbs="1744"/>
+    <function class="InTablePhase" name="startTagCol" sline="1749" eline="1751" brval="" bbs="1749"/>
+    <function class="InTablePhase" name="startTagRowGroup" sline="1753" eline="1756" brval="" bbs="1753"/>
+    <function class="InTablePhase" name="startTagImplyTbody" sline="1758" eline="1760" brval="" bbs="1758"/>
+    <function class="InTablePhase" name="startTagTable" sline="1762" eline="1767" brval="" bbs="1762 1766"/>
+    <function class="InTablePhase" name="startTagStyleScript" sline="1769" eline="1770" brval="" bbs="1769"/>
+    <function class="InTablePhase" name="startTagInput" sline="1772" eline="1780" brval="" bbs="1772 1773 1780"/>
+    <function class="InTablePhase" name="startTagForm" sline="1782" eline="1787" brval="" bbs="1782 1784"/>
+    <function class="InTablePhase" name="startTagOther" sline="1789" eline="1794" brval="" bbs="1789"/>
+    <function class="InTablePhase" name="endTagTable" sline="1796" eline="1810" brval="" bbs="1796 1797 1799 1803 1809 1810"/>
+    <function class="InTablePhase" name="endTagIgnore" sline="1812" eline="1813" brval="" bbs="1812"/>
+    <function class="InTablePhase" name="endTagOther" sline="1815" eline="1820" brval="" bbs="1815"/>
+    <function class="InTableTextPhase" name="__init__" sline="1846" eline="1849" brval="" bbs="1846"/>
+    <function class="InTableTextPhase" name="flushCharacters" sline="1851" eline="1858" brval="" bbs="1851 1853 1856"/>
+    <function class="InTableTextPhase" name="processComment" sline="1860" eline="1863" brval="" bbs="1860"/>
+    <function class="InTableTextPhase" name="processEOF" sline="1865" eline="1868" brval="" bbs="1865"/>
+    <function class="InTableTextPhase" name="processCharacters" sline="1870" eline="1873" brval="" bbs="1870 1871"/>
+    <function class="InTableTextPhase" name="processSpaceCharacters" sline="1875" eline="1877" brval="" bbs="1875"/>
+    <function class="InTableTextPhase" name="processStartTag" sline="1880" eline="1883" brval="" bbs="1880"/>
+    <function class="InTableTextPhase" name="processEndTag" sline="1885" eline="1888" brval="" bbs="1885"/>
+    <function class="InCaptionPhase" name="ignoreEndTagCaption" sline="1894" eline="1895" brval="" bbs="1894"/>
+    <function class="InCaptionPhase" name="processEOF" sline="1897" eline="1898" brval="" bbs="1897"/>
+    <function class="InCaptionPhase" name="processCharacters" sline="1900" eline="1901" brval="" bbs="1900"/>
+    <function class="InCaptionPhase" name="startTagTableElement" sline="1903" eline="1909" brval="" bbs="1903 1908"/>
+    <function class="InCaptionPhase" name="startTagOther" sline="1911" eline="1912" brval="" bbs="1911"/>
+    <function class="InCaptionPhase" name="endTagCaption" sline="1914" eline="1930" brval="" bbs="1914 1915 1918 1922 1929 1930"/>
+    <function class="InCaptionPhase" name="endTagTable" sline="1932" eline="1937" brval="" bbs="1932 1936"/>
+    <function class="InCaptionPhase" name="endTagIgnore" sline="1939" eline="1940" brval="" bbs="1939"/>
+    <function class="InCaptionPhase" name="endTagOther" sline="1942" eline="1943" brval="" bbs="1942"/>
+    <function class="InColumnGroupPhase" name="ignoreEndTagColgroup" sline="1964" eline="1965" brval="" bbs="1964"/>
+    <function class="InColumnGroupPhase" name="processEOF" sline="1967" eline="1975" brval="" bbs="1967 1968 1972 1973 1974"/>
+    <function class="InColumnGroupPhase" name="processCharacters" sline="1977" eline="1981" brval="" bbs="1977 1980"/>
+    <function class="InColumnGroupPhase" name="startTagCol" sline="1983" eline="1986" brval="" bbs="1983"/>
+    <function class="InColumnGroupPhase" name="startTagOther" sline="1988" eline="1992" brval="" bbs="1988 1991"/>
+    <function class="InColumnGroupPhase" name="endTagColgroup" sline="1994" eline="2001" brval="" bbs="1994 1995 2000 2001"/>
+    <function class="InColumnGroupPhase" name="endTagCol" sline="2003" eline="2004" brval="" bbs="2003"/>
+    <function class="InColumnGroupPhase" name="endTagOther" sline="2006" eline="2010" brval="" bbs="2006 2009"/>
+    <function class="InTableBodyPhase" name="clearStackToTableBodyContext" sline="2029" eline="2036" brval="" bbs="2029 2030 2035"/>
+    <function class="InTableBodyPhase" name="processEOF" sline="2039" eline="2040" brval="" bbs="2039"/>
+    <function class="InTableBodyPhase" name="processSpaceCharacters" sline="2042" eline="2043" brval="" bbs="2042"/>
+    <function class="InTableBodyPhase" name="processCharacters" sline="2045" eline="2046" brval="" bbs="2045"/>
+    <function class="InTableBodyPhase" name="startTagTr" sline="2048" eline="2051" brval="" bbs="2048"/>
+    <function class="InTableBodyPhase" name="startTagTableCell" sline="2053" eline="2057" brval="" bbs="2053"/>
+    <function class="InTableBodyPhase" name="startTagTableOther" sline="2059" eline="2071" brval="" bbs="2059 2061 2070 2071"/>
+    <function class="InTableBodyPhase" name="startTagOther" sline="2073" eline="2074" brval="" bbs="2073"/>
+    <function class="InTableBodyPhase" name="endTagTableRowGroup" sline="2076" eline="2082" brval="" bbs="2076 2077 2082"/>
+    <function class="InTableBodyPhase" name="endTagTable" sline="2085" eline="2096" brval="" bbs="2085 2086 2095 2096"/>
+    <function class="InTableBodyPhase" name="endTagIgnore" sline="2098" eline="2099" brval="" bbs="2098"/>
+    <function class="InTableBodyPhase" name="endTagOther" sline="2102" eline="2103" brval="" bbs="2102"/>
+    <function class="InRowPhase" name="clearStackToTableRowContext" sline="2127" eline="2131" brval="" bbs="2127 2128"/>
+    <function class="InRowPhase" name="ignoreEndTagTr" sline="2133" eline="2134" brval="" bbs="2133"/>
+    <function class="InRowPhase" name="processEOF" sline="2137" eline="2138" brval="" bbs="2137"/>
+    <function class="InRowPhase" name="processSpaceCharacters" sline="2140" eline="2141" brval="" bbs="2140"/>
+    <function class="InRowPhase" name="processCharacters" sline="2143" eline="2144" brval="" bbs="2143"/>
+    <function class="InRowPhase" name="startTagTableCell" sline="2146" eline="2150" brval="" bbs="2146"/>
+    <function class="InRowPhase" name="startTagTableOther" sline="2152" eline="2157" brval="" bbs="2152 2156"/>
+    <function class="InRowPhase" name="startTagOther" sline="2159" eline="2160" brval="" bbs="2159"/>
+    <function class="InRowPhase" name="endTagTr" sline="2162" eline="2170" brval="" bbs="2162 2163 2169 2170"/>
+    <function class="InRowPhase" name="endTagTable" sline="2172" eline="2178" brval="" bbs="2172 2177"/>
+    <function class="InRowPhase" name="endTagTableRowGroup" sline="2180" eline="2185" brval="" bbs="2180 2181 2185"/>
+    <function class="InRowPhase" name="endTagIgnore" sline="2187" eline="2188" brval="" bbs="2187"/>
+    <function class="InRowPhase" name="endTagOther" sline="2191" eline="2192" brval="" bbs="2191"/>
+    <function class="InCellPhase" name="closeCell" sline="2216" eline="2220" brval="" bbs="2216 2217 2219"/>
+    <function class="InCellPhase" name="processEOF" sline="2223" eline="2224" brval="" bbs="2223"/>
+    <function class="InCellPhase" name="processCharacters" sline="2226" eline="2227" brval="" bbs="2226"/>
+    <function class="InCellPhase" name="startTagTableOther" sline="2229" eline="2237" brval="" bbs="2229 2230 2236 2237"/>
+    <function class="InCellPhase" name="startTagOther" sline="2239" eline="2240" brval="" bbs="2239"/>
+    <function class="InCellPhase" name="endTagTableCell" sline="2242" eline="2257" brval="" bbs="2242 2243 2245 2248 2250 2253 2257"/>
+    <function class="InCellPhase" name="endTagIgnore" sline="2259" eline="2260" brval="" bbs="2259"/>
+    <function class="InCellPhase" name="endTagImply" sline="2262" eline="2268" brval="" bbs="2262 2263 2268"/>
+    <function class="InCellPhase" name="endTagOther" sline="2270" eline="2271" brval="" bbs="2270"/>
+    <function class="InSelectPhase" name="processEOF" sline="2291" eline="2295" brval="" bbs="2291 2292 2295"/>
+    <function class="InSelectPhase" name="processCharacters" sline="2297" eline="2300" brval="" bbs="2297 2298"/>
+    <function class="InSelectPhase" name="startTagOption" sline="2302" eline="2306" brval="" bbs="2302 2304"/>
+    <function class="InSelectPhase" name="startTagOptgroup" sline="2308" eline="2313" brval="" bbs="2308 2309 2311"/>
+    <function class="InSelectPhase" name="startTagSelect" sline="2315" eline="2317" brval="" bbs="2315"/>
+    <function class="InSelectPhase" name="startTagInput" sline="2319" eline="2325" brval="" bbs="2319 2321 2325"/>
+    <function class="InSelectPhase" name="startTagScript" sline="2327" eline="2328" brval="" bbs="2327"/>
+    <function class="InSelectPhase" name="startTagOther" sline="2330" eline="2331" brval="" bbs="2330"/>
+    <function class="InSelectPhase" name="endTagOption" sline="2334" eline="2338" brval="" bbs="2334 2335 2338"/>
+    <function class="InSelectPhase" name="endTagOptgroup" sline="2341" eline="2351" brval="" bbs="2341 2343 2347 2351"/>
+    <function class="InSelectPhase" name="endTagSelect" sline="2354" eline="2363" brval="" bbs="2354 2355 2357 2362 2363"/>
+    <function class="InSelectPhase" name="endTagOther" sline="2365" eline="2366" brval="" bbs="2365"/>
+    <function class="InSelectInTablePhase" name="processEOF" sline="2389" eline="2390" brval="" bbs="2389"/>
+    <function class="InSelectInTablePhase" name="processCharacters" sline="2392" eline="2393" brval="" bbs="2392"/>
+    <function class="InSelectInTablePhase" name="startTagTable" sline="2395" eline="2398" brval="" bbs="2395"/>
+    <function class="InSelectInTablePhase" name="startTagOther" sline="2400" eline="2401" brval="" bbs="2400"/>
+    <function class="InSelectInTablePhase" name="endTagTable" sline="2403" eline="2407" brval="" bbs="2403 2405"/>
+    <function class="InSelectInTablePhase" name="endTagOther" sline="2409" eline="2410" brval="" bbs="2409"/>
+    <function class="InForeignContentPhase" name="adjustSVGTagNames" sline="2436" eline="2475" brval="" bbs="2436 2474"/>
+    <function class="InForeignContentPhase" name="processCharacters" sline="2477" eline="2483" brval="" bbs="2477 2478 2480"/>
+    <function class="InForeignContentPhase" name="processStartTag" sline="2485" eline="2510" brval="" bbs="2485 2487 2492 2500 2502 2505 2506 2507 2508"/>
+    <function class="InForeignContentPhase" name="processEndTag" sline="2512" eline="2536" brval="" bbs="2512 2515 2518 2519 2521 2524 2531 2534 2535"/>
+    <function class="AfterBodyPhase" name="processEOF" sline="2541" eline="2543" brval="" bbs="2541"/>
+    <function class="AfterBodyPhase" name="processComment" sline="2545" eline="2548" brval="" bbs="2545"/>
+    <function class="AfterBodyPhase" name="processCharacters" sline="2550" eline="2553" brval="" bbs="2550"/>
+    <function class="AfterBodyPhase" name="startTagHtml" sline="2555" eline="2556" brval="" bbs="2555"/>
+    <function class="AfterBodyPhase" name="startTagOther" sline="2558" eline="2562" brval="" bbs="2558"/>
+    <function class="AfterBodyPhase" name="endTagHtml" sline="2564" eline="2568" brval="" bbs="2564 2565 2568"/>
+    <function class="AfterBodyPhase" name="endTagOther" sline="2570" eline="2574" brval="" bbs="2570"/>
+    <function class="InFramesetPhase" name="processEOF" sline="2588" eline="2592" brval="" bbs="2588 2589 2592"/>
+    <function class="InFramesetPhase" name="processCharacters" sline="2594" eline="2595" brval="" bbs="2594"/>
+    <function class="InFramesetPhase" name="startTagFrameset" sline="2597" eline="2598" brval="" bbs="2597"/>
+    <function class="InFramesetPhase" name="startTagFrame" sline="2600" eline="2602" brval="" bbs="2600"/>
+    <function class="InFramesetPhase" name="startTagNoframes" sline="2604" eline="2605" brval="" bbs="2604"/>
+    <function class="InFramesetPhase" name="startTagOther" sline="2607" eline="2608" brval="" bbs="2607"/>
+    <function class="InFramesetPhase" name="endTagFrameset" sline="2611" eline="2621" brval="" bbs="2611 2612 2616 2617"/>
+    <function class="InFramesetPhase" name="endTagOther" sline="2623" eline="2624" brval="" bbs="2623"/>
+    <function class="AfterFramesetPhase" name="processEOF" sline="2644" eline="2646" brval="" bbs="2644"/>
+    <function class="AfterFramesetPhase" name="processCharacters" sline="2648" eline="2649" brval="" bbs="2648"/>
+    <function class="AfterFramesetPhase" name="startTagNoframes" sline="2651" eline="2652" brval="" bbs="2651"/>
+    <function class="AfterFramesetPhase" name="startTagOther" sline="2654" eline="2655" brval="" bbs="2654"/>
+    <function class="AfterFramesetPhase" name="endTagHtml" sline="2658" eline="2659" brval="" bbs="2658"/>
+    <function class="AfterFramesetPhase" name="endTagOther" sline="2661" eline="2662" brval="" bbs="2661"/>
+    <function class="AfterAfterBodyPhase" name="processEOF" sline="2679" eline="2680" brval="" bbs="2679"/>
+    <function class="AfterAfterBodyPhase" name="processComment" sline="2682" eline="2683" brval="" bbs="2682"/>
+    <function class="AfterAfterBodyPhase" name="processSpaceCharacters" sline="2685" eline="2686" brval="" bbs="2685"/>
+    <function class="AfterAfterBodyPhase" name="processCharacters" sline="2688" eline="2691" brval="" bbs="2688"/>
+    <function class="AfterAfterBodyPhase" name="startTagHtml" sline="2693" eline="2694" brval="" bbs="2693"/>
+    <function class="AfterAfterBodyPhase" name="startTagOther" sline="2696" eline="2700" brval="" bbs="2696"/>
+    <function class="AfterAfterBodyPhase" name="processEndTag" sline="2702" eline="2706" brval="" bbs="2702"/>
+    <function class="AfterAfterFramesetPhase" name="processEOF" sline="2716" eline="2717" brval="" bbs="2716"/>
+    <function class="AfterAfterFramesetPhase" name="processComment" sline="2719" eline="2720" brval="" bbs="2719"/>
+    <function class="AfterAfterFramesetPhase" name="processSpaceCharacters" sline="2722" eline="2723" brval="" bbs="2722"/>
+    <function class="AfterAfterFramesetPhase" name="processCharacters" sline="2725" eline="2726" brval="" bbs="2725"/>
+    <function class="AfterAfterFramesetPhase" name="startTagHtml" sline="2728" eline="2729" brval="" bbs="2728"/>
+    <function class="AfterAfterFramesetPhase" name="startTagNoFrames" sline="2731" eline="2732" brval="" bbs="2731"/>
+    <function class="AfterAfterFramesetPhase" name="startTagOther" sline="2734" eline="2735" brval="" bbs="2734"/>
+    <function class="AfterAfterFramesetPhase" name="processEndTag" sline="2738" eline="2739" brval="" bbs="2738"/>
+    <function class="" name="adjust_attributes" sline="2778" eline="2781" brval="" bbs="2778 2780"/>
+    <function class="" name="impliedTagToken" sline="2785" eline="2790" brval="" bbs="2785 2787"/>
+  </file>
+  <file name="constants.py" id="12"/>
+  <file name="_ihatexml.py" id="13">
+    <function class="" name="charStringToList" sline="103" eline="121" brval="" bbs="103 106 108 110 112 116"/>
+    <function class="" name="normaliseCharList" sline="124" eline="137" brval="" bbs="124 126 130 133"/>
+    <function class="" name="missingRanges" sline="144" eline="152" brval="146:charList:2908736048 " bbs="144 146 148 150"/>
+    <function class="" name="listToRegexpStr" sline="155" eline="163" brval="" bbs="155 157 158 161"/>
+    <function class="" name="hexToInt" sline="166" eline="167" brval="" bbs="166"/>
+    <function class="" name="escapeRegexp" sline="170" eline="176" brval="" bbs="170 173"/>
+    <function class="InfosetFilter" name="__init__" sline="190" eline="208" brval="" bbs="190"/>
+    <function class="InfosetFilter" name="coerceAttribute" sline="210" eline="219" brval="" bbs="210 211 214 219"/>
+    <function class="InfosetFilter" name="coerceElement" sline="221" eline="222" brval="" bbs="221"/>
+    <function class="InfosetFilter" name="coerceComment" sline="224" eline="232" brval="" bbs="224 225 226 229"/>
+    <function class="InfosetFilter" name="coerceCharacters" sline="234" eline="240" brval="" bbs="234 235 236"/>
+    <function class="InfosetFilter" name="coercePubid" sline="242" eline="251" brval="" bbs="242 244 248"/>
+    <function class="InfosetFilter" name="toXmlName" sline="253" eline="269" brval="" bbs="253 257 261 265"/>
+    <function class="InfosetFilter" name="getReplacementCharacter" sline="271" eline="276" brval="" bbs="271 272 275"/>
+    <function class="InfosetFilter" name="fromXmlName" sline="278" eline="281" brval="" bbs="278 279"/>
+    <function class="InfosetFilter" name="escapeChar" sline="283" eline="286" brval="" bbs="283"/>
+    <function class="InfosetFilter" name="unescapeChar" sline="288" eline="289" brval="" bbs="288"/>
+  </file>
+  <file name="_inputstream.py" id="14">
+    <function class="BufferedStream" name="__init__" sline="58" eline="61" brval="" bbs="58"/>
+    <function class="BufferedStream" name="tell" sline="63" eline="68" brval="" bbs="63 65"/>
+    <function class="BufferedStream" name="seek" sline="70" eline="77" brval="" bbs="70 74"/>
+    <function class="BufferedStream" name="read" sline="79" eline="86" brval="" bbs="79 80 82 86"/>
+    <function class="BufferedStream" name="_bufferedBytes" sline="88" eline="89" brval="" bbs="88"/>
+    <function class="BufferedStream" name="_readStream" sline="91" eline="96" brval="" bbs="91"/>
+    <function class="BufferedStream" name="_readFromBuffer" sline="98" eline="122" brval="" bbs="98 103 107 111 112 113 119"/>
+    <function class="" name="HTMLInputStream" sline="125" eline="145" brval="" bbs="125 128 133 136 138 140 145"/>
+    <function class="HTMLUnicodeInputStream" name="__init__" sline="158" eline="188" brval="" bbs="158 173 177 180"/>
+    <function class="HTMLUnicodeInputStream" name="reset" sline="190" eline="202" brval="" bbs="190"/>
+    <function class="HTMLUnicodeInputStream" name="openStream" sline="204" eline="216" brval="" bbs="204 211 214"/>
+    <function class="HTMLUnicodeInputStream" name="_position" sline="218" eline="227" brval="" bbs="218 223 226"/>
+    <function class="HTMLUnicodeInputStream" name="position" sline="229" eline="232" brval="" bbs="229"/>
+    <function class="HTMLUnicodeInputStream" name="char" sline="234" eline="247" brval="" bbs="234 239 240"/>
+    <function class="HTMLUnicodeInputStream" name="readChunk" sline="249" eline="285" brval="271:lastv:2908727856 " bbs="249 250 262 265 269 271 275"/>
+    <function class="HTMLUnicodeInputStream" name="characterErrorsUCS4" sline="287" eline="289" brval="" bbs="287 288"/>
+    <function class="HTMLUnicodeInputStream" name="characterErrorsUCS2" sline="291" eline="312" brval="307:codepoint:2908727664 " bbs="291 295 296 301 304 307 311 312"/>
+    <function class="HTMLUnicodeInputStream" name="charsUntil" sline="314" eline="359" brval="" bbs="314 335 338 341 344 347 354"/>
+    <function class="HTMLUnicodeInputStream" name="unget" sline="361" eline="375" brval="" bbs="361 364 365 374 375"/>
+    <function class="HTMLBinaryInputStream" name="__init__" sline="386" eline="426" brval="" bbs="386"/>
+    <function class="HTMLBinaryInputStream" name="reset" sline="428" eline="430" brval="" bbs="428"/>
+    <function class="HTMLBinaryInputStream" name="openStream" sline="432" eline="449" brval="" bbs="432 439 442"/>
+    <function class="HTMLBinaryInputStream" name="determineEncoding" sline="451" eline="511" brval="" bbs="451 455 460 465 470 475 480 484 492 495 502 507"/>
+    <function class="HTMLBinaryInputStream" name="changeEncoding" sline="513" eline="527" brval="" bbs="513 516 518 521 524 525 526 527"/>
+    <function class="HTMLBinaryInputStream" name="detectBOM" sline="529" eline="561" brval="" bbs="529 546 550 556 560 561"/>
+    <function class="HTMLBinaryInputStream" name="detectEncodingMeta" sline="563" eline="575" brval="" bbs="563 572"/>
+    <function class="EncodingBytes" name="__init__" sline="586" eline="588" brval="" bbs="586"/>
+    <function class="EncodingBytes" name="next" sline="601" eline="603" brval="" bbs="601"/>
+    <function class="EncodingBytes" name="previous" sline="605" eline="612" brval="609:p:2934735024 " bbs="605 607 609"/>
+    <function class="EncodingBytes" name="setPosition" sline="614" eline="617" brval="" bbs="614 615"/>
+    <function class="EncodingBytes" name="getPosition" sline="619" eline="625" brval="" bbs="619 620 622 625"/>
+    <function class="EncodingBytes" name="getCurrentByte" sline="629" eline="630" brval="" bbs="629"/>
+    <function class="EncodingBytes" name="skip" sline="634" eline="644" brval="" bbs="634 637 639"/>
+    <function class="EncodingBytes" name="skipUntil" sline="646" eline="655" brval="" bbs="646 648 650"/>
+    <function class="EncodingBytes" name="matchBytes" sline="657" eline="664" brval="" bbs="657 662"/>
+    <function class="EncodingBytes" name="jumpTo" sline="666" eline="673" brval="" bbs="666"/>
+    <function class="EncodingParser" name="__init__" sline="679" eline="682" brval="" bbs="679"/>
+    <function class="EncodingParser" name="getEncoding" sline="684" eline="712" brval="" bbs="684 685 695 701 702 709"/>
+    <function class="EncodingParser" name="handleComment" sline="714" eline="716" brval="" bbs="714"/>
+    <function class="EncodingParser" name="handleMeta" sline="718" eline="752" brval="" bbs="718 719 725 728 731 733 736 739 742 745 747 748 752"/>
+    <function class="EncodingParser" name="handlePossibleStartTag" sline="754" eline="755" brval="" bbs="754"/>
+    <function class="EncodingParser" name="handlePossibleEndTag" sline="757" eline="759" brval="" bbs="757"/>
+    <function class="EncodingParser" name="handlePossibleTag" sline="761" eline="782" brval="" bbs="761 763 767 773 779 780"/>
+    <function class="EncodingParser" name="handleOther" sline="784" eline="785" brval="" bbs="784"/>
+    <function class="EncodingParser" name="getAttribute" sline="787" eline="861" brval="" bbs="787 795 801 802 804 808 810 812 815 819 827 830 834 838 842 843 845 847 850 852 854 856 858 861"/>
+    <function class="ContentAttrParser" name="__init__" sline="865" eline="867" brval="" bbs="865"/>
+    <function class="ContentAttrParser" name="parse" sline="869" eline="895" brval="" bbs="869 876 882 886 889 892 893"/>
+    <function class="" name="lookupEncoding" sline="903" eline="918" brval="" bbs="903 906 912 918"/>
+  </file>
+  <file name="_tokenizer.py" id="15">
+    <function class="HTMLTokenizer" name="__init__" sline="40" eline="53" brval="" bbs="40"/>
+    <function class="HTMLTokenizer" name="consumeNumberEntity" sline="71" eline="141" brval="109:charAsInt:2908759600 " bbs="71 79 88 96 101 109 126 136"/>
+    <function class="HTMLTokenizer" name="consumeEntity" sline="143" eline="221" brval="" bbs="143 148 152 156 161 168 170 171 179 180 188 194 195 198 205 206 207 209 211 212 214 217 220 221"/>
+    <function class="HTMLTokenizer" name="processEntityInAttribute" sline="223" eline="226" brval="" bbs="223"/>
+    <function class="HTMLTokenizer" name="emitCurrentToken" sline="228" eline="253" brval="" bbs="228 235 237 240 245 246 249"/>
+    <function class="HTMLTokenizer" name="dataState" sline="256" eline="283" brval="" bbs="256 258 260 262 267 270 280 281"/>
+    <function class="HTMLTokenizer" name="entityDataState" sline="285" eline="288" brval="" bbs="285"/>
+    <function class="HTMLTokenizer" name="rcdataState" sline="290" eline="317" brval="" bbs="290 292 294 296 299 304 314 315"/>
+    <function class="HTMLTokenizer" name="characterReferenceInRcdata" sline="319" eline="322" brval="" bbs="319"/>
+    <function class="HTMLTokenizer" name="rawtextState" sline="324" eline="340" brval="" bbs="324 326 328 333 337 338"/>
+    <function class="HTMLTokenizer" name="scriptDataState" sline="342" eline="358" brval="" bbs="342 344 346 351 355 356"/>
+    <function class="HTMLTokenizer" name="plaintextState" sline="360" eline="373" brval="" bbs="360 362 365 371"/>
+    <function class="HTMLTokenizer" name="tagOpenState" sline="375" eline="408" brval="" bbs="375 377 379 381 387 394 403 405 406 407"/>
+    <function class="HTMLTokenizer" name="closeTagOpenState" sline="410" eline="432" brval="" bbs="410 412 416 420 427 430 431"/>
+    <function class="HTMLTokenizer" name="tagNameState" sline="434" eline="454" brval="" bbs="434 436 438 440 444 446 451"/>
+    <function class="HTMLTokenizer" name="rcdataLessThanSignState" sline="456" eline="465" brval="" bbs="456 458 462 463 464"/>
+    <function class="HTMLTokenizer" name="rcdataEndTagOpenState" sline="467" eline="476" brval="" bbs="467 469 473 474 475"/>
+    <function class="HTMLTokenizer" name="rcdataEndTagNameState" sline="478" eline="504" brval="" bbs="478 481 486 491 497 500 502 503"/>
+    <function class="HTMLTokenizer" name="rawtextLessThanSignState" sline="506" eline="515" brval="" bbs="506 508 512 513 514"/>
+    <function class="HTMLTokenizer" name="rawtextEndTagOpenState" sline="517" eline="526" brval="" bbs="517 519 523 524 525"/>
+    <function class="HTMLTokenizer" name="rawtextEndTagNameState" sline="528" eline="554" brval="" bbs="528 531 536 541 547 550 552 553"/>
+    <function class="HTMLTokenizer" name="scriptDataLessThanSignState" sline="556" eline="568" brval="" bbs="556 558 561 565 566 567"/>
+    <function class="HTMLTokenizer" name="scriptDataEndTagOpenState" sline="570" eline="579" brval="" bbs="570 572 576 577 578"/>
+    <function class="HTMLTokenizer" name="scriptDataEndTagNameState" sline="581" eline="607" brval="" bbs="581 584 589 594 600 603 605 606"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapeStartState" sline="609" eline="617" brval="" bbs="609 611 615 616"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapeStartDashState" sline="619" eline="627" brval="" bbs="619 621 625 626"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedState" sline="629" eline="647" brval="" bbs="629 631 634 636 641 644 645"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedDashState" sline="649" eline="667" brval="" bbs="649 651 654 656 662 665 666"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedDashDashState" sline="669" eline="689" brval="" bbs="669 671 673 675 678 684 687 688"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedLessThanSignState" sline="691" eline="704" brval="" bbs="691 693 696 701 702 703"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedEndTagOpenState" sline="706" eline="715" brval="" bbs="706 708 712 713 714"/>
+    <function class="HTMLTokenizer" name="scriptDataEscapedEndTagNameState" sline="717" eline="743" brval="" bbs="717 720 725 730 736 739 741 742"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapeStartState" sline="745" eline="759" brval="" bbs="745 747 749 752 753 757 758"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapedState" sline="761" eline="780" brval="" bbs="761 763 766 769 774 779"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapedDashState" sline="782" eline="803" brval="" bbs="782 784 787 790 796 801 802"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapedDashDashState" sline="805" eline="828" brval="" bbs="805 807 809 812 815 821 826 827"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapedLessThanSignState" sline="830" eline="839" brval="" bbs="830 832 837 838"/>
+    <function class="HTMLTokenizer" name="scriptDataDoubleEscapeEndState" sline="841" eline="855" brval="" bbs="841 843 845 848 849 853 854"/>
+    <function class="HTMLTokenizer" name="beforeAttributeNameState" sline="857" eline="885" brval="" bbs="857 859 861 864 866 868 873 878 883 884"/>
+    <function class="HTMLTokenizer" name="attributeNameState" sline="887" eline="939" brval="" bbs="887 891 893 897 902 904 906 911 917 922 923 925 931 932 937"/>
+    <function class="HTMLTokenizer" name="afterAttributeNameState" sline="941" eline="971" brval="" bbs="941 943 945 947 949 952 954 959 964 969 970"/>
+    <function class="HTMLTokenizer" name="beforeAttributeValueState" sline="973" eline="1005" brval="" bbs="973 975 977 979 982 984 988 993 998 1003 1004"/>
+    <function class="HTMLTokenizer" name="attributeValueDoubleQuotedState" sline="1007" eline="1024" brval="" bbs="1007 1009 1011 1013 1017 1022"/>
+    <function class="HTMLTokenizer" name="attributeValueSingleQuotedState" sline="1026" eline="1043" brval="" bbs="1026 1028 1030 1032 1036 1041"/>
+    <function class="HTMLTokenizer" name="attributeValueUnQuotedState" sline="1045" eline="1068" brval="" bbs="1045 1047 1049 1051 1053 1057 1061 1066"/>
+    <function class="HTMLTokenizer" name="afterAttributeValueState" sline="1070" eline="1088" brval="" bbs="1070 1072 1074 1076 1078 1084 1086 1087"/>
+    <function class="HTMLTokenizer" name="selfClosingStartTagState" sline="1090" eline="1106" brval="" bbs="1090 1092 1095 1102 1104 1105"/>
+    <function class="HTMLTokenizer" name="bogusCommentState" sline="1108" eline="1121" brval="" bbs="1108"/>
+    <function class="HTMLTokenizer" name="markupDeclarationOpenState" sline="1123" eline="1166" brval="" bbs="1123 1125 1127 1131 1133 1136 1139 1146 1151 1153 1156 1163"/>
+    <function class="HTMLTokenizer" name="commentStartState" sline="1168" eline="1189" brval="" bbs="1168 1170 1172 1176 1181 1187 1188"/>
+    <function class="HTMLTokenizer" name="commentStartDashState" sline="1191" eline="1212" brval="" bbs="1191 1193 1195 1199 1204 1210 1211"/>
+    <function class="HTMLTokenizer" name="commentState" sline="1214" eline="1230" brval="" bbs="1214 1216 1218 1222 1228"/>
+    <function class="HTMLTokenizer" name="commentEndDashState" sline="1232" eline="1249" brval="" bbs="1232 1234 1236 1241 1247 1248"/>
+    <function class="HTMLTokenizer" name="commentEndState" sline="1251" eline="1280" brval="" bbs="1251 1253 1256 1261 1265 1269 1276 1278 1279"/>
+    <function class="HTMLTokenizer" name="commentEndBangState" sline="1282" eline="1303" brval="" bbs="1282 1284 1287 1290 1295 1301 1302"/>
+    <function class="HTMLTokenizer" name="doctypeState" sline="1305" eline="1320" brval="" bbs="1305 1307 1309 1316 1318 1319"/>
+    <function class="HTMLTokenizer" name="beforeDoctypeNameState" sline="1322" eline="1346" brval="" bbs="1322 1324 1326 1332 1337 1344 1345"/>
+    <function class="HTMLTokenizer" name="doctypeNameState" sline="1348" eline="1371" brval="" bbs="1348 1350 1353 1357 1362 1370"/>
+    <function class="HTMLTokenizer" name="afterDoctypeNameState" sline="1373" eline="1422" brval="" bbs="1373 1375 1377 1380 1388 1390 1393 1396 1399 1401 1404 1407 1415 1416 1419 1420"/>
+    <function class="HTMLTokenizer" name="afterDoctypePublicKeywordState" sline="1424" eline="1442" brval="" bbs="1424 1426 1428 1433 1440 1441"/>
+    <function class="HTMLTokenizer" name="beforeDoctypePublicIdentifierState" sline="1444" eline="1471" brval="" bbs="1444 1446 1448 1451 1454 1460 1467 1469 1470"/>
+    <function class="HTMLTokenizer" name="doctypePublicIdentifierDoubleQuotedState" sline="1473" eline="1495" brval="" bbs="1473 1475 1477 1481 1487 1494"/>
+    <function class="HTMLTokenizer" name="doctypePublicIdentifierSingleQuotedState" sline="1497" eline="1519" brval="" bbs="1497 1499 1501 1505 1511 1518"/>
+    <function class="HTMLTokenizer" name="afterDoctypePublicIdentifierState" sline="1521" eline="1549" brval="" bbs="1521 1523 1525 1528 1533 1538 1545 1547 1548"/>
+    <function class="HTMLTokenizer" name="betweenDoctypePublicAndSystemIdentifiersState" sline="1551" eline="1575" brval="" bbs="1551 1553 1555 1558 1561 1564 1571 1573 1574"/>
+    <function class="HTMLTokenizer" name="afterDoctypeSystemKeywordState" sline="1577" eline="1595" brval="" bbs="1577 1579 1581 1586 1593 1594"/>
+    <function class="HTMLTokenizer" name="beforeDoctypeSystemIdentifierState" sline="1597" eline="1624" brval="" bbs="1597 1599 1601 1604 1607 1613 1620 1622 1623"/>
+    <function class="HTMLTokenizer" name="doctypeSystemIdentifierDoubleQuotedState" sline="1626" eline="1648" brval="" bbs="1626 1628 1630 1634 1640 1647"/>
+    <function class="HTMLTokenizer" name="doctypeSystemIdentifierSingleQuotedState" sline="1650" eline="1672" brval="" bbs="1650 1652 1654 1658 1664 1671"/>
+    <function class="HTMLTokenizer" name="afterDoctypeSystemIdentifierState" sline="1674" eline="1691" brval="" bbs="1674 1676 1678 1681 1688 1690"/>
+    <function class="HTMLTokenizer" name="bogusDoctypeState" sline="1693" eline="1705" brval="" bbs="1693 1695 1698 1704"/>
+    <function class="HTMLTokenizer" name="cdataSectionState" sline="1707" eline="1735" brval="1726:nullCount:2904304432 " bbs="1707 1709 1713 1716 1717 1721 1726 1727 1731"/>
+  </file>
+  <file name="__init__.py" id="16"/>
+  <file name="etree.py" id="17">
+    <function class="" name="getETreeBuilder" sline="19" eline="0" brval="" bbs="19"/>
+    <function class="Element" name="__init__" sline="24" eline="35" brval="" bbs="24 29 32"/>
+    <function class="Element" name="_getETreeTag" sline="37" eline="42" brval="" bbs="37 38 41"/>
+    <function class="Element" name="_setName" sline="44" eline="46" brval="" bbs="44"/>
+    <function class="Element" name="_getName" sline="48" eline="49" brval="" bbs="48"/>
+    <function class="Element" name="_setNamespace" sline="53" eline="55" brval="" bbs="53"/>
+    <function class="Element" name="_getNamespace" sline="57" eline="58" brval="" bbs="57"/>
+    <function class="Element" name="_getAttributes" sline="62" eline="63" brval="" bbs="62"/>
+    <function class="Element" name="_setAttributes" sline="65" eline="76" brval="" bbs="65 68 71 72 75"/>
+    <function class="Element" name="_getChildNodes" sline="80" eline="81" brval="" bbs="80"/>
+    <function class="Element" name="_setChildNodes" sline="83" eline="87" brval="" bbs="83 86"/>
+    <function class="Element" name="hasContent" sline="91" eline="93" brval="" bbs="91"/>
+    <function class="Element" name="appendChild" sline="95" eline="98" brval="" bbs="95"/>
+    <function class="Element" name="insertBefore" sline="100" eline="103" brval="" bbs="100"/>
+    <function class="Element" name="removeChild" sline="105" eline="108" brval="" bbs="105"/>
+    <function class="Element" name="insertText" sline="110" eline="131" brval="124:index:2934790896 " bbs="110 111 112 115 117 122 123 124 125 129 131"/>
+    <function class="Element" name="cloneNode" sline="133" eline="137" brval="" bbs="133 135"/>
+    <function class="Element" name="reparentChildren" sline="139" eline="148" brval="" bbs="139 140 143 145"/>
+    <function class="Comment" name="__init__" sline="151" eline="157" brval="" bbs="151"/>
+    <function class="Comment" name="_getData" sline="159" eline="160" brval="" bbs="159"/>
+    <function class="Comment" name="_setData" sline="162" eline="163" brval="" bbs="162"/>
+    <function class="DocumentType" name="__init__" sline="168" eline="172" brval="" bbs="168"/>
+    <function class="DocumentType" name="_getPublicId" sline="174" eline="175" brval="" bbs="174"/>
+    <function class="DocumentType" name="_setPublicId" sline="177" eline="179" brval="" bbs="177 178"/>
+    <function class="DocumentType" name="_getSystemId" sline="183" eline="184" brval="" bbs="183"/>
+    <function class="DocumentType" name="_setSystemId" sline="186" eline="188" brval="" bbs="186 187"/>
+    <function class="Document" name="__init__" sline="193" eline="194" brval="" bbs="193"/>
+    <function class="DocumentFragment" name="__init__" sline="197" eline="198" brval="" bbs="197"/>
+    <function class="" name="testSerializer" sline="200" eline="0" brval="" bbs="200"/>
+    <function class="" name="serializeElement" sline="203" eline="257" brval="" bbs="203 204 206 207 213 214 216 218 220 222 225 227 229 232 233 234 235 237 239 241 246 249 251 254 256"/>
+    <function class="" name="tostring" sline="262" eline="0" brval="" bbs="262"/>
+    <function class="" name="serializeElement" sline="267" eline="310" brval="" bbs="267 268 271 272 278 279 280 282 284 287 290 294 297 300 301 304 307 309"/>
+    <function class="TreeBuilder" name="testSerializer" sline="324" eline="325" brval="" bbs="324"/>
+    <function class="TreeBuilder" name="getDocument" sline="327" eline="335" brval="" bbs="327 328 331 335"/>
+    <function class="TreeBuilder" name="getFragment" sline="337" eline="338" brval="" bbs="337"/>
+  </file>
+  <file name="dom.py" id="18">
+    <function class="" name="getDomBuilder" sline="17" eline="0" brval="" bbs="17"/>
+    <function class="AttrList" name="__init__" sline="21" eline="22" brval="" bbs="21"/>
+    <function class="AttrList" name="items" sline="38" eline="39" brval="" bbs="38"/>
+    <function class="AttrList" name="values" sline="41" eline="42" brval="" bbs="41"/>
+    <function class="NodeBuilder" name="__init__" sline="57" eline="59" brval="" bbs="57"/>
+    <function class="NodeBuilder" name="appendChild" sline="64" eline="66" brval="" bbs="64"/>
+    <function class="NodeBuilder" name="insertText" sline="68" eline="73" brval="" bbs="68 70 73"/>
+    <function class="NodeBuilder" name="insertBefore" sline="75" eline="77" brval="" bbs="75"/>
+    <function class="NodeBuilder" name="removeChild" sline="79" eline="82" brval="" bbs="79 80"/>
+    <function class="NodeBuilder" name="reparentChildren" sline="84" eline="89" brval="" bbs="84 85"/>
+    <function class="NodeBuilder" name="getAttributes" sline="91" eline="92" brval="" bbs="91"/>
+    <function class="NodeBuilder" name="setAttributes" sline="94" eline="105" brval="" bbs="94 95 96 97 98 101 105"/>
+    <function class="NodeBuilder" name="cloneNode" sline="109" eline="110" brval="" bbs="109"/>
+    <function class="NodeBuilder" name="hasContent" sline="112" eline="113" brval="" bbs="112"/>
+    <function class="NodeBuilder" name="getNameTuple" sline="115" eline="119" brval="" bbs="115 116 119"/>
+    <function class="TreeBuilder" name="documentClass" sline="124" eline="126" brval="" bbs="124"/>
+    <function class="TreeBuilder" name="insertDoctype" sline="128" eline="137" brval="" bbs="128 136"/>
+    <function class="TreeBuilder" name="elementClass" sline="139" eline="145" brval="" bbs="139 140 143"/>
+    <function class="TreeBuilder" name="commentClass" sline="147" eline="148" brval="" bbs="147"/>
+    <function class="TreeBuilder" name="fragmentClass" sline="150" eline="151" brval="" bbs="150"/>
+    <function class="TreeBuilder" name="appendChild" sline="153" eline="154" brval="" bbs="153"/>
+    <function class="TreeBuilder" name="testSerializer" sline="156" eline="157" brval="" bbs="156"/>
+    <function class="TreeBuilder" name="getDocument" sline="159" eline="160" brval="" bbs="159"/>
+    <function class="TreeBuilder" name="getFragment" sline="162" eline="163" brval="" bbs="162"/>
+    <function class="TreeBuilder" name="insertText" sline="165" eline="176" brval="" bbs="165 167 171 173 176"/>
+    <function class="" name="testSerializer" sline="181" eline="0" brval="" bbs="181"/>
+    <function class="" name="serializeElement" sline="185" eline="230" brval="" bbs="185 186 187 188 194 196 197 199 201 203 206 211 212 213 215 220 223 226 229"/>
+  </file>
+  <file name="base.py" id="19">
+    <function class="Node" name="__init__" sline="25" eline="43" brval="" bbs="25"/>
+    <function class="Node" name="appendChild" sline="57" eline="63" brval="" bbs="57"/>
+    <function class="Node" name="insertText" sline="65" eline="75" brval="" bbs="65"/>
+    <function class="Node" name="insertBefore" sline="77" eline="87" brval="" bbs="77"/>
+    <function class="Node" name="removeChild" sline="89" eline="95" brval="" bbs="89"/>
+    <function class="Node" name="reparentChildren" sline="97" eline="108" brval="" bbs="97 106"/>
+    <function class="Node" name="cloneNode" sline="110" eline="114" brval="" bbs="110"/>
+    <function class="Node" name="hasContent" sline="116" eline="119" brval="" bbs="116"/>
+    <function class="ActiveFormattingElements" name="append" sline="123" eline="134" brval="131:equalCount:2908007536 " bbs="123 125 126 127 129 131"/>
+    <function class="ActiveFormattingElements" name="nodesEqual" sline="136" eline="143" brval="" bbs="136 137 140"/>
+    <function class="TreeBuilder" name="__init__" sline="172" eline="182" brval="" bbs="172 178 181"/>
+    <function class="TreeBuilder" name="reset" sline="184" eline="194" brval="" bbs="184"/>
+    <function class="TreeBuilder" name="elementInScope" sline="196" eline="216" brval="" bbs="196 201 202 208 209 211 213"/>
+    <function class="TreeBuilder" name="reconstructActiveFormattingElements" sline="218" eline="262" brval="235:i:2934736240 " bbs="218 224 230 234 235 243 261"/>
+    <function class="TreeBuilder" name="clearActiveFormattingElements" sline="264" eline="267" brval="" bbs="264 266"/>
+    <function class="TreeBuilder" name="elementInActiveFormattingElements" sline="269" eline="281" brval="" bbs="269 274 277 279"/>
+    <function class="TreeBuilder" name="insertRoot" sline="283" eline="286" brval="" bbs="283"/>
+    <function class="TreeBuilder" name="insertDoctype" sline="288" eline="294" brval="" bbs="288"/>
+    <function class="TreeBuilder" name="insertComment" sline="296" eline="299" brval="" bbs="296 297"/>
+    <function class="TreeBuilder" name="createElement" sline="301" eline="307" brval="" bbs="301"/>
+    <function class="TreeBuilder" name="_getInsertFromTable" sline="309" eline="310" brval="" bbs="309"/>
+    <function class="TreeBuilder" name="_setInsertFromTable" sline="312" eline="319" brval="" bbs="312 316 319"/>
+    <function class="TreeBuilder" name="insertElementNormal" sline="323" eline="331" brval="" bbs="323"/>
+    <function class="TreeBuilder" name="insertElementTable" sline="333" eline="347" brval="" bbs="333 336 341 342 345 346"/>
+    <function class="TreeBuilder" name="insertText" sline="349" eline="362" brval="" bbs="349 351 354 361 362"/>
+    <function class="TreeBuilder" name="getTableMisnestedNodePosition" sline="364" eline="388" brval="" bbs="364 373 374 377 380 384 387"/>
+    <function class="TreeBuilder" name="generateImpliedEndTags" sline="390" eline="398" brval="" bbs="390 393"/>
+    <function class="TreeBuilder" name="getDocument" sline="400" eline="402" brval="" bbs="400"/>
+    <function class="TreeBuilder" name="getFragment" sline="404" eline="409" brval="" bbs="404"/>
+    <function class="TreeBuilder" name="testSerializer" sline="411" eline="417" brval="" bbs="411"/>
+  </file>
+  <file name="etree_lxml.py" id="20">
+    <function class="DocumentType" name="__init__" sline="41" eline="44" brval="" bbs="41"/>
+    <function class="Document" name="__init__" sline="48" eline="50" brval="" bbs="48"/>
+    <function class="Document" name="appendChild" sline="52" eline="57" brval="" bbs="52 54"/>
+    <function class="Document" name="_getChildNodes" sline="59" eline="60" brval="" bbs="59"/>
+    <function class="" name="testSerializer" sline="65" eline="0" brval="" bbs="65"/>
+    <function class="" name="serializeElement" sline="69" eline="138" brval="" bbs="69 70 71 74 75 79 85 87 90 96 97 99 101 104 105 106 113 116 118 120 126 129 132 134 135 137"/>
+    <function class="" name="tostring" sline="144" eline="0" brval="" bbs="144"/>
+    <function class="" name="serializeElement" sline="148" eline="178" brval="" bbs="148 149 150 151 154 158 163 166 168 169 172 175 177"/>
+    <function class="TreeBuilder" name="__init__" sline="193" eline="0" brval="" bbs="193"/>
+    <function class="Attributes" name="__init__" sline="199" eline="200" brval="" bbs="199"/>
+    <function class="Attributes" name="_coerceKey" sline="202" eline="207" brval="" bbs="202 203 206"/>
+    <function class="Attributes" name="clear" sline="227" eline="228" brval="" bbs="227"/>
+    <function class="Element" name="__init__" sline="231" eline="234" brval="" bbs="231"/>
+    <function class="Element" name="_setName" sline="236" eline="238" brval="" bbs="236"/>
+    <function class="Element" name="_getName" sline="241" eline="242" brval="" bbs="241"/>
+    <function class="Element" name="_getAttributes" sline="246" eline="247" brval="" bbs="246"/>
+    <function class="Element" name="_setAttributes" sline="249" eline="252" brval="" bbs="249"/>
+    <function class="Element" name="insertText" sline="256" eline="258" brval="" bbs="256"/>
+    <function class="Element" name="cloneNode" sline="260" eline="264" brval="" bbs="260 262"/>
+    <function class="Comment" name="__init__" sline="267" eline="269" brval="" bbs="267"/>
+    <function class="Comment" name="_setData" sline="271" eline="273" brval="" bbs="271"/>
+    <function class="Comment" name="_getData" sline="275" eline="276" brval="" bbs="275"/>
+    <function class="TreeBuilder" name="reset" sline="285" eline="289" brval="" bbs="285"/>
+    <function class="TreeBuilder" name="testSerializer" sline="291" eline="292" brval="" bbs="291"/>
+    <function class="TreeBuilder" name="getDocument" sline="294" eline="298" brval="" bbs="294 295 298"/>
+    <function class="TreeBuilder" name="getFragment" sline="300" eline="308" brval="" bbs="300 303 306"/>
+    <function class="TreeBuilder" name="insertDoctype" sline="310" eline="324" brval="" bbs="310 315 319 320 323 324"/>
+    <function class="TreeBuilder" name="insertCommentInitial" sline="326" eline="329" brval="" bbs="326"/>
+    <function class="TreeBuilder" name="insertCommentMain" sline="331" eline="335" brval="" bbs="331 332"/>
+    <function class="TreeBuilder" name="insertRoot" sline="337" eline="392" brval="" bbs="337 343 346 350 352 355 358 360 362 368 379 382"/>
+  </file>
+  <file name="__init__.py" id="21">
+    <function class="" name="getTreeBuilder" sline="39" eline="88" brval="" bbs="39 68 69 72 77 80 82 87"/>
+  </file>
+  <file name="etree.py" id="22">
+    <function class="" name="getETreeBuilder" sline="14" eline="0" brval="" bbs="14"/>
+    <function class="TreeWalker" name="getNodeDetails" sline="32" eline="70" brval="" bbs="32 33 35 38 40 43 46 50 54 56 57 60 61 62 63 65 68 69"/>
+    <function class="TreeWalker" name="getFirstChild" sline="72" eline="87" brval="" bbs="72 73 76 78 81 83 87"/>
+    <function class="TreeWalker" name="getNextSibling" sline="89" eline="107" brval="" bbs="89 90 93 95 96 100 102 104 107"/>
+    <function class="TreeWalker" name="getParentNode" sline="109" eline="126" brval="" bbs="109 110 113 115 116 119 121 122 125 126"/>
+  </file>
+  <file name="dom.py" id="23">
+    <function class="TreeWalker" name="getNodeDetails" sline="9" eline="34" brval="" bbs="9 10 13 16 18 20 23 27 30 34"/>
+    <function class="TreeWalker" name="getFirstChild" sline="36" eline="37" brval="" bbs="36"/>
+    <function class="TreeWalker" name="getNextSibling" sline="39" eline="40" brval="" bbs="39"/>
+    <function class="TreeWalker" name="getParentNode" sline="42" eline="43" brval="" bbs="42"/>
+  </file>
+  <file name="base.py" id="24">
+    <function class="TreeWalker" name="__init__" sline="27" eline="33" brval="" bbs="27"/>
+    <function class="TreeWalker" name="error" sline="38" eline="46" brval="" bbs="38"/>
+    <function class="TreeWalker" name="emptyTag" sline="48" eline="67" brval="" bbs="48 66"/>
+    <function class="TreeWalker" name="startTag" sline="69" eline="84" brval="" bbs="69"/>
+    <function class="TreeWalker" name="endTag" sline="86" eline="98" brval="" bbs="86"/>
+    <function class="TreeWalker" name="text" sline="100" eline="136" brval="" bbs="100 128 133 135"/>
+    <function class="TreeWalker" name="comment" sline="138" eline="146" brval="" bbs="138"/>
+    <function class="TreeWalker" name="doctype" sline="148" eline="163" brval="" bbs="148"/>
+    <function class="TreeWalker" name="entity" sline="165" eline="173" brval="" bbs="165"/>
+    <function class="TreeWalker" name="unknown" sline="175" eline="177" brval="" bbs="175"/>
+    <function class="NonRecursiveTreeWalker" name="getNodeDetails" sline="181" eline="182" brval="" bbs="181"/>
+    <function class="NonRecursiveTreeWalker" name="getFirstChild" sline="184" eline="185" brval="" bbs="184"/>
+    <function class="NonRecursiveTreeWalker" name="getNextSibling" sline="187" eline="188" brval="" bbs="187"/>
+    <function class="NonRecursiveTreeWalker" name="getParentNode" sline="190" eline="191" brval="" bbs="190"/>
+  </file>
+  <file name="genshi.py" id="25">
+    <function class="TreeWalker" name="tokens" sline="27" eline="69" brval="" bbs="27 29 34 35 38 40 41 46 48 51 54 57 58 61 64 69"/>
+  </file>
+  <file name="etree_lxml.py" id="26">
+    <function class="" name="ensure_str" sline="14" eline="20" brval="" bbs="14 15 17 20"/>
+    <function class="Root" name="__init__" sline="24" eline="49" brval="" bbs="24 29 42 44"/>
+    <function class="Root" name="getnext" sline="54" eline="55" brval="" bbs="54"/>
+    <function class="Doctype" name="__init__" sline="62" eline="69" brval="" bbs="62"/>
+    <function class="Doctype" name="getnext" sline="71" eline="72" brval="" bbs="71"/>
+    <function class="FragmentRoot" name="__init__" sline="76" eline="78" brval="" bbs="76"/>
+    <function class="FragmentRoot" name="getnext" sline="80" eline="81" brval="" bbs="80"/>
+    <function class="FragmentWrapper" name="__init__" sline="85" eline="95" brval="" bbs="85 88 91 92 95"/>
+    <function class="FragmentWrapper" name="getnext" sline="100" eline="106" brval="" bbs="100 103 106"/>
+    <function class="FragmentWrapper" name="getparent" sline="114" eline="115" brval="" bbs="114"/>
+    <function class="TreeWalker" name="__init__" sline="128" eline="137" brval="" bbs="128 130 134 135"/>
+    <function class="TreeWalker" name="getNodeDetails" sline="139" eline="178" brval="" bbs="139 140 145 148 151 154 157 162 163 166 167 168 169 173 176 177"/>
+    <function class="TreeWalker" name="getFirstChild" sline="180" eline="187" brval="" bbs="180 184 187"/>
+    <function class="TreeWalker" name="getNextSibling" sline="189" eline="203" brval="" bbs="189 190 193 196 199 201"/>
+    <function class="TreeWalker" name="getParentNode" sline="205" eline="215" brval="" bbs="205 206 209 212"/>
+  </file>
+  <file name="__init__.py" id="27">
+    <function class="" name="getTreeWalker" sline="21" eline="62" brval="" bbs="21 46 47 50 53 56 58"/>
+    <function class="" name="concatenateCharacterTokens" sline="65" eline="77" brval="" bbs="65 67 69 72 75 76"/>
+    <function class="" name="pprint" sline="80" eline="154" brval="" bbs="80 90 92 94 95 98 101 106 107 108 111 114 117 120 123 126 127 128 134 140 143 145 148 152"/>
+  </file>
+  <file name="_base.py" id="28">
+    <function class="Trie" name="keys" sline="12" eline="19" brval="" bbs="12 16"/>
+    <function class="Trie" name="has_keys_with_prefix" sline="21" eline="26" brval="" bbs="21 22 23"/>
+    <function class="Trie" name="longest_prefix" sline="28" eline="36" brval="" bbs="28 29 32 33"/>
+    <function class="Trie" name="longest_prefix_item" sline="38" eline="40" brval="" bbs="38"/>
+  </file>
+  <file name="py.py" id="29">
+    <function class="Trie" name="__init__" sline="10" eline="17" brval="" bbs="10 11"/>
+    <function class="Trie" name="keys" sline="31" eline="52" brval="" bbs="31 32 35 39 42 45"/>
+    <function class="Trie" name="has_keys_with_prefix" sline="54" eline="67" brval="" bbs="54 55 58 62 64"/>
+  </file>
+  <file name="__init__.py" id="30"/>
+  <file name="genshi.py" id="31">
+    <function class="" name="to_genshi" sline="7" eline="54" brval="" bbs="7 16 18 20 24 25 28 32 35 36 39 43 46 51 53"/>
+  </file>
+  <file name="sax.py" id="32">
+    <function class="" name="to_sax" sline="13" eline="50" brval="" bbs="13 22 25 27 29 35 38 41 43 46 48"/>
+  </file>
+  <file name="__init__.py" id="33"/>
+  <file name="inject_meta_charset.py" id="34">
+    <function class="Filter" name="__init__" sline="8" eline="17" brval="" bbs="8"/>
+  </file>
+  <file name="base.py" id="35">
+    <function class="Filter" name="__init__" sline="5" eline="6" brval="" bbs="5"/>
+  </file>
+  <file name="sanitizer.py" id="36">
+    <function class="Filter" name="__init__" sline="726" eline="782" brval="" bbs="726"/>
+    <function class="Filter" name="sanitize_token" sline="801" eline="817" brval="" bbs="801 805 808 813 814 817"/>
+    <function class="Filter" name="allowed_token" sline="819" eline="867" brval="" bbs="819 820 825 830 845 846 848 850 852 855 856 860 864"/>
+    <function class="Filter" name="disallowed_token" sline="869" eline="887" brval="" bbs="869 871 873 876 880 881"/>
+    <function class="Filter" name="sanitize_css" sline="889" eline="916" brval="" bbs="889 894 896 900 901 903 905 907 908 913"/>
+  </file>
+  <file name="optionaltags.py" id="37">
+    <function class="Filter" name="slider" sline="8" eline="16" brval="" bbs="8 10 11 15"/>
+    <function class="Filter" name="is_optional_start" sline="31" eline="86" brval="" bbs="31 33 37 41 43 45 51 53 59 60 65 71 72 77 80 85"/>
+    <function class="Filter" name="is_optional_end" sline="88" eline="207" brval="" bbs="88 90 94 104 107 108 114 116 119 120 127 135 136 142 145 146 153 156 157 161 163 168 169 180 182 185 186 192 195 196 203 206"/>
+  </file>
+  <file name="alphabeticalattributes.py" id="38">
+    <function class="" name="_attr_key" sline="8" eline="16" brval="" bbs="8"/>
+  </file>
+  <file name="whitespace.py" id="39">
+    <function class="" name="collapse_spaces" sline="37" eline="38" brval="" bbs="37"/>
+  </file>
+  <file name="lint.py" id="40">
+    <function class="Filter" name="__init__" sline="18" eline="27" brval="" bbs="18"/>
+  </file>
+  <file name="__init__.py" id="41"/>
+</py_summary>

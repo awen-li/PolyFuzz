@@ -114,15 +114,12 @@ struct PRT_function
                 {
                     m_ScancovGen [LineNo-m_SBB] = BBno;
                 }
-                PY_PRINT("InitScanCov: line[%d-%d] -> block[%d] \r\n", 
-                         m_BBs->at(CurBB-1), m_BBs->at(CurBB), BBno);
+                PY_PRINT("[%d]InitScanCov: line[%d-%d] -> block[%d] \r\n", BBnum, StartBB, EndBB, BBno);
 
                 BBno++;
             }
 
             assert (LineNo == m_EBB+1);
-            PY_PRINT("InitScanCov: line[%d-++] -> block[%d] \r\n", LineNo, BBno);
-
             BBno++;
         }
         

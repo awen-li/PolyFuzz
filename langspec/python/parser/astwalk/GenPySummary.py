@@ -73,6 +73,15 @@ def GenPySummary (PyDir, ExpList=None):
 
                 for FuncName, Def in FuncDef.items ():
                     BrVals = Def.GetBrVar ()
+
+                    if len (Def.BBNo) == 0:
+                        continue
+
+                    if Def.Sline == 0:
+                        continue
+                        
+                    if Def.Eline == 0:
+                        Def.Eline = Def.BBNo[-1]    
                     
                     FuncNode = _AddChildNode (doc, FileNode, "function")
                     FuncNode.setAttribute ("class", Def.Cls)

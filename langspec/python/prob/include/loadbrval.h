@@ -66,7 +66,14 @@ struct BV_function
 
     inline void InsertBb (string Bb)
     {
-        m_BBs.push_back (stoi(Bb));
+        int BbNo = stoi(Bb);
+        unsigned Size = (unsigned) m_BBs.size ();
+        if (Size != 0 && m_BBs[Size-1] == BbNo)
+        {
+            return;
+        }
+        
+        m_BBs.push_back (BbNo);
         return;
     }
 

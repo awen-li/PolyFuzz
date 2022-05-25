@@ -21,5 +21,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -t 2000 -m none -d -- python ../driver.py  @@
+afl-fuzz $1 $2 -i in/ -o out -t 5000 -m none -d -- python ../driver.py  @@
 

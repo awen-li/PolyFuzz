@@ -10,14 +10,13 @@ function instrument_java ()
 	inst_dir=$1
 	jar_name=$2
 	
-	if [ ! -d "$inst_dir" ]; then
-		mkdir $inst_dir
-		cd $inst_dir
-		jar -xvf ../app/$jar_name
-		cd -
+	if [ -d "$inst_dir" ]; then
+		rm -rf $inst_dir
 	fi
 	
+	mkdir $inst_dir
 	cd $inst_dir
+	jar -xvf ../app/$jar_name
 	
 	echo "8" > $inst_dir/INTERAL_LOC
 

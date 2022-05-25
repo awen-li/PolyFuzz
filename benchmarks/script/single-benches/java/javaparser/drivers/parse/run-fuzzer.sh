@@ -6,7 +6,7 @@ if [ ! -d "fuzz" ]; then
    cp ./tests/* fuzz/in/
 fi
 
-export target=parse.tar
+export target=parse.jar
 cp $target fuzz/
 
 cd fuzz
@@ -27,5 +27,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $target:$JavaCovPCG/JavaCovPCG.jar:$JANSI_PATH parse.jparser  @@
+afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $target:$JavaCovPCG/JavaCovPCG.jar:$TARGET_APP parse.jparser  @@
 

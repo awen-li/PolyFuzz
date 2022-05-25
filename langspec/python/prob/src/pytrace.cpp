@@ -47,7 +47,7 @@ static inline string BaseName(string const &Path)
 }
 
 
-static inline void TraceOpCode(PyFrameObject *frame, int what, PRT_function* Rtf)
+static inline void TraceOpCode(PyFrameObject *frame, int what, PRT_file* Rtf)
 {
     frame->f_trace_opcodes = true;
 
@@ -58,7 +58,7 @@ static inline void TraceOpCode(PyFrameObject *frame, int what, PRT_function* Rtf
         return;
     }
     
-    unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
+    //unsigned oparg  = (unsigned char)PyBytes_AsString(f_code->co_code)[frame->f_lasti+1];
     if (!HAS_ARG(opcode))
     {
         return;
@@ -122,7 +122,7 @@ static inline PyObject* GetVarObj (PyFrameObject *frame, string VarName)
     return NULL;
 }
 
-static inline void TraceLine(PyFrameObject *frame, int what, PRT_function* Rtf)
+static inline void TraceLine(PyFrameObject *frame, int what, PRT_file* Rtf)
 {
     frame->f_trace_lines = true;
 
@@ -152,12 +152,12 @@ static inline void TraceLine(PyFrameObject *frame, int what, PRT_function* Rtf)
 
     unsigned Value = PyLong_AsLong(ObjBrVar);
     DynTraceD32 (0, BV->m_Key, Value);
-    PY_PRINT ("\t@@@ [TraceLine][File:%u]Line:%u, Var:%s:%u:%u\r\n", Rtf->m_Idx, frame->f_lineno, BV->m_Name.c_str(), BV->m_Key, Value);
+    PY_PRINT ("\t@@@ [TraceLine][File:%s]Line:%u, Var:%s:%u:%u\r\n", Rtf->m_FileName.c_str(), frame->f_lineno, BV->m_Name.c_str(), BV->m_Key, Value);
     return;
 }
 
 
-static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
+static inline void TraceSAI(PyFrameObject *frame, int what, PRT_file* Rtf)
 {
     switch (what)
     {
@@ -181,7 +181,7 @@ static inline void TraceSAI(PyFrameObject *frame, int what, PRT_function* Rtf)
 }
 
 
-static inline void InjectCov(PyFrameObject *frame, PRT_function* Rtf) 
+static inline void InjectCov(PyFrameObject *frame, PRT_file* Rtf) 
 {
     PY_PRINT("InjectCov: [PreBB : CurBB]  = [%d : %d] \r\n", Rtf->m_PreBB, Rtf->m_CurBB);
     if (Rtf->m_PreBB == 0)
@@ -213,21 +213,21 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     PyCodeObject *f_code  = frame->f_code;
 
     string FileName = BaseName(PyUnicode_AsUTF8(f_code->co_filename));
-    const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
 
-    //PY_PRINT ("@@@ %s : %s: %d\r\n", FileName.c_str(), FuncName, frame->f_lineno);
-    
-    int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName, frame->f_lineno);
-    if (FIdx == 0)
-    {
-        PY_PRINT ("@@@ %s : %s: %d, GetFIdx fail!!!\r\n", FileName.c_str(), FuncName, frame->f_lineno);
-        return 0;
-    }
+    #ifdef __DEBUG__
+    const char* FuncName = PyUnicode_AsUTF8(f_code->co_name);
+    #endif
 
     /* init runtime for current function */
-    PRT_function* Rtf = __Prt.GetRtf (FIdx, frame->f_lineno);
-    PY_PRINT ("@@@ %s : [%u]%s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
-              FileName.c_str(), FIdx, FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVars->size(), Rtf);
+    PRT_file* Rtf = __Prt.GetRtf (FileName, frame->f_lineno);
+    if (Rtf == NULL)
+    {
+        PY_PRINT ("@@@ Retrieve %s fail \r\n", FileName.c_str());
+        return 0;
+    }
+    
+    PY_PRINT ("@@@ %s : %s :[%d] %d --- length(BVs)-> %u, Rtf[%p] \r\n", 
+              FileName.c_str(), FuncName, Rtf->m_CurBB, frame->f_lineno, (unsigned)Rtf->m_BrVars->size(), Rtf);
 
 #ifdef _PROB_DATA_
     TraceSAI (frame, what, Rtf);

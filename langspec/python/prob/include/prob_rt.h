@@ -8,10 +8,10 @@ namespace pyprob {
 
 using namespace std;
 
-struct PRT_function
+struct PRT_file
 {
-    unsigned m_Idx;
-
+    string m_FileName;
+    
     int m_SBB;
     int m_EBB;
     int m_CovSize;
@@ -23,31 +23,44 @@ struct PRT_function
 
     int m_PreBB;
     int m_CurBB;
+    int m_ConstBB;
 
-    PRT_function (unsigned Idx, int &BBno, vector<int> *BBs, unordered_map<unsigned, BVar*> *BrVals)
+    PRT_file (string FileName, int &BBno, vector<int> *BBs, unordered_map<unsigned, BVar*> *BrVals)
     {
         assert (BBs != NULL);
-        
-        m_Idx = Idx;
-        m_BBs = BBs;
-        m_BrVars = BrVals;
-        
-        m_SBB = BBs->front ();
-        m_EBB = BBs->back ();
-        m_CovSize = m_EBB-m_SBB+2;      
-        assert (m_CovSize >= 1);
-        
-        m_ScancovGen = new int[m_CovSize];
-        assert (m_ScancovGen != NULL);
-        PY_PRINT("[%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
 
-        InitScanCov (BBno);
-
+        m_FileName = FileName;
         m_PreBB = 0;
         m_CurBB = 0;
+        m_ConstBB = 0;
+        m_CovSize = 0;
+        m_ScancovGen = NULL;
+        m_BBs = BBs;
+        m_BrVars = BrVals;
+
+        if (m_BBs->size () == 0)
+        {
+            PY_PRINT("[%s] None branches exist, set blockno as: %u \r\n", m_FileName.c_str(), BBno);
+            m_ConstBB = BBno;
+            BBno++;
+        }
+        else
+        {     
+            m_SBB = BBs->front ();
+            m_EBB = BBs->back ();
+            m_CovSize = m_EBB-m_SBB+2;      
+            assert (m_CovSize >= 1);
+            
+            m_ScancovGen = new int[m_CovSize];
+            assert (m_ScancovGen != NULL);
+
+            InitScanCov (BBno);
+        }
+
+        
     }
 
-    ~PRT_function () 
+    ~PRT_file () 
     {
         //PY_PRINT("~PRT_function -> [%d]m_ScancovGen = %p[%d] \r\n", m_Idx, m_ScancovGen, m_CovSize);
         if (m_ScancovGen)
@@ -72,6 +85,12 @@ struct PRT_function
 
     void inline UpdateCurBB (int LineNo)
     {
+        if (m_ConstBB != 0)
+        {
+            m_CurBB = m_ConstBB;
+            return;
+        }
+        
         if (LineNo < m_SBB)
         {
             return;
@@ -95,6 +114,8 @@ struct PRT_function
         int BBnum = (int)m_BBs->size ();
         assert (BBnum > 0);
 
+        PY_PRINT("[%s]InitScanCov: BlockNum = %u [%u, %u]\r\n", m_FileName.c_str(), BBnum, m_SBB, m_EBB);
+        
         if (BBnum == 1)
         {
             m_ScancovGen [0] = BBno;
@@ -120,7 +141,6 @@ struct PRT_function
             }
 
             assert (LineNo == m_EBB+1);
-            BBno++;
         }
         
         return;
@@ -132,9 +152,10 @@ struct PRT
 {
     set<string> RegModule;
     BV_set BvSet;
+
+    unordered_map <string, PRT_file*> m_Idx2Rtf;
+    PRT_file *m_CatchRtf;
     
-    unordered_map <unsigned, PRT_function*> m_Idx2Rtf;
-    PRT_function *m_CatchRtf;
     unsigned m_InitOkay;
 
     PRT () 
@@ -165,16 +186,11 @@ struct PRT
         for (auto BvIt = BvSet.begin (), BvEnd = BvSet.end (); BvIt != BvEnd; BvIt++)
         {
             BV_file* Bvf = BvIt->second;
-            for (auto fIt = Bvf->begin (), fEnd = Bvf->end (); fIt != fEnd; fIt++)
-            {   
-                BV_function* BvFunc = fIt->second;
+            PY_PRINT("@@@ Start init Rtf: [%s] \r\n", Bvf->m_FileName.c_str());
+            PRT_file *Rtf = new PRT_file (Bvf->m_FileName, BBno, &Bvf->m_BBs, &Bvf->m_BrVals);
+            assert (Rtf != NULL);
 
-                PY_PRINT("@@@ Start init Rtf: [%d][%s] \r\n", BvFunc->m_Idx, BvFunc->m_FuncName.c_str());
-                PRT_function *Rtf = new PRT_function (BvFunc->m_Idx, BBno, &BvFunc->m_BBs, &BvFunc->m_BrVals);
-                assert (Rtf != NULL);
-
-                m_Idx2Rtf [BvFunc->m_Idx] = Rtf;     
-            }
+            m_Idx2Rtf [Bvf->m_FileName] = Rtf;   
         }
 
         m_InitOkay = 1;
@@ -192,15 +208,15 @@ struct PRT
         return true;
     }
 
-    inline PRT_function* GetRtf (unsigned Idx, int LineNo)
+    inline PRT_file* GetRtf (string FileName, int LineNo)
     {
-        if (m_CatchRtf != NULL && m_CatchRtf->m_Idx == Idx)
+        if (m_CatchRtf != NULL && m_CatchRtf->m_FileName == FileName)
         {
             m_CatchRtf->UpdateCurBB (LineNo);
             return m_CatchRtf;
         }
         
-        auto It = m_Idx2Rtf.find (Idx);
+        auto It = m_Idx2Rtf.find (FileName);
         if (It != m_Idx2Rtf.end ())
         {
             m_CatchRtf = It->second;
@@ -211,9 +227,7 @@ struct PRT
         }
         else
         {
-            printf ("Unknown Idx: %u \r\n", Idx);
-            assert (0);
-            return m_CatchRtf;
+            return NULL;
         }
     }
 };

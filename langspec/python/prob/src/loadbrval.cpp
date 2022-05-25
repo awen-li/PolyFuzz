@@ -9,7 +9,7 @@ namespace pyprob {
 using namespace std;
 
 /* brval="addvar:4137755248 " */
-void BV_set::DecodeBrVars (BV_function *BVfunc, char *BrVars)
+void BV_set::DecodeBrVars (BV_file *BVfile, char *BrVars)
 {
     char *Val = strtok (BrVars, " ");
     while(Val != NULL) 
@@ -30,7 +30,7 @@ void BV_set::DecodeBrVars (BV_function *BVfunc, char *BrVars)
         
         string VarKey (Key);
         
-        BVfunc->InsertBv((unsigned)stol(LineNo), VarName, (unsigned)stol(VarKey));
+        BVfile->InsertBv((unsigned)stol(LineNo), VarName, (unsigned)stol(VarKey));
         
         Val = strtok(NULL, " ");
     }
@@ -92,11 +92,11 @@ unsigned BV_set::LoadPySummary(string PySummary)
         mxml_node_t *Function = mxmlFindElement(File, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);
         while (Function != NULL)
         {
-            const char *FuncName = mxmlElementGetAttr(Function, "name");
-            assert (FuncName != NULL);
+            //const char *FuncName = mxmlElementGetAttr(Function, "name");
+            //assert (FuncName != NULL);
 
-            const char *SLine = mxmlElementGetAttr(Function, "sline");
-            assert (SLine != NULL);
+            //const char *SLine = mxmlElementGetAttr(Function, "sline");
+            //assert (SLine != NULL);
 
             const char *ELine = mxmlElementGetAttr(Function, "eline");
             assert (ELine != NULL);
@@ -107,29 +107,24 @@ unsigned BV_set::LoadPySummary(string PySummary)
             const char *BBList   = mxmlElementGetAttr(Function, "bbs");
             assert (BBList != NULL);
 
-            BV_function *BVfunc = BVfile->Insert(FuncName, FuncNo+1, (unsigned)atoi (SLine), (unsigned)atoi (ELine));
-            assert (BVfunc != NULL);
-
             /* branch variables */
-            DecodeBrVars (BVfunc, (char *)ValList);
+            DecodeBrVars (BVfile, (char *)ValList);
 
             /* bbs */
             const char *Bb = strtok ((char *)BBList, " ");
             while(Bb != NULL) 
             {
-                BVfunc->InsertBb(Bb);   
+                BVfile->InsertBb(Bb);
                 Bb = strtok(NULL, " ");
             }
-            BVfunc->InsertBb(ELine); // the end line
-
-            BlockNum += (unsigned)BVfunc->m_BBs.size () + 1;
-            
-            //BVfunc->View();
+            BVfile->InsertBb(ELine); // the end line
 
             /* next function node */
             Function = mxmlFindElement(Function, tree, "function", NULL, NULL, MXML_DESCEND_FIRST);
             FuncNo++;
         }
+
+        BlockNum += (unsigned)BVfile->m_BBs.size () + 1;
 
         /* next file node */
         FileNo++;
@@ -142,55 +137,6 @@ unsigned BV_set::LoadPySummary(string PySummary)
 
     return BlockNum;
 }
-
-
-int BV_set::GetFIdx (string File, string Func, unsigned LineNo)
-{
-    PY_PRINT ("GetFIdx -> %s -> %s -> %u \r\n", File.c_str(), Func.c_str(), LineNo);
-    if (m_BVFileCatch != NULL && m_BVFileCatch->m_FileName == File)
-    {
-        BV_function *BVFuncCatch = m_BVFileCatch->m_BVFuncCatch;
-        if (BVFuncCatch != NULL && BVFuncCatch->m_FuncName == Func)
-        {
-            return BVFuncCatch->m_Idx;
-        }
-        else
-        {
-            BVFuncCatch = m_BVFileCatch->Get(Func, LineNo);
-            m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
-            if (BVFuncCatch != NULL)
-            {
-                return BVFuncCatch->m_Idx;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-    else
-    {
-        m_BVFileCatch = Get (File);
-        if (m_BVFileCatch == NULL)
-        {
-            return 0;
-        }
-
-        BV_function *BVFuncCatch = m_BVFileCatch->Get(Func, LineNo);
-        m_BVFileCatch->m_BVFuncCatch = BVFuncCatch;
-        if (BVFuncCatch != NULL)
-        {
-            return BVFuncCatch->m_Idx;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-
-    return 0;
-}
-
 
 
 }  // namespace atheris

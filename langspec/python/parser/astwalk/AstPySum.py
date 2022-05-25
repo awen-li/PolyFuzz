@@ -254,7 +254,7 @@ class AstPySum(NodeVisitor):
 
     def visit_if(self, node):
         #print (ast.dump (node))
-        print ("#line-no if: %d" %node.lineno)
+        print ("#line-no if-start: %d" %node.lineno)
         self.InsertBB (node.lineno)
         
         # check test
@@ -263,12 +263,16 @@ class AstPySum(NodeVisitor):
         # continue to body
         for s in node.body:
             self.visit(s)
+        print ("#line-no if-end: %d" %self.CurLine)
+        self.InsertBB (self.CurLine)
 
         # continue to else
         for s in node.orelse:
-            print ("#line-no else: %d" %s.lineno)
+            print ("#line-no else-start: %d" %s.lineno)
             self.InsertBB (s.lineno)
             self.visit(s)
+        print ("#line-no else-end: %d" %self.CurLine)
+        self.InsertBB (self.CurLine)
             
         return
 

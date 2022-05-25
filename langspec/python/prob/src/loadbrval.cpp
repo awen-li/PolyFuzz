@@ -52,8 +52,10 @@ void BV_set::DecodeBrVars (BV_function *BVfunc, char *BrVars)
 </branch_variables>
 
 */
-void BV_set::LoadPySummary(string PySummary)
+unsigned BV_set::LoadPySummary(string PySummary)
 {
+    unsigned BlockNum = 0;
+    
     FILE *fp = fopen(PySummary.c_str(), "r");
     if (fp == NULL)
     {
@@ -118,6 +120,9 @@ void BV_set::LoadPySummary(string PySummary)
                 BVfunc->InsertBb(Bb);   
                 Bb = strtok(NULL, " ");
             }
+            BVfunc->InsertBb(ELine); // the end line
+
+            BlockNum += (unsigned)BVfunc->m_BBs.size () + 1;
             
             //BVfunc->View();
 
@@ -135,7 +140,7 @@ void BV_set::LoadPySummary(string PySummary)
     PY_PRINT("LoadPySummary: load %s done, file number:%d , function number:%d, branchs:%u\r\n", 
              PySummary.c_str(), FileNo, FuncNo, m_Branchs);
 
-    return;
+    return BlockNum;
 }
 
 

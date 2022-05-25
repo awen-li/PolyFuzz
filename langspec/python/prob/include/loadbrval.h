@@ -215,7 +215,7 @@ struct BV_set
     }
 
     void DecodeBrVars (BV_function *BVfunc,       char *BrVars);
-    void LoadPySummary(string BrValXml);
+    unsigned LoadPySummary(string BrValXml);
     int GetFIdx (string File, string Func, unsigned LineNo);
 };
 

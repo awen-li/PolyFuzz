@@ -27,15 +27,15 @@ void PyInit(string PySummary)
 {
     /* load all branch variables for each function */
     BV_set *BvSet = &__Prt.BvSet;
-    BvSet->LoadPySummary(PySummary);
+    unsigned BlockNum = BvSet->LoadPySummary(PySummary);
 
     /* Init tracing: shared memory ALF++, etc. */
-    int FinalLoc = DynTraceInit (BvSet->m_Branchs);
-    PY_PRINT (">>>>>>>>Get FinalLoc = %d before InitRtfs of python\r\n", FinalLoc);
+    int FinalLoc = DynTraceInit (BlockNum);
+    PY_PRINT (">>>>>>>>Get FinalLoc = %d before InitRtfs of python [%u]\r\n", FinalLoc, BlockNum);
 
     /* Init Rtfs */
     __Prt.InitRtfs(FinalLoc);
-    PY_PRINT (">>>>>>>>Get FinalLoc = %d after InitRtfs of python\r\n", FinalLoc);
+    PY_PRINT (">>>>>>>>Get FinalLoc = %d after InitRtfs of python [%u]\r\n", FinalLoc, BlockNum);
 
     return;
 }
@@ -220,6 +220,7 @@ int Tracer (PyObject *obj, PyFrameObject *frame, int what, PyObject *arg)
     int FIdx = __Prt.BvSet.GetFIdx (FileName, FuncName, frame->f_lineno);
     if (FIdx == 0)
     {
+        PY_PRINT ("@@@ %s : %s: %d, GetFIdx fail!!!\r\n", FileName.c_str(), FuncName, frame->f_lineno);
         return 0;
     }
 

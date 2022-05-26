@@ -5,10 +5,33 @@ export target=bind9
 export FUZZ_HOME="$ROOT/fuzz_root"
 
 #dependences
-apt-get install -y python-ply
-apt-get install -y libuv1.dev
-apt-get install -y libnghttp2-dev
-apt-get install -y libjson-c-dev
+function deps ()
+{
+	apt-get install -y python-ply
+	apt-get install -y libuv1.dev
+	apt-get install -y libnghttp2-dev
+	apt-get install -y libjson-c-dev
+	apt-get install -y libssl-dev
+	apt-get install -y comerr-dev
+}
+
+	
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "./branch_vars.bv" ]; then
+		rm ./branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> ./branch_vars.bv
+		rm $branch
+	done
+}
+
 
 function compile ()
 {
@@ -34,6 +57,8 @@ function compile ()
 	make install
 
 	cd -
+	
+	collect_branchs
 }
 
 

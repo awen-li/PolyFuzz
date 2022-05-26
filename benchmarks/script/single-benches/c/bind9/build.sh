@@ -20,14 +20,14 @@ function collect_branchs ()
 {
 	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
 	
-	if [ -f "./branch_vars.bv" ]; then
-		rm ./branch_vars.bv
+	if [ -f "$ROOT/drivers/branch_vars.bv" ]; then
+		rm $ROOT/drivers/branch_vars.bv
 	fi
 	
 	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
 	for branch in $ALL_BRANCHS
 	do
-		cat $branch >> ./branch_vars.bv
+		cat $branch >> $ROOT/drivers/branch_vars.bv
 		rm $branch
 	done
 }

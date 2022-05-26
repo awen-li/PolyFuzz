@@ -14,7 +14,7 @@ cd fuzz
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
-export TARGET_APP=../../../jsoup.jar
+export TARGET_APP=$BENCH/script/single-benches/java/jsoup/jsoup.jar
 
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100
@@ -27,5 +27,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o -t 5000 out -m none -d -- javawrapper java -cp $target:$JavaCovPCG/JavaCovPCG.jar:$TARGET_APP xml.XmlFuzzer  @@
+afl-fuzz $1 $2 -i in/ -o out -t 5000 -m none -d -- javawrapper java -cp $target:$JavaCovPCG/JavaCovPCG.jar:$TARGET_APP xml.XmlFuzzer  @@
 

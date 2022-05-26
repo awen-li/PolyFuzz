@@ -8,7 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export TARGET_JAR=../jsoup.jar
+export TARGET_JAR=$BENCH/script/single-benches/java/jsoup/jsoup.jar
   
 function compile()
 {

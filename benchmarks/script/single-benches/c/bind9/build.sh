@@ -1,12 +1,13 @@
 
 
 export ROOT=`pwd`
-export target=bind-9.19.1
-export BING_HOME="$ROOT/bind_fuzz"
+export target=bind9
+export FUZZ_HOME="$ROOT/fuzz_root"
 
 #dependences
 apt-get install -y python-ply
 apt-get install -y libuv1.dev
+apt-get install -y libnghttp2-dev
 
 function compile ()
 {
@@ -14,32 +15,23 @@ function compile ()
 		rm -rf $ROOT/$target*
 	fi
 	
-	if [ ! -d "$BING_HOME" ]; then
-	    mkdir "$BING_HOME"
+	if [ ! -d "$FUZZ_HOME" ]; then
+	    mkdir "$FUZZ_HOME"
 	fi
 	
-	wget https://downloads.isc.org/isc/bind9/9.19.1/bind-9.19.1.tar.xz
-	tar -xvf bind-9.19.1.tar.xz
+	git clone https://gitlab.isc.org/isc-projects/bind9
 	cd $target
 
-	set -ex
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++ -lxFuzztrace"
-
-	./configure \
-			--prefix="$BING_HOME"/ \
-			--without-gssapi \
-			--disable-chroot \
-			--disable-linux-caps \
-			--without-libtool \
-			--enable-epoll \
-			--disable-backtrace \
-			--with-openssl=yes \
-			--disable-doh
+	
+	autoreconf -fi
+	./configure --disable-shared --enable-static --enable-developer --without-cmocka --without-zlib --disable-linux-caps --prefix="$FUZZ_HOME"
+	
 
 	make -j4
 	make install
-	
+
 	cd -
 }
 

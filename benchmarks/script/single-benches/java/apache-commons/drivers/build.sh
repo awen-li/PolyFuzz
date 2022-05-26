@@ -70,7 +70,7 @@ do
     if [ ! -d "$JT/tests" ]; then
         mkdir $JT/tests
     fi
-    cd $JT/tests/ && tar -xvf ../seed_corpus.tar.gz
+    @cd $JT/tests/ && tar -xvf ../seed_corpus.tar.gz
 done
   
 cd $Root 

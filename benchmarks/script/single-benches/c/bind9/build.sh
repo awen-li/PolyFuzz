@@ -8,6 +8,7 @@ export FUZZ_HOME="$ROOT/fuzz_root"
 apt-get install -y python-ply
 apt-get install -y libuv1.dev
 apt-get install -y libnghttp2-dev
+apt-get install -y libjson-c-dev
 
 function compile ()
 {
@@ -26,7 +27,7 @@ function compile ()
 	export CXX="afl-c++ -lxFuzztrace"
 	
 	autoreconf -fi
-	./configure --disable-shared --enable-static --enable-developer --without-cmocka --without-zlib --disable-linux-caps --prefix="$FUZZ_HOME"
+	./configure --enable-developer --without-cmocka --without-zlib --disable-linux-caps --prefix="$FUZZ_HOME"
 	
 
 	make -j4

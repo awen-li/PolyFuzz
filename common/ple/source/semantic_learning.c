@@ -117,10 +117,10 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(DHL->DBSeedHandle, 8*1024, sizeof (Seed), sizeof (DWORD));
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(DHL->DBSeedBlockHandle, 64*1024, sizeof (SeedBlock), 64);
+    Ret = DbCreateTable(DHL->DBSeedBlockHandle, 64*1024, sizeof (SeedBlock), 96);
     assert (Ret != R_FAIL);
 
-    Ret = DbCreateTable(DHL->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 64);
+    Ret = DbCreateTable(DHL->DBBrVariableHandle, 128*1024, sizeof (BrVariable), 96);
     assert (Ret != R_FAIL);
 
     Ret = DbCreateTable(DHL->DBBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
@@ -129,7 +129,7 @@ VOID InitDbTable (PLServer *plSrv)
     Ret = DbCreateTable(DHL->DBCacheBrVarKeyHandle, 128*1024, sizeof (DWORD), sizeof (DWORD));
     assert (Ret != R_FAIL);
     
-    Ret = DbCreateTable(DHL->DBCacheBrVariableHandle, 8*1024, sizeof (BrVariable), 64);
+    Ret = DbCreateTable(DHL->DBCacheBrVariableHandle, 8*1024, sizeof (BrVariable), 96);
     assert (Ret != R_FAIL);
 
     printf ("@InitDB: SeedTable[%u], SeedBlockTable[%u], BrVarTable[%u], BrVarKeyTable[%u], CacheBrVarKeyTable[%u], CacheBrVarTable[%u]\r\n",

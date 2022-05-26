@@ -8,7 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export TARGET_JAR=../zxing.jar:../app
+export TARGET_JAR=$BENCH/script/single-benches/java/zxing/zxing.jar:$BENCH/script/single-benches/java/zxing/lib
   
 function compile()
 {

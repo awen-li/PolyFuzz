@@ -42,11 +42,30 @@ function instrument_java ()
 # switch to java11
 #update-java-alternatives -s /usr/lib/jvm/java-1.11.0-openjdk-amd64
 #export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+unset JAVA_TOOL_OPTIONS
+
+function compile_source ()
+{
+	if [ -d "$target" ]; then
+		rm -rf $target
+    fi
+    
+    git clone https://github.com/zxing/zxing.git
+    cd $target
+    mvn clean install
+    
+    mv core/target/core-.*-SNAPSHOT.jar ../app/zxing.jar -f
+    cd -
+}
+
+#compile_source
+if [ "$1" == "build" ]; then
+	compile_source
+fi
 
 # instrument java
 jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "zxing.jar"
-cp app/jsr305-3.0.2.jar ./
 
 
 

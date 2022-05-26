@@ -24,7 +24,7 @@ function instrument_java ()
 	    echo "8" > $inst_dir/INTERAL_LOC
 	fi
 
-    	echo "../app/jsr305-3.0.2.jar" > dep
+	echo "$BENCH/script/single-benches/java/json-sanitizer/lib/jsr305-3.0.2.jar" > dep
 	java -cp .:$JavaCovPCG/JavaCovPCG.jar: JCovPCG.Main -d dep -t .
 	cp sootOutput/* -rf .
 	rm -rf sootOutput
@@ -43,10 +43,31 @@ function instrument_java ()
 update-java-alternatives -s /usr/lib/jvm/java-1.8.0-openjdk-amd64
 export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-amd64
 
+unset JAVA_TOOL_OPTIONS
+
+function compile_source ()
+{
+	if [ -d "$target" ]; then
+		rm -rf $target
+    fi
+    
+    git clone https://github.com/OWASP/json-sanitizer.git
+    cd $target
+    mvn clean install
+    
+    mv target/json-sanitizer-*-SNAPSHOT.jar ../app/json-sanitizer.jar -f
+    cd -
+}
+
+#compile_source
+if [ "$1" == "build" ]; then
+	compile_source
+fi
+
 # instrument java
 jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "json-sanitizer.jar"
-cp ../app/gson-2.8.6.jar ./
+
 
 
 

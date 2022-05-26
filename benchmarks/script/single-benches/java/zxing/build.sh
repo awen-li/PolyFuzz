@@ -54,7 +54,7 @@ function compile_source ()
     cd $target
     mvn clean install
     
-    mv core/target/core-.*-SNAPSHOT.jar ../app/zxing.jar -f
+    mv core/target/core-*-SNAPSHOT.jar ../app/zxing.jar -f
     cd -
 }
 

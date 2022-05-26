@@ -24,7 +24,7 @@ function instrument_java ()
 	    echo "8" > $inst_dir/INTERAL_LOC
 	fi
 	
-	echo "../app/jsr305-3.0.2.jar" > dep
+	echo "$BENCH/script/single-benches/java/jsoup/lib/jsr305-3.0.2.jar" > dep
 	java -cp .:$JavaCovPCG/JavaCovPCG.jar: JCovPCG.Main -d dep -t .
 	cp sootOutput/* -rf .
 	rm -rf sootOutput
@@ -54,7 +54,7 @@ function compile_source ()
     cd $target
     mvn clean install
     
-    mv target/jsoup-.*-SNAPSHOT.jar ../app/jsoup.jar -f
+    mv target/jsoup-*-SNAPSHOT.jar ../app/jsoup.jar -f
     cd -
 }
 

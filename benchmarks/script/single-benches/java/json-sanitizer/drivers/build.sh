@@ -8,7 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export TARGET_JAR=../json-sanitizer.jar:../gson-2.8.6.jar
+export TARGET_JAR=$BENCH/script/single-benches/java/json-sanitizer/json-sanitizer.jar:$BENCH/script/single-benches/java/json-sanitizer/lib/gson-2.8.6.jar
   
 function compile()
 {
@@ -30,7 +30,6 @@ function compile()
     fi
     mkdir -p $JAVA_CLASS 
 
-	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
     javac -d $JAVA_CLASS -encoding utf-8 -cp .:$TARGET_JAR -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
 }
 
@@ -68,7 +67,7 @@ do
     cp ../EXTERNAL_LOC $JT/
     if [ ! -d "$JT/tests" ]; then
         mkdir $JT/tests
-        cd $JT/tests && tar -xzf ../seed_corpus.tar.gz
+        @cd $JT/tests && tar -xzf ../seed_corpus.tar.gz
     fi
 done
   

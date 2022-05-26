@@ -36,6 +36,26 @@ function instrument_java ()
 # switch to java11
 #update-java-alternatives -s /usr/lib/jvm/java-1.11.0-openjdk-amd64
 #export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
+unset JAVA_TOOL_OPTIONS
+
+function compile_source ()
+{
+	if [ -d "$target" ]; then
+		rm -rf $target
+    fi
+    
+    git clone https://github.com/javaparser/javaparser.git
+    cd $target
+    mvn clean install
+    
+    mv javaparser-core/javaparser-core-*-SNAPSHOT.jar ../app/javaparser.jar -f
+    cd -
+}
+
+#compile_source
+if [ "$1" == "build" ]; then
+	compile_source
+fi
 
 # instrument java
 jar_dir=$ROOT/$target-instm

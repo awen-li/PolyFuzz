@@ -8,7 +8,7 @@ if [ ! -n "$JavaCovPCG" ]; then
 fi
 
 
-export TARGET_JAR=../javaparser.jar
+export TARGET_JAR=$BENCH/script/single-benches/java/javaparser/javaparser.jar
   
 function compile()
 {

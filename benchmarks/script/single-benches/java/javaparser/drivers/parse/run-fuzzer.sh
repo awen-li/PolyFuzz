@@ -14,7 +14,7 @@ cd fuzz
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1
-export TARGET_APP=../../../javaparser.jar
+export TARGET_APP=$BENCH/script/single-benches/java/javaparser/javaparser.jar
 
 #enable crash exit code
 export AFL_CRASH_EXITCODE=100

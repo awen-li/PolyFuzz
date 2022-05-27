@@ -14,7 +14,7 @@ do
     fi    
     cd $JT/tests && tar -xzf ../seed_corpus.tar.gz  && cd -
 
-    cp $FUZZ_HOME/lib/*   $JT/ -rf
+    cp $FUZZ_HOME/lib     $JT/ -rf
     cp $FUZZ_HOME/include $JT/ -rf
 
     cd $JT && make clean && make && cd -

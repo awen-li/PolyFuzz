@@ -39,20 +39,25 @@ function compile ()
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++"
 	
-	cp $ROOT/script/$target/setup.py $ROOT/$target/
-	#python setup.py install
-	pip3 install .
+	cp $ROOT_SCRIPT/setup.py $ROOT/$target/
+	python setup.py install
 	
 	popd
 }
+
+Pyversion=`PyVersion.sh`
+if [ -d "$Pyversion/site-packages/bottleneck" ]; then
+	rm -rf $Pyversion/site-packages/bottleneck
+fi
 
 # 1. compile the C unit
 cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/bottleneck
-python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+cd $ROOT/$target
+PyDir=bottleneck
+python -m parser $PyDir > python.log
+cp $PyDir/py_summary.xml $ROOT_SCRIPT/
 
 collect_branchs

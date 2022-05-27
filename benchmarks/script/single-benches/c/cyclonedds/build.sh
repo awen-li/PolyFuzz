@@ -51,6 +51,8 @@ function compile ()
 	cd -
 	
 	collect_branchs
+	unset CC
+	unset CXX
 }
 
 

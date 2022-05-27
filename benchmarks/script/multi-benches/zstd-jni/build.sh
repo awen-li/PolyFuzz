@@ -1,7 +1,24 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=zstd-jni
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
 
 function instrument_java ()
 {
@@ -24,12 +41,12 @@ function instrument_java ()
 	
 	mv linux/amd64/branch_vars.bv $ROOT/$target/
 	mv linux/amd64/cmp_statistic.info $ROOT/$target/
-	mv EXTERNAL_LOC $ROOT/script/$target
+	mv EXTERNAL_LOC $ROOT_SCRIPT/
 	cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
 	rm branch_vars.bv
 	rm INTERAL_LOC
 	
-	cp $ROOT/script/$target/MANIFEST.MF ./META-INF/ -f
+	cp $ROOT_SCRIPT/MANIFEST.MF ./META-INF/ -f
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	cp $jar_name ../
@@ -51,7 +68,7 @@ function compile ()
 	update-java-alternatives --set java-1.8.0-openjdk-amd64
 	
 	export CC="afl-cc"
-	cp $ROOT/script/$target/build.sbt $ROOT/$target/ -f
+	cp $ROOT_SCRIPT/build.sbt $ROOT/$target/ -f
 	./sbt compile package
 	
 	jar_dir=$ROOT/$target/target/zstd-jni
@@ -69,3 +86,4 @@ cd $ROOT
 compile
 
 
+collect_branchs

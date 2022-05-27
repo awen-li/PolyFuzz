@@ -1,0 +1,234 @@
+Fri May 20 06:28:54 2022 #16524687	REDUCE cov: 1108 ft: 5807 corp: 747/509Kb lim: 4096 exec/s: 9200 rss: 1128Mb L: 2018/4096 MS: 1 EraseBytes-
+
+Fri May 20 06:58:54 2022 #26744698	REDUCE cov: 1181 ft: 6377 corp: 866/612Kb lim: 4096 exec/s: 7437 rss: 1213Mb L: 2280/4096 MS: 1 EraseBytes-
+
+Fri May 20 07:28:54 2022 #36926286	REDUCE cov: 1181 ft: 6461 corp: 907/661Kb lim: 4096 exec/s: 6845 rss: 1306Mb L: 282/4092 MS: 1 EraseBytes-
+
+Fri May 20 07:58:54 2022 #47549286	REDUCE cov: 1182 ft: 6491 corp: 918/669Kb lim: 4096 exec/s: 6608 rss: 1378Mb L: 2893/4091 MS: 2 PersAutoDict-CMP- DE: "\xf6\x02\x00\x00\x00\x00\x00\x00"-"\x00\x80"-
+
+Fri May 20 08:28:55 2022 #58472489	REDUCE cov: 1182 ft: 6505 corp: 925/673Kb lim: 4096 exec/s: 6509 rss: 1463Mb L: 261/4089 MS: 2 ShuffleBytes-EraseBytes-
+
+Fri May 20 08:58:55 2022 #69512270	REDUCE cov: 1190 ft: 6552 corp: 947/686Kb lim: 4096 exec/s: 6441 rss: 1555Mb L: 315/4089 MS: 1 EraseBytes-
+
+Fri May 20 09:28:55 2022 #80104642	REDUCE cov: 1190 ft: 6599 corp: 967/706Kb lim: 4096 exec/s: 6360 rss: 1644Mb L: 2120/4089 MS: 1 EraseBytes-
+
+Fri May 20 09:58:55 2022 #90754062	REDUCE cov: 1190 ft: 6614 corp: 972/708Kb lim: 4096 exec/s: 6310 rss: 1740Mb L: 1199/4089 MS: 4 ShuffleBytes-ChangeBinInt-ChangeBinInt-EraseBytes-
+
+Fri May 20 10:28:55 2022 #101727637	REDUCE cov: 1190 ft: 6618 corp: 976/714Kb lim: 4096 exec/s: 6285 rss: 1834Mb L: 358/4089 MS: 5 ChangeBinInt-PersAutoDict-ChangeBit-ShuffleBytes-EraseBytes- DE: "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00K\x06\x00P"-
+
+Fri May 20 10:58:55 2022 #112697268	REDUCE cov: 1190 ft: 6673 corp: 986/724Kb lim: 4096 exec/s: 6262 rss: 1930Mb L: 1228/4089 MS: 3 ChangeBit-ChangeBinInt-EraseBytes-
+
+Fri May 20 11:28:55 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 11:58:55 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 12:28:55 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 12:58:55 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 13:28:55 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 13:58:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 14:28:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 14:58:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 15:28:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 15:58:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 16:28:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 16:58:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 17:28:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 17:58:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 18:28:56 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 18:58:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 19:28:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 19:58:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 20:28:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 20:58:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 21:28:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 21:58:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 22:28:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 22:58:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 23:28:57 2022 SUMMARY: libFuzzer: out-of-memory
+
+Fri May 20 23:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 00:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 00:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 01:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 01:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 02:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 02:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 03:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 03:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 04:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 04:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 05:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 05:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 06:28:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 06:58:58 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 07:28:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 07:58:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 08:28:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 08:58:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 09:28:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 09:58:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 10:28:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 10:58:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 11:28:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 11:58:59 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 12:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 12:59:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 13:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 13:59:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 14:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 14:59:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 15:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 15:59:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 16:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 16:59:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 17:29:00 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 17:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 18:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 18:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 19:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 19:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 20:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 20:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 21:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 21:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 22:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 22:59:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 23:29:01 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sat May 21 23:59:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 00:29:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 00:59:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 01:29:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 01:59:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 02:29:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 02:59:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 03:29:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 03:59:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 04:29:02 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 04:59:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 05:29:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 05:59:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 06:29:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 06:59:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 07:29:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 07:59:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 08:29:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 08:59:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 09:29:03 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 09:59:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 10:29:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 10:59:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 11:29:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 11:59:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 12:29:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 12:59:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 13:29:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 13:59:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 14:29:04 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 14:59:05 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 15:29:05 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 15:59:05 2022 SUMMARY: libFuzzer: out-of-memory
+
+Sun May 22 16:29:05 2022 SUMMARY: libFuzzer: out-of-memory
+

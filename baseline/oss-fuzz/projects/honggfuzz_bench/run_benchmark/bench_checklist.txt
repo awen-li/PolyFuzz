@@ -1,8 +1,0 @@
-civetweb_fuzz3
-dns_message_parse_fuzzer - bind9
-dns_name_fromtext_target_fuzzer - bind9
-read_dl_fuzzer - igraph
-read_gml_fuzzer
-read_ncol_fuzzer
-fuzz_handle_rtps_message - cyclonedds
-e2fsprogs

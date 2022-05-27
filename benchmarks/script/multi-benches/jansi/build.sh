@@ -35,7 +35,7 @@ function instrument_java ()
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	cp $jar_name ../
-	mv EXTERNAL_LOC $ROOT/script/$target
+	mv EXTERNAL_LOC $ROOT_SCRIPT/
 	
 	popd
 }
@@ -51,7 +51,7 @@ function compile ()
 	pushd $target
 	
 	# compile native
-	cp $ROOT/script/$target/Makefile $ROOT/$target
+	cp $ROOT_SCRIPT/Makefile $ROOT/$target
     make CC="afl-cc -lxFuzztrace"
 	
 	# compile java

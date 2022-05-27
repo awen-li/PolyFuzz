@@ -1,7 +1,24 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=one-nio
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
 
 function get_onenio_deps ()
 {
@@ -57,7 +74,7 @@ function compile ()
 
 	pushd $target
 	
-	cp $ROOT/script/$target/ant-build.xml $ROOT/$target/build.xml -f
+	cp $ROOT_SCRIPT/ant-build.xml $ROOT/$target/build.xml -f
 	ant
 	
 	jar_dir=$ROOT/$target/build/one-nio-instm
@@ -73,3 +90,4 @@ cd $ROOT
 compile
 
 
+collect_branchs

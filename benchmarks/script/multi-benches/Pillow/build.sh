@@ -1,7 +1,24 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=Pillow
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
 
 function compile ()
 {
@@ -16,7 +33,7 @@ function compile ()
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++ -lxFuzztrace"
 		
-	cp $ROOT/script/$target/setup.py ./ -f
+	cp $ROOT_SCRIPT/setup.py ./ -f
 	python setup.py install
 
 	popd
@@ -27,6 +44,9 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/src/PIL
+cd $ROOT/$target
+PyDir=src/PIL
 python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+cp $PyDir/py_summary.xml $ROOT_SCRIPT/
+
+collect_branchs

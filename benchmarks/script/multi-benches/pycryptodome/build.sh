@@ -45,7 +45,7 @@ compile
 # 2. summarize the Python unit
 cd $ROOT/$target/
 PyDir=lib
-python -m parser $PyDir
+python -m parser $PyDir  > python.log
 cp $PyDir/py_summary.xml $ROOT_SCRIPT/
 
 collect_branchs

@@ -82,7 +82,7 @@ compile
 # 2. summarize the Python unit
 cd $ROOT/$target
 PyDir=src/python
-python -m parser $PyDir
+python -m parser $PyDir  > python.log
 cp $PyDir/py_summary.xml $drivers/
 
 collect_branchs

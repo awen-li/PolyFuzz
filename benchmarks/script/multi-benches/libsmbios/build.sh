@@ -1,8 +1,9 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=libsmbios
-export drivers=$ROOT/script/$target/drivers
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+export drivers=$ROOT_SCRIPT/drivers
 
 function dependency ()
 {
@@ -24,6 +25,22 @@ PythonInstallPath ()
 	else
 	    echo "/root/anaconda3/lib/python$PyVersion"
 	fi
+}
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
 }
 
 function compile ()
@@ -63,7 +80,9 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/src/python
+cd $ROOT/$target
+PyDir=src/python
 python -m parser $PyDir
 cp $PyDir/py_summary.xml $drivers/
 
+collect_branchs

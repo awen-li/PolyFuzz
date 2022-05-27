@@ -39,14 +39,13 @@ void log_perf_periodic(int signum)
     if (interal_size == 0)
     {
         FILE *isf = fopen ("INTERAL_LOC", "r");
-        assert (isf != NULL);
-
-        u8 str_is[128] = {0};
-        assert (fgets (str_is, sizeof(str_is)-1, isf) != NULL);
-        interal_size = (u32)atoi (str_is);
-
-        fprintf (stderr, "read INTERAL_LOC -> %s\n", str_is);
-        fclose (isf);     
+        if (isf != NULL)
+        {
+            u8 str_is[128] = {0};
+            assert (fgets (str_is, sizeof(str_is)-1, isf) != NULL);
+            interal_size = (u32)atoi (str_is);
+            fclose (isf);
+         }
     }
 
     struct stat st;

@@ -38,6 +38,9 @@ function compile ()
 	popd
 }
 
+Pyversion=`PyVersion.sh`
+rm -rf $Pyversion/site-packages/simplejson*
+
 # 1. compile the C unit
 cd $ROOT
 compile
@@ -45,7 +48,7 @@ compile
 # 2. summarize the Python unit
 cd $ROOT/$target/
 PyDir=simplejson
-python -m parser $PyDir
+python -m parser $PyDir > python.log
 cp $PyDir/py_summary.xml $ROOT_SCRIPT/
 
 collect_branchs

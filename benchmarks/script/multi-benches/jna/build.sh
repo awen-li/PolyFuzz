@@ -1,7 +1,24 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=jna
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
 
 function instrument_java ()
 {
@@ -19,14 +36,14 @@ function instrument_java ()
 	
 	cp $ROOT/$target/INTERAL_LOC $inst_dir/
 
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t .
-	cp sootOutput/* -rf .
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t ./com
+	cp sootOutput/* -rf ./com
 	rm -rf sootOutput
 
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *
 	chmod a+x $jar_name
 	cp $jar_name ../
-	mv EXTERNAL_LOC $ROOT/script/$target
+	mv EXTERNAL_LOC $ROOT_SCRIPT/
 }
 
 function compile ()
@@ -47,7 +64,7 @@ function compile ()
 	cd $target
 	
 	# compile native
-	cp $ROOT/script/$target/Makefile $ROOT/$target/native/ -f
+	cp $ROOT_SCRIPT/Makefile $ROOT/$target/native/ -f
 	cd native
 	ant
 	cd ..
@@ -66,3 +83,4 @@ cd $ROOT
 compile
 
 
+collect_branchs

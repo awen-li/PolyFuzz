@@ -1,11 +1,28 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=aubio
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
 
 function deps ()
 {
     apt-get install ffmpeg 
+}
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
 }
 
 function compile ()
@@ -36,6 +53,9 @@ cd $ROOT
 compile
 
 # 2. summarize the Python unit
-PyDir=$target/python
+cd $ROOT/$target
+PyDir=python
 python -m parser $PyDir
-cp $PyDir/py_summary.xml $ROOT/script/$target/
+cp $PyDir/py_summary.xml $ROOT_SCRIPT/
+
+collect_branchs

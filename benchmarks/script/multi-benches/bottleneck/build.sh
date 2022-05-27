@@ -1,12 +1,29 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=bottleneck
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
 
 function dep ()
 {
 	pip uninstall numpy
 	pip install numpy
+}
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
 }
 
 function compile ()
@@ -37,3 +54,5 @@ compile
 PyDir=$target/bottleneck
 python -m parser $PyDir
 cp $PyDir/py_summary.xml $ROOT/script/$target/
+
+collect_branchs

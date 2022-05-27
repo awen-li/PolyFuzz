@@ -1,4 +1,0 @@
-
-# Null graph, undirected
-
-graph []

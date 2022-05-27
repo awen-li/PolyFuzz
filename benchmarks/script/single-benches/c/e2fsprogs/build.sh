@@ -1,0 +1,52 @@
+
+
+export ROOT=`pwd`
+export target=e2fsprogs
+export FUZZ_HOME="$ROOT/fuzz_root"
+
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT/drivers/branch_vars.bv" ]; then
+		rm $ROOT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
+
+
+function compile ()
+{
+	if [ -d "$ROOT/$target" ]; then
+		rm -rf $ROOT/$target*
+	fi
+	
+	if [ ! -d "$FUZZ_HOME" ]; then
+	    mkdir "$FUZZ_HOME"
+	fi
+	
+	git clone https://github.com/tytso/e2fsprogs
+	cd $target
+
+	export CC="afl-cc -fPIC -lxFuzztrace"
+	export CXX="afl-c++ -fPIC -lxFuzztrace"
+	./configure --prefix="$FUZZ_HOME"
+	make all -j4
+	make install
+	cd -
+	
+	collect_branchs
+}
+
+
+cd $ROOT
+compile
+
+

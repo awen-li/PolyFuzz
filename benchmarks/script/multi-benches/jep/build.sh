@@ -1,7 +1,24 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=jep
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
+}
 
 function compile ()
 {
@@ -16,12 +33,12 @@ function compile ()
 	rm -rf build
 	
 	export CC="afl-cc"
-	cp -f $ROOT/script/$target/java.py     $ROOT/$target/commands/
-	cp -f $ROOT/script/$target/setup.py    $ROOT/$target/
-	cp -f $ROOT/script/$target/INTERAL_LOC $ROOT/$target/
+	cp -f $ROOT_SCRIPT/java.py     $ROOT/$target/commands/
+	cp -f $ROOT_SCRIPT/setup.py    $ROOT/$target/
+	cp -f $ROOT_SCRIPT/INTERAL_LOC $ROOT/$target/
 	python setup.py install
 	
-	cp $ROOT/$target/EXTERNAL_LOC $ROOT/script/$target/
+	cp $ROOT/$target/EXTERNAL_LOC $ROOT_SCRIPT/
 	
 	popd
 }
@@ -30,3 +47,4 @@ function compile ()
 cd $ROOT
 compile
 
+collect_branchs

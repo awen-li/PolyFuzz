@@ -86,3 +86,4 @@ python -m parser $PyDir  > python.log
 cp $PyDir/py_summary.xml $drivers/
 
 collect_branchs
+cd $ROOT

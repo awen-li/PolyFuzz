@@ -2,8 +2,8 @@ export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
    mkdir -p fuzz/in
-   cp -rf tests/* fuzz/in/
 fi
+cp -rf tests/* fuzz/in/
 
 cd fuzz
 #afl-system-config

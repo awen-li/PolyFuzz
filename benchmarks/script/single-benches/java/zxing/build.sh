@@ -68,5 +68,5 @@ jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "zxing.jar"
 
 
-
+cd $ROOT
 

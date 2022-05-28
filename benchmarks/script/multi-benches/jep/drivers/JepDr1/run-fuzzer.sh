@@ -26,5 +26,5 @@ if [ "$?" != "0" ]; then
 fi
 
 export AFL_PL_HAVOC_NUM=512
-afl-fuzz $1 $2 -i in/ -o out -m none -d -- javawrapper java -cp $JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
+afl-fuzz $1 $2 -i in/ -o out -t 5000 -m none -d -- javawrapper java -cp $JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar:JepDr1.jar JepDr.JepDrOne  @@
 

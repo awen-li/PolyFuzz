@@ -69,5 +69,5 @@ jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "json-sanitizer.jar"
 
 
-
+cd $ROOT
 

@@ -69,3 +69,4 @@ cd $ROOT
 compile
 
 collect_branchs
+cd $ROOT

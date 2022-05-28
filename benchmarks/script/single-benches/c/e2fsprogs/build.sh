@@ -52,3 +52,4 @@ cd $ROOT
 compile
 
 
+cd $ROOT

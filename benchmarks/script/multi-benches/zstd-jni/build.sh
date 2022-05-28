@@ -87,3 +87,4 @@ compile
 
 
 collect_branchs
+cd $ROOT

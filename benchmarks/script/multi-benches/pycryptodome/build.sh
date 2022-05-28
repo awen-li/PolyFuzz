@@ -49,3 +49,4 @@ python -m parser $PyDir  > python.log
 cp $PyDir/py_summary.xml $ROOT_SCRIPT/
 
 collect_branchs
+cd $ROOT

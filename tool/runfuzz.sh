@@ -47,7 +47,7 @@ if [ "$input_benchtype" == "sole" ]; then
 	container_name="bench_"$input_fuzzer"_"$benchmark
 	checkContainer $container_name
 	
-	docker run  -it --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $benchmark
+	docker run  -itd --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $benchmark
 else
     benchmakrs=$MULTI_BENCHS
 	if [ "$input_benchtype" == "single" ]; then

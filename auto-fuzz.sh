@@ -29,6 +29,31 @@ DRIVER_NAME=$3
 export FUZZ_WORKING_DIR=""
 
 ###############################################################
+# init environment
+###############################################################
+function initEnv ()
+{
+	__conda_setup="$('/root/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+	if [ $? -eq 0 ]; then
+		eval "$__conda_setup"
+	else
+		if [ -f "/root/anaconda3/etc/profile.d/conda.sh" ]; then
+			. "/root/anaconda3/etc/profile.d/conda.sh"
+		else
+			export PATH="/root/anaconda3/bin:$PATH"
+		fi
+	fi
+	unset __conda_setup
+
+	export LLVM_PATH=/root/tools/llvm11
+	export CLANG_PATH=$LLVM_PATH/build/bin
+	export PATH=$PATH:$CLANG_PATH
+	export AFLPP=/root/xFuzz/AFLplusplus
+	export PATH=$PATH:$AFLPP
+}
+
+
+###############################################################
 # arg1: fuzzer name
 # arg2: benchmark name
 ###############################################################
@@ -143,8 +168,13 @@ function runFuzzing ()
 	fi
 }
 
+
+# 0. init env
+initEnv
+
 # 1. build the fuzzer
 cd $FUZZ_ROOT
+env
 . build.sh
 cd -
 
@@ -156,7 +186,7 @@ for benchmark in $FUZZ_WORKING_DIR
 do
 	cd $benchmark
 	buildBenchmark $BENCH_NAME $benchmark
-	if [ "$$?" != "0" ]; then
+	if [ "$?" != "0" ]; then
 		continue
 	fi
 	

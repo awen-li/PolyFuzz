@@ -53,7 +53,7 @@ function instrument_java ()
 	cp sootOutput/* -rf ./
 	rm -rf sootOutput
 	
-	mv EXTERNAL_LOC $ROOT/script/$target
+	mv EXTERNAL_LOC $ROOT_SCRIPT/
 	cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
 	rm branch_vars.bv
 	rm INTERAL_LOC

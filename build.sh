@@ -45,28 +45,8 @@ cd $BASE_DIR
 
 # init environment
 export JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
-
-if [ ! -n "$JAVA_HOME" ]; then
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-	echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64" >> /root/.bashrc
-fi
-
-if [ ! -n "$BENCH" ]; then
-    export BENCH=$BASE_DIR/benchmarks
-	echo "export BENCH=$BASE_DIR/benchmarks" >> /root/.bashrc
-fi
-
-if [ ! -n "$JavaCovPCG" ]; then
-    export JavaCovPCG=/usr/lib/JavaCovPCG
-	echo "export JavaCovPCG=/usr/lib/JavaCovPCG" >> /root/.bashrc
-fi
-
-if [ ! -n "$JepPath" ]; then
-    export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep
-	echo "export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep" >> /root/.bashrc
-fi
-
-if [ ! -n "$LD_LIBRARY_PATH" ]; then
-	echo "export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH" >> /root/.bashrc
-	export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH
-fi
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export BENCH=$BASE_DIR/benchmarks
+export JavaCovPCG=/usr/lib/JavaCovPCG
+export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep
+export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH

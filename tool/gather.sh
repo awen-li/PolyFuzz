@@ -15,8 +15,9 @@ fi
 ALL_CONTAINERS=`docker container ls --format 'table {{.Names}}'`
 for container in $ALL_CONTAINERS
 do
-	if [ "$container" == "NAMES" ]; then
-		continue;
+	is_bench=$(echo $container | grep "bench_")
+	if [ "$is_bench" == "" ]; then
+		continue
 	fi
 	
 	if [ "$BENCH_TYPE" == "pls" ]; then
@@ -32,6 +33,9 @@ do
 	for path in $target_path
 	do
 		benches=`docker exec $container ls $path`
+		if [ $? -ne 0 ]; then
+			continue
+		fi
 		
 		for bench in $benches
 		do

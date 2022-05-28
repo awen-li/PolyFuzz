@@ -9,7 +9,7 @@ FUZZERS="polyfuzz atheris jazzer honggfuzz nsa-polyfuzz"
 
 FUZZER_NAME=$1
 IsOk=$(echo $FUZZERS | grep "$FUZZER_NAME")
-if [ "$IsOk" == "" ]; then
+if [ "$IsOk" == "" ] || [ "$FUZZER_NAME" == "" ]; then
 	echo "@@@[Warning]please specify the fuzzer[$FUZZERS]:"
 	exit 0
 fi
@@ -17,7 +17,7 @@ fi
 
 BENCH_NAME=$2
 IsOk=$(echo "$MULTI_BENCHS $SINGLE_BENCHS" | grep "$BENCH_NAME")
-if [ "$IsOk" == "" ]; then
+if [ "$IsOk" == "" ] || [ "$BENCH_NAME" == "" ]; then
 	echo "@@@[Warning]None support benchmakrs:"
 	echo "@@@[Multi-language  Benchmarks]: $MULTI_BENCHS"
 	echo "@@@[Single-language Benchmarks]: $SINGLE_BENCHS"

@@ -2,6 +2,13 @@
 BENCH_ROOT="/root/xFuzz/benchmarks/script"
 BENCH_PATHS="$BENCH_ROOT/single-benches/c $BENCH_ROOT/single-benches/python $BENCH_ROOT/single-benches/java $BENCH_ROOT/multi-benches/"
 
+BENCH_PREFIX=$1
+ACTION=$2
+
+if [ "$BENCH_PREFIX" == "" ]; then
+	BENCH_PREFIX="bench_"
+fi
+
 #data dir
 DATA_DIR=~/container_data
 if [ ! -d "$DATA_DIR" ]; then
@@ -11,7 +18,7 @@ fi
 ALL_CONTAINERS=`docker container ls --format 'table {{.Names}}'`
 for container in $ALL_CONTAINERS
 do
-	is_bench=$(echo $container | grep "bench_")
+	is_bench=$(echo $container | grep "$BENCH_PREFIX")
 	if [ "$is_bench" == "" ]; then
 		continue
 	fi
@@ -33,7 +40,14 @@ do
 			fi
 			
 			log_path=$DATA_DIR/$container"_"$bench"_perf_periodic.txt"
-			docker exec $container cat $file > $log_path 
+			docker exec $container cat $file > $log_path
+			
+			if [ "$ACTION" == "stop" ]; then
+				docker stop $container
+			elif [ "$ACTION" == "rm" ]; then
+				docker stop $container
+				docker rm $container
+			fi
 		done
 	done
 done

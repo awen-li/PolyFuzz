@@ -56,10 +56,10 @@ else
 	
 	for bench in $benchmakrs
 	do
-		container_name="bench_$input_fuzzer_$bench"
+		container_name="bench_"$input_fuzzer"_"$benchmark
 		checkContainer $container_name
 		
-		docker run  -itd --name $container_name $image /bin/bash /root/xFuzz.sh $input_fuzzer $benchmark
+		docker run  -itd --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $benchmark
 	done
 fi
 

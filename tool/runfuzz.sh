@@ -8,9 +8,10 @@ image=$1
 input_fuzzer=$2
 input_benchtype=$3
 
-IsOk=$(docker image ls | grep "$image")
-if [ "$IsOk" == "" ] || [ "$image" == "" ]; then
-	echo "@Image $image not found...."
+image_name=`echo $image | awk -F ":" '{print $1}'`
+IsOk=$(docker image ls | grep "$image_name")
+if [ "$IsOk" == "" ] || [ "$image_name" == "" ]; then
+	echo "@Image $image_name not found...."
 	exit 0
 fi
 
@@ -43,10 +44,10 @@ if [ "$input_benchtype" == "sole" ]; then
 		exit 0
 	fi
 	
-	container_name="bench_$input_fuzzer_$benchmark"
+	container_name="bench_"$input_fuzzer"_"$benchmark
 	checkContainer $container_name
 	
-	docker run  -itd --name $container_name $image /bin/bash /root/xFuzz.sh $input_fuzzer $benchmark
+	docker run  -itd --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $benchmark
 else
     benchmakrs=$MULTI_BENCHS
 	if [ "$input_benchtype" == "single" ]; then

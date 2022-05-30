@@ -59,7 +59,7 @@ else
 		container_name="bench_"$input_fuzzer"_"$bench
 		checkContainer $container_name
 		
-		docker run  -itd --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $benchmark
+		docker run  -itd --name $container_name $image /bin/bash /root/xFuzz/auto-fuzz.sh $input_fuzzer $bench
 	done
 fi
 

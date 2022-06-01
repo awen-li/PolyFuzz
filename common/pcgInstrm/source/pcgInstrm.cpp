@@ -111,6 +111,11 @@ bool pcgIsPostDominated (unsigned Handle, unsigned SNode, unsigned ENode)
 
 bool pcgNeedInstrumented (unsigned Handle, unsigned Id)
 {
+    if (getenv ("INSTRUMENT_ALL") != NULL)
+    {
+        return true;
+    }
+    
     CFGGraph *Cfg = pcgHdl.GetCFG (Handle);
     assert (Cfg != NULL);
     
@@ -148,6 +153,10 @@ unsigned pcgGetPCGStmtID (unsigned Handle, unsigned Id)
     assert (Cfg != NULL);
     
     CFGNode *Cn = Cfg->GetGNode(Id);
+    if (Cn == NULL)
+    {
+        return 0;
+    }
 
     return Cn->GetPCGStmtID ();
 }

@@ -56,4 +56,4 @@ export JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64
 jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "commons-compress.jar"
 
-
+cd $ROOT

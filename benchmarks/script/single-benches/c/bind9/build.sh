@@ -59,10 +59,12 @@ function compile ()
 	cd -
 	
 	collect_branchs
+	unset CC
+	unset CXX
 }
 
 
 cd $ROOT
 compile
 
-
+cd $ROOT

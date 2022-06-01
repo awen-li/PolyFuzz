@@ -30,10 +30,23 @@
 
 #define PERF_PERIODIC_FILE   "perf_periodic.txt"
 static afl_state_t *afl_ref = NULL;
+static u32 interal_size     = 0;
 void log_perf_periodic(int signum)
 {
     (void)signum;
     assert (afl_ref != NULL);
+
+    if (interal_size == 0)
+    {
+        FILE *isf = fopen ("INTERAL_LOC", "r");
+        if (isf != NULL)
+        {
+            u8 str_is[128] = {0};
+            assert (fgets (str_is, sizeof(str_is)-1, isf) != NULL);
+            interal_size = (u32)atoi (str_is);
+            fclose (isf);
+         }
+    }
 
     struct stat st;
     int first_crt = lstat(PERF_PERIODIC_FILE, &st);
@@ -43,17 +56,24 @@ void log_perf_periodic(int signum)
 
     if (first_crt != 0)
     {
-        fprintf (Pef, "time,paths,blocks,crashes # real-map-size:%u\n", afl_ref->fsrv.real_map_size);
+        fprintf (Pef, "time, paths, blocks[max-%u], c-blocks[max-%u], crashes\n", afl_ref->fsrv.real_map_size, interal_size);
     }
 
     u32 block_num = 0;
+    u32 c_block_num = 0;
     u8 *tb = afl_ref->virgin_bits;
     for (u32 ix = afl_ref->fsrv.real_map_size; ix > 1; ix--)
     {
-        block_num += (u32) (tb[ix-1] != 0xff);
+        u32 valid = (u32) (tb[ix-1] != 0xff);
+        
+        if (ix < interal_size)
+        {
+            c_block_num += valid;
+        }
+        block_num += valid;
     }
 
-    fprintf (Pef, "%lu,%u,%u,%u\n", time (NULL), afl_ref->queued_paths, block_num, (u32)afl_ref->total_crashes);
+    fprintf (Pef, "%lu,%u,%u(%u),%u\n", time (NULL), afl_ref->queued_paths, block_num, c_block_num, (u32)afl_ref->total_crashes);
     fclose (Pef);
 
     alarm(1800);

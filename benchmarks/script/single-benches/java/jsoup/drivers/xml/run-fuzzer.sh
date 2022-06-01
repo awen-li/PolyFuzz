@@ -3,8 +3,8 @@ export AFL_SKIP_BIN_CHECK=1
 
 if [ ! -d "fuzz" ]; then
    mkdir -p fuzz/in
-   cp ./tests/* fuzz/in/
 fi
+cp ./tests/* fuzz/in/
 
 export target=xml.jar
 cp $target fuzz/

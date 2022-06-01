@@ -61,4 +61,4 @@ fi
 jar_dir=$ROOT/$target-instm
 instrument_java $jar_dir "javaparser.jar"
 
-
+cd $ROOT

@@ -60,4 +60,4 @@ function compile ()
 cd $ROOT
 compile
 
-
+cd $ROOT

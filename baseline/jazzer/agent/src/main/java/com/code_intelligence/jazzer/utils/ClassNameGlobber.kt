@@ -26,7 +26,6 @@ private val IS_BAZEL_COVERAGE_RUN = System.getenv("TEST_UNDECLARED_OUTPUTS_DIR")
 private val ADDITIONAL_EXCLUDED_NAME_GLOBS_FOR_BAZEL_COVERAGE = listOf(
     "com.google.testing.coverage.**",
     "org.jacoco.**",
-    "java.util.regex.**",
 )
 
 private val BASE_EXCLUDED_CLASS_NAME_GLOBS = listOf(
@@ -45,6 +44,7 @@ private val BASE_EXCLUDED_CLASS_NAME_GLOBS = listOf(
     "com.code_intelligence.jazzer.**",
     "jaz.Ter", // safe companion of the honeypot class used by sanitizers
     "jaz.Zer", // honeypot class used by sanitizers
+    "java.util.**",
 ) + if (IS_BAZEL_COVERAGE_RUN) ADDITIONAL_EXCLUDED_NAME_GLOBS_FOR_BAZEL_COVERAGE else listOf()
 
 class ClassNameGlobber(includes: List<String>, excludes: List<String>) {

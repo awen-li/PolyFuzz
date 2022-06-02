@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="msgpack"):
     from msgpack import packb, unpackb
 
 @atheris.instrument_func    

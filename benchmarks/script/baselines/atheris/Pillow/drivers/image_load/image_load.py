@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="PIL"):
     from PIL import Image
 
 seed_path = "seed.bin"

@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="aubio"):
     import aubio
 
 seed_path = "seed.bin"

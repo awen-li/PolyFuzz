@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="tink"):
     import tink
     from tink import aead
     from tink import cleartext_keyset_handle

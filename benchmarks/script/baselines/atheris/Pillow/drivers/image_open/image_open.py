@@ -2,7 +2,7 @@ import sys
 from io import BytesIO
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="PIL"):
     from PIL import Image
 
 @atheris.instrument_func    

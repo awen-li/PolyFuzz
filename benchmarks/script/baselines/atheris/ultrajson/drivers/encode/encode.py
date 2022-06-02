@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="ujson"):
     import ujson
 
 @atheris.instrument_func    

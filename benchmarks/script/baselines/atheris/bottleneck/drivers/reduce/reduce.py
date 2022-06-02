@@ -3,7 +3,7 @@ import random
 import numpy as np
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="bottleneck"):
     import bottleneck as bn
 
 R_types = ["int32", "int64", "float32", "float64"]

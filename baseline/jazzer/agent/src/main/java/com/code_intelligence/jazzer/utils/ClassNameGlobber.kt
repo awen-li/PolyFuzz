@@ -59,7 +59,7 @@ class ClassNameGlobber(includes: List<String>, excludes: List<String>) {
         return includeMatchers.any { it.matches(className) } && excludeMatchers.none { it.matches(className) }
     }
 
-    println("INFO: Instrumented Class Name $includeMatchers ")
+    println("INFO: Instrumented Class Name $BASE_INCLUDED_CLASS_NAME_GLOBS ")
 }
 
 class SimpleGlobMatcher(val glob: String) {

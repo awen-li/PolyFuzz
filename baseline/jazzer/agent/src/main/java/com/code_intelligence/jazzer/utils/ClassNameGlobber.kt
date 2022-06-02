@@ -64,7 +64,7 @@ class ClassNameGlobber(includes: List<String>, excludes: List<String>) {
         if (classExcludeFlag)
         {
             println("$className should be False")
-            classResult = classExcludeFlag
+            classResult = false
         }
 
         //if (classResult)

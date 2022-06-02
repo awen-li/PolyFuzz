@@ -1,8 +1,8 @@
 
 
-export ROOT=`cd ../../ && pwd`
+export ROOT=`cd ../../../ && pwd`
 export target=tink
-export drivers=$ROOT/script/$target/drivers
+export ROOT_SCRIPT=$ROOT/script/multi-benches/$target
 
 function dependency ()
 {
@@ -11,6 +11,22 @@ function dependency ()
 	mv bazel.gpg /etc/apt/trusted.gpg.d/
 	echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
 	apt update && apt install bazel-4.2.2
+}
+
+function collect_branchs ()
+{
+	ALL_BRANCHS=`find $ROOT/$target -name branch_vars.bv`
+	
+	if [ -f "$ROOT_SCRIPT/drivers/branch_vars.bv" ]; then
+		rm $ROOT_SCRIPT/drivers/branch_vars.bv
+	fi
+	
+	echo "@@@@@@@@@ ALL_BRANCHES -----> $ALL_BRANCHS"
+	for branch in $ALL_BRANCHS
+	do
+		cat $branch >> $ROOT_SCRIPT/drivers/branch_vars.bv
+		rm $branch
+	done
 }
 
 function compile ()
@@ -73,16 +89,13 @@ cp ExpList /tmp/ExpList
 cd $ROOT && compile
 
 # 2. summarize the Python unit
-rm -rf branch_vars.bv
-PyDir=$target/python/tink
-python -m parser $PyDir
-if [ ! -d "$drivers" ]; then
-	mkdir $drivers
-fi
-cp $PyDir/py_summary.xml $drivers/
-cat branch_vars.bv >> $ROOT/$target/branch_vars.bv
+cd $ROOT/$target
+PyDir=python/tink
+python -m parser $PyDir > python.log
+cp $PyDir/py_summary.xml $ROOT_SCRIPT/
 
+collect_branchs
 
-cd $ROOT/script/$target/
+cd $ROOT_SCRIPT
 python tink-test.py
 cd $ROOT

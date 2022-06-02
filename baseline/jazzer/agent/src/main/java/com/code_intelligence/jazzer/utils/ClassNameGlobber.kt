@@ -44,6 +44,7 @@ private val BASE_EXCLUDED_CLASS_NAME_GLOBS = listOf(
     "com.code_intelligence.jazzer.**",
     "jaz.Ter", // safe companion of the honeypot class used by sanitizers
     "jaz.Zer", // honeypot class used by sanitizers
+    "java.util.**",
 ) + if (IS_BAZEL_COVERAGE_RUN) ADDITIONAL_EXCLUDED_NAME_GLOBS_FOR_BAZEL_COVERAGE else listOf()
 
 class ClassNameGlobber(includes: List<String>, excludes: List<String>) {
@@ -56,10 +57,14 @@ class ClassNameGlobber(includes: List<String>, excludes: List<String>) {
         .map(::SimpleGlobMatcher)
 
     fun includes(className: String): Boolean {
+
+        if (excludeMatchers.none)
+        {
+            println("No excludeMatchers hit!")
+        }
+
         return includeMatchers.any { it.matches(className) } && excludeMatchers.none { it.matches(className) }
     }
-
-    println("INFO: Instrumented Class Name $BASE_INCLUDED_CLASS_NAME_GLOBS ")
 }
 
 class SimpleGlobMatcher(val glob: String) {

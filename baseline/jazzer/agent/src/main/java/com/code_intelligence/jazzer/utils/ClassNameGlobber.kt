@@ -58,14 +58,12 @@ class ClassNameGlobber(includes: List<String>, excludes: List<String>) {
 
     fun includes(className: String): Boolean {
 
-        val classResult = includeMatchers.any { it.matches(className) } && excludeMatchers.none { it.matches(className) }
+        var classResult = includeMatchers.any { it.matches(className) } && excludeMatchers.none { it.matches(className) }
 
         val classExcludeFlag : Boolean = "java/util/regex" in className
         if (classExcludeFlag)
-        {}
-        else
         {
-            println("$className is False")
+            println("$className should be False")
             classResult = classExcludeFlag
         }
 

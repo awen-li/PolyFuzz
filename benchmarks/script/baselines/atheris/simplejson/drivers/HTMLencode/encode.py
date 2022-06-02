@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="simplejson"):
     import simplejson as json
 
 @atheris.instrument_func    

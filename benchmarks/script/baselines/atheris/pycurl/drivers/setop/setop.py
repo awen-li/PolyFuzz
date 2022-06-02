@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="pycurl"):
     import pycurl
 
 PY3 = sys.version_info[0] > 2

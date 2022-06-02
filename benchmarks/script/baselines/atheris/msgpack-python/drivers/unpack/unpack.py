@@ -2,7 +2,7 @@ import sys
 import io
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="msgpack"):
     import msgpack
 
 binarydata = bytes(bytearray(range(256)))

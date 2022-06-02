@@ -3,7 +3,7 @@ import os
 import random
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="libsmbios"):
     import libsmbios_c.memory as Mem
 
 pageunit = 8192

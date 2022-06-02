@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="PIL"):
     from PIL import Image
     from PIL import ImageSequence
 

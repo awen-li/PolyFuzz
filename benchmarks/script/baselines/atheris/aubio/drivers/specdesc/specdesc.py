@@ -3,7 +3,7 @@ import numpy as np
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="aubio"):
     from aubio import source, pvoc, specdesc
 
 

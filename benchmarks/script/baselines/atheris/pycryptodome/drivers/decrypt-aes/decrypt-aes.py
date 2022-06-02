@@ -1,7 +1,7 @@
 import sys
 import atheris
 
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="Crypto"):
     from Crypto.Cipher import AES
 
 key_path  = "key.bin"

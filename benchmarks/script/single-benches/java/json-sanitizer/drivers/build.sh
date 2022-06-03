@@ -67,8 +67,8 @@ do
     cp ../EXTERNAL_LOC $JT/
     if [ ! -d "$JT/tests" ]; then
         mkdir $JT/tests
-        @cd $JT/tests && tar -xzf ../seed_corpus.tar.gz
     fi
+    cd $JT/tests && tar -xzf ../seed_corpus.tar.gz
 done
   
 cd $Root 

@@ -30,7 +30,6 @@ function compile()
     fi
     mkdir -p $JAVA_CLASS 
 
-	DEPENDENT_LIBS=$(deplibs $JAVA_LIB)
     javac -d $JAVA_CLASS -encoding utf-8 -cp .:$TARGET_JAR -g -sourcepath $JAVA_SOURCE @$JAVA_SOURCE/sources.list
 }
 
@@ -70,7 +69,7 @@ do
     if [ ! -d "$JT/tests" ]; then
         mkdir $JT/tests
     fi
-    @cd $JT/tests/ && tar -xvf ../seed_corpus.tar.gz
+    cd $JT/tests/ && tar -xvf ../seed_corpus.tar.gz
 done
   
 cd $Root 

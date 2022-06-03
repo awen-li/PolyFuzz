@@ -27,8 +27,7 @@ all: package
 
 JANSI_OUT:=target/native-$(OS_NAME)-$(OS_ARCH)
 
-CCFLAGS:= -I$(JANSI_OUT) $(CCFLAGS)
-
+CCFLAGS:= -I$(JANSI_OUT) $(CCFLAGS) -I$(JAVA_HOME)/include/linux
 target:
 	@test -d target || mkdir target
 
@@ -87,3 +86,4 @@ $(NATIVE_DLL): $(JANSI_OUT)/$(LIBNAME)
 	cp $< $@
 	@mkdir -p $(NATIVE_TARGET_DIR)
 	cp $< $(NATIVE_TARGET_DIR)/$(LIBNAME)
+

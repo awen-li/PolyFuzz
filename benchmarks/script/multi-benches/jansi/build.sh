@@ -52,7 +52,7 @@ function compile ()
 	
 	# compile native
 	cp $ROOT_SCRIPT/Makefile $ROOT/$target
-    make CC="afl-cc -lxFuzztrace"
+	make clean-native native OS_NAME=Linux OS_ARCH=x86_64 CC="afl-cc -lxFuzztrace"
 	
 	# compile java
 	mvn clean package

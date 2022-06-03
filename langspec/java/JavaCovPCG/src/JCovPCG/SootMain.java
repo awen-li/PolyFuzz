@@ -53,7 +53,8 @@ public class SootMain {
 		List<String> lstCheckPath = new ArrayList<String>();
 		
 		lstCheckPath.add(targetPath);	
-		Options.v().set_process_dir(lstCheckPath);	
+		Options.v().set_process_dir(lstCheckPath);
+        System.out.println ("Set process dir: " + lstCheckPath);
 		//Options.v().set_whole_program(true);
 		//Options.v().set_prepend_classpath(true);
 		//Options.v().set_no_bodies_for_excluded(true);

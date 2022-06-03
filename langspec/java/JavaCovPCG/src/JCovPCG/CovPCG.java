@@ -162,9 +162,9 @@ public class CovPCG extends BodyTransformer
 			
 			if (IsExcepProc (stmt))
 			{
-				Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(100)));
-		    	units.insertAfter(dynStmt, stmt);
-		    	Debug.DebugPrint ("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
+				//Stmt dynStmt = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(JvTraceDeInit.makeRef(), IntConstant.v(100)));
+		    	//units.insertAfter(dynStmt, stmt);
+		    	//Debug.DebugPrint ("\t### Instrument exit statement with exit-code 100 -> " + stmt.toString());
 			}
 			else if (IsExitStmt (stmt, isMainMethod))
 		    {
@@ -400,10 +400,10 @@ public class CovPCG extends BodyTransformer
 		Map<Block, Integer> VisitedBb = new HashMap<>();
 		
 		SootMethod CurMethod = body.getMethod();		
-		if (IsInBlackList (CurMethod.getDeclaration()))
-		{
-			return;
-		}
+		//if (IsInBlackList (CurMethod.getDeclaration()))
+		//{
+		//	return;
+		//}
 		
 		/* unit graph */
 		BlockGraph BG = new BriefBlockGraph(body);
@@ -418,9 +418,6 @@ public class CovPCG extends BodyTransformer
 			Block Hb = Heads.get(0);
 			units.insertBefore(dynStmt, Hb.getHead());
 		}
-		
-		/* insert exit function */
-		InsertExitStmt (body, isMainMethod);
         
 		/* init block-id */
 		int MaxBID = InitBlockMap (Block2ID, BG.getBlocks());
@@ -515,6 +512,9 @@ public class CovPCG extends BodyTransformer
 		}
 		
 		PCGuidance.pcgCFGDel(CFGHd);
+        
+        /* insert exit function */
+		InsertExitStmt (body, isMainMethod);
         System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature() + ", BlockId to " + Integer.toString (MaxBID));
 	}
 }

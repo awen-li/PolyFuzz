@@ -3,6 +3,8 @@
 export ROOT=`cd ../../../../ && pwd`
 export target=pyyaml
 
+apt-get install libyaml-dev
+
 function compile ()
 {
 	if [ -d "$ROOT/$target" ]; then

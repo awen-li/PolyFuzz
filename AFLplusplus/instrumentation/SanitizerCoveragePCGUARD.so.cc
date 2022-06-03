@@ -1178,11 +1178,6 @@ bool shouldInstrumentBlock(const Function &F, const BasicBlock *BB,
     if (Options.CoverageType == SanitizerCoverageOptions::SCK_Function && &F.getEntryBlock() != BB)
         return false;
 
-    if (getenv ("INSTRUMENT_ALL") != NULL)
-    {
-        return true;
-    }
-
     // Do not instrument full dominators, or full post-dominators with multiple
     // predecessors. 
     return !isFullDominator(BB, DT) &&
@@ -1240,7 +1235,7 @@ void ModuleSanitizerCoverage::instrumentFunction(Function &F, DomTreeCallback DT
         F.getName() == "__local_stdio_scanf_options")
         return;
 
-    if (getenv ("INSTRUMENT_ALL") == NULL && strstr (F.getName().data (), "PyInit_") != 0)
+    if (strstr (F.getName().data (), "PyInit_") != 0)
     {
         errs ()<<"No need to instrument "<<F.getName()<<"\r\n";
         return;

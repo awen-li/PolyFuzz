@@ -24,9 +24,9 @@ public class getEntries
             insputStream.read(bytes);
             insputStream.close();
 
-            new ZipFile(new SeekableInMemoryByteChannel(bytes)).close();
+            new ZipFile(new SeekableInMemoryByteChannel(bytes)).close();       
         }
-        catch (Exception e) 
+        catch (IOException e) 
         {
             return;
         }

@@ -1,7 +1,6 @@
 package jsovalid;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.json.JsonSanitizer;
 
@@ -29,7 +28,8 @@ public class ValidJson
             insputStream.read(bytes);
             insputStream.close();
 
-            new Gson().fromJson(JsonSanitizer.sanitize(new String (bytes), 10), JsonElement.class);
+            String sanitize = JsonSanitizer.sanitize(new String (bytes), 10);
+            JsonSanitizer.sanitize(sanitize).equals(sanitize);
         }
         catch (Exception e) 
         {

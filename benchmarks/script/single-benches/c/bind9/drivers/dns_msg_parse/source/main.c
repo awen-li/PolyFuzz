@@ -47,6 +47,7 @@ test_one_file(const char *filename) {
 		printf("testing %zd bytes from %s\n", n, filename);
 		fflush(stdout);
 		LLVMFuzzerTestOneInput((const uint8_t *)data, n);
+		LLVMFuzzerTestOneInput2((const uint8_t *)data, n);
 		fflush(stderr);
 	} else {
 		if (n < 0) {

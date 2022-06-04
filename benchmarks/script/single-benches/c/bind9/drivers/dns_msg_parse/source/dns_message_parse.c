@@ -23,6 +23,12 @@
 #include <isc/string.h>
 #include <isc/util.h>
 #include <dns/message.h>
+#include <isc/buffer.h>
+#include <isc/util.h>
+
+#include <dns/fixedname.h>
+#include <dns/name.h>
+
 
 #include "fuzz.h"
 
@@ -185,3 +191,25 @@ cleanup:
 
 	return (0);
 }
+
+int
+LLVMFuzzerTestOneInput2(const uint8_t *data, size_t size) {
+	isc_buffer_t buf;
+	isc_result_t result;
+	dns_fixedname_t origin;
+
+	dns_fixedname_init(&origin);
+
+	isc_buffer_constinit(&buf, data, size);
+	isc_buffer_add(&buf, size);
+	isc_buffer_setactive(&buf, size);
+
+	result = dns_name_fromtext(dns_fixedname_name(&origin), &buf,
+				   dns_rootname, 0, NULL);
+	if (debug) {
+		fprintf(stderr, "dns_name_fromtext: %s\n",
+			isc_result_totext(result));
+	}
+	return (0);
+}
+

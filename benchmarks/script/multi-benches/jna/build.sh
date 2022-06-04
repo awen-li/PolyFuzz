@@ -36,8 +36,8 @@ function instrument_java ()
 	
 	cp $ROOT/$target/INTERAL_LOC $inst_dir/
 
-	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t ./com
-	cp sootOutput/* -rf ./com
+	java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t ./com/sun/jna
+	cp sootOutput/* -rf ./com/sun/jna
 	rm -rf sootOutput
 
 	jar -cvfm $jar_name META-INF/MANIFEST.MF *

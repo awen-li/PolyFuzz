@@ -67,10 +67,10 @@ class BrStat ():
         print ("===============================================")
         print ("===  Functions: %4d              " %self.FuncNum)
         print ("===  CMP&SWITCHs: %4d              " %self.TotalBrs)
-        print ("===  CMP&SWITCHs with Consts: %4d (%.2f)  " %(self.CmpWithConstNum, self.CmpWithConstNum*1.0/self.TotalBrs))
-        print ("===  CMP&SWITCHs with No Consts: %4d (%.2f)  " %(self.CmpWithNoConstNum, self.CmpWithNoConstNum*1.0/self.TotalBrs))
-        print ("===  CMP&SWITCHs with INT Consts: %4d (%.2f)  " %(self.CmpWithIntConstNum, self.CmpWithIntConstNum*1.0/self.TotalBrs))
-        print ("===  CMP&SWITCHs with POINTER Consts: %4d (%.2f)  " %(self.CmpWithPointerConstNum, self.CmpWithPointerConstNum*1.0/self.TotalBrs))
+        print ("===  CMP&SWITCHs with Consts: %4d (%.3f)  " %(self.CmpWithConstNum, self.CmpWithConstNum*1.0/self.TotalBrs))
+        print ("===  CMP&SWITCHs with No Consts: %4d (%.3f)  " %(self.CmpWithNoConstNum, self.CmpWithNoConstNum*1.0/self.TotalBrs))
+        print ("===  CMP&SWITCHs with INT Consts: %4d (%.3f)  " %(self.CmpWithIntConstNum, self.CmpWithIntConstNum*1.0/self.TotalBrs))
+        print ("===  CMP&SWITCHs with POINTER Consts: %4d (%.3f)  " %(self.CmpWithPointerConstNum, self.CmpWithPointerConstNum*1.0/self.TotalBrs))
         print ("===============================================\r\n")
     
 def InitArgument (parser):

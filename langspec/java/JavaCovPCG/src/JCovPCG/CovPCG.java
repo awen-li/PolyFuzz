@@ -60,6 +60,7 @@ public class CovPCG extends BodyTransformer
 	static int StartBID = 0;
 	static Map<String, Integer> BlackList;
 	static String BranchVarFile = "branch_vars.bv";
+    static String CmpStatFile = "cmp_statistic.info";
 	
 	CovPCG (int StartBID)
 	{
@@ -80,6 +81,27 @@ public class CovPCG extends BodyTransformer
 		BlackList.put("public void <init>()", 1);
         BlackList.put("static void <clinit>()", 1);
 	}
+
+    private void DumpCmpStat (String FuncName, int BranchVarNum, int ConstBranchVarNum)
+    {
+        if (BranchVarNum == 0)
+        {
+            return;
+        }
+        try 
+        {
+            //function:brinstnum:CmpWithConstNum:CmpWithIntConstNum:CmpWithNoConstNum:CmpWithIntNoConstNum:CmpWithPointerConstNum
+            BufferedWriter out = new BufferedWriter(new FileWriter(CmpStatFile, true));
+            out.write(FuncName + ":" + Integer.toString(BranchVarNum) + ":" + Integer.toString(ConstBranchVarNum) + ":" + 
+                      Integer.toString(BranchVarNum-ConstBranchVarNum)  + ":0:0:0\n");
+            out.close();
+					
+		} catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
+        
+    }
 	
 	private int GetStmtID (Map<Stmt, Integer> StmtIDMap, Map<Integer, Stmt> ID2StmpMap, Stmt CurSt)
 	{
@@ -218,9 +240,12 @@ public class CovPCG extends BodyTransformer
 	}
 	
 	/* Key:CMP:Predict:Value ------   1574118200:CMP:36:3 */
-	private boolean GenIfStmtBv (IfStmt CurSt) throws IOException
+	private boolean GenIfStmtBv (IfStmt CurSt, List<Integer> BranchInfo) throws IOException
 	{
 		ConditionExpr CE = (ConditionExpr) CurSt.getCondition();
+        
+        int BranchNum = BranchInfo.get (0) + 1;
+        BranchInfo.add (0, BranchNum);
 		
 		Value Op1 = CE.getOp1();
 		Value Op2 = CE.getOp2();
@@ -229,6 +254,9 @@ public class CovPCG extends BodyTransformer
 		{
 			return false;
 		}
+
+        int ConstBranchVarNum = BranchInfo.get (1) + 1;
+        BranchInfo.add (0, ConstBranchVarNum);
 		
 		int Key;
 		String Value;
@@ -257,10 +285,16 @@ public class CovPCG extends BodyTransformer
 		return true;
 	}
 	
-	private void GenSwitchStmtBv (Stmt CurSt) throws IOException
+	private void GenSwitchStmtBv (Stmt CurSt, List<Integer> BranchInfo) throws IOException
 	{
 		if (CurSt instanceof TableSwitchStmt)
 		{
+		    int BranchNum = BranchInfo.get (0) + 1;
+            BranchInfo.add (0, BranchNum);
+            
+		    int ConstBranchVarNum = BranchInfo.get (1) + 1;
+            BranchInfo.add (1, ConstBranchVarNum);
+            
 			Debug.DebugPrint ("@@@ TableSwitchStmt\r\n");
 			TableSwitchStmt Tss = (TableSwitchStmt) CurSt;
 			
@@ -278,6 +312,12 @@ public class CovPCG extends BodyTransformer
 		}
 		else if (CurSt instanceof LookupSwitchStmt)
 		{
+		    int BranchNum = BranchInfo.get (0) + 1;
+            BranchInfo.add (0, BranchNum);
+            
+		    int ConstBranchVarNum = BranchInfo.get (1) + 1;
+            BranchInfo.add (1, ConstBranchVarNum);
+            
 			Debug.DebugPrint ("@@@ LookupSwitchStmt\r\n");
 			LookupSwitchStmt Lss = (LookupSwitchStmt)CurSt;
 			
@@ -339,18 +379,20 @@ public class CovPCG extends BodyTransformer
 	 *  compare statement: ID:CMP:DEF#T:USE1#T:USE2#T:...:USEN#T
 	 *  other statement: 
 	 * */
-	private String GetSaIR (Map<Stmt, Integer> Stmt2IDMap, Map<Integer, Stmt> ID2StmpMap, Unit CurUnit) throws IOException
+	private String GetSaIR (Map<Stmt, Integer> Stmt2IDMap, 
+	                            Map<Integer, Stmt> ID2StmpMap, 
+	                            Unit CurUnit, List<Integer> BranchInfo) throws IOException
 	{
 		String SaIR = "";
 		Stmt CurSt = (Stmt)CurUnit;
 		
-		if((CurSt instanceof IfStmt) && GenIfStmtBv ((IfStmt) CurSt) == true)
+		if((CurSt instanceof IfStmt) && GenIfStmtBv ((IfStmt) CurSt, BranchInfo) == true)
 		{
 			SaIR += "CMP:";
 		}
 		else if(CurSt instanceof SwitchStmt)
 		{
-			GenSwitchStmtBv (CurSt);	
+			GenSwitchStmtBv (CurSt, BranchInfo);	
 			SaIR += "SWITCH:";
 		}
         else
@@ -398,6 +440,10 @@ public class CovPCG extends BodyTransformer
 		Map<Stmt, Integer> Stmt2IDMap = new HashMap<>();
 		Map<Integer, Stmt> ID2StmtMap = new HashMap<>();
 		Map<Block, Integer> VisitedBb = new HashMap<>();
+        
+        List<Integer> BranchInfo = new ArrayList<Integer>();
+        BranchInfo.add (0, 0);
+        BranchInfo.add (1, 0);
 		
 		SootMethod CurMethod = body.getMethod();		
 		//if (IsInBlackList (CurMethod.getDeclaration()))
@@ -440,7 +486,7 @@ public class CovPCG extends BodyTransformer
 			for (Unit CurUnit : CurB)
 			{
 				try {
-					String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit);
+					String SaIR = GetSaIR (Stmt2IDMap, ID2StmtMap, CurUnit, BranchInfo);
 					Debug.DebugPrint ("\t statement ->  " + CurUnit.toString() + " -> SAIR: " + SaIR + "\r\n");
 					PCGuidance.pcgInsertIR(CFGHd, CurBId, SaIR);
 				} catch (IOException e) {
@@ -515,6 +561,7 @@ public class CovPCG extends BodyTransformer
         
         /* insert exit function */
 		InsertExitStmt (body, isMainMethod);
+        DumpCmpStat (CurMethod.getName (), BranchInfo.get (0), BranchInfo.get (1));
         System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature() + ", BlockId to " + Integer.toString (MaxBID));
 	}
 }

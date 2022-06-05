@@ -3,6 +3,10 @@ package jsovalid;
 
 import com.google.gson.JsonElement;
 import com.google.json.JsonSanitizer;
+import com.google.gson.Gson;
+import com.google.json.EvalMinifier.NameGenerator;
+import com.google.json.EvalMinifier;
+
 
 import java.io.File;
 import java.io.InputStream;
@@ -30,6 +34,14 @@ public class ValidJson
 
             String sanitize = JsonSanitizer.sanitize(new String (bytes), 10);
             JsonSanitizer.sanitize(sanitize).equals(sanitize);
+             new Gson().fromJson(sanitize, JsonElement.class);
+             JsonSanitizer.sanitize(new String (bytes), length);
+
+             EvalMinifier.minify(new String (bytes));
+
+             NameGenerator ng = new NameGenerator();
+             for (int i = length; --i >= 0;) { ng.next(); }
+            
         }
         catch (Exception e) 
         {

@@ -82,7 +82,7 @@ public class CovPCG extends BodyTransformer
         BlackList.put("static void <clinit>()", 1);
 	}
 
-    private void DumpCmpStat (String FuncName, int BranchVarNum, int ConstBranchVarNum)
+    private void DumpCmpStat (String FuncName, int BranchVarNum, int BranchConstVarNum, int IntConstBranchVarNum)
     {
         if (BranchVarNum == 0)
         {
@@ -91,9 +91,9 @@ public class CovPCG extends BodyTransformer
         try 
         {
             //function:brinstnum:CmpWithConstNum:CmpWithIntConstNum:CmpWithNoConstNum:CmpWithIntNoConstNum:CmpWithPointerConstNum
-            BufferedWriter out = new BufferedWriter(new FileWriter(CmpStatFile, true));
-            out.write(FuncName + ":" + Integer.toString(BranchVarNum) + ":" + Integer.toString(ConstBranchVarNum) + ":" + 
-                      Integer.toString(BranchVarNum-ConstBranchVarNum)  + ":0:0:0\n");
+            BufferedWriter out = new BufferedWriter(new FileWriter(FuncName, true));
+            out.write(FuncName + ":" + Integer.toString(BranchVarNum) + ":" + Integer.toString(BranchConstVarNum) + ":" + 
+                      Integer.toString(IntConstBranchVarNum)  + ":0:0:0\n");
             out.close();
 					
 		} catch (IOException e) 
@@ -243,9 +243,17 @@ public class CovPCG extends BodyTransformer
 	private boolean GenIfStmtBv (IfStmt CurSt, List<Integer> BranchInfo) throws IOException
 	{
 		ConditionExpr CE = (ConditionExpr) CurSt.getCondition();
-        
+
+        // branch num
         int BranchNum = BranchInfo.get (0) + 1;
         BranchInfo.add (0, BranchNum);
+
+        // const branch num
+        if (Op1 instanceof Constant || Op2 instanceof Constant)
+        {
+            int ConstBranchNum = BranchInfo.get (1) + 1;
+            BranchInfo.add (1, ConstBranchNum);
+        }
 		
 		Value Op1 = CE.getOp1();
 		Value Op2 = CE.getOp2();
@@ -254,9 +262,6 @@ public class CovPCG extends BodyTransformer
 		{
 			return false;
 		}
-
-        int ConstBranchVarNum = BranchInfo.get (1) + 1;
-        BranchInfo.add (0, ConstBranchVarNum);
 		
 		int Key;
 		String Value;
@@ -274,6 +279,10 @@ public class CovPCG extends BodyTransformer
 		{
 			return false;
 		}
+
+        // const int branch num
+        int ConstIntBrNum = BranchInfo.get (2) + 1;
+        BranchInfo.add (2, ConstIntBrNum);
 		
 		int Predict = GetCeCode (CE);
 		if (Predict == 0) return false;
@@ -291,9 +300,13 @@ public class CovPCG extends BodyTransformer
 		{
 		    int BranchNum = BranchInfo.get (0) + 1;
             BranchInfo.add (0, BranchNum);
+
+            int ConstBranchNum = BranchInfo.get (1) + 1;
+            BranchInfo.add (1, ConstBranchNum);
             
-		    int ConstBranchVarNum = BranchInfo.get (1) + 1;
-            BranchInfo.add (1, ConstBranchVarNum);
+		    // const int branch num
+            int ConstIntBrNum = BranchInfo.get (2) + 1;
+            BranchInfo.add (2, ConstIntBrNum);
             
 			Debug.DebugPrint ("@@@ TableSwitchStmt\r\n");
 			TableSwitchStmt Tss = (TableSwitchStmt) CurSt;
@@ -314,9 +327,13 @@ public class CovPCG extends BodyTransformer
 		{
 		    int BranchNum = BranchInfo.get (0) + 1;
             BranchInfo.add (0, BranchNum);
+
+            int ConstBranchNum = BranchInfo.get (1) + 1;
+            BranchInfo.add (1, ConstBranchNum);
             
-		    int ConstBranchVarNum = BranchInfo.get (1) + 1;
-            BranchInfo.add (1, ConstBranchVarNum);
+		    // const int branch num
+            int ConstIntBrNum = BranchInfo.get (2) + 1;
+            BranchInfo.add (2, ConstIntBrNum);
             
 			Debug.DebugPrint ("@@@ LookupSwitchStmt\r\n");
 			LookupSwitchStmt Lss = (LookupSwitchStmt)CurSt;
@@ -444,6 +461,7 @@ public class CovPCG extends BodyTransformer
         List<Integer> BranchInfo = new ArrayList<Integer>();
         BranchInfo.add (0, 0);
         BranchInfo.add (1, 0);
+        BranchInfo.add (2, 0);
 		
 		SootMethod CurMethod = body.getMethod();		
 		//if (IsInBlackList (CurMethod.getDeclaration()))
@@ -561,7 +579,7 @@ public class CovPCG extends BodyTransformer
         
         /* insert exit function */
 		InsertExitStmt (body, isMainMethod);
-        DumpCmpStat (CurMethod.getName (), BranchInfo.get (0), BranchInfo.get (1));
+        DumpCmpStat (CurMethod.getName (), BranchInfo.get (0), BranchInfo.get (1), BranchInfo.get (2));
         System.out.println ("@@@ instrumenting method : " + CurMethod.getSignature() + ", BlockId to " + Integer.toString (MaxBID));
 	}
 }

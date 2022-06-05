@@ -26,11 +26,16 @@ public class XmlFuzzer
             insputStream.read(bytes);
             insputStream.close();
 
-            Document parsed = Jsoup.parse (new ByteArrayInputStream(bytes), null, "");
-            Jsoup.parse(new String (bytes), "", Parser.xmlParser());
+            Parser.unescapeEntities("<<>>>" + Integer.toString (length) + "]]]]", false);
 
-            parsed.selectFirst("p").wholeText();
-            Parser.unescapeEntities(new String (bytes), false);
+            Document doc1 = Jsoup.parse (new String (bytes), null, Parser.xmlParser());
+            doc1.selectFirst("p").wholeText();
+            doc1.getElementsByAttribute("x");
+            
+
+            Document doc2 = Jsoup.parse(new String (bytes), "", Parser.htmlParser());
+            doc2.selectFirst("p").wholeText();
+            doc2.getElementsByAttribute("x");
             
         }
         catch (Exception e) 

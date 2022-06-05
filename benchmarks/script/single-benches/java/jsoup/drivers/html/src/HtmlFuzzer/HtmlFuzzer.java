@@ -23,7 +23,9 @@ public class HtmlFuzzer
             insputStream.read(bytes);
             insputStream.close();
 
-            Jsoup.parse(new String (bytes));
+            Jsoup.parse (new ByteArrayInputStream(bytes), null, "");
+            Jsoup.parse(new String (bytes), "", Parser.xmlParser());
+            Jsoup.parse(new String (bytes), "", Parser.htmlParser());
         }
         catch (Exception e) 
         {

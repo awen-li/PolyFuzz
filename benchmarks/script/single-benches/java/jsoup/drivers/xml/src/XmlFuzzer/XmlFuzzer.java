@@ -26,16 +26,9 @@ public class XmlFuzzer
             insputStream.read(bytes);
             insputStream.close();
 
-            Parser.unescapeEntities("<<>>>" + Integer.toString (length) + "]]]]", false);
-
-            Document doc1 = Jsoup.parse (new String (bytes), null, Parser.xmlParser());
-            doc1.selectFirst("p").wholeText();
-            doc1.getElementsByAttribute("x");
-            
-
-            Document doc2 = Jsoup.parse(new String (bytes), "", Parser.htmlParser());
-            doc2.selectFirst("p").wholeText();
-            doc2.getElementsByAttribute("x");
+            Jsoup.parse (new ByteArrayInputStream(bytes), null, "");
+            Jsoup.parse(new String (bytes), "", Parser.xmlParser());
+            Jsoup.parse(new String (bytes), "", Parser.htmlParser());
             
         }
         catch (Exception e) 

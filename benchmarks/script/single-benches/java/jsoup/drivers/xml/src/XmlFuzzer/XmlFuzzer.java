@@ -2,6 +2,7 @@ package xml;
 
 import org.jsoup.Jsoup;
 import org.jsoup.parser.Parser;
+import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.InputStream;
@@ -25,8 +26,11 @@ public class XmlFuzzer
             insputStream.read(bytes);
             insputStream.close();
 
-            Jsoup.parse (new ByteArrayInputStream(bytes), null, "");
+            Document parsed = Jsoup.parse (new ByteArrayInputStream(bytes), null, "");
             Jsoup.parse(new String (bytes), "", Parser.xmlParser());
+
+            parsed.selectFirst("p").wholeText();
+            Parser.unescapeEntities(new String (bytes), false);
             
         }
         catch (Exception e) 

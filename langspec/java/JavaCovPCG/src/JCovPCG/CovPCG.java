@@ -91,7 +91,7 @@ public class CovPCG extends BodyTransformer
         try 
         {
             //function:brinstnum:CmpWithConstNum:CmpWithIntConstNum:CmpWithNoConstNum:CmpWithIntNoConstNum:CmpWithPointerConstNum
-            BufferedWriter out = new BufferedWriter(new FileWriter(FuncName, true));
+            BufferedWriter out = new BufferedWriter(new FileWriter(CmpStatFile, true));
             out.write(FuncName + ":" + Integer.toString(BranchVarNum) + ":" + Integer.toString(BranchConstVarNum) + ":" + 
                       Integer.toString(IntConstBranchVarNum)  + ":0:0:0\n");
             out.close();

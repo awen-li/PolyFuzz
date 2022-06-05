@@ -248,15 +248,16 @@ public class CovPCG extends BodyTransformer
         int BranchNum = BranchInfo.get (0) + 1;
         BranchInfo.add (0, BranchNum);
 
+		Value Op1 = CE.getOp1();
+		Value Op2 = CE.getOp2();
+
         // const branch num
         if (Op1 instanceof Constant || Op2 instanceof Constant)
         {
             int ConstBranchNum = BranchInfo.get (1) + 1;
             BranchInfo.add (1, ConstBranchNum);
         }
-		
-		Value Op1 = CE.getOp1();
-		Value Op2 = CE.getOp2();
+
 		if (!(Op1.getType() instanceof soot.IntegerType) ||
 			!(Op2.getType() instanceof soot.IntegerType))
 		{

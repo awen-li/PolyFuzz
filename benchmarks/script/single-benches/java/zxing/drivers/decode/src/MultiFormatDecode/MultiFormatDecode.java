@@ -35,7 +35,7 @@ public class MultiFormatDecode
             insputStream.close();
             
             BufferedImage read = ImageIO.read(new ByteArrayInputStream(bytes));
-            if (read != null && ((long) read.getHeight()) * ((long) read.getWidth()) <= 10000000) {
+            if (read != null ) {
                 Result decode = barcodeReader.decode(new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(read))));
                 decode.getText();
                 decode.getResultMetadata();

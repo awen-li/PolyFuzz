@@ -16,7 +16,7 @@
 
 import sys
 import atheris
-with atheris.instrument_imports(key="bleach"):
+with atheris.instrument_imports():
   import bleach
 
 
@@ -24,7 +24,7 @@ def TestOneInput(input_bytes):
   fdp = atheris.FuzzedDataProvider(input_bytes)
   data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
 
-  bleach.clean(data)
+  bleach.linkify(data)
 
 
 def main():

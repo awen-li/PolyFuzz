@@ -13,24 +13,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import sys
 import atheris
-with atheris.instrument_imports(key="bleach"):
-  import bleach
+with atheris.instrument_imports():
+  import yaml.reader
 
+@atheris.instrument_func
+def TestOneInput(data):
+    if len(data) < 1:
+        return 
+    try:
+        stream = yaml.reader.Reader(data)
+        while stream.peek() != u'\0':
+            stream.forward()
+    except yaml.reader.ReaderError:
+        None
 
-def TestOneInput(input_bytes):
-  fdp = atheris.FuzzedDataProvider(input_bytes)
-  data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
-
-  bleach.clean(data)
-
+    return 
 
 def main():
-  atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
-  atheris.Fuzz()
-
+    atheris.Setup(sys.argv, TestOneInput)
+    atheris.Fuzz()
 
 if __name__ == "__main__":
-  main()
+    main()

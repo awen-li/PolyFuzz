@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,24 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
+################################################################################
 
-import sys
-import atheris
-with atheris.instrument_imports(key="bleach"):
-  import bleach
-
-
-def TestOneInput(input_bytes):
-  fdp = atheris.FuzzedDataProvider(input_bytes)
-  data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
-
-  bleach.clean(data)
-
-
-def main():
-  atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
-  atheris.Fuzz()
-
-
-if __name__ == "__main__":
-  main()
+FROM gcr.io/oss-fuzz-base/base-builder-python
+RUN git clone https://github.com/yaml/pyyaml
+WORKDIR $SRC
+COPY build.sh $SRC/
+COPY fuzz_* $SRC/

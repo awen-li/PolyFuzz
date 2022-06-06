@@ -16,7 +16,9 @@
 import os
 import sys
 import atheris
-import urllib3
+
+with atheris.instrument_imports(key="urllib3"):
+    import urllib3
 
 def TestOneInput(data):
     fdp = atheris.FuzzedDataProvider(data)
@@ -33,6 +35,6 @@ def main():
     atheris.Fuzz()
 
 if __name__ == "__main__":
-    atheris.instrument_all()
+    #atheris.instrument_all()
     main()
 

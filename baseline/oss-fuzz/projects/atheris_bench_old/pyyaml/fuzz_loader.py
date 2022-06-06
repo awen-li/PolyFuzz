@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
 # limitations under the License.
 
 import sys
+
 import atheris
-with atheris.instrument_imports(key="bleach"):
-  import bleach
+
+with atheris.instrument_imports():
+  import yaml
 
 
+@atheris.instrument_func
 def TestOneInput(input_bytes):
-  fdp = atheris.FuzzedDataProvider(input_bytes)
-  data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
-
-  bleach.clean(data)
-
+  try:
+    context = yaml.load(input_bytes, Loader=yaml.FullLoader)
+  except yaml.YAMLError:
+    pass
 
 def main():
   atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)

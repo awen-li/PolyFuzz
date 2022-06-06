@@ -1,6 +1,5 @@
 #!/usr/bin/python3
-
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,23 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import sys
 import atheris
-with atheris.instrument_imports(key="bleach"):
-  import bleach
+import urllib3
 
+def TestOneInput(data):
+    fdp = atheris.FuzzedDataProvider(data)
+    original = fdp.ConsumeUnicode(sys.maxsize)
 
-def TestOneInput(input_bytes):
-  fdp = atheris.FuzzedDataProvider(input_bytes)
-  data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
-
-  bleach.clean(data)
-
+    try:
+        urllib3.util.parse_url(original)
+    except urllib3.exceptions.LocationParseError:
+        None
+    return
 
 def main():
-  atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
-  atheris.Fuzz()
-
+    atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
+    atheris.Fuzz()
 
 if __name__ == "__main__":
-  main()
+    atheris.instrument_all()
+    main()
+

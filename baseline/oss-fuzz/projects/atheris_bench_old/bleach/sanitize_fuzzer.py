@@ -16,7 +16,7 @@
 
 import sys
 import atheris
-with atheris.instrument_imports(key="bleach"):
+with atheris.instrument_imports():
   import bleach
 
 

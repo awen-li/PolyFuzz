@@ -15,7 +15,7 @@
 # limitations under the License.
 import sys
 import atheris
-with atheris.instrument_imports():
+with atheris.instrument_imports(key="yaml"):
   import yaml.reader
 
 @atheris.instrument_func

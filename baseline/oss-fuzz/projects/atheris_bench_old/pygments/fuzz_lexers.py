@@ -15,20 +15,27 @@
 # limitations under the License.
 
 import atheris
-import sys
 
-with atheris.instrument_imports(key="pygments"):
-  import pygments
-  import pygments.lexers
-  import pygments.util
+import sys
+import pygments
+import pygments.formatters.html
+import pygments.lexers
+
+formatter = pygments.formatters.html.HtmlFormatter()
+# pygments.LEXERS.values() is a list of tuples like this, with some of then empty:
+# (textual class name, longname, tuple of aliases, tuple of filename patterns, tuple of mimetypes)
+LEXERS = [l[2][0] for l in pygments.lexers.LEXERS.values() if l[2]]
+
 
 def TestOneInput(data: bytes) -> int:
-  try:
-    lexer = pygments.lexers.guess_lexer(str(data))
-  except pygments.util.ClassNotFound:
-    return 0
+  fdp = atheris.FuzzedDataProvider(data)
+  random_lexer = pygments.lexers.get_lexer_by_name(fdp.PickValueInList(LEXERS))
+  str_data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
+
+  pygments.highlight(str_data, random_lexer, formatter)
   return 0
 
 
+atheris.instrument_all()
 atheris.Setup(sys.argv, TestOneInput)
 atheris.Fuzz()

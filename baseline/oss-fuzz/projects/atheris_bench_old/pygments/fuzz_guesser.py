@@ -14,23 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
 import atheris
-with atheris.instrument_imports(key="bleach"):
-  import bleach
+
+import sys
+import pygments
+import pygments.lexers
+import pygments.util
+
+def TestOneInput(data: bytes) -> int:
+  try:
+    lexer = pygments.lexers.guess_lexer(str(data))
+  except pygments.util.ClassNotFound:
+    return 0
+  return 0
 
 
-def TestOneInput(input_bytes):
-  fdp = atheris.FuzzedDataProvider(input_bytes)
-  data = fdp.ConsumeUnicode(atheris.ALL_REMAINING)
-
-  bleach.clean(data)
-
-
-def main():
-  atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
-  atheris.Fuzz()
-
-
-if __name__ == "__main__":
-  main()
+atheris.instrument_all()
+atheris.Setup(sys.argv, TestOneInput)
+atheris.Fuzz()

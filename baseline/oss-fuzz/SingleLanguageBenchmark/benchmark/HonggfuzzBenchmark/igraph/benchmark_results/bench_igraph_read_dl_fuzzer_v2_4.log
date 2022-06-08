@@ -1,0 +1,91 @@
+Sun May 22 12:19:05 2022 	NEW_FUNC[1/1]: 
+Sun May 22 12:49:05 2022 #1048576	pulse  cov: 202 ft: 345 corp: 51/1432b lim: 4096 exec/s: 692 rss: 259Mb
+
+Sun May 22 13:19:06 2022 #2218911	REDUCE cov: 202 ft: 345 corp: 51/1425b lim: 4096 exec/s: 693 rss: 259Mb L: 5/256 MS: 5 CopyPart-InsertRepeatedBytes-EraseBytes-ChangeASCIIInt-CrossOver-
+
+Sun May 22 13:49:06 2022 #3530869	REDUCE cov: 228 ft: 420 corp: 68/1686b lim: 4096 exec/s: 658 rss: 260Mb L: 8/256 MS: 1 EraseBytes-
+
+Sun May 22 14:19:06 2022 #4194304	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 654 rss: 260Mb
+
+Sun May 22 14:49:06 2022 #4194304	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 654 rss: 260Mb
+
+Sun May 22 15:19:06 2022 #4194304	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 654 rss: 260Mb
+
+Sun May 22 15:49:06 2022 #4194304	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 654 rss: 260Mb
+
+Sun May 22 16:19:06 2022 #8388608	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 609 rss: 260Mb
+
+Sun May 22 16:49:06 2022 #8388608	pulse  cov: 228 ft: 422 corp: 70/1705b lim: 4096 exec/s: 609 rss: 260Mb
+
+Sun May 22 17:19:06 2022 #10761107	REDUCE cov: 228 ft: 422 corp: 70/1704b lim: 4096 exec/s: 598 rss: 260Mb L: 133/256 MS: 2 EraseBytes-CrossOver-
+
+Sun May 22 17:49:06 2022 #10761107	REDUCE cov: 228 ft: 422 corp: 70/1704b lim: 4096 exec/s: 598 rss: 260Mb L: 133/256 MS: 2 EraseBytes-CrossOver-
+
+Sun May 22 18:19:07 2022 #12763628	REDUCE cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 599 rss: 260Mb L: 131/256 MS: 1 EraseBytes-
+
+Sun May 22 18:49:07 2022 #12763628	REDUCE cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 599 rss: 260Mb L: 131/256 MS: 1 EraseBytes-
+
+Sun May 22 19:19:07 2022 #12763628	REDUCE cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 599 rss: 260Mb L: 131/256 MS: 1 EraseBytes-
+
+Sun May 22 19:49:07 2022 #12763628	REDUCE cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 599 rss: 260Mb L: 131/256 MS: 1 EraseBytes-
+
+Sun May 22 20:19:07 2022 #16777216	pulse  cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 583 rss: 260Mb
+
+Sun May 22 20:49:07 2022 #16777216	pulse  cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 583 rss: 260Mb
+
+Sun May 22 21:19:07 2022 #16777216	pulse  cov: 228 ft: 422 corp: 70/1703b lim: 4096 exec/s: 583 rss: 260Mb
+
+Sun May 22 21:49:07 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Sun May 22 22:19:07 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Sun May 22 22:49:07 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Sun May 22 23:19:07 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Sun May 22 23:49:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 00:19:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 00:49:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 01:19:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 01:49:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 02:19:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 02:49:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 03:19:08 2022 #20138047	REDUCE cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 593 rss: 260Mb L: 130/256 MS: 3 ChangeBit-EraseBytes-CopyPart-
+
+Mon May 23 03:49:08 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 04:19:08 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 04:49:08 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 05:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 05:49:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 06:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 06:49:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 07:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 07:49:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 08:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 08:49:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 09:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 09:49:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 10:19:09 2022 #33554432	pulse  cov: 228 ft: 422 corp: 70/1701b lim: 4096 exec/s: 621 rss: 260Mb
+
+Mon May 23 10:49:10 2022 #51672529	REDUCE cov: 228 ft: 422 corp: 70/1700b lim: 4096 exec/s: 651 rss: 260Mb L: 24/256 MS: 2 CrossOver-EraseBytes-
+

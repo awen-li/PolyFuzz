@@ -1,0 +1,3 @@
+[pyinstaller40]
+hook-dirs = atheris:get_hook_dirs
+

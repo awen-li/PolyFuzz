@@ -1,33 +1,38 @@
 # xFuzz
-a data flow sensitive cross-langauge fuzzer
+POLYFUZZ: Holistic Greybox Fuzzing of Multi-Language Systems
 
 # Introduction
 ```
-xFuzz
-├── ADUC            ======  ADUC learning engine
-├── AFLplusplus     ======  AFL++, C instrumentation and coverage report
-├── common          ======  common support modules
-│   ├── ctrace      ------  dynamic tracing library, memory management for event queue
-│   └── cvgopt      ------  optimization library for coverage-instrumentation
-├── documents
-├── langspec        ======  Language specfic components
-│   ├── clang       ------  C instrumentation library
-│   ├── java        ------  Java instrumentation library
-│   └── python      ------  Python parser and instrumentation library
-└── tool            ======  thirdparties and demos
-    ├── PyTrace
-    └── PyTraceBind
+PolyFuzz
++-- AFLplusplus                 ---------------   the core fuzzing agent
++-- baseline                    ---------------   evaluation scripts of three baselines: Atheris, Jazzer and Honggfuzz
++-- benchmarks                  ---------------   drivers&scripts of multilingual bencharks for PolyFuzz, Atheris, Jazzer, and single-language drivers for PolyFuzz
++-- build.sh                    ---------------   the build script for the whole project
++-- common                      ---------------   implementation of common library
+¦   +-- ctrace                  ---------------   dynamic tracing
+¦   +-- pcgInstrm               ---------------   coverage guidance computation
+¦   +-- ple                     ---------------   sensitivity analysis engine
+¦   +-- shmqueue                ---------------   shared memory queue for dynamic event tracing
++-- langspec                    ---------------   language specific analysis
+¦   +-- clang                   ---------------   for c
+¦   +-- java                    ---------------   for java
+¦   +-- python                  ---------------   for python
++-- NewVulnerabilities.pdf      ---------------   new vulnerabilities discovered by PolyFuzz
++-- tool                        ---------------   internal tool set
 ```
 
 # Build xFuzz
 ### Use following script to build the whole system
 ```
-./buid.sh
+. buid.sh
 ```
-### Add (yourpath)/xFuzz/AFLplusplus to environment (PATH)
+
+# Steps for fuzzing C programs
 ```
-export PATH=([yourpath)/xFuzz/AFLplusplus:$PATH
+export CC="afl-cc -fPIC -lxFuzztrace"
+export CXX="afl-c++ -fPIC -lxFuzztrace"
 ```
+An [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/script/single-benches/c/bind9)  for C program
 
 # Steps for fuzzing Python-C programs
 
@@ -38,16 +43,16 @@ import os
 os.environ["CC"]  = "afl-cc"
 os.environ["CXX"] = "afl-c++"
 ```
-
 ### Parse python code summary
 ```
 python -m parser [python code dir]
 ```
-A xml "py_summary.xml" will be generated in the specified dir, it should be placed with the drivers. 
+A xml "py_summary.xml" will be generated in the specified dir, it should be placed with the drivers.
+An [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/script/multi-benches/Pillow)  for Python-C program
 
-### Prepare driver, tests
-As shown in the [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/mongo)
-The keys to write the driver is to import the library "pyprob"
+# Steps for fuzzing Java-C programs
+```
+java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t <class-dir>
+```
 
-### Run the fuzzing
-Use a similar script as the run-fuzzer.sh in [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/mongo)
+An [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/script/multi-benches/jansi)  for Java-C program

@@ -27,6 +27,8 @@ ext_modules = [
             "src/loadbrval.cpp",
             "src/pyprob.cpp",
             "src/pytrace.cpp",
+            "src/util.cpp",
+            "src/data_provider.cpp",
         ]),
         include_dirs=[
             "include",

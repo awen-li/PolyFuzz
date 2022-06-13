@@ -1,2 +1,0 @@
-atheris
-atheris_no_libfuzzer

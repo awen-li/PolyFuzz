@@ -5,7 +5,7 @@ import jep.JepConfig;
 import jep.Interpreter;
 import jep.SubInterpreter;
 
-public class JepDriver {
+public class JepTestEval {
     
     public void run(String argv[]) 
     {
@@ -32,7 +32,7 @@ public class JepDriver {
 
     public static void main(String argv[]) throws Throwable 
     {
-        jep_drive = new JepDriver();
+        jep_drive = new JepTestEval();
         jep_drive.run(argv);
     }
 

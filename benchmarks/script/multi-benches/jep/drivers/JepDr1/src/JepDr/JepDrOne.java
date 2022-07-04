@@ -5,7 +5,7 @@ import jep.JepConfig;
 import jep.Interpreter;
 import jep.SubInterpreter;
 
-public class JepDriver {
+public class JepDrOne {
 
     public static void main(String argv[]) throws Throwable 
     {

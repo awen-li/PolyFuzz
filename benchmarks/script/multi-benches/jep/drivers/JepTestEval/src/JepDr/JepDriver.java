@@ -32,7 +32,7 @@ public class JepTestEval {
 
     public static void main(String argv[]) throws Throwable 
     {
-        jep_drive = new JepTestEval();
+        JepTestEval jep_drive = new JepTestEval();
         jep_drive.run(argv);
     }
 

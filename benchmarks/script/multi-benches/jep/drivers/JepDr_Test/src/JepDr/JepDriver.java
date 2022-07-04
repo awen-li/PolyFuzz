@@ -32,7 +32,7 @@ public class JepDriver {
 
     public static void main(String argv[]) throws Throwable 
     {
-        jep_drive = new JepDriver();
+        JepDriver jep_drive = new JepDriver();
         jep_drive.run(argv);
     }
 

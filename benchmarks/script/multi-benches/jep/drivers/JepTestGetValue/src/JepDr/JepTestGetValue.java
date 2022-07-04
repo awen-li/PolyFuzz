@@ -33,7 +33,7 @@ public class JepTestGetValue {
 
     public static void main(String argv[]) throws Throwable 
     {
-        jep_drive = new JepTestGetValue();
+        JepTestGetValue jep_drive = new JepTestGetValue();
         jep_drive.run(argv);
     }
 

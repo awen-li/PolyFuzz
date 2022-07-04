@@ -6,7 +6,7 @@ import jep.Interpreter;
 import jep.SubInterpreter;
 
 
-public class JepTestGetValue {
+public class JepDriver {
 
     public void run(String argv[]) 
     {

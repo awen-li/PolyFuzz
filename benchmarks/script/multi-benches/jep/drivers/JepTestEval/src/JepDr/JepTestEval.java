@@ -5,7 +5,7 @@ import jep.JepConfig;
 import jep.Interpreter;
 import jep.SubInterpreter;
 
-public class JepTestEval {
+public class JepDriver {
     
     public void run(String argv[]) 
     {

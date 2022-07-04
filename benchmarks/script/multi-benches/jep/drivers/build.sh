@@ -13,7 +13,7 @@ if [ ! -n "$JepPath" ]; then
 fi
 
 
-function deplibs ()
+function deplibs()
 {
     DEPLIBS=$JavaCovPCG/JavaCovPCG.jar:$JepPath/jep-4.0.3.jar
     

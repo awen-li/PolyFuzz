@@ -1,8 +1,6 @@
 import sys
 import atheris
 
-from ofunctions.json_sanitize import json_sanitize
-
 with atheris.instrument_imports(key="simplejson"):
     import simplejson as json
 

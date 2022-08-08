@@ -34,13 +34,14 @@ def RunAubio (path):
             total_frames_written += read
 
     except Exception as e:
-        print (e)
+        pass
 
     return s
 
 def TestOneInput(data):  
     fdp = atheris.FuzzedDataProvider(data)
-    RunAubio(fdp)
+    original = fdp.ConsumeString(sys.maxsize)
+    RunAubio(original)
 
 
 

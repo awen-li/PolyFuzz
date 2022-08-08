@@ -6,7 +6,7 @@ import pyprob
 with atheris.instrument_imports(key="msgpack"):
     import msgpack
 
-pyprob.Setup('py_summary.xml', 'pack.py')
+#pyprob.Setup('py_summary.xml', 'pack.py')
 
 def LoadInput (FName):
     Content = ""

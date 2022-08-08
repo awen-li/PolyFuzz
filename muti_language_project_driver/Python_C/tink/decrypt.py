@@ -38,7 +38,10 @@ def RunTest (InputData):
     keyset_handle = cleartext_keyset_handle.read(tink.JsonKeysetReader(keyset))
     primitive = keyset_handle.primitive(aead.Aead)
     ciphertext = primitive.encrypt(b'msg', b'associated_data')
-    primitive.decrypt(original, b'associated_data')
+    try:
+        primitive.decrypt(original, b'associated_data')
+    except:
+        pass
 
 
 if __name__ == '__main__':

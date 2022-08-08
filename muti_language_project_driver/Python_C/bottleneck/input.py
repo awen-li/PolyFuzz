@@ -1,7 +1,6 @@
 import sys
 import atheris
 
-from .util import DTYPES
 import numpy as np
 
 with atheris.instrument_imports(key="bottleneck"):
@@ -9,7 +8,7 @@ with atheris.instrument_imports(key="bottleneck"):
 
 def TestOneInput(data):  
     fdp = atheris.FuzzedDataProvider(data)
-    original = fdp.ConsumeInt(10)
+    original = fdp.ConsumeInt(4)
     test_modification("run", original)
 
 def arrays(dtypes, numbers):
@@ -36,7 +35,7 @@ def arrays(dtypes, numbers):
 
 def test_modification(func, numbers):
     """Test that bn.xxx gives the same output as np.xxx."""
-    name = func.__name__
+    name = func
     if name == "replace":
         return
     msg = "\nInput array modified by %s.\n\n"

@@ -38,12 +38,13 @@ def RunAubio (path):
             if read < hop_s: break
 
     except Exception as e:
-        print (e)
+        pass
     return s
 
 def TestOneInput(data):  
     fdp = atheris.FuzzedDataProvider(data)
-    RunAubio(fdp)
+    original = fdp.ConsumeString(sys.maxsize)
+    RunAubio(original)
 
 if __name__ == '__main__':
     atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)

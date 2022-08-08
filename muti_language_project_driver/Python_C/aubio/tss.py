@@ -37,14 +37,15 @@ def RunAubio (path):
             h(steadstate, read)               
 
     except Exception as e:
-        print (e)
+        pass
     
     return s, g, h   
 
 
 def TestOneInput(data):  
     fdp = atheris.FuzzedDataProvider(data)
-    RunAubio(fdp)
+    original = fdp.ConsumeString(sys.maxsize)
+    RunAubio(original)
 
 
 if __name__ == '__main__':

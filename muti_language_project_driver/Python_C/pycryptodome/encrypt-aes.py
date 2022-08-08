@@ -23,11 +23,12 @@ def GetKey ():
 @atheris.instrument_func    
 def RunTest (data):
     fdp = atheris.FuzzedDataProvider(data)
+    input = fdp.ConsumeUnicode(sys.maxsize)
     try: 
         key = GetKey()
         
         cipher = AES.new(key, AES.MODE_EAX)
-        ciphertext, tag = cipher.encrypt_and_digest(fdp)
+        ciphertext, tag = cipher.encrypt_and_digest(input)
 
         with open("encrypted.bin", "wb") as F:
             [ F.write(x) for x in (cipher.nonce, tag, ciphertext) ]

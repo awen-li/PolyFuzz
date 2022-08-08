@@ -21,7 +21,7 @@ def RunTest (data):
         del(tableObj)
         
     except Exception as e:
-        print (e)
+        pass
 
 if __name__ == '__main__':
     atheris.Setup(sys.argv, RunTest, enable_python_coverage=True)

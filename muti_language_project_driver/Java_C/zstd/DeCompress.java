@@ -6,8 +6,9 @@ public class CompressTest {
     {
         try
         {
-            byte[] compressed = Zstd.compress(input);
-            
+            int length   = input.length;
+            byte[] ob = new byte[length];
+            Zstd.decompress(ob, bytes); 
         }
         catch (Exception e) 
         {

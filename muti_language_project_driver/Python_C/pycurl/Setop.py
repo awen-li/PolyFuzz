@@ -15,7 +15,7 @@ def RunTest (InputData):
         
         c = pycurl.Curl()
         c.setopt(pycurl.OPT_CERTINFO, 1)
-        c.setopt(pycurl.URL, "localhost")
+        c.setopt(pycurl.URL, original)
         c.setopt(pycurl.FOLLOWLOCATION, 1)
         c.perform()
         c.close()

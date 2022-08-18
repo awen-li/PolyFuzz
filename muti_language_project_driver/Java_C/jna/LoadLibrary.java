@@ -11,7 +11,7 @@ public class loadLibrary{
         {
             new Native.loadLibrary(input, CRuntimeLibrary.class);
         } 
-        catch () 
+        catch (Exception e) 
         {
             return;
         }

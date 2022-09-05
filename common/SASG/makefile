@@ -22,6 +22,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ_FILES)
 	$(LD) -o $@ $^ $(LD_CFLAGS)
 	@cp $(TARGET) -rf /usr/bin/
+	@cp $(TARGET) -rf /usr/bin/ple
 	@cp include/pl_message.h -rf /usr/include/
 	@cd py; ./install.sh; cd -
 	

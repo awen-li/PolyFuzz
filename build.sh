@@ -50,3 +50,4 @@ export BENCH=$BASE_DIR/benchmarks
 export JavaCovPCG=/usr/lib/JavaCovPCG
 export JepPath=$(sh /usr/bin/PyVersion.sh)/site-packages/jep
 export LD_LIBRARY_PATH=$JepPath:$LD_LIBRARY_PATH
+export LD_PRELOAD="$(python -c "import atheris; print(atheris.path())")/asan_with_fuzzer.so" 

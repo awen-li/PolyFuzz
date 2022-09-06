@@ -3,9 +3,6 @@ import sys
 import atheris
 from PyDemo import *
 
-with atheris.instrument_imports(key="Demo"):
-    import aubio
-
 class Demo ():
     def __init__ (self, value):
         if value < 0:
@@ -25,12 +22,15 @@ def Trace (val):
     else:
         return (8 / Hint)
     
-def TestOneInput(data):  
-    Input = int (data)
-    Value = Trace (Input)
-  
+def TestOneInput(data):
+    try: 
+        Input = int (data)
+        Value = Trace (Input)
+    except Exception as e:
+        pass
+
 if __name__ == '__main__':
-    atheris.Setup(sys.argv, main, enable_python_coverage=True)
+    atheris.Setup(sys.argv, TestOneInput, enable_python_coverage=True)
     atheris.Fuzz()
 
     

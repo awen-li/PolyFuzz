@@ -89,6 +89,10 @@ do
     echo "==================================================="
     echo
     
+    if [ "$ACTION" != "" ] && [ "$ACTION" != "$JT" ]; then
+    	continue
+    fi
+    
     compile $JT  
     instrument $JT
     pack $JT

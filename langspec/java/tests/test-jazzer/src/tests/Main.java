@@ -8,23 +8,22 @@ import java.util.List;
 
 public class Main {
 
-	public static void main(String[] args) {
-
+    public static void fuzzerTestOneInput(byte[] input) {
 		int Key = 165535;
 		
-		if (args.length != 0)
-		{
-			Path path = Paths.get(args[0]);
-			try
-			{
-				List<String> lines = Files.readAllLines(path);
-				Key = Integer.parseInt(lines.get(0));
-			}
-			catch (Exception e)
-			{
-				;
-			}
-		}
+		int value = 0;
+        int size  = 0;
+        for (byte b : input) {
+            value = (value << 8) + (b & 0xFF);
+
+            size++;
+            if (size >= 4)
+            {
+                break;
+            }
+        }
+
+        Key = value;
 
 		PwManage Pm = new PwManage ();
         String pw = Pm.getPwd(Key);

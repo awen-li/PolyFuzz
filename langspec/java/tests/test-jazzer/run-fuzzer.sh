@@ -1,5 +1,5 @@
 
-target=test-jazzer
+target=test-jazzer.jar
 
 # link jazzer to current fuzzing directory
 ln -s $JAZZER_ROOT/jazzer jazzer

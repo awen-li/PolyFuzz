@@ -27,8 +27,8 @@ public class Main {
 
 		PwManage Pm = new PwManage ();
         String pw = Pm.getPwd(Key);
-        //System.out.println ("Run over -> " + pw);
-        System.exit(0);
+
+        return;
 	}
 
 }

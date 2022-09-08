@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<py_summary branchs="15">
-  <file name="Demo.py" id="1">
-    <function class="" name="Trace" sline="15" eline="24" brval="Hint" bbs="15 19 21 24"/>
-    <function class="" name="ParseText" sline="26" eline="32" brval="" bbs="26 29"/>
-    <function class="" name="main" sline="34" eline="39" brval="" bbs="34 36"/>
-  </file>
-</py_summary>

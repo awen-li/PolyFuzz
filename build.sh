@@ -5,9 +5,9 @@ BASE_DIR=`pwd`
 if [ ! -d "/usr/include/ctrace" ]; then 
     mkdir /usr/include/ctrace 
 fi
-cp $BASE_DIR/common/ctrace/include/* /usr/include/ctrace/ -rf
+cp $BASE_DIR/common/DynTrace/include/* /usr/include/ctrace/ -rf
 cd $BASE_DIR/common/shmqueue && make clean && make
-cd $BASE_DIR/common/ple && make && make
+cd $BASE_DIR/common/SASG && make clean && make
 
 
 # 2. build AFL++

@@ -230,6 +230,8 @@ typedef struct PilotData
     DWORD LsValidNum;
 
     List *FlSdList;
+
+    DWORD SdStatByBlock[20]; /* 1 - 2- 4 - 8 - 16*/
 }PilotData;
 
 

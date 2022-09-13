@@ -1088,6 +1088,7 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
         if (CurBlkNo+1 == BlkNum)
         {
             WriteSeed (PD, BlkNum, CurSeed);
+            PD->SdStatByBlock[PD->CurAlign]++;
         }
         else
         {      
@@ -1175,6 +1176,24 @@ static inline VOID ComputeBudget (PilotData *PD, BsValue *SAList, DWORD SANum, D
     return;    
 }
 
+
+static inline VOID DumpSdStat (PilotData *PD)
+{
+    FILE *f = fopen ("seed_stat_blocksize.txt", "a+");
+    if (f == NULL)
+    {
+        return;
+    }
+
+    fprintf (f, "1:%u, 2:%u, 4:%u, 8:%u, 16:%u\r\n",
+             PD->SdStatByBlock[1], PD->SdStatByBlock[2],
+             PD->SdStatByBlock[4], PD->SdStatByBlock[8],
+             PD->SdStatByBlock[16]);
+    fclose (f);
+
+    return;
+}
+
 static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
 {
     BYTE BlkDir[256];
@@ -1250,6 +1269,8 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
         }
         free (SAList);   
     }
+
+    DumpSdStat (PD);
     
     return;
 }

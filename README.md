@@ -1,7 +1,9 @@
-# xFuzz
-POLYFUZZ: Holistic Greybox Fuzzing of Multi-Language Systems
+# POLYFUZZ: Holistic Greybox Fuzzing of Multi-Language Systems
+
 
 # Introduction
+we present PolyFuzz, a greybox fuzzer that holistically fuzzes a given multi-language system through cross-language coverage feedback and explicit modeling of the semantic relationships between inputs and branch predicates. PolyFuzz is extensible for supporting multilingual code using different language combinations and has been implemented for C/C++, Python, Java, and their combinations.
+
 ```
 PolyFuzz
 ├── AFLplusplus       --------------  the core fuzzing agent
@@ -20,7 +22,25 @@ PolyFuzz
 └── tool
 ```
 
-# Build PolyFuzz
+# Installation
+
+## 1. Requirements
+#### 1.1 Setup the environment manually
+PolyFuzz is tested on Ubuntu18.04, LLVM11.0, Python3.8/9 (and Python3-dev), and JDK 8/11.
+
+#### 1.2 Reuse the environment from docker image (recommanded)
+We build a [docker image](https://hub.docker.com/repository/registry-1.docker.io/daybreak2019/polyfuzz/tags?page=1&ordering=last_updated) with all dependences ready (i.e., all the dependencies required for running PolyFuzz itself; 
+for subject systems (benchmakrs), we provides scripts to setup the environments under benchmarks/script.<br>
+Please use the command ```docker pull daybreak2019/polyfuzz:v1.0``` to pull the image to local storage.
+
+
+## 2. Build PolyFuzz
+
+
+
+## 3. Usage
+
+
 ### Use following script to build the whole system
 ```
 . buid.sh

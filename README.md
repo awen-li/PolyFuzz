@@ -4,24 +4,23 @@ POLYFUZZ: Holistic Greybox Fuzzing of Multi-Language Systems
 # Introduction
 ```
 PolyFuzz
-+-- AFLplusplus                 ---------------   the core fuzzing agent
-+-- baseline                    ---------------   evaluation scripts of three baselines: Atheris, Jazzer and Honggfuzz
-+-- benchmarks                  ---------------   drivers&scripts of multilingual bencharks for PolyFuzz, Atheris, Jazzer, and single-language drivers for PolyFuzz
-+-- build.sh                    ---------------   the build script for the whole project
-+-- common                      ---------------   implementation of common library
-¦   +-- ctrace                  ---------------   dynamic tracing
-¦   +-- pcgInstrm               ---------------   coverage guidance computation
-¦   +-- ple                     ---------------   sensitivity analysis engine
-¦   +-- shmqueue                ---------------   shared memory queue for dynamic event tracing
-+-- langspec                    ---------------   language specific analysis
-¦   +-- clang                   ---------------   for c
-¦   +-- java                    ---------------   for java
-¦   +-- python                  ---------------   for python
-+-- NewVulnerabilities.pdf      ---------------   new vulnerabilities discovered by PolyFuzz
-+-- tool                        ---------------   internal tool set
+├── AFLplusplus       --------------  the core fuzzing agent
+├── baseline          --------------  configurations and scripts for baselines
+├── benchmarks        --------------  configurations and scripts for benchmarks
+├── common            --------------  common modules
+│   ├── DynTrace      --------------  dynamic tracing library
+│   ├── IGC           --------------  instrumentation guidance computation
+│   ├── SASG          --------------  sensitivity analysis and seed generation
+│   └── shmqueue      --------------  shared memory queue
+├── documents         --------------  some DOCs during the development
+├── langspec          --------------  language specific analysis
+│   ├── clang         --------------  analysis for C 
+│   ├── java          --------------  analysis for Java
+│   └── python        --------------  analysis for Python
+└── tool
 ```
 
-# Build xFuzz
+# Build PolyFuzz
 ### Use following script to build the whole system
 ```
 . buid.sh

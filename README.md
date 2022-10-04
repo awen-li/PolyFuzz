@@ -8,7 +8,7 @@ we present PolyFuzz, a greybox fuzzer that holistically fuzzes a given multi-lan
 PolyFuzz
 ├── AFLplusplus       --------------  the core fuzzing agent
 ├── baseline          --------------  configurations and scripts for baselines
-├── benchmarks        --------------  configurations and scripts for benchmarks
+├── benchmarks        --------------  configurations, scripts and drivers for benchmarks
 ├── common            --------------  common modules
 │   ├── DynTrace      --------------  dynamic tracing library
 │   ├── IGC           --------------  instrumentation guidance computation

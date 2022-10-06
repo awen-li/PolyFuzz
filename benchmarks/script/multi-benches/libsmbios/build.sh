@@ -45,11 +45,9 @@ function collect_branchs ()
 
 function compile ()
 {
-	if [ -d "$ROOT/$target" ]; then
-		rm -rf $ROOT/$target
+	if [ ! -d "$ROOT/$target" ]; then
+		git clone https://github.com/dell/libsmbios.git
 	fi
-	
-	git clone https://github.com/dell/libsmbios.git
 
 	pushd $target
 	

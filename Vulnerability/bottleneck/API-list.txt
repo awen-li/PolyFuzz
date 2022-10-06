@@ -1,0 +1,7 @@
+bn.nanmedian 
+bn.nanmean 
+bn.nanstd 
+bn.median
+bn.ss 
+bn.nanmin 
+bn.nanmax

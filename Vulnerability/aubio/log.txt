@@ -1,0 +1,22 @@
+(base) root@ubuntu:/home/wen/git/polyfuzz/aubio# ./run.sh case-normal
+[1] Thu May 19 23:25:31 PDT 2022: memory percentage: 0.1
+[2] Thu May 19 23:26:01 PDT 2022: memory percentage: 0.7
+[3] Thu May 19 23:26:31 PDT 2022: memory percentage: 0.7
+[4] Thu May 19 23:27:01 PDT 2022: memory percentage: 0.7
+[5] Thu May 19 23:27:31 PDT 2022: memory percentage: 0.7
+[6] Thu May 19 23:28:01 PDT 2022: memory percentage: 0.7
+[7] Thu May 19 23:28:31 PDT 2022: memory percentage: 0.7
+[8] Thu May 19 23:29:01 PDT 2022: memory percentage: 0.7
+[9] Thu May 19 23:29:31 PDT 2022: memory percentage: 0.7
+[10] Thu May 19 23:30:01 PDT 2022: memory percentage: 0.7
+(base) root@ubuntu:/home/wen/git/polyfuzz/aubio# ./run.sh case-abnormal 
+[1] Thu May 19 23:31:13 PDT 2022: memory percentage: 0.1
+[2] Thu May 19 23:31:43 PDT 2022: memory percentage: 1.9
+[3] Thu May 19 23:32:13 PDT 2022: memory percentage: 3.0
+[4] Thu May 19 23:32:43 PDT 2022: memory percentage: 4.1
+[5] Thu May 19 23:33:13 PDT 2022: memory percentage: 5.2
+[6] Thu May 19 23:33:43 PDT 2022: memory percentage: 6.3
+[7] Thu May 19 23:34:13 PDT 2022: memory percentage: 7.4
+[8] Thu May 19 23:34:43 PDT 2022: memory percentage: 8.5
+[9] Thu May 19 23:35:13 PDT 2022: memory percentage: 9.6
+[10] Thu May 19 23:35:43 PDT 2022: memory percentage: 10.6

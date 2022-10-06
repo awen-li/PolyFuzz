@@ -1,0 +1,43 @@
+Starting program: /root/anaconda3/bin/python ujson_poc.py input
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+PyBytes_Size () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/bytesobject.c:1199
+1199    /tmp/build/80754af9/python-split_1631797238431/work/Objects/bytesobject.c: No such file or directory.
+(gdb) bt
+#0  PyBytes_Size () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/bytesobject.c:1199
+#1  0x00007ffff7e25e99 in ?? () from /root/anaconda3/lib/python3.9/site-packages/ujson.cpython-39-x86_64-linux-gnu.so
+#2  0x00007ffff7e24b94 in ?? () from /root/anaconda3/lib/python3.9/site-packages/ujson.cpython-39-x86_64-linux-gnu.so
+#3  0x00007ffff7e253cf in JSON_EncodeObject () from /root/anaconda3/lib/python3.9/site-packages/ujson.cpython-39-x86_64-linux-gnu.so
+#4  0x00007ffff7e26e93 in objToJSON () from /root/anaconda3/lib/python3.9/site-packages/ujson.cpython-39-x86_64-linux-gnu.so
+#5  0x00005555556c8714 in cfunction_call () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/methodobject.c:543
+#6  0x00005555556989ef in _PyObject_MakeTpCall () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/call.c:191
+#7  0x0000555555722d89 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x7ffff7ed5758, callable=<optimized out>, tstate=<optimized out>)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Include/cpython/abstract.h:116
+#8  PyObject_Vectorcall () at /tmp/build/80754af9/python-split_1631797238431/work/Include/cpython/abstract.h:127
+#9  call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x555555914680)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:5075
+#10 _PyEval_EvalFrameDefault () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:3487
+#11 0x00005555556d68e2 in _PyEval_EvalFrame () at /tmp/build/80754af9/python-split_1631797238431/work/Include/internal/pycore_ceval.h:40
+#12 _PyEval_EvalCode () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4327
+#13 0x0000555555788bac in _PyEval_EvalCodeWithName (qualname=0x0, name=0x0, closure=0x0, kwdefs=0x0, defcount=0, defs=0x0, kwstep=2, kwcount=0, 
+    kwargs=<optimized out>, kwnames=<optimized out>, argcount=<optimized out>, args=<optimized out>, locals=<optimized out>, globals=<optimized out>, 
+    _co=<optimized out>) at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4359
+#14 PyEval_EvalCodeEx () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4375
+#15 0x00005555556d79eb in PyEval_EvalCode (co=<optimized out>, globals=<optimized out>, locals=<optimized out>)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:826
+#16 0x0000555555788c5b in run_eval_code_obj () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1219
+#17 0x00005555557bc705 in run_mod () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1240
+#18 0x000055555566160d in pyrun_file (fp=0x555555976b20, filename=0x7ffff6c7dc00, start=<optimized out>, globals=0x7ffff7f01f80, locals=0x7ffff7f01f80, closeit=1, 
+    flags=0x7fffffffdfa8) at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1138
+#19 0x00005555557c149f in pyrun_simple_file (flags=0x7fffffffdfa8, closeit=1, filename=0x7ffff6c7dc00, fp=0x555555976b20)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:449
+#20 PyRun_SimpleFileExFlags () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:482
+#21 0x00005555557c1c7f in pymain_run_file (cf=0x7fffffffdfa8, config=0x555555912f90) at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:379
+#22 pymain_run_python (exitcode=0x7fffffffdfa0) at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:604
+#23 Py_RunMain () at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:683
+#24 0x00005555557c1d79 in Py_BytesMain () at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:1129
+#25 0x00007ffff703fbf7 in __libc_start_main (main=0x555555669d80 <main>, argc=3, argv=0x7fffffffe198, init=<optimized out>, fini=<optimized out>, 
+    rtld_fini=<optimized out>, stack_end=0x7fffffffe188) at ../csu/libc-start.c:310
+#26 0x0000555555746bc3 in _start ()

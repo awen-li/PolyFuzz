@@ -6,4 +6,4 @@ if [ ! -f "../branch_vars.bv" ]; then
 fi
 cp ../branch_vars.bv ./
 
-sasg -s tests/ -d ./ 
+sasg -s tests/ -d ./ -l 128

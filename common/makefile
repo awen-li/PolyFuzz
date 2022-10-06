@@ -1,4 +1,4 @@
-SUBDIRS = shmqueue DynTrace ICC SASG
+SUBDIRS = shmqueue DynTrace IGC SASG
 
 $(SUBDIRS):init
 	for subdir in $(SUBDIRS);\

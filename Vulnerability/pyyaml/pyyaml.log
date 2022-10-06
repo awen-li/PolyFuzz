@@ -1,0 +1,2004 @@
+﻿(base) root@ubuntu:/home/wen/git/polyfuzz/pyyaml# python poc_load.py test 
+Traceback (most recent call last):
+  File "/home/wen/git/polyfuzz/pyyaml/poc_load.py", line 10, in <module>
+    context = yaml.load(bytes, Loader=yaml.FullLoader)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/__init__.py", line 81, in load
+    return loader.get_single_data()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/constructor.py", line 49, in get_single_data
+    node = self.get_single_node()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 36, in get_single_node
+    document = self.compose_document()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 55, in compose_document
+    node = self.compose_node(None, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 133, in compose_mapping_node
+    item_value = self.compose_node(node, item_key)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 82, in compose_node
+    node = self.compose_sequence_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 111, in compose_sequence_node
+    node.value.append(self.compose_node(node, index))
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 129, in compose_mapping_node
+    item_key = self.compose_node(node, None)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 84, in compose_node
+    node = self.compose_mapping_node(anchor)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/composer.py", line 127, in compose_mapping_node
+    while not self.check_event(MappingEndEvent):
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/parser.py", line 98, in check_event
+    self.current_event = self.state()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/parser.py", line 540, in parse_flow_mapping_first_key
+    return self.parse_flow_mapping_key(first=True)
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/parser.py", line 562, in parse_flow_mapping_key
+    return self.parse_flow_node()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/parser.py", line 268, in parse_flow_node
+    return self.parse_node()
+  File "/root/anaconda3/lib/python3.9/site-packages/PyYAML-6.0-py3.9-linux-x86_64.egg/yaml/parser.py", line 274, in parse_node
+    if self.check_token(AliasToken):
+RecursionError: maximum recursion depth exceeded
+(base) root@ubuntu:/home/wen/git/polyfuzz/pyyaml# chmod -R 777 ../pyyaml/

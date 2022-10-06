@@ -1049,13 +1049,9 @@ static inline VOID WriteSeed (PilotData *PD, DWORD BlkNum, ULONG *CurSeed)
     return;
 }
 
-static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
-{
-    if (PD->GenSeedNumBlock >= GEN_SEED_MAXNUM)
-    {
-        return;
-    }
 
+static inline DWORD GetSampleNum (PilotData *PD, BsValue *BsHeader)
+{
     DWORD SampleNum = BsHeader->ValueNum;
     if (PD->PLOP->SamplePolicy == SP_AVERAGE)
     {
@@ -1073,7 +1069,41 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
             SampleNum = BsHeader->ValueNum;
         }
         SampleNum = (SampleNum == 0)?1:SampleNum;
-    }  
+    }
+
+    return SampleNum;
+}
+
+static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWORD CurBlkNo, ULONG *CurSeed)
+{
+    if (PD->GenSeedNumBlock >= GEN_SEED_MAXNUM)
+    {
+        return;
+    }
+
+    DWORD SampleNum = GetSampleNum (PD, BsHeader);
+    if (SampleNum == 1)
+    {
+        do
+        {
+            CurSeed[CurBlkNo] = BsHeader->ValueList[0];
+            BsHeader++; CurBlkNo++;
+
+            if (CurBlkNo == BlkNum)
+            {
+                WriteSeed (PD, BlkNum, CurSeed);
+                PD->SdStatByBlock[PD->CurAlign]++;
+                break;
+            }
+            
+            SampleNum = GetSampleNum (PD, BsHeader); 
+        } while (SampleNum == 1);
+
+        if (CurBlkNo == BlkNum)
+        {
+            return;
+        }
+    }
 
     DWORD SpUnit = BsHeader->ValueNum/SampleNum;
     SpUnit = (SpUnit == 0)?1:SpUnit;
@@ -1084,7 +1114,7 @@ static inline VOID GenSeed (PilotData *PD, BsValue *BsHeader, DWORD BlkNum, DWOR
         /* random sampling */
         DWORD SmpIndex = Ei*SpUnit +  random ()%SpUnit;            
         CurSeed[CurBlkNo] = BsHeader->ValueList[SmpIndex];
-        
+            
         if (CurBlkNo+1 == BlkNum)
         {
             WriteSeed (PD, BlkNum, CurSeed);
@@ -1223,7 +1253,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
             {     
                 snprintf (BlkDir, sizeof (BlkDir), "%s/Align%u/BLK-%u-%u", PD->CurSeedName, Align, OFF, Align);
                 ReadBsList (BlkDir, BsList, Align);
-                printf ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
+                DEBUG ("@@@ [%u-%u] read value total of %u \r\n", OFF, Align, BsList->ValueNum);
             }
 
             /* For this seed block, we learned nothing, using original value instead */
@@ -1246,7 +1276,7 @@ static inline VOID GenAllSeeds (PilotData *PD, Seed *Sd)
 
         if (LearnFailNum == Sd->SeedLen/Align)
         {
-            printf ("@@@GenAllSeeds [%s]Align:%u, blocknum:%u, learning fails...!\r\n", PD->CurSeedName, Align, Sd->SeedLen/Align);        
+            DEBUG ("@@@GenAllSeeds [%s]Align:%u, blocknum:%u, learning fails...!\r\n", PD->CurSeedName, Align, Sd->SeedLen/Align);        
         }
         else
         {

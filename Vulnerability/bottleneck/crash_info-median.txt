@@ -1,0 +1,51 @@
+Starting program: /root/anaconda3/bin/python random_shape.py input1 bn.median
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[New Thread 0x7ffff47f0700 (LWP 49724)]
+[New Thread 0x7fffebfef700 (LWP 49725)]
+[New Thread 0x7fffe37ee700 (LWP 49726)]
+5
+4
+[1, 30, 1, 19]
+[0, 3, 1, 2]
+
+Thread 1 "python" received signal SIGSEGV, Segmentation fault.
+0x00007fffd9ed80a0 in median_all_float64 (a=<optimized out>, ddof=<optimized out>) at bottleneck/src/reduce_template.c:822
+822     bottleneck/src/reduce_template.c: No such file or directory.
+(gdb) bt
+#0  0x00007fffd9ed80a0 in median_all_float64 (a=<optimized out>, ddof=<optimized out>) at bottleneck/src/reduce_template.c:822
+#1  0x00007fffd9ebb6cd in reducer (name=0x7fffd9ee29b4 "median", args=<optimized out>, args@entry=0x7ffff7f00a60, kwds=<optimized out>, kwds@entry=0x0, 
+    fall_float64=0x7fffd9ed7d40 <median_all_float64>, fall_float32=0x7fffd9ed8690 <median_all_float32>, fall_int64=0x7fffd9ed8fd0 <median_all_int64>, 
+    fall_int32=0x7fffd9ed98c0 <median_all_int32>, fone_float64=0x7fffd9eda2f0 <median_one_float64>, fone_float32=0x7fffd9edaff0 <median_one_float32>, 
+    fone_int64=0x7fffd9edbce0 <median_one_int64>, fone_int32=0x7fffd9edc950 <median_one_int32>, has_ddof=0) at bottleneck/src/reduce_template.c:1246
+#2  0x00007fffd9ebae5f in median (self=<optimized out>, args=0x0, kwds=0x2d) at bottleneck/src/reduce_template.c:892
+#3  0x00005555556c8714 in cfunction_call () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/methodobject.c:543
+#4  0x00005555556989ef in _PyObject_MakeTpCall () at /tmp/build/80754af9/python-split_1631797238431/work/Objects/call.c:191
+#5  0x000055555571e8b4 in _PyObject_VectorcallTstate (kwnames=0x0, nargsf=<optimized out>, args=0x7ffff7ed5750, callable=<optimized out>, tstate=<optimized out>)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Include/cpython/abstract.h:116
+#6  PyObject_Vectorcall () at /tmp/build/80754af9/python-split_1631797238431/work/Include/cpython/abstract.h:127
+#7  call_function (kwnames=0x0, oparg=<optimized out>, pp_stack=<synthetic pointer>, tstate=0x555555914a20)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:5075
+#8  _PyEval_EvalFrameDefault () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:3518
+#9  0x00005555556d68e2 in _PyEval_EvalFrame () at /tmp/build/80754af9/python-split_1631797238431/work/Include/internal/pycore_ceval.h:40
+#10 _PyEval_EvalCode () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4327
+#11 0x0000555555788bac in _PyEval_EvalCodeWithName (qualname=0x0, name=0x0, closure=0x0, kwdefs=0x0, defcount=0, defs=0x0, kwstep=2, kwcount=0, 
+    kwargs=<optimized out>, kwnames=<optimized out>, argcount=<optimized out>, args=<optimized out>, locals=<optimized out>, globals=<optimized out>, 
+    _co=<optimized out>) at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4359
+#12 PyEval_EvalCodeEx () at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:4375
+#13 0x00005555556d79eb in PyEval_EvalCode (co=<optimized out>, globals=<optimized out>, locals=<optimized out>)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/ceval.c:826
+#14 0x0000555555788c5b in run_eval_code_obj () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1219
+#15 0x00005555557bc705 in run_mod () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1240
+#16 0x000055555566160d in pyrun_file (fp=0x555555976ec0, filename=0x7ffff6c7dc00, start=<optimized out>, globals=0x7ffff7f01fc0, locals=0x7ffff7f01fc0, closeit=1, 
+    flags=0x7fffffffdf98) at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:1138
+#17 0x00005555557c149f in pyrun_simple_file (flags=0x7fffffffdf98, closeit=1, filename=0x7ffff6c7dc00, fp=0x555555976ec0)
+    at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:449
+#18 PyRun_SimpleFileExFlags () at /tmp/build/80754af9/python-split_1631797238431/work/Python/pythonrun.c:482
+#19 0x00005555557c1c7f in pymain_run_file (cf=0x7fffffffdf98, config=0x555555913140) at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:379
+#20 pymain_run_python (exitcode=0x7fffffffdf90) at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:604
+#21 Py_RunMain () at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:683
+#22 0x00005555557c1d79 in Py_BytesMain () at /tmp/build/80754af9/python-split_1631797238431/work/Modules/main.c:1129
+#23 0x00007ffff703fbf7 in __libc_start_main (main=0x555555669d80 <main>, argc=4, argv=0x7fffffffe188, init=<optimized out>, fini=<optimized out>, 
+    rtld_fini=<optimized out>, stack_end=0x7fffffffe178) at ../csu/libc-start.c:310
+#24 0x0000555555746bc3 in _start ()

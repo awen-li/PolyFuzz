@@ -22,11 +22,9 @@ function collect_branchs ()
 
 function compile ()
 {
-	if [ -d "$ROOT/$target" ]; then
-		rm -rf $ROOT/$target
+	if [ ! -d "$ROOT/$target" ]; then
+		git clone https://github.com/python-pillow/Pillow.git
 	fi
-	
-	git clone https://github.com/python-pillow/Pillow.git
 	
 	pushd $target
 	

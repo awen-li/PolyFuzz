@@ -23,7 +23,7 @@
 #define FZ_SEED_NAME_LEN     (512)
 #define MAX_THREAD_NUM       (128)
 #define LEARN_BLOCK_SIZE     (32)
-#define LEARN_BLOCK_NUM      (256)
+#define LEARN_BLOCK_NUM      (64)
 #define GEN_SEED_UNIT        (8192)
 #define GEN_SEED_MAXNUM      (32 * GEN_SEED_UNIT)
 

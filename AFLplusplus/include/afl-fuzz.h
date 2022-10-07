@@ -824,6 +824,7 @@ typedef struct afl_state {
   /* pattern fuzzing type: PL_SYNTAX_FZ=1 | PL_SEMANTIC_FZ=2 | PL_OFFICIAL_FZ=3 */
   u8  pl_fuzzing_type;
   u32 pl_havoc_num;
+  u32 pl_stat;
   
   /* threshold for path length in pattern recognization fuzzing, default:1 */
   u32 threshold_pathlen;

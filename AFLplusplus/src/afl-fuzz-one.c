@@ -6544,7 +6544,7 @@ static inline void havoc_fuzzing(afl_state_t *afl, u8 *in_buf, u32 len) {
 
 
 
-void read_seed_fuzz(afl_state_t *afl, u8 *dir) 
+void read_seed_fuzz(afl_state_t *afl, u8 *dir, u8 rem) 
 {
     struct dirent **nl;
     s32             nl_cnt;
@@ -6552,8 +6552,11 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
     struct stat st;
     
     nl_cnt = scandir(dir, &nl, NULL, alphasort);
-    assert (nl_cnt >= 0);
-    ACTF("Scanning %s, get seeds: %u", dir, nl_cnt);
+    if (nl_cnt < 0)
+    {
+        return;
+    }
+    ACTF("Scanning %s, get seeds: %u\r\n", dir, nl_cnt);
 
     /* for these seed, we only consider the PC */
     setenv("AFL_TRACE_DU_SHUTDOWN", "1", 1);
@@ -6605,7 +6608,8 @@ void read_seed_fuzz(afl_state_t *afl, u8 *dir)
         }
 
         if (i != random_saved) {
-            remove (seed);
+            if (rem)
+                remove (seed);
         }
         else {
             u8 *target = alloc_printf("in/%s", nl[i]->d_name);
@@ -6676,11 +6680,16 @@ u8 fuzz_one_standard(afl_state_t *afl)
             
             char *seed_dir = (char *)(msg_header + 1);      
             //OKF ("[fuzz_one_standard] recv PL_MSG_GEN_SEED: %s, queued_paths:%u", seed_dir, afl->queued_paths);
-            read_seed_fuzz(afl, seed_dir);
+            read_seed_fuzz(afl, seed_dir, 1);
+            if (afl->pl_stat < 3)
+            {
+                read_seed_fuzz(afl, "../tests/", 0);
+            }
             //OKF ("[fuzz_one_standard] finish READING new seeds, queued_paths:%u", afl->queued_paths);
 
             msg_header = format_msg (msg_header->MsgType);
             pl_send ((char*)msg_header, msg_header->MsgLen);
+            afl->pl_stat++;
             break;
         }
         default:

@@ -28,6 +28,10 @@ function compile ()
 	
 	pushd $target
 	
+	if [ -d "build" ]; then
+		rm -rf build
+	fi
+	
 	export CC="afl-cc -lxFuzztrace"
 	export CXX="afl-c++ -lxFuzztrace"
 		

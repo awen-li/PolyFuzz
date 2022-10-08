@@ -1037,7 +1037,7 @@ void perform_dry_run(afl_state_t *afl) {
                "    altogether, and find one that is less of a CPU hog.\n",
                afl->fsrv.exec_tmout);
 
-          FATAL("Test case '%s' results in a timeout", fn);
+          SAYF("Test case '%s' results in a timeout", fn);
 
         }
 

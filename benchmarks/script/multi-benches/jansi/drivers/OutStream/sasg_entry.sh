@@ -6,4 +6,6 @@ if [ ! -f "../branch_vars.bv" ]; then
 fi
 cp ../branch_vars.bv ./
 
+unset JAVA_TOOL_OPTIONS
+
 sasg -s tests/ -d ./ 

@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<py_summary branchs="6906">
+  <file name="FliImagePlugin.py" id="1">
+    <function class="" name="_accept" sline="28" eline="32" brval="" bbs="28"/>
+    <function class="FliImageFile" name="_open" sline="47" eline="96" brval="65:magic:4160285360 " bbs="47 51 52 65 66 76 79 81 84 85 86 87"/>
+    <function class="FliImageFile" name="_palette" sline="98" eline="114" brval="106:n:4159744560 " bbs="98 102 106 107 109"/>
+    <function class="FliImageFile" name="seek" sline="116" eline="123" brval="" bbs="116 117 118 119 120 122"/>
+    <function class="FliImageFile" name="_seek" sline="125" eline="151" brval="126:frame:4158946224 " bbs="125 126 129 132 134 135 143 144"/>
+    <function class="FliImageFile" name="tell" sline="153" eline="154" brval="" bbs="153"/>
+    <function class="FliImageFile" name="_close__fp" sline="156" eline="163" brval="" bbs="156 158 159"/>
+  </file>
+  <file name="ImageEnhance.py" id="2">
+    <function class="_Enhance" name="enhance" sline="25" eline="36" brval="" bbs="25"/>
+    <function class="Color" name="__init__" sline="48" eline="54" brval="" bbs="48 51 52"/>
+    <function class="Contrast" name="__init__" sline="65" eline="71" brval="" bbs="65 70 71"/>
+    <function class="Brightness" name="__init__" sline="82" eline="87" brval="" bbs="82 86 87"/>
+    <function class="Sharpness" name="__init__" sline="98" eline="103" brval="" bbs="98 102 103"/>
+  </file>
+  <file name="FontFile.py" id="3">
+    <function class="" name="puti16" sline="25" eline="30" brval="28:v:4159597296 " bbs="25 27 28 29"/>
+    <function class="FontFile" name="__init__" sline="38" eline="41" brval="" bbs="38"/>
+    <function class="FontFile" name="__getitem__" sline="43" eline="44" brval="" bbs="43"/>
+    <function class="FontFile" name="compile" sline="46" eline="91" brval="68:xsize:4137851184 68:ysize:4137851120 " bbs="46 49 50 55 56 60 62 63 68 69 77 79 85 88 91"/>
+    <function class="FontFile" name="save" sline="93" eline="111" brval="" bbs="93 106 108 109 111"/>
+  </file>
+  <file name="ContainerIO.py" id="4">
+    <function class="ContainerIO" name="__init__" sline="27" eline="39" brval="" bbs="27"/>
+    <function class="ContainerIO" name="isatty" sline="44" eline="45" brval="" bbs="44"/>
+    <function class="ContainerIO" name="seek" sline="47" eline="64" brval="58:mode:4160463856 " bbs="47 56 57 58 59 61"/>
+    <function class="ContainerIO" name="tell" sline="66" eline="72" brval="" bbs="66"/>
+    <function class="ContainerIO" name="read" sline="74" eline="89" brval="" bbs="74 82 83 85 86 87"/>
+    <function class="ContainerIO" name="readline" sline="91" eline="106" brval="" bbs="91 99 101 102 104 105"/>
+    <function class="ContainerIO" name="readlines" sline="108" eline="120" brval="" bbs="108 115 117 118"/>
+  </file>
+  <file name="MpegImagePlugin.py" id="5">
+    <function class="BitStream" name="__init__" sline="25" eline="28" brval="" bbs="25"/>
+    <function class="BitStream" name="next" sline="30" eline="31" brval="" bbs="30"/>
+    <function class="BitStream" name="peek" sline="33" eline="41" brval="36:c:4159999536 " bbs="33 34 36 38"/>
+    <function class="BitStream" name="skip" sline="43" eline="47" brval="" bbs="43 44"/>
+    <function class="BitStream" name="read" sline="49" eline="52" brval="" bbs="49"/>
+    <function class="MpegImageFile" name="_open" sline="65" eline="73" brval="" bbs="65 69 70"/>
+  </file>
+  <file name="ImtImagePlugin.py" id="6">
+    <function class="ImtImageFile" name="_open" sline="37" eline="84" brval="" bbs="37 42 43 48 51 52 54 61 67 68 69 70 71 73 74 75 76 77 79 80 82 83 84"/>
+  </file>
+  <file name="PixarImagePlugin.py" id="7">
+    <function class="" name="_accept" sline="29" eline="30" brval="" bbs="29"/>
+    <function class="PixarImageFile" name="_open" sline="42" eline="62" brval="" bbs="42 46 47 57 58"/>
+  </file>
+</py_summary>

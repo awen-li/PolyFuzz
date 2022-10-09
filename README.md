@@ -74,3 +74,10 @@ java -cp .:$JavaCovPCG/JavaCovPCG.jar JCovPCG.Main -t <class-dir>
 ```
 
 An [example](https://github.com/Daybreak2019/xFuzz/tree/main/benchmarks/script/multi-benches/jansi)  for Java-C program
+
+
+## 4. Vulnerabilities detected on real-world programs
+PolyFuzz got 5 CVEs assigned on 5 multi-language real-world programs:
+CVE-2022-34070, CVE-2022-34072, CVE-2022-34073, CVE-2022-34074, CVE-2022-34075
+
+Refer to [Vulnerability](https://github.com/Daybreak2019/PolyFuzz/tree/main/Vulnerability) for details.

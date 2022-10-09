@@ -1884,7 +1884,7 @@ static inline DWORD PilotMode (PilotData *PD, SocketInfo *SkInfo)
                 int Ret = pthread_create(&Tid, NULL, LearningMainThread, PD);
                 if (Ret != 0)
                 {
-                    fprintf (stderr, "pthread_create for DECollect fail, Ret = %d\r\n", Ret);
+                    fprintf (stderr, "pthread_create for LearningMainThread fail, Ret = %d\r\n", Ret);
                     exit (0);
                 }                
                 

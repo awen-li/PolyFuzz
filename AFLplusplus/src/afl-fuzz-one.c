@@ -6656,6 +6656,11 @@ u8 fuzz_one_standard(afl_state_t *afl)
     msg_header = (MsgHdr *)pl_recv();
     
     u8 ret = fuzz_one_original(afl);
+    if (afl->pl_stat > (u32)afl->init_seed)
+    {
+        read_seed_fuzz(afl, "../tests/", 0);
+        afl->init_seed = -1;
+    }
     
     switch (msg_header->MsgType)
     {
@@ -6681,7 +6686,7 @@ u8 fuzz_one_standard(afl_state_t *afl)
             char *seed_dir = (char *)(msg_header + 1);      
             //OKF ("[fuzz_one_standard] recv PL_MSG_GEN_SEED: %s, queued_paths:%u", seed_dir, afl->queued_paths);
             read_seed_fuzz(afl, seed_dir, 1);
-            if (afl->pl_stat < 3)
+            if (!(afl->pl_stat%4))
             {
                 read_seed_fuzz(afl, "../tests/", 0);
             }
@@ -6689,7 +6694,7 @@ u8 fuzz_one_standard(afl_state_t *afl)
 
             msg_header = format_msg (msg_header->MsgType);
             pl_send ((char*)msg_header, msg_header->MsgLen);
-            afl->pl_stat++;
+            
             break;
         }
         default:
@@ -6698,6 +6703,8 @@ u8 fuzz_one_standard(afl_state_t *afl)
             assert (0);
         }
     }
+
+    afl->pl_stat++;
 
     //OKF (">>[fuzz_one_standard]seed %u fuzzing done.", afl->current_entry);
     return ret;

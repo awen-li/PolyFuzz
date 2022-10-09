@@ -4,7 +4,7 @@ import random
 import libsmbios_c.memory as Mem
 import pyprob
 
-pyprob.Setup('py_summary.xml', 'setup_mem.py')
+pyprob.Setup('py_summary.xml', 'op_mem.py')
 
 pageunit = 8192
 

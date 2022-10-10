@@ -3,6 +3,8 @@
 import os
 from distutils.core import setup, Extension
 
+
+
 module1 = Extension('PyDemo',
                     define_macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')],
                     extra_link_args=['-lxFuzztrace'],

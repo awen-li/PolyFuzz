@@ -11,7 +11,7 @@ fi
 
 cd fuzz
 
-afl-system-config
+#afl-system-config
 
 #enable debug for child process
 export AFL_DEBUG_CHILD=1

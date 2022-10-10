@@ -1,7 +1,0 @@
-<?xml version="1.0" ?>
-<py_summary branchs="15">
-  <file name="Demo.py" id="1">
-    <function class="PwManage" name="Retrieve" sline="12" eline="13" brval="" bbs="12"/>
-    <function class="PwManage" name="getPwd" sline="15" eline="19" brval="" bbs="15 16 19"/>
-  </file>
-</py_summary>

@@ -30,7 +30,7 @@ PolyFuzz is tested on Ubuntu18.04, LLVM11.0, Soot4.3.0, Python3.8/9 (and Python3
 
 #### 1.2 Reuse the environment from docker image (recommanded)
 We build a [docker image](https://hub.docker.com/repository/registry-1.docker.io/daybreak2019/polyfuzz/tags?page=1&ordering=last_updated) with all dependences ready (i.e., all the dependencies required for running PolyFuzz itself; 
-for subject systems (benchmakrs), we provides scripts to setup the environments under benchmarks/script.<br>
+for subject systems (benchmarks), we provides scripts to setup the environments under benchmarks/script.<br>
 Please use the command ```docker pull daybreak2019/polyfuzz:v1.1``` to pull the image to local storage.
 
 
